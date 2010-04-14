@@ -1,0 +1,28 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $filesString = `find ../data/korpus/sgml-input/ -type f`;
+my @files = split(/\n/, $filesString);
+
+my $counter = 0;
+
+my $actFiles = "";
+
+while ($counter < scalar(@files))
+{
+	if ($actFiles ne "") { $actFiles .= " "; }
+	$actFiles .= $files[$counter];
+	$counter++;
+	
+	if ($counter % 500 == 0)
+	{
+		`cat $actFiles >../data/korpus/sgml-input-grouped/$counter.in`;
+		$actFiles = "";
+	}
+}
+
+if ($actFiles ne "")
+{
+		`cat $actFiles >../data/korpus/sgml-input-grouped/$counter.in`;
+}

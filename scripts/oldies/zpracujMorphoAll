@@ -1,0 +1,164 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $morphoFile = "/home/michalisek/MasterThesis/data/slovnikISO-tagged.txt";
+my $formsMultiLemmaOutput = "/home/michalisek/MasterThesis/data/form.out";
+my $tagOutput = "/home/michalisek/MasterThesis/data/tag.out";
+my $tagGroups = "/home/michalisek/MasterThesis/data/tagGroups.out";
+my $formsOneLemmaOutput = "/home/michalisek/MasterThesis/data/forms-oneLemma.out";
+
+open(INPUT, "<$morphoFile") || die "Can't open $morphoFile for reading";
+
+my @parts = ();
+my @tags = ();
+my $forma;
+my $lemma;
+my $tagsString;
+my @tagIDs = ();
+
+my %tagGroups = ();
+my $tagGroupsCounter = 0;
+
+my %lemmaHash = ();
+my $lemmaCounter = 0;
+
+my %tagHash = ();
+my $tagCounter = 0;
+
+my %formHash = ();
+my $formCounter = 0;
+my $part;
+
+my $formID;
+my $lemmaID;
+my $tagID;
+my $tagGroupID;
+
+open(FORMONELEMMA, ">$formOneLemmaOutput") || die "Can't open $formOneLemmaOutput for writting";
+open(FORMMULTILEMMA, ">$formMultiLemmaOutput") || die "Can't open $formMultiLemmaOutput for writting";
+open(LEMMA, ">$lemmaOutput") || die "Can't open $lemmaOutput for writting";
+open(TAG, ">$tagOutput") || die "Can't open $tagOutput for writting";
+open(TAGGROUPS, ">$tagGroups") || die "Can't open $tagGroups for writting";
+open(MORPHOOUT, ">$morphoOut") || die "Can't open $morphoOut for writting";
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+	@parts = split(/<MMl[^>]+>/, $radek);
+	
+	$forma = substr($parts[0], 3);
+	
+	#print "form: $forma\n";
+	
+	if (! defined($formHash{$forma}))
+	{
+		print FORM "$forma\n";
+		$formHash{$forma} = $formCounter;
+		$formCounter++;
+	}
+	
+	$formID = $formHash{$forma};
+	
+	print MORPHOOUT $formID."\n";
+	print MORPHOOUT (scalar(@parts) - 1)."\n";
+	
+	for (my $j = 1; $j < scalar(@parts); $j++) 
+	{
+		$part = $parts[$j];
+		@tags = split(/<MMt[^>]+>/, $part);
+		
+		
+		$tags[0] =~ s/^([a-zì¹èø¾ýáíéóï»òúù]+).*/\1/;
+		
+		if ($j > 1 && $tags[0] eq $lemma) { print MORPHOOUT "-\n-\n"; next; }
+		$lemma = $tags[0];
+		
+		
+		#print "lemma: $lemma\n";
+		
+		if (! defined($lemmaHash{$lemma}))
+		{
+			print LEMMA "$lemma\n";
+			$lemmaHash{$lemma} = $lemmaCounter;
+			$lemmaCounter++;
+		}
+		
+		$lemmaID = $lemmaHash{$lemma};
+		print MORPHOOUT $lemmaID."\n";
+		
+		@tagIDs = ();
+		for (my $i = 1; $i < scalar(@tags); $i++)
+		{
+			$tags[$i] = zpracujTag($tags[$i]);
+			
+			#print "tag: $tags[$i]\n";
+			if (! defined($tagHash{$tags[$i]}))
+			{
+				print TAG $tags[$i]."\n";
+				$tagHash{$tags[$i]} = $tagCounter;
+				$tagCounter++;
+			}
+			
+			push(@tagIDs, $tagHash{$tags[$i]});
+		}
+		@tagIDs = sort @tagIDs;
+		
+		$tagsString = join(';', @tagIDs);
+		if (! defined($tagGroups{$tagsString}))
+		{
+			print TAGGROUPS $tagsString."\n";
+			$tagGroups{$tagsString} = $tagGroupsCounter;
+			$tagGroupsCounter++;
+		}
+		
+		$tagGroupID = $tagGroups{$tagsString};
+		
+		print MORPHOOUT $tagGroupID."\n";
+		
+	}
+	
+}
+
+
+sub zpracujTag {
+
+  my $tag = shift;
+		 
+  my $prvniZnak = substr($tag, 0, 1);
+       
+  if ($prvniZnak eq "C" || $prvniZnak eq "A" || $prvniZnak eq "N" || $prvniZnak eq "P")
+  {
+    $tag = substr($tag, 0, 5);
+  }
+       
+  if ($prvniZnak eq "V")
+  {
+    $tag = substr($tag, 0, 4).substr($tag, 7, 2).substr($tag, 11, 1);
+  }
+       
+  if ($prvniZnak eq "R")
+  {
+    $tag = substr($tag, 0, 2).substr($tag, 4, 1);
+  }
+       
+  if ($prvniZnak eq "D" || $prvniZnak eq "I" || $prvniZnak eq "J"  || $prvniZnak eq "T")
+  {
+    $tag = substr($tag, 0, 2);
+  }
+      
+  if ($prvniZnak eq "X")
+  {
+    $tag = substr($tag, 0, 1);
+  }
+       
+  $tag =~ tr/X/-/;
+  
+  return $tag;
+}
+
+close(FORM);
+close(LEMMA);
+close(TAG);
+close(TAGGROUPS);
+close(MORPHOOUT);

@@ -1,0 +1,12 @@
+#!/usr/bin/perl
+
+use strict;
+
+my %lines = ();
+
+while (my $radek = <STDIN>)
+{
+	if (defined($lines{$radek})) { print STDERR "duplicate: $radek"; next; }
+	$lines{$radek} = 1;
+	print $radek;
+}

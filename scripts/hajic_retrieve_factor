@@ -1,0 +1,207 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß";
+my $allLetters = $lcLetters.$ucLetters;
+
+my $badChars =      "µ±„“";
+my $replaceWith  = "¾¹  ";
+
+my $chr160 = chr(160);
+my $chr255 = chr(255);
+
+my $inputFile = $ARGV[0];
+
+my $filter = $ARGV[2];
+if ($filter eq "filter") { $filter = 1; }
+
+open(INPUT, "<$inputFile") || die "Can't open input file: $inputFile";
+
+my @factors = split(/\+/, $ARGV[1]);
+
+my $multiword_counter = 0;
+my $strangeLemma_counter = 0;
+
+foreach my $factor (@factors)
+{
+	if ($factor ne "form" && $factor ne "lemma" && $factor ne "tag") { die "$factor is incorrect factor type!"; }
+}
+
+if (scalar(@factors) == 0) { die "no factors specified!"; }
+
+#open(STRANGE_CHARS, ">strangeChars");
+
+my $radek = "";
+sub outputWord {
+	my $form = shift;
+	my $lemma = shift;
+	my $tag = shift;
+	my $spec = shift;
+
+	if ($radek ne "") { print " "; $radek .= " "; }
+	
+	if ($spec ne "") { print "<$spec>"; }
+	
+	for (my $i = 0; $i < scalar(@factors); $i++)
+	{
+		if ($i > 0) { print "|"; }
+		
+		if ($factors[$i] eq "form") { print $form; }
+		elsif ($factors[$i] eq "lemma") { print $lemma; }
+		else { print $tag; }
+		
+	}
+	
+	
+	$radek .= $form;
+	
+}
+
+sub endSentence {
+	print "\n";
+	$radek = "";
+}
+
+my $firstSentence = 1;
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+    $radek =~ tr/µ±„“/¾¹  /;
+    $radek =~ s/$chr160/ /g;
+    $radek =~ s/$chr255/ /g;
+    
+	if ($radek =~ m/^<s id=/)
+	{
+		if ($firstSentence != 1) { endSentence(); }
+		else { $firstSentence = 0; }
+	}
+	elsif ($radek =~ m/^<d>([^<]+)</)
+	{
+		my $word = $1;
+		if ($word eq "&lt;") { $word = "<"; }
+		if ($word eq "&gt;") { $word = ">"; }
+		if ($word eq "&amp;") { $word = "&"; }
+		outputWord($word, $word, $word);
+		if (length($word) > 1) { print STDERR "long delim character: <d>$word\n"; }
+	}
+	elsif ($radek eq "<D>" || $radek eq "<p>") { next; }
+	elsif ($radek =~ m/^<f>([^<]+)<MDl[^>]+>([^<]+)<MDt[^>]+>([^<]+)/)
+	{
+		#if ($3 ne "") { print STDERR "<P>s: $radek\n"; }
+	
+		
+		my $form = $1;
+		my $lemma = $2;
+		my $tag = $3;
+		my $spec = "name";
+		
+		if ($form eq "") { next; }
+		
+		$lemma =~ s/^([^\-_`]+)[\-_`].*$/\1/;
+		
+		if ($form =~ m/^[0-9\-\.]+$/)
+		{
+			$spec = "number";
+		}
+		elsif ($lemma =~ m/^[$allLetters]+$/)
+		{
+			if ($lemma =~ m/^[$lcLetters]+$/) 
+			{ 
+				$spec = ""; 
+			}
+		}
+		else
+		{
+			if ($lemma =~ m/^[\*\&\^\%\$\#\@\!\~\`\{\}\|\\\'\/\.\>\<\;\+\-\_\:]+$/)
+			{
+				$spec = "";
+			}
+			elsif (index($lemma, " ") >= 0)
+			{
+				$multiword_counter++;
+				#print STDERR "$inputFile: multiword $multiword_counter: $radek";
+				next;
+			}
+			else
+			{
+				$strangeLemma_counter++;
+				#print STDERR "$inputFile: strange lemma $strangeLemma_counter: $lemma ($radek)\n";
+				
+				#my $character;
+				#for (my $i = 0; $i < length($lemma); $i++)
+				#{
+				#	$character = substr($lemma, $i, 1);
+				#	if (index($allLetters, $character) < 0)
+				#	{
+				#		print STDERR "strange character: $character, ord value = ".ord($character)."\n";
+				#	}
+				#	
+				#}
+			}
+		}
+		
+		if ($spec eq "" && !($form =~ m/^[$lcLetters]+$/) )
+		{
+			$form =~ tr/ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß/abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß/;
+		}
+
+		$tag = zpracujTag($tag);
+		
+		if ($spec eq "" && $tag eq "<unk>" && $filter == 1) 
+		{
+			print STDERR "filtered word: $form\n"; 
+			next; 
+		}
+		
+		outputWord($form, $lemma, $tag, $spec);
+		
+		
+	}
+	else
+	{
+		die "line doesn't match: $radek";
+	}
+	
+}
+
+
+sub zpracujTag {
+
+  my $tag = shift;
+		 
+  my $prvniZnak = substr($tag, 0, 1);
+       
+  if ($prvniZnak eq "C" || $prvniZnak eq "A" || $prvniZnak eq "N" || $prvniZnak eq "P")
+  {
+    $tag = substr($tag, 0, 5);
+  }
+       
+  if ($prvniZnak eq "V")
+  {
+    $tag = substr($tag, 0, 4).substr($tag, 7, 2).substr($tag, 11, 1);
+  }
+       
+  if ($prvniZnak eq "R")
+  {
+    $tag = substr($tag, 0, 2).substr($tag, 4, 1);
+  }
+       
+  if ($prvniZnak eq "D" || $prvniZnak eq "I" || $prvniZnak eq "J"  || $prvniZnak eq "T")
+  {
+    $tag = substr($tag, 0, 2);
+  }
+      
+  if ($prvniZnak eq "X")
+  {
+    $tag = "<unk>";
+  }
+  
+       
+  $tag =~ tr/X/-/;
+  
+  return $tag;
+}
+

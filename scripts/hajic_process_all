@@ -1,0 +1,52 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Basename;
+
+my $factorsS = $ARGV[0];
+
+my @factors = split(/\+/, $factorsS);
+
+foreach my $factor (@factors)
+{
+	if ($factor ne "form" && $factor ne "lemma" && $factor ne "tag") { die "$factor is incorrect factor type!"; }
+}
+
+my $inputDir = "../data/korpus/hajic-tagged";
+my $outputDir = "../data/korpus/$factorsS";
+my @suffixes;
+push(@suffixes, ".out");
+
+
+if (! -d $inputDir) { die "Input directory doesn't exist"; }
+
+if (! -d $outputDir)
+{
+	mkdir($outputDir);
+	
+	if (! -d $outputDir) { die "Can't create output dir"; }
+}
+
+my $filesS = `find $inputDir -type f`;
+my @files = split(/\n/, $filesS);
+my $fileBase;
+my $dirName;
+my $suffix;
+
+my $counter = 0;
+foreach my $file (@files)
+{ 
+	my($fileName, $dirName, $suffix) = fileparse($file, @suffixes);
+	
+	if (! -e "$outputDir/$fileName.$factorsS")
+	{
+		$counter++;
+		`./hajic_retrieve_factor $file $factorsS >$outputDir/$fileName.$factorsS`;
+		print "$counter file processed: $fileName\n";
+	}
+	else
+	{
+		print "skipping file: $outputDir/$fileName.$factorsS\n";
+	}
+}
+

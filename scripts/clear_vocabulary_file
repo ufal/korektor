@@ -1,0 +1,61 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $file = $ARGV[0];
+my $outputFile = $ARGV[1];
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ıáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®İÁÍÉÓÏ«ÒÚÙÄÖÜß";
+my $allLetters = $lcLetters.$ucLetters;
+
+
+my $temp = "./tmp/temp0";
+
+if (-e $temp)
+{
+	print STDERR "$temp exists, skipping...\n";
+}
+else
+{
+	open(INPUT, "<$file") || die "Can't open input file: $file";
+	open(TEMP, ">$temp") || die "Can't open temporary file $temp";
+
+	while (my $radek = <INPUT>)
+	{
+		chomp($radek);
+		if ($radek =~ m/^[$allLetters]+$/)
+		{
+			print TEMP "<f>$radek\n";
+		}
+	}
+
+	close(TEMP);
+	close(INPUT);
+
+}
+print STDERR `head $temp`;
+
+print STDERR "temp1 ok!\n";
+
+my $temp2 = "./tmp/temp.ble";
+
+if (! -e $temp2)
+{
+	print STDERR "/home/michalisek/bc_cedo/main/cz/CZ070430ax M $temp $temp2";
+	`/home/michalisek/bc_cedo/main/cz/CZ070430ax T $temp $temp2`;
+}
+
+if ( (! -e "$temp2") || (-z $temp2) )
+{
+	die "$temp2 not exists or has zero size";
+}
+
+
+`./hajic_retrieve_factor $temp2 form filter | tr ' ' '\n' > $outputFile`;
+
+if ( (! -e "$outputFile") || (-z $outputFile) )
+{
+	die "$outputFile not exists or has zero size";
+}
+

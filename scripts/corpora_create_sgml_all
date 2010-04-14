@@ -1,0 +1,40 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Basename;
+
+
+my $inputDir = "../data/korpus/trns";
+my $outputDir = "../data/korpus/sgml-input";
+my @suffixes;
+push(@suffixes, ".sgml");
+
+
+if (! -d $inputDir) { die "Input directory doesn't exist"; }
+
+if (! -d $outputDir)
+{
+	mkdir($outputDir);
+	
+	if (! -d $outputDir) { die "Can't create output dir"; }
+}
+
+my $filesS = `find $inputDir -type f`;
+my @files = split(/\n/, $filesS);
+my $fileBase;
+my $dirName;
+my $suffix;
+
+my $counter = 0;
+foreach my $file (@files)
+{ 
+	my($fileName, $dirName, $suffix) = fileparse($file, @suffixes);
+	
+	if (! -e "$outputDir/$fileName.in")
+	{
+		$counter++;
+		`./corpora_create_sgml_input $file >$outputDir/$fileName.in`;
+		print "$counter file processed: $fileName\n";
+	}
+}
+

@@ -1,0 +1,31 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $slovnik="../data/dictionaries/aspell_cs+korpus.txt";
+my $outDir="../data/morphology/text/";
+
+if (! -d $outDir)
+{
+	mkdir($outDir) || die "Can't create dir: $outDir";
+}
+
+if (! -e "$outDir/vocab-tagged.txt")
+{
+
+	my $temp1 = "./tmp/bleble0.tmp";
+
+	print STDERR "directory created\n";
+
+	print STDERR "slovnik = $slovnik\n";
+	`cat $slovnik | sed 's/^/<f>/;' > $temp1`;
+
+	print STDERR "temp created, starting morphology\n";
+
+	`/home/michalisek/bc_cedo/main/cz/CZ070430ax M $temp1 $outDir/vocab-tagged.txt`;
+
+}
+
+print STDERR "zpracujMorphoAllNew $outDir\n";
+
+`./zpracujMorphoAllNew $outDir`;

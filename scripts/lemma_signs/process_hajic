@@ -1,0 +1,86 @@
+#!/usr/bin/perl
+
+use strict;
+
+my %group_mapping = ();
+my $group_counter = 1;
+
+
+my $signs = "aehlnstvx";
+$group_mapping{"---------"} = 0;
+
+my $inputFile = "./lemma_processed.txt";
+my $outputFile = "./lemma_signs.txt";
+my $groupsFile = "./signs_groups.txt";
+
+open(INPUT, "<$inputFile") || die "Can't open $inputFile";
+open(OUTPUT, ">$outputFile") || die "Can't open $outputFile";
+open(GROUPS, ">$groupsFile") || die "Can't open $groupsFile";
+
+print GROUPS "---------\n";
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+	
+	my $form;
+	
+	if ($radek =~ m/^<f>([^<]+)</) { $form = $1; }
+	elsif ($radek ne "<f>") { die "Line doesn't match (form) $radek"; }
+	
+	#print STDERR "$form\n";
+	
+	if ($radek =~ m/<MMl src="ad">($form[^<]*)<MMt src="ad">/)
+	{
+		my $lemma = $1;
+		my $lemma_compl = $lemma;
+		$lemma_compl =~ s/^([^\-_`]+)[\-_`].*$/\1/;
+		
+		if ($lemma_compl ne $form)
+		{
+			print STDERR "!!! $lemma_compl($lemma) != $form\n";
+		}
+		
+		if ($lemma =~ m/^(.*)_\^.*$/)
+		{
+			$lemma = $1;
+		}
+		
+		my @sig = ();
+		
+		for (my $i = 0; $i < length($signs); $i++)
+		{
+			$sig[$i] = "-";
+		}
+		
+		while ($lemma =~ m/^.*?_,([$signs])(.*)$/)
+		{
+			$lemma = $2;
+			$sig[index($signs, $1)] = $1;
+		}
+		
+		my $sig_string = join('', @sig);
+		
+		
+		if (!defined($group_mapping{$sig_string}))
+		{
+			$group_mapping{$sig_string} = $group_counter;
+			$group_counter++;
+			print GROUPS "$sig_string\n";
+		}
+		
+		print OUTPUT "$lemma_compl ".$group_mapping{$sig_string}."\n";
+		
+	}
+	elsif ($radek ne "<f>")
+	{
+		print OUTPUT "$form 0\n";
+		#print STDERR "Line doesn't match: $radek";
+	}
+	
+	
+}
+
+close(INPUT);
+close(OUTPUT);
+close(GROUPS);

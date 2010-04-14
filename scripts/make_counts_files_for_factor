@@ -1,0 +1,104 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß";
+my $allLetters = $lcLetters.$ucLetters;
+
+my $punctuation = ".,;<>,/?:'\"\\=+-()*&%\$#@![]_§`";
+
+my $factor = $ARGV[0];
+
+if ($factor ne "form" && $factor ne "lemma" && $factor ne "tag")
+{
+	die "factor parameter must be set to form, lemma or tag!";
+}
+
+my $vocabFile = "../data/morphology/text/$factor.out";
+
+open(VOCAB, "<$vocabFile") || die "Can't open vocab file: $vocabFile";
+
+my %vocabulary = ();
+
+while (my $radek = <VOCAB>)
+{
+	chomp($radek);
+	$vocabulary{$radek} = 1;
+}
+
+close(VOCAB);
+
+`cat ../data/korpus/$factor/* > ../data/korpus/$factor/$factor.all`;
+
+my $inputFile = "../data/korpus/$factor/$factor.all";
+my $outFile = "../data/korpus/$factor/$factor-applied-vocab.all";
+
+if (! -e $outFile)
+{
+
+	open(INPUT, "<$inputFile") || die "Can't open input file: $inputFile";
+	open(OUTPUT, ">$outFile") || die "Can't open output file: $outFile";
+
+	while (my $radek = <INPUT>)
+	{
+		chomp($radek);
+		my @words = split(/ /, $radek);
+	
+		my $makeSpace = 0;
+	
+		foreach my $word (@words)
+		{
+			if ($makeSpace == 1) { print OUTPUT " "; }
+			$makeSpace = 1;
+		
+			if ($word =~ m/<name>/)
+			{
+				$word =~ s/<name>//;
+				if (defined($vocabulary{$word}))
+				{
+					print OUTPUT "$word";
+				}
+				else
+				{
+					print OUTPUT "<name>";
+				}
+			}
+			elsif ($word =~ m/<number>/)
+			{
+				print OUTPUT "<number>";
+			}
+			elsif (length($word) == 1 && index($punctuation, $word) >= 0)
+			{
+				print OUTPUT $word;
+			}
+			else
+			{
+				if (defined($vocabulary{$word}))
+				{
+					print OUTPUT "$word";
+				}
+				elsif ($word =~ m/^[$allLetters]+$/)
+				{
+					print OUTPUT "<unk>";
+				}
+				else
+				{
+					$makeSpace = 0;
+					if (! ($word =~ m/^\*+$/) )
+					{
+						print STDERR "ignored word: $word\n";
+					}
+				}
+			
+			}
+		}
+	
+		print OUTPUT "\n";
+	}
+
+	close(OUTPUT);
+
+}
+
+#print `ngram-count -text $outFile -gt2min 1 -gt3min 3 -write ../data/lm/counts/$factor.counts`;

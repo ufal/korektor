@@ -1,0 +1,34 @@
+#!/usr/bin/perl
+
+use strict;
+
+my @search_str = ("pater </s>");
+
+#push(@search_str, "èi");
+
+my $lm_file = "/home/michalisek/korektor/trunk/data/lm/form1.lm";
+
+open(INPUT, "<$lm_file") || die "Can't open input file $lm_file";
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+	
+	my @tokens = split(/[ \t]/, $radek);
+	
+	#print "$radek ----> num toks = ".scalar(@tokens)."\n";
+	
+	$radek .= " ";
+	
+	#if (scalar(@tokens) == 3)
+	{
+		foreach my $str (@search_str)
+		{
+			if ($radek =~ m/[\t ]$str[\t ]/)
+			{
+				print $radek."\n";
+				last;
+			}
+		}
+	}
+}

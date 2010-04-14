@@ -1,0 +1,15 @@
+
+*.swp
+*.lock
+.DS_Store
+*.aux
+*.log
+*.bbl
+*.blg
+*.brf
+*.out
+*.lof
+*.lot
+*.toc
+*.synctex.gz
+ijcnlp2011.pdf

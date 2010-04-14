@@ -1,0 +1,89 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $lexiconFile = "../data/dictionaries/aspell_cs.txt";
+my $countsFile = "../data/lm/form-counts";
+my $newLexiconFile = "../data/dictionaries/aspell_cs+korpus.txt";
+my $nameLexiconFile = "../data/dictionaries/frequent_names";
+
+my $minCount = 5;
+
+open(LEXICON, "<$lexiconFile") || die "Can't open lexicon: $lexiconFile";
+open(COUNTS, "<$countsFile") || die "Can't open counts: $countsFile";
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß";
+my $allLetters = $lcLetters.$ucLetters;
+
+my %lexicon = ();
+my %names = ();
+
+while (my $radek = <LEXICON>)
+{
+	chomp($radek);
+	$lexicon{$radek} = 1;
+}
+
+close(LEXICON);
+
+my $word;
+my $count;
+
+while (my $radek = <COUNTS>)
+{
+	chomp($radek);
+	
+	if ($radek =~ m/^([^\t]+)\t([0-9]+)/)
+	{
+		$word = $1;
+		$count = $2;
+		
+		if ($count >= $minCount)
+		{
+			if ($word =~ m/<name>/)
+			{
+				$word =~ s/<name>//;
+				
+				if ($word =~ m/^[abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüßABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß]+$/)
+				{
+					$names{$word} = 1;
+				}
+			}
+			
+				if ($word =~ m/^[abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüßABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß]+$/)
+				{
+					$lexicon{$word} = 1;
+				}
+		}
+	}
+}
+
+close(COUNTS);
+
+open(NEW_LEXICON, ">$newLexiconFile") || die "Can't create file: $newLexiconFile";
+open(NAME_LEXICON, ">$nameLexiconFile") || die "Can't create file: $nameLexiconFile";
+
+
+my $first = 1;
+foreach my $key (sort keys %lexicon)
+{
+	if ($first != 1) { print NEW_LEXICON "\n"; }
+	$first = 0;
+	 
+	print NEW_LEXICON "$key";
+}
+
+my $first = 1;
+foreach my $key (sort keys %names)
+{
+	if ($first != 1) { print NAME_LEXICON "\n"; }
+	$first = 0;
+
+	print NAME_LEXICON "$key";
+}
+
+
+close(NEW_LEXICON);
+close(NAME_LEXICON);
+

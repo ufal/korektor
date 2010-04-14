@@ -1,0 +1,144 @@
+#!/usr/bin/perl
+
+use strict;
+
+use File::Basename;
+
+my $czechDic = "../dictionaries/aspell_cs.txt";
+
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÚ";
+
+my @foreignDics = ();
+
+push(@foreignDics, "../data/dictionaries/de-DE.dic");
+push(@foreignDics, "../data/dictionaries/en-GB.dic");
+push(@foreignDics, "../data/dictionaries/en-US.dic");
+push(@foreignDics, "../data/dictionaries/sk-SK.dic");
+
+my %czechVocab = ();
+my %forVocab = ();
+
+open(CZECH, "<$czechDic") || die "Can't open czech dictionary: $czechDic";
+
+while (my $radek = <CZECH>)
+{
+	chomp($radek);
+	$czechVocab{$radek} = 1;
+}
+
+if (! defined($czechVocab{"pohotovostní"}))
+{
+	die "Nezna hovno!";
+}
+
+close(CZECH);
+
+foreach my $forDic (@foreignDics)
+{
+	open(FOR_DIC, "<$forDic") || die "Can't open foreign dictionary: $forDic";
+	
+	while (my $radek = <FOR_DIC>)
+	{
+		chomp($radek);
+		
+		$radek =~ s/^([^\/]+).*$/\1/;
+		
+		if ((! defined($czechVocab{$radek})) && length($radek) > 1 )
+		{
+			$forVocab{$radek} = 1;
+		}
+		
+	}
+	
+	close(FOR_DIC);
+}
+
+print STDERR "Dictionaries loaded\n";
+
+my $inputFile = "./form+lemma+tag/form+lemma+tag.all";
+my $dirtyFile = "./form+lemma+tag/dirty_sentences.all";
+
+my $outputFile = "../data/korpus/form+lemma+tag-cleaned/form+lemma+tag-cleaned.all";
+
+
+open(ERROR, ">$dirtyFile") || die "Can't create output file: $dirtyFile";
+
+open(OUTPUT, ">$outputFile") || die "Can't create output file: $outputFile";
+
+open(FILE, "<$inputFile") || die "Can't open input file: $inputFile";
+		
+while (my $radek = <FILE>)
+{
+	chomp($radek);
+		
+	my $numCzech = 0;
+	my $numForeign = 0;
+	my $numOneLetter = 0;
+	my $unkWord = 0;
+	my $numNames = 0;
+		
+	my @words = split(/ /, $radek);
+		
+	my $sentence = "";
+		
+	foreach my $word (@words)
+	{
+		#print STDERR "word=$word\n";
+		$word =~ s/^([^\|]+)\|.*$/\1/;
+			
+			#if ($word =~ m/^<name>(.*)$/)
+			#{
+			#	$word = $1;
+			#}
+			
+			#print STDERR "word=$word\n";
+		
+		if ( defined($czechVocab{$word}) )
+		{
+			$numCzech++;
+			#print STDERR "czech word: $word\n";
+		}
+		elsif ($word eq "." || $word eq "," || $word eq ":" || $word eq "!" || $word eq "?" || $word eq ";" || $word eq "\"" || $word eq "-" || $word eq "/" || $word eq "\\" || $word eq "*" || $word eq "(" || $word eq ")" )
+		{
+		
+		}
+		elsif (length($word) == 1)
+		{
+			$numOneLetter++;
+			#print STDERR "oneLetter:$word\n";
+		}
+		elsif ($word =~ m/^[$ucLetters]/ || $word =~ m/<name>/ || $word =~ m/<number>/)
+		{
+			$numNames++;
+		}
+		elsif (defined($forVocab{$word}) )
+		{
+			$numForeign++;
+			#print STDERR "foreign:$word\n";
+		}
+		else
+		{
+			$unkWord++;
+			#print STDERR "unknown:$word\n";
+		}
+		$sentence .= "$word ";
+	}
+		
+	my $score = $numCzech - 2 * $numForeign - $numOneLetter - $unkWord - $numNames / 3.5;
+		
+	if ($score < 0)
+	{
+		#print STDERR "dirty sentence(unk = $unkWord, foreign = $numForeign, one_letter = $numOneLetter, names = $numNames)\n$sentence\n";
+		print ERROR "$radek\n";
+	}
+	else
+	{
+		print OUTPUT "$radek\n";
+	}
+}
+
+close(FILE);
+close(OUTPUT);
+close(ERROR);
+
+

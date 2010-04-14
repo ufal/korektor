@@ -1,0 +1,94 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $factor = $ARGV[0];
+
+if ($factor ne "form" && $factor ne "lemma" && $factor ne "tag")
+{
+	die "Set first parameter to form, lemma or tag!";
+}
+
+my $nameVocabFile = "../data/dictionaries/names-$factor.list";
+my $countsFile = "../data/lm/counts/$factor.counts";
+my $outputFile = "../data/lm/counts/$factor.adjusted.counts";
+
+my $multiplier = 0.7;
+
+open(VOCAB, "<$nameVocabFile") || die "Can't open vocabulary file $nameVocabFile";
+
+my %names = ();
+my %name_counts = ();
+
+while (my $radek = <VOCAB>)
+{
+	chomp($radek);
+	$names{$radek} = 1;
+}
+
+open(COUNTS, "<$countsFile") || die "Can't open counts file $countsFile";
+
+open(OUT1, ">$outputFile") || die "Can't open temp file $outputFile for writting";
+
+while (my $radek = <COUNTS>)
+{
+	chomp($radek);
+
+	my @words;
+	
+	my $changedWords = "";
+		
+	my $ok = 0;
+	my $count;
+		
+	if ($radek =~ m/^([^\t]+)\t([0-9]+)$/)
+	{
+		$count = $2;
+		@words = split(/ /, $1);
+	}
+	else
+	{
+		die "Line doesn't match: $radek";
+	}
+	
+	for my $word (@words)
+	{
+		
+		if ($changedWords ne "") { $changedWords .= " "; }
+		
+		if ( defined($names{$word}) )
+		{
+			$changedWords .= "<name>";
+			$ok = 1;
+		}
+		else
+		{
+			$changedWords .= $word;
+		}
+	}
+	
+	if ($ok == 0) { print OUT1 join(" ", @words)."\t".($count * 10)."\n"; }
+	else
+	{
+		my $new_count = $count * 7;
+		
+		if ($new_count > 0)
+		{
+			print OUT1 join(" ", @words)."\t$new_count\n";
+		}
+		
+		$name_counts{$changedWords} += $count * 3;
+	}
+	
+}
+
+foreach my $key (keys %name_counts)
+{
+	print OUT1 "$key\t".$name_counts{$key}."\n";
+}
+
+close(OUT1);
+
+
+
+

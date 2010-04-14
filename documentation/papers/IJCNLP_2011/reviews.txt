@@ -1,0 +1,199 @@
+Dear Mr. Pavel Stranak:
+
+I am sorry to inform you that the following submission
+was not selected by the program committee to appear at
+IJCNLP 2011:
+
+     Korektor -- A System for Contextual Spell-checking and
+          Diacritics Completion For Czech
+
+The selection process was very competitive. Due to time
+and space limitations, we could only choose a small number
+of the submitted papers to appear on the program.  Nonetheless,
+I still hope you can attend the conference.
+
+I have enclosed the reviewer comments for your perusal.
+
+If you have any additional questions, please feel free
+to contact us.
+
+Best Regards,
+David and Haifeng
+IJCNLP 2011
+
+============================================================================
+IJCNLP 2011 Reviews for Submission #469
+============================================================================
+
+Title: Korektor -- A System for Contextual Spell-checking and Diacritics Completion For Czech
+
+Authors: Michal Richter, Pavel Stranak and Alexandr Rosen
+============================================================================
+                           REVIEWER #1
+============================================================================
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                        APPROPRIATENESS: 4
+                                CLARITY: 3
+             ORIGINALITY/INNOVATIVENESS: 2
+                  SOUNDNESS/CORRECTNESS: 2
+                  MEANINGFUL COMPARISON: 2
+                              SUBSTANCE: 2
+             IMPACT OF IDEAS OR RESULTS: 3
+                          REPLICABILITY: 3
+        IMPACT OF ACCOMPANYING SOFTWARE: 4
+         IMPACT OF ACCOMPANYING DATASET: 1
+                         RECOMMENDATION: 2
+                    REVIEWER CONFIDENCE: 4
+    RECOMMENDATION FOR BEST PAPER AWARD: 1
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+This paper describes a system for Czech spell-checking and diacritics
+correction, Korektor. An HMM is used where the hidden states are bigrams of a
+current and previous word tuple, where the tuple consists of the intended word
+form, lemma, and tag. The emissions are the observed word form. The model is
+log-linear and standard feature functions are used: n-grams of the word form,
+morphological lemmas, and morphological tags. The features functions are
+estimated using n-gram counts from a large training corpus of Czech newspapers.
+The feature weights are first examined in a linear search, and then learned via
+hill-climbing. The paper proposes a high precision, low recall error model
+based on Church and Gale (1991). A letter n-gram model is trained on the same
+newspaper corpus for diacritics completion. The system is evaluated on
+diacritic completion accuracy, spell-checking F1, and on error correction of a
+foreign-language-learner corpus.
+
+While the paper presents a likely very useful piece of software in the form of
+Korektor, it is difficult to understand what the specific research
+contributions of this paper are. This is in part due to the lack of clear
+citations and discussion of related work. There are also several issues with
+the evaluation that may result in an unfair or biased comparison of Korektor
+with the baseline methods.
+
+Several aspects of the evaluation are concerning. First, the spell-checker
+evaluation only compares to MS Word on one of the three datasets (Audio). The
+claim that Korektor is a state-of-the-art spell-checker based on this single
+dataset seems premature. While the margin between Korektor and MS Word is wide,
+this could be due simply to a bias in the training data. Since MS Word is
+effectively a black box, this seems like an unfair comparison. This same
+problem applies to the comparison with CZACCENT, for which the training setup
+is not specified, and may not be fairly comparable to the setup for Korektor.
+Thus, in both cases, it may be the training data and not the model that cause
+Korektor to outperform the baselines.
+
+Second, the WebColl test set is annotated semi-automatically, by having humans
+annotate only those errors found by Korektor. The paper correctly states that
+evaluating recall on such a test set would be inappropriate. However, using
+this dataset for accuracy as the paper does might also unfairly bias the subset
+of errors towards ones Korektor is good at providing suggestions for.
+
+The paper does not include a related work section. Korektor is evaluated
+alongside CZACCENT for diacritics completion, but no description of the model
+for CZACCENT is provided. Brill & Moore (2000) is only mentioned briefly in the
+future work and very little other prior work in spell-checking is mentioned.
+
+Much of this paper was difficult to follow. Notation is frequently used without
+being clearly defined. Some terms, such as ‘real-word errors’, are never
+defined. The paper mentions significant accuracy improvements, but does not
+describe any statistical significance tests. Several aspects of the system are
+underspecified, such as how the lemma forms are generated. The experimental
+setup was not always clear, such as how the test datasets were used in the
+diacritics completion experiment. Citations of background material, such as for
+log-linear models (Ratnaparkhi et al., 1994; Rosenfeld, 1994), are missing.
+
+============================================================================
+                           REVIEWER #2
+============================================================================
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                        APPROPRIATENESS: 2
+                                CLARITY: 5
+             ORIGINALITY/INNOVATIVENESS: 2
+                  SOUNDNESS/CORRECTNESS: 4
+                  MEANINGFUL COMPARISON: 3
+                              SUBSTANCE: 3
+             IMPACT OF IDEAS OR RESULTS: 1
+                          REPLICABILITY: 4
+        IMPACT OF ACCOMPANYING SOFTWARE: 1
+         IMPACT OF ACCOMPANYING DATASET: 1
+                         RECOMMENDATION: 2
+                    REVIEWER CONFIDENCE: 4
+    RECOMMENDATION FOR BEST PAPER AWARD: 1
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+This paper describes a spell checker and diacritics completion for Czech
+language.
+The model is very straightforward and nothing special is assumed for Czech,
+making the selection of Czech just an arbitrary choice.
+Generally the paper is good for a system description, but I found nothing
+interesting
+both the model and uniqueness to Czech language in this paper.
+For that reason, I cannot recommend this paper to appear at IJCNLP because it
+will
+not help other research in this area.
+
+============================================================================
+                           REVIEWER #3
+============================================================================
+
+
+---------------------------------------------------------------------------
+Reviewer's Scores
+---------------------------------------------------------------------------
+
+                        APPROPRIATENESS: 4
+                                CLARITY: 4
+             ORIGINALITY/INNOVATIVENESS: 2
+                  SOUNDNESS/CORRECTNESS: 4
+                  MEANINGFUL COMPARISON: 4
+                              SUBSTANCE: 2
+             IMPACT OF IDEAS OR RESULTS: 1
+                          REPLICABILITY: 3
+        IMPACT OF ACCOMPANYING SOFTWARE: 1
+         IMPACT OF ACCOMPANYING DATASET: 1
+                         RECOMMENDATION: 2
+                    REVIEWER CONFIDENCE: 3
+    RECOMMENDATION FOR BEST PAPER AWARD: 1
+
+
+---------------------------------------------------------------------------
+Comments
+---------------------------------------------------------------------------
+
+The authors describe a noisy channel model for Czech spelling correction and
+accent completion.
+
+The paper is generally clear and easy to follow. (There are a few places where
+the English wasn't quite right, but nothing bad.) In terms of techniques, there
+isn't a lot that's new here. They use a by-now standard log-linear model with
+n-gram features based on words, their lemmas, and their part of speech tag.
+(There's also a character n-gram model for accent correction.) The application
+is important and they demonstrate its usefulness. They use their system to
+automatically correct second language learners' essays with good performance.
+On spelling correction, they beat MS Word handily.
+
+Comments:
+
+* I  believe that your corrector doesn't correct in-vocabulary spelling errors
+(for instance it wouldn't catch the homophone error in this hear sentence.)
+This is especially bad because you create the test set using your spelling
+checker's vocabulary. Am I wrong here?
+
+* It would be good to have some kind of baseline for accent correction, so that
+we know how hard the task is. For example: for each (unaccented) form, replace
+it with the most common accented one. How would that perform?

@@ -1,0 +1,80 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $stats_for_letters = "aeiouyáéìíóúùızscrdtn¾¹èøï»ò";
+						
+my @groups = ("aá", "eéì", "ií", "oó", "uúù", "yı", "z¾", "s¹", "cè", "rø", "dï", "t»", "nò");
+
+my %counts = ();
+my %log10probs = ();
+
+while (my $radek = <STDIN>)
+{
+	chomp($radek);
+	
+	for (my $i = 0; $i < length($radek); $i++)
+	{
+	  my $char = substr($radek, $i, 1);
+	  
+	  if (index($stats_for_letters, $char) >= 0)
+	  {
+	  	$counts{$char}++;
+	  }
+	  
+	}
+	
+}
+
+foreach my $group (@groups)
+{
+	my $count_sum = 0;
+
+	for (my $i = 0; $i < length($group); $i++)
+	{
+		my $char = substr($group, $i, 1);
+		$count_sum += $counts{$char};
+	}
+
+	if ($count_sum == 0)
+	{
+		print STDERR "\$count_sum == 0: $group\n";
+		$count_sum = 1;
+	}
+
+	#print STDERR "count_sum == $count_sum\n";
+
+	for (my $i = 0; $i < length($group); $i++)
+	{
+		my $char = substr($group, $i, 1);
+		$log10probs{$char} = -log10($counts{$char} / $count_sum);
+	}	
+}
+
+foreach my $group (@groups)
+{
+	print "$group";
+	
+	my $prob_basic = $log10probs{substr($group, 0, 1)};
+	
+	for (my $i = 1; $i < length($group); $i++)
+	{
+		my $char = substr($group, $i, 1);
+		my $prob = $log10probs{$char} - $prob_basic;
+		print " $prob";
+	}
+	
+	print "\n";
+}
+
+#print "probabilities:\n";
+#
+#foreach my $letter (keys %log10probs)
+#{
+#	print "$letter ~ ".$log10probs{$letter}."\n";
+#}
+
+sub log10 {
+	my $number = shift;
+	return log($number) / log(10);
+}

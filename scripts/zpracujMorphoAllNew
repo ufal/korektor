@@ -1,0 +1,311 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $dir = $ARGV[0];
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß";
+my $allLetters = $lcLetters.$ucLetters;
+
+my %tagGroups = ();
+my $tagGroupsCounter = 0;
+
+my %lemmaHash = ();
+my $lemmaCounter = 0;
+
+my %tagHash = ();
+my $tagCounter = 0;
+
+my %formHash = ();
+my $formCounter = 0;
+
+my %morpho = ();
+
+my %vocab_set = ();
+
+my $old_vocab_file = "$dir/form_old.out";
+open(OLD_VOCAB, "<$old_vocab_file") || die "Can't open old vocab $old_vocab_file";
+
+while (my $radek = <OLD_VOCAB>)
+{
+	chomp($radek);
+	$vocab_set{$radek} = 1;
+}
+
+close(OLD_VOCAB);
+
+my $special_toks_file = "$dir/special_toks.txt";
+open(SPECIAL_TOKS, "<$special_toks_file") || die "Can't open $special_toks_file";
+
+while (my $radek = <SPECIAL_TOKS>)
+{
+	chomp($radek);
+
+	print STDERR "special toks: \"$radek\"\n";
+	$morpho{$radek} = $lemmaCounter."-".$tagCounter;
+	
+	$formHash{$radek} = $formCounter;
+	$formCounter++;
+	
+	$lemmaHash{$radek} = $lemmaCounter;
+	$lemmaCounter++;
+	
+	$tagHash{$radek} = $tagCounter;
+	$tagCounter++;
+	
+	my $tagsIDString = $tagHash{$radek};
+	
+	$tagGroups{$tagsIDString} = $tagGroupsCounter;
+	$tagGroupsCounter++;
+}
+
+close(SPECIAL_TOKS);
+
+my $form_lm_vocab_file = "$dir/form_lm_vocab.txt";
+open(LM_FORM_VOCAB, "<$form_lm_vocab_file") || die "Can't open $form_lm_vocab_file";
+
+while (my $radek = <LM_FORM_VOCAB>)
+{
+	chomp($radek);
+	
+	if (! defined($formHash{$radek}) )
+	{
+		if ( defined($vocab_set{$radek}) )
+		{
+			$formHash{$radek} = $formCounter;
+			$formCounter++;
+		}
+		else
+		{
+			print STDERR "Word from LM vocab not in OLD vocab: $radek\n";
+		}
+	}
+}
+
+close(LM_FORM_VOCAB);
+
+my $lemma_lm_vocab_file = "$dir/lemma_lm_vocab.txt";
+open(LM_LEMMA_VOCAB, "<$lemma_lm_vocab_file") || die "Can't open $lemma_lm_vocab_file";
+
+while (my $radek = <LM_LEMMA_VOCAB>)
+{
+	chomp($radek);
+	
+	if ($radek eq "-pau-") { next; }
+	
+	if (! defined($lemmaHash{$radek}) )
+	{
+		$lemmaHash{$radek} = $lemmaCounter;
+		$lemmaCounter++;
+	}
+}
+
+close(LM_LEMMA_VOCAB);
+
+my $tag_lm_vocab_file = "$dir/tag_lm_vocab.txt";
+open(LM_TAG_VOCAB, "<$tag_lm_vocab_file") || die "Can't open $tag_lm_vocab_file";
+
+while (my $radek = <LM_TAG_VOCAB>)
+{
+	chomp($radek);
+	
+	if ($radek eq "-pau-") { next; }
+	
+	if (! defined($tagHash{$radek}) )
+	{
+		$tagHash{$radek} = $tagCounter;
+		$tagCounter++;
+	}	
+}
+
+close(LM_TAG_VOCAB);
+
+
+my $morphoFile = "$dir/vocab-tagged.txt";
+open(INPUT, "<$morphoFile") || die "Can't open $morphoFile for reading";
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+	my @parts = split(/<MMl[^>]+>/, $radek);
+	
+	my $form = substr($parts[0], 3);
+
+	if ($form eq "") { next; }
+
+	my $unk = 0;
+	
+	my $old_lemma = "";
+	
+	if (scalar(@parts) == 1) { $unk = 1; }
+	
+	for (my $j = 1; $j < scalar(@parts); $j++) 
+	{
+		my $part = $parts[$j];
+		my @tags = split(/<MMt[^>]+>/, $part);
+		
+		my $isName = 1;
+		
+		$tags[0] =~ s/^([$allLetters]+).*/\1/;
+		
+		my $lemma = $tags[0];
+		
+		if ($lemma =~ m/^[$lcLetters]+$/)
+		{
+			$isName = 0;
+		}
+		
+		if ($j > 1 && $lemma eq $old_lemma) { next; }
+		
+		if (substr($tags[1],0, 2) eq "X@" && $isName == 0) { $unk = 1; next; } 
+		
+		my $tagsString = "";
+		
+		for (my $k = 1; $k < scalar(@tags); $k++)
+		{
+			my $zpracTag = zpracujTag($tags[$k]);
+			
+			if (! defined($tagHash{$zpracTag}) )
+			{
+				$tagHash{$zpracTag} = $tagCounter;
+				$tagCounter++;
+			}
+			
+			if ($tagsString ne "") { $tagsString .= ";"; }
+			$tagsString .= $tagHash{$zpracTag};
+		}
+		
+		if (! defined($tagGroups{$tagsString}) )
+		{
+			$tagGroups{$tagsString} = $tagGroupsCounter;
+			$tagGroupsCounter++;
+		}
+		
+		my $tagGroupID = $tagGroups{$tagsString};
+		
+		if (defined($morpho{$form})) { $morpho{$form} .= " "; }
+		
+		if (! defined($lemmaHash{$lemma}) )
+		{
+			$lemmaHash{$lemma} = $lemmaCounter;
+			$lemmaCounter++;
+		}
+		
+		my $lemmaID = $lemmaHash{$lemma};
+		
+		$morpho{$form} .= $lemmaID." ".$tagGroupID; 
+				
+		$old_lemma = $lemma;
+	}
+	
+	if ((! defined($formHash{$form})) && $unk == 0)
+	{
+		$formHash{$form} = $formCounter;
+		$formCounter++;
+	}
+
+					
+}
+
+close(INPUT);
+
+
+my $morphoOutput = "$dir/morphology.out";
+my $wordListOutput = "$dir/form.out";
+
+open(MORPHOLOGY, ">$morphoOutput") || die "Can't open $morphoOutput for writting";
+open(FORM, ">$wordListOutput") || die "Can't open $wordListOutput for writting";
+
+my @keys = sort { $formHash{$a} <=> $formHash{$b} } keys %formHash;
+my $first = 1;
+
+foreach my $key (@keys)
+{
+	#print STDERR "$key\n";
+	if ($first == 1) { $first = 0; } else { print FORM "\n"; print MORPHOLOGY "\n"; }
+	print FORM "$key";
+	print MORPHOLOGY $formHash{$key}." ".$morpho{$key}; 
+}
+
+close(FORM);
+close(MORPHOLOGY);
+
+my $tagOutput = "$dir/tag.out";
+open(TAG, ">$tagOutput") || die "Can't open $tagOutput for writting";
+
+@keys = sort { $tagHash{$a} <=> $tagHash{$b} } keys %tagHash;
+
+$first = 1;
+
+foreach my $key (@keys)
+{
+	if ($first == 1) { $first = 0; } else { print TAG "\n"; }
+	print TAG "$key";
+}
+
+close(TAG);
+
+my $tagGroupsOutput = "$dir/tagGroups.out";
+open(TAGGROUPS, ">$tagGroupsOutput") || die "Can't open $tagGroupsOutput for writting";
+
+@keys = sort { $tagGroups{$a} <=> $tagGroups{$b} } keys %tagGroups;
+$first = 1;
+
+foreach my $key (@keys)
+{
+	if ($first == 1) { $first = 0; } else { print TAGGROUPS "\n"; }
+	print TAGGROUPS "$key";
+}
+
+close(TAGGROUPS);
+
+my $lemmaOutput = "$dir/lemma.out";
+open(LEMMA, ">$lemmaOutput") || die "Can't open $lemmaOutput for writting";
+
+@keys = sort { $lemmaHash{$a} <=> $lemmaHash{$b} } keys %lemmaHash;
+$first = 1;
+
+foreach my $key (@keys)
+{
+	if ($first == 1) { $first = 0; } else { print LEMMA "\n"; }
+	print LEMMA "$key";
+}
+
+close(LEMMA);
+
+sub zpracujTag {
+
+  my $tag = shift;
+		 
+  my $prvniZnak = substr($tag, 0, 1);
+       
+  if ($prvniZnak eq "C" || $prvniZnak eq "A" || $prvniZnak eq "N" || $prvniZnak eq "P")
+  {
+    $tag = substr($tag, 0, 5);
+  }
+       
+  if ($prvniZnak eq "V")
+  {
+    $tag = substr($tag, 0, 4).substr($tag, 7, 2).substr($tag, 11, 1);
+  }
+       
+  if ($prvniZnak eq "R")
+  {
+    $tag = substr($tag, 0, 2).substr($tag, 4, 1);
+  }
+       
+  if ($prvniZnak eq "D" || $prvniZnak eq "I" || $prvniZnak eq "J"  || $prvniZnak eq "T")
+  {
+    $tag = substr($tag, 0, 2);
+  }
+      
+  if ($prvniZnak eq "X")
+  {
+    $tag = substr($tag, 0, 1);
+  }
+       
+  $tag =~ tr/X/-/;
+  
+  return $tag;
+}

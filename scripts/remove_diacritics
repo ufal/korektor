@@ -1,0 +1,17 @@
+#!/usr/bin/perl
+
+use strict;
+
+
+my $orig = "בילםףתש‎¾¹טרן»ע";
+my $subs = "aeeiouuyzscrdtn";
+
+
+while (my $radek = <STDIN>)
+{
+	chomp($radek);
+	$radek =~ tr/בילםףתש‎¾¹טרן»ע/aeeiouuyzscrdtn/;
+	
+	print "$radek\n";
+		
+}

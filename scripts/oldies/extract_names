@@ -1,0 +1,48 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $inputFile = $ARGV[0];
+my $outputFile = $ARGV[1];
+
+open(INPUT, "<$inputFile") || die "Can't open input file $inputFile";
+
+open(OUTPUT, ">$outputFile") || die "Can't open output file $outputFile";
+
+my %names = ();
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+	
+	my @words = split(/ /, $radek);
+	
+	foreach my $word (@words)
+	{
+		if (substr($word, 0, 6) eq "<name>")
+		{
+			$word = substr($word, 6);
+			if ($word =~ m/^([^\|]+)\|/)
+			{
+				$names{$1} = 1;
+			}
+			elsif ($word =~ m/\|\|/)
+			{
+				print STDERR "weird word: $word\n";
+			}
+			else
+			{
+				die STDERR "extract_names on input word: $word";
+			}
+		}
+	}
+}
+
+my @keys = sort keys %names;
+
+foreach my $key (@keys)
+{
+	print OUTPUT "$key\n";
+}
+
+

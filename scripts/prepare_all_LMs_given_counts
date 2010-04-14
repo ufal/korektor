@@ -1,0 +1,12 @@
+#/bin/bash
+
+
+ngram-count -read ../data/lm/counts/form.counts -order 3 -prune 0.00000012 -wbdiscount -unk -lm ../data/lm/form1.lm
+ngram-count -read ../data/lm/counts/lemma.counts -order 3 -prune 0.00000012 -wbdiscount -unk -lm ../data/lm/lemma1.lm
+ngram-count -read ../data/lm/counts/tag.counts -order 3 -prune 0.00000012 -wbdiscount -unk -lm ../data/lm/tag1.lm
+
+cat ../data/lm/form1.lm | ./lm_prepareForC++ ../data/morphology/text/form.out > ../data/lm/form1.lm.c++
+cat ../data/lm/lemma1.lm | ./lm_prepareForC++ ../data/morphology/text/lemma.out > ../data/lm/lemma1.lm.c++
+cat ../data/lm/tag1.lm | ./lm_prepareForC++ ../data/morphology/text/tag.out > ../data/lm/tag1.lm.c++
+
+

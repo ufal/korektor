@@ -1,0 +1,97 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ıáíéóï»òúù";
+my $AllLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®İÁÍÉÓÏ«ÒÚÚabcdefghijklmnopqrstuvwxyzì¹èø¾ıáíéóï»òúù";
+
+my $badChars =      "µ±„“";
+my $replaceWith  = "¾¹  ";
+
+my $chr160 = chr(160);
+my $chr255 = chr(255);
+
+my $inputFile = $ARGV[0];
+
+open(INPUT, "<$inputFile") || die "Can't open input file: $inputFile";
+
+my @factors = split(/\+/, $ARGV[1]);
+
+my $multiword_counter = 0;
+my $strangeLemma_counter = 0;
+
+foreach my $factor (@factors)
+{
+	if ($factor ne "form" && $factor ne "lemma" && $factor ne "tag") { die "$factor is incorrect factor type!"; }
+}
+
+#open(STRANGE_CHARS, ">strangeChars");
+
+
+my $sentenceCounter = 0;
+
+while (my $radek = <INPUT>)
+{
+	chomp($radek);
+    $radek =~ tr/µ±„“/¾¹  /;
+    $radek =~ s/$chr160/ /g;
+    $radek =~ s/$chr255/ /g;
+    
+	if ($radek =~ m/^<s id=/)
+	{
+		$sentenceCounter++;
+		print "<s id=$sentenceCounter>\n";
+	}
+	elsif ($radek =~ m/^<f num>([^<]+)</)
+	{
+		print "<f>$1\n";
+	}
+	elsif ($radek =~ m/^<d>([^<]+)</)
+	{
+		#my $word = $1;
+		#if ($word eq "&lt;") { $word = "<"; }
+		#if ($word eq "&gt;") { $word = ">"; }
+		#if ($word eq "&amp;") { $word = "&"; }
+		print "<d>$1\n";
+		#if (length($word) > 1) { print STDERR "long delim character: <d>$word\n"; }
+	}
+	elsif ($radek eq "<D>" || $radek eq "<p>") { print "$radek\n"; }
+	elsif ($radek =~ m/^<f> *([^<]*)<P> *([^<]*)(<P>[^<]+)*<l> *([^<]*)<t>(.*)$/)
+	{
+		#if ($3 ne "") { print STDERR "<P>s: $radek\n"; }
+	
+		
+		my $form = $1;
+		my $lcForm = $2;
+		my $lemma = $4;
+		my $tag = $5;
+		my $jmeno = 1;
+		
+		if ($form eq "") { next; }
+		
+		if (index($form, " ") >= 0)
+		{
+			my @forms = split(/ /, $form);
+			foreach my $f (@forms)
+			{
+				print "<f>$f\n";
+			} 
+		}
+		else
+		{
+			print "<f>$form\n";
+		}		
+		
+	}
+	else
+	{
+		if ($radek ne "<f>")
+		{
+			die "line doesn't match: $radek ($inputFile)";
+		}
+	}
+	
+}
+
+
+

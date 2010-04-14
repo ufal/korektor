@@ -1,0 +1,96 @@
+#!/usr/bin/perl
+
+use strict;
+
+my $letters = "aábcèdïeìéfghiíjklmnòoópqrøs¹t»uúùvwxyýz¾";
+
+my @chars = ();
+
+for (my $i = 0; $i < length($letters); $i++)
+{
+	push(@chars, substr($letters, $i, 1));
+}
+
+my $lexiconFile = "../data/morphology/text/form.out";
+my $corpusFile = "../data/korpus/form+lemma+tag/form+lemma+tag.all";
+my $spellingErrorsFile = "../data/spelling_errors.out";
+
+open(LEXICON, "<$lexiconFile") || die "Can't open $lexiconFile";
+open(CORPUS, "<$corpusFile") || die "Can't open $corpusFile";
+open(ERRORS, ">$spellingErrorsFile") || die "Can't open $spellingErrorsFile";
+
+my %dictionary = ();
+
+while (my $radek = <LEXICON>)
+{
+	chomp($radek);
+	$dictionary{$radek} = 1;
+}
+
+close(LEXICON);
+
+print STDERR "Lexicon ready!\n";
+
+while (my $radek = <CORPUS>)
+{
+	#print STDERR "next sentence:\n";
+	chomp($radek);
+	my @words = split(/ /, $radek);
+
+	foreach my $word (@words)
+	{
+		if (! ($word =~ m/<unk>/) ) { next; }
+		if ($word =~ m/<name>/) { next; }
+		if ($word =~ m/<number>/) { next; }
+
+		if (defined($dictionary{$word})) { next; }
+		$word = substr($word, 0, index($word, "|"));
+
+		if (length($word) <= 3) { next; }
+
+		print STDERR "Unknown word: $word\n";
+		my @sim = similarWordsInDictionary($word);
+
+		if (scalar(@sim) > 0)
+		{
+			print "$word\t".join(" ", @sim)."\n";
+		}
+	}
+}
+
+close(CORPUS);
+close(ERRORS);
+
+sub similarWordsInDictionary {
+	my $word = shift;
+
+	my %simWords = ();
+	my $pom;
+	for (my $i = 0; $i < length($word); $i++)
+	{
+		foreach my $char (@chars)
+		{
+			$pom = substr($word, 0, $i).$char.substr($word, $i + 1);
+			if (defined($dictionary{$pom})) { $simWords{$pom} = 1;  }
+
+			$pom = substr($word, 0, $i).$char.substr($word, $i);
+			if (defined($dictionary{$pom})) { $simWords{$pom} = 1; }
+		}
+
+		$pom = substr($word, 0, $i).substr($word, $i + 1);
+		if (defined($dictionary{$pom})) { $simWords{$pom} = 1;  }
+
+		if ($i < length($word) - 1)
+		{
+			$pom = substr($word, 0, $i).substr($word, $i + 1, 1).substr($word, $i, 1).substr($word, $i + 2);
+			if (defined($dictionary{$pom})) { $simWords{$pom} = 1;  }
+		}
+	}	
+
+	my @ret = keys %simWords;
+	return @ret;	
+}
+
+
+
+

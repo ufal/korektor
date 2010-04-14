@@ -1,0 +1,124 @@
+Adapting Korektor to new languages/tasks consist of 4 simple steps:
+===================================================================
+
+	1. Creating a morphology model of the language
+	2. Creating a language model for each morphological factor
+	3. Creating an error model
+	4. Writing  a configuration file
+
+1) Creating a morphology model of the language
+==============================================
+
+This step requires:
+	a) Morphology Lexicon - an input text file containing the set of valid word factor tuplets for the language.
+	b) Counts File - containing the frequency information for word factor tuplets trained from the morphologically annotated corpus
+	c) Creating of binary representation by 'create_morphology' tool
+	
+a) Format of the Morphology Lexicon
+--------------------------------
+	1st line: names of the factors delimited by '|'
+	2nd line: '-----'
+	following lines: word factor strings delimited by '|', there must be the same number of tokens as on the first line
+
+Example:
+--------
+	form|lemma|pos
+	-----
+	dog|dog|NN
+	fish|fish|NN
+	fish|fish|VB
+	....
+
+b) Format of the Counts File
+-------------------------
+Word factor tuplet at each line followed by a count number. The order and number of morphological factors must be the same as in the morphology lexicon.
+
+Example:
+--------
+	dog|dog|NN 68
+	likes|like|VB 220
+	...
+ 
+c) Creating of binary representation by `create_morphology` tool
+--------------------------------------------------------------
+ Run the binarization tool as follows:
+ 
+`./create_morphology [morphology lexicon] [counts file] [binary morphology] [binary vocabulary] [test file]`
+ 
+Input files: [Morphology Lexicon] [Counts File]
+Output files: [binary morphology] [binary vocabulary] [test file]
+
+
+2. Creating a language model for each morphological factor
+==========================================================
+ 
+ This step requires:
+	a) Training of language model for each factor
+	b) Binarization of language models
+	
+a) Training of language model for each factor
+---------------------------------------------
+Use an external tool such as SRILM to train language models for each morphological factor.
+The trained language models should be stored in ARPA format.
+
+b) Binarization of language models
+----------------------------------
+Binarization of language models in ARPA format is performed by 'create_lm_binary' tool.
+
+`./create_lm_binary [ARPA language model] [binary morphology] [binary vocabulary] [factor name] [language model order] [output binary language model]`
+
+
+3. Creating an error model
+==========================
+
+this step requires:
+	a) Textual definition of error model
+	b) Binarization of the textual definition
+	
+a) Textual definition of error model
+------------------------------------
+Textual definition contains one error model item (edit operation) per line. Each item consists of 'signature', 'edit distance' and 'cost'.
+'cost' is the logarithm of probability of the edit operation. 'edit distance' is important during the similar words look-up (which is limited
+by the maximal edit distance). 'signature' describe the edit operation.
+
+signatures of edit operations:
+	s_ab			- substitution of letter 'a' for letter 'b'
+	i_abc			- insertion of letter 'a' between letters 'b' and 'c'
+	d_ab			- deletion of letter 'a' when previous letter is 'b'
+	swap_ab			- swapping of letters 'ab' -> 'ba'
+	
+	case			- edit operation that changes the casing (i.e. lower case <-> upper case)
+	insertions		- default insertion operation (used when no rule of the form i_... is applicable)
+	substitutions 	- default substitution operation (used when no rule of the form s_.. is applicable)
+	deletions		- default deletion operation (used when no rule of the form d_.. is applicable)
+	swaps			- default swap operation (used when no rule of the form swap_.. is applicable)
+	
+Example of the textual definition
+--------------------------------
+	case	0	2.6
+	insertions	1	4.4
+	substitutions	1	3.8
+	deletions	1	3.5
+	swaps	1	4.1
+	s_qw	1	3.7
+	s_ui	1	2.3
+	s_yi	1	2.1
+	i_iuo	1	4.8
+	...
+
+(Tokens on each line are separated by `\t`, the first number is the edit distance, the second number is the logarithm of probability)
+IMPORTANT: the first five entries in the error model definition have to be 'case', 'insertions', 'substitutions', 'deletions' and 'swaps'
+with the same ordering as in the example.
+
+b) Binarization of the textual definition
+-----------------------------------------
+Performed by 'create_error_model' tool:
+
+`./create_error_model -binarize [textual definition] [binary error model]`
+
+4. Writing a configuration file
+================================
+Configuration file tells what models and similar word searching strategy should be used. Look at the example configuration files `diacritics_h2mor.conf`
+and `spellchecking_h2mor.conf`. The entries of the configuration files are well documented.
+It is important to place all the created binary models into the `data` folder at the top of the Korektor folder hierarchy and use filenames directly without paths
+when writting the configuration files definitions.

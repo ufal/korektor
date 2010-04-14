@@ -1,0 +1,8 @@
+#!/usr/bin/perl
+
+use strict;
+
+while (my $radek = <STDIN>)
+{
+	print "<f>$radek";
+}

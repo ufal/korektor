@@ -1,0 +1,89 @@
+#!/usr/bin/perl
+
+use strict;
+
+my %unigrams = ();
+my %bigrams = ();
+my %skip_bigrams = ();
+my %trigrams = ();
+
+my $lcLetters = "abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß";
+my $ucLetters = "ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß";
+
+my $unigramsFile = "../data/letter_unigrams.txt";
+my $bigramsFile = "../data/letter_bigrams.txt";
+my $trigramsFile = "../data/letter_trigrams.txt";
+my $skip_bigramsFile = "../data/skip_letter_bigrams.txt";
+
+open(UNIGRAMS, ">$unigramsFile") || die "Can't create $unigramsFile";
+open(BIGRAMS, ">$bigramsFile") || die "Can't create $bigramsFile";
+open(TRIGRAMS, ">$trigramsFile") || die "Can't create $trigramsFile";
+open(SKIP_BIGRAMS, ">$skip_bigramsFile") || die "Can't create $skip_bigramsFile";
+
+while (my $radek = <STDIN>)
+{
+	chomp($radek);
+	$radek = my_lc($radek);
+	#print "lowercased: $radek\n";
+	my @tokens = split(/ /, $radek);
+	
+	foreach my $token (@tokens)
+	{
+		if ($token =~ m/^[$lcLetters]+$/)
+		{
+			#print "token: $token\n";
+			my $len = length($token);
+			for (my $i = 0; $i < $len; $i++)
+			{
+				$unigrams{substr($token, $i, 1)}++;
+				
+				#print substr($token, $i, 1)."\n";
+				
+				if ($i < $len - 1)
+				{
+					$bigrams{substr($token, $i, 2)}++;
+					#print substr($token, $i, 2)."\n";
+				}
+				
+				if ($i < $len - 2)
+				{
+					$trigrams{substr($token, $i, 3)}++;
+					$skip_bigrams{substr($token, $i, 1).substr($token, $i + 2, 1)}++;
+					#print substr($token, $i, 1)."_".substr($token, $i + 2, 1)."\n";
+				}
+			}
+		}
+	}
+}
+
+foreach my $key (keys %unigrams)
+{
+	print UNIGRAMS "$key ".$unigrams{$key}."\n";
+}
+
+foreach my $key (keys %bigrams)
+{
+	print BIGRAMS "$key ".$bigrams{$key}."\n";
+}
+
+foreach my $key (keys %trigrams)
+{
+	print TRIGRAMS "$key ".$trigrams{$key}."\n";
+}
+
+foreach my $key (keys %skip_bigrams)
+{
+	print SKIP_BIGRAMS "$key ".$skip_bigrams{$key}."\n";
+
+}
+
+close(UNIGRAMS);
+close(BIGRAMS);
+close(TRIGRAMS);
+close(SKIP_BIGRAMS);
+
+sub my_lc {
+	my $string = shift;
+	$string =~ tr/ABCDEFGHIJKLMNOPQRSTUVWXYZÌ©ÈØ®ÝÁÍÉÓÏ«ÒÚÙÄÖÜß/abcdefghijklmnopqrstuvwxyzì¹èø¾ýáíéóï»òúùäöüß/;
+	return $string;
+}
