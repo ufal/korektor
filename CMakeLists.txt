@@ -88,7 +88,7 @@ if(UNIX)
 endif(UNIX)
 
 if(USE_CLANG)
-	link_directories(${CMAKE_SOURCE_DIR}/external/libcxx/)
+	#link_directories(${CMAKE_SOURCE_DIR}/external/libcxx/)
 	# -Wformat-security warns about printf(non-const-string, ...)
 	# -Woverloaded-virtual warns about virtual functions with the same name but different parameters
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-format-security -Wno-overloaded-virtual -Wno-reserved-user-defined-literal")
@@ -188,9 +188,9 @@ endif (UNIX)
 #
 # CLANG specific build flags
 #
-if (USE_CLANG)
+if (USE_CLANG AND USE_CXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
-endif (USE_CLANG)
+endif (USE_CLANG AND USE_CXX)
 
 
 add_library(korlib STATIC ${korlib_srcs} ${korlib_hdrs})
