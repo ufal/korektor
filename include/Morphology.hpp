@@ -381,7 +381,7 @@ namespace ngramchecker {
 		void WriteToStream(ostream &ofs)
 		{
 			MyUtils::WriteString(ofs, "Morphology");
-			ofs.write((char*)num_factors, sizeof(uint32_t));
+			ofs.write((char*)&num_factors, sizeof(uint32_t));
 
 			vector<string> factor_names_vec;
 			factor_names_vec.resize(num_factors);
