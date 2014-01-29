@@ -137,7 +137,7 @@ namespace ngramchecker {
 		//wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
 		static bool SafeReadline(istream &istr, string &str)
 		{
-			if (std::getline(istr, str) == false)
+			if (!std::getline(istr, str))
 				return false;
 			else
 			{
