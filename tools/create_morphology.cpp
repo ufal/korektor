@@ -679,7 +679,7 @@ int main(int argc, char** argv)
 		vector<uint32_t> dep_vector;
 
 		for (uint j = 0; j < cm.factor_string_lists[governing].size(); j++)
-			dep_vector.push_back(UINT_MAX);
+			dep_vector.push_back(std::numeric_limits<uint32_t>::max());
 
 		for (map<uint, uint>::iterator it = dep_map.begin(); it != dep_map.end(); it++)
 		{
@@ -688,7 +688,7 @@ int main(int argc, char** argv)
 
 		for (uint i = 0; i < dep_vector.size(); i++)
 		{
-			FATAL_CONDITION(dep_vector[i] != UINT_MAX, "");
+			FATAL_CONDITION(dep_vector[i] != std::numeric_limits<uint32_t>::max(), "");
 		}
 
 		MyPackedArray mpa = MyPackedArray(dep_vector);

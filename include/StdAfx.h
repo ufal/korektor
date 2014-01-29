@@ -28,9 +28,7 @@ All rights reserved.
 #include <algorithm>
 #include <math.h>
 #include <cassert>
-#include <stdint.h>
 #include <limits>
-#include <climits>
 #include <unordered_set>
 #include <unordered_map>
 #include <memory>

@@ -96,7 +96,7 @@ namespace ngramchecker {
 
 	  int GetWordID(const u16string &word) const; //return value -1 for out of vocabulary words!
 
-	  void PrintWords(ostream &os, uint32_t max_index = UINT32_MAX);
+	  void PrintWords(ostream &os, uint32_t max_index = std::numeric_limits<uint32_t>::max());
 
 	  bool CorrectionIsAllowed(int wordID) const;
 	  void ArcsConsistencyCheck();

@@ -25,7 +25,7 @@ namespace ngramchecker {
 		//utility for writing a string to a binary stream
 		static void WriteString(ostream &ofs, const string &s)
 		{
-			FATAL_CONDITION(s.length() <= USHRT_MAX, "");
+			FATAL_CONDITION(uint16_t(s.length()) == s.length(), "");
 			uint16_t len = s.length();
 			ofs.write((char*)&len, sizeof(uint16_t));
 			ofs.write(s.data(), sizeof(char) * len);
