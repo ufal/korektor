@@ -34,7 +34,7 @@ namespace ngramchecker {
 		utf8_vec.resize(utf16.size() * 2 + 1);
 
 		int32_t destLen;
-		UErrorCode errCode;
+		UErrorCode errCode = U_ZERO_ERROR;
 		u_strToUTF8(&utf8_vec[0], utf16.size() * 2, &destLen, (UChar*)&utf16[0], utf16.size(), &errCode);
 		utf8_vec[destLen] = 0;
 		return &utf8_vec[0];
@@ -47,7 +47,7 @@ namespace ngramchecker {
 		utf16_vec.resize(utf8.size() + 1);
 
 		int32_t destLen;
-		UErrorCode errCode;
+		UErrorCode errCode = U_ZERO_ERROR;
 		u_strFromUTF8((UChar*)&utf16_vec[0], utf8.size(), &destLen, &utf8[0], utf8.size(), &errCode);
 		utf16_vec[destLen] = 0;
 		return &utf16_vec[0];
