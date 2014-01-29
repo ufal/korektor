@@ -33,7 +33,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 if (DEFINED USE_CLANG AND USE_CLANG)
 	set(USE_ICC OFF)
 else (DEFINED USE_CLANG AND USE_CLANG)
-	set(USE_CLANG ON) # set this to off if you want to disable using clang
+	set(USE_CLANG OFF) # set this to off if you want to disable using clang
 endif (DEFINED USE_CLANG AND USE_CLANG)
 
 #
@@ -44,9 +44,6 @@ if (DEFINED USE_ICC AND USE_ICC)
 else (DEFINED USE_ICC AND USE_ICC)
 	set(USE_ICC OFF) # set this to off if you want to disable using ICC
 endif (DEFINED USE_ICC AND USE_ICC)
-
-#for some reason, USE CLANG was ON even on Windows!
-set(USE_CLANG OFF)
 
 #
 # LLVM/CLANG compiler settings
