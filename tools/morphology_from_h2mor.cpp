@@ -34,7 +34,7 @@ string processTag(const string &tag)
 	else
 	{
 		fprintf(stderr, "No rule for tag %s\n", tag.c_str());
-		exit(-1);
+		exit(1);
 	}
   
 	for (uint i = 0; i < ret.length(); i++)
@@ -119,7 +119,7 @@ int main(int argc, char** argv)
 	if (ifs_ending.is_open() == false)
 	{
 		fprintf(stderr, "Can't open file %s!\n", root_file.c_str());
-		exit(-3);
+		exit(1);
 	}
 
 	int current_id = -1;
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
 			if ((int)e.paradigm_id != current_id + 1)
 			{
 				fprintf(stderr, "no entries for paradigm_id %u in endings file!\n", current_id + 1);
-				exit(-2);
+				exit(1);
 			}
 
 			endings.push_back(vector<Ending>());
@@ -162,7 +162,7 @@ int main(int argc, char** argv)
 	if (ifs_root.is_open() == false)
 	{
 		fprintf(stderr, "Can't open file %s!\n", root_file.c_str());
-		exit(-5);
+		exit(1);
 	}
 
 	ofstream ofs(output_file.c_str());
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
 	if (ofs.is_open() == false)
 	{
 		fprintf(stderr, "Can't open file %s!\n", output_file.c_str());
-		exit(-6);
+		exit(1);
 	}
 
 	fprintf(stderr, "processing roots...\n");

@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 	if (argc < 2)
 	{
 		print_help();
-		exit(-148);
+		exit(1);
 	}
 
 	cerr << argv[1] << endl;
@@ -55,7 +55,7 @@ int main(int argc, char** argv)
 		if (argc < 4)
 		{
 			print_help();
-			exit(-147);
+			exit(1);
 		}
 
 		ErrorModelBasic::CreateBinaryFormFromTextForm(argv[2], argv[3]);
@@ -191,7 +191,7 @@ int main(int argc, char** argv)
 	else
 	{
 		print_help();
-		exit(-11);
+		exit(1);
 	}
 
 

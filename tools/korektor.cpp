@@ -23,7 +23,7 @@ int main(int argc, char** argv)
 	if (argc < 2)
 	{
 		print_help();
-		exit(-1);
+		exit(1);
 	}
 
 
@@ -46,7 +46,7 @@ int main(int argc, char** argv)
 		if (gold_ifs.is_open() == false)
 		{
 			cerr << "Can't open gold data file!" << endl;
-			exit(-3);
+			exit(1);
 		}
 		
 		uint fail = 0;
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
 			if (gold_ifs.eof())
 			{
 				cerr << "Error: Gold data have fewer lines than input data!" << endl;
-				exit(-4);
+				exit(1);
 			}
 
 			MyUtils::SafeReadline(gold_ifs, gold_s);
@@ -80,7 +80,7 @@ int main(int argc, char** argv)
 				cerr << "Error: input line splitted into different numbers of sentences in input data and gold data!" << endl;
 				cerr << "output: " << out << endl << endl;
 				cerr << "gold: " << gold_s << endl << endl;
-				exit(-5);
+				exit(1);
 			}
 			
 			for (uint i = 0; i < out_toks.size(); i++)

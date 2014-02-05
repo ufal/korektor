@@ -69,7 +69,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	if (slash_pos == string::npos && slash2_pos == string::npos)
 	{
 		//slash_pos = 0;
-		//exit(-1234);
+		//exit(1);
 		//throw std::bad_exception("Can't determine the application directory!");
 	}
 
@@ -103,7 +103,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	if (ifs.is_open() == false)
 	{
 		cerr << "Opening configuration file " << conf_file << "failed!" << endl;
-		exit(-12345);
+		exit(1);
 		//throw std::bad_exception("Can't open configuration file!");
 	}
 	
@@ -139,7 +139,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 			if (ifs.is_open() == false)
 			{
 				cerr << "Opening morpholex file " << morpholex_file << " failed!" << endl;
-				exit(-2345);
+				exit(1);
 				//throw std::bad_exception("Can't open morpholex file!");
 			}
 
@@ -203,7 +203,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 			else
 			{
 				cerr << s << endl << toks[1] << " - invalid value of casing treatment" << endl;
-				exit(-987); 
+				exit(1); 
 			}
 
 			uint max_edit_distance = MyUtils::my_atoi(toks[2]);
@@ -218,7 +218,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 			if (mode_string != "autocorrect" && mode_string != "tag_errors")
 			{
 				cerr << s << endl << " - invalid value of output mode" << endl;
-				exit(-876);
+				exit(1);
 			}
 		}
 	}
@@ -245,7 +245,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	{
 		//throw std::bad_exception("configuration is not initialized!");
 		cerr << "Configuration was not initialized proparly!" << endl;
-		exit(-123456789);
+		exit(1);
 	}
 
 }
