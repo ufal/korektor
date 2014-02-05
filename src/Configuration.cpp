@@ -138,6 +138,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 			ifs.open(morpholex_file.c_str(), ios::binary);
 			if (ifs.is_open() == false)
 			{
+				cerr << "Opening morpholex file " << morpholex_file << " failed!" << endl;
 				exit(-2345);
 				//throw std::bad_exception("Can't open morpholex file!");
 			}
@@ -243,7 +244,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	if (is_initialized() == false)
 	{
 		//throw std::bad_exception("configuration is not initialized!");
-		cerr << "configuration was not initialized proparly!" << endl;
+		cerr << "Configuration was not initialized proparly!" << endl;
 		exit(-123456789);
 	}
 
