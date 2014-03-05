@@ -1,0 +1,14 @@
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+create_error_model
+create_lm_binary
+create_morphology
+korektor
+korektor_server
+launch-korektor.sh
+libkorlib.a
+morphology_from_h2mor
+spellchecking_h2mor_d.conf
+tokenize
