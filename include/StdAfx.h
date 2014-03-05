@@ -33,10 +33,6 @@ All rights reserved.
 #include <unordered_map>
 #include <memory>
 
-#ifndef nullptr
-#define nullptr NULL
-#endif
-
 //boost:
 //#include <boost/lexical_cast.hpp>
 //#include <boost/algorithm/string.hpp>
