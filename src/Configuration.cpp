@@ -237,7 +237,7 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	//TODO: morphology vocab file should be set in configuration file as well!
 	if (diagnostics)
 	{
-		morphology->initMorphoWordLists(data_directory + "morphology_vocab_20_2.bin");
+		morphology->initMorphoWordLists(data_directory + "morphology_h2mor_freq2_vocab.bin");
 		morphology->initMorphoWordMaps();
 	}
 
