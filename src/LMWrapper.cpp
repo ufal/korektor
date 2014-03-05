@@ -8,6 +8,8 @@ All rights reserved.
 #include "NGram.hpp"
 #include "utils.hpp"
 
+// #define CACHING_ENABLED
+
 namespace ngramchecker {
 
 		//!!! The ordering of IDs is not reversed anymore !!!
@@ -15,6 +17,7 @@ namespace ngramchecker {
 		{
 			size_t hash_key = ngram_hash_function(ngram_key);
 
+#ifdef CACHING_ENABLED
 			if (ngram_cash.IsCashed(hash_key))
 			{
 				triple(uint, double, double) trp = ngram_cash.GetCashedValue(hash_key);
@@ -24,6 +27,7 @@ namespace ngramchecker {
 				memcpy(ngram_ret.word_ids, ngram_key.word_ids, sizeof(uint32_t) * ngram_ret.order);
 				return;
 			}
+#endif
 
 			LM->GetNGramForNGramKey(ngram_key, ngram_ret);
 
@@ -35,12 +39,15 @@ namespace ngramchecker {
 				ngram_key.order = undef_order;
 				size_t undef_hash = ngram_hash_function(ngram_key);
 
+#ifdef CACHING_ENABLED
 				if (! ngram_cash.IsCashed(undef_hash))
 					ngram_cash.StoreValueForKey(undef_hash, make_triple(0, 0.0, 0.0));
+#endif
 			}
 
 			ngram_key.order = end_undef;
 
+#ifdef CACHING_ENABLED
 			if (ngram_ret.order > 0)
 			{
 				if (ngram_ret.order == ngram_key.order)
@@ -57,6 +64,7 @@ namespace ngramchecker {
 
 
 			}
+#endif
 
 		}
 
@@ -72,10 +80,12 @@ namespace ngramchecker {
 		{
 			size_t key_hash = ngram_hash_function(ngram_key);
 
+#ifdef CACHING_ENABLED
 			if (ngram_probs_cash.IsCashed(key_hash))
 			{
 				return ngram_probs_cash.GetCashedValue(key_hash);
 			}
+#endif
 
 
 			/*if (ngram_cash.IsCashed(key_hash))
@@ -118,7 +128,9 @@ namespace ngramchecker {
 				ngram_key.order = ngram_pom.order - 1;
 			}
 
+#ifdef CACHING_ENABLED
 			ngram_probs_cash.StoreValueForKey(key_hash, ret_prob);
+#endif
 
 			ngram_key.word_ids--;
 			ngram_key.order = ngram_orig_order;
