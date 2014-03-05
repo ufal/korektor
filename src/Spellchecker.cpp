@@ -458,6 +458,39 @@ namespace ngramchecker {
 				return MyUtils::utf16_to_utf8(usr.GetResult());
 		}
 
+		void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {
+			suggestions.clear();
+
+			u16string u_text = MyUtils::utf8_to_utf16(text);
+			vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
+
+			unsigned u_index = 0;
+			for (auto&& sentence : tokens) {
+				if (sentence.empty()) continue;
+
+				vector<StagePosibilityP> spv;
+				StagePosibilitiesType stage_posibs;
+				decoder->DecodeTokenizedSentence_ReturnStagePosibilities(sentence, spv, stage_posibs);
+				map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+
+				uint32_t decoder_order = decoder->GetViterbiOrder();
+				for (auto&& suggestion : sugg) {
+					uint32_t tok_index = suggestion.first - (decoder_order - 1);
+					if (tok_index >= sentence.size()) continue;
+
+					if (u_index < sentence[tok_index]->first)
+						suggestions.emplace_back(MyUtils::utf16_to_utf8(u_text.substr(u_index, sentence[tok_index]->first - u_index)), vector<string>());
+
+					suggestions.emplace_back(sentence[tok_index]->str_utf8, vector<string>());
+					for (unsigned i = 0; i < suggestion.second.size() && i < num_sugg_to_output; i++)
+						suggestions.back().second.emplace_back(suggestion.second[i]->ToString());
+
+					u_index = sentence[tok_index]->first + sentence[tok_index]->length;
+				}
+			}
+			if (u_index < u_text.size()) suggestions.emplace_back(MyUtils::utf16_to_utf8(u_text.substr(u_index)), vector<string>());
+		}
+
 		Spellchecker::Spellchecker(Configuration* _configuration):
 		configuration(_configuration), decoder(new DecoderMultiFactor(_configuration))
 		{}

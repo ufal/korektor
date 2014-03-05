@@ -61,6 +61,9 @@ namespace ngramchecker {
 		//marks mispelled words and correction using a XML tag
 		string command_line_mode(const string &text, uint32_t num_sugg_to_output);
 
+		//return array of tokens, for each token list suggestions from the most probable
+		void GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions);
+
 		Spellchecker(Configuration* _configuration);
 
 	};
