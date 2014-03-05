@@ -1,0 +1,3 @@
+libmicrohttpd-*/
+libmicrohttpd.so*
+microhttpd.h

@@ -214,6 +214,13 @@ target_link_libraries(tokenize korlib ${korektor_libs})
 add_executable(morphology_from_h2mor ${CMAKE_CURRENT_SOURCE_DIR}/tools/morphology_from_h2mor.cpp)
 target_link_libraries(morphology_from_h2mor ${korektor_libs})
 
+if (WITH_REST_SERVER)
+  file(GLOB korektor_server_srcs "rest_service/server/*.cpp")
+  add_executable(korektor_server ${korektor_server_srcs})
+  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd)
+  target_link_libraries(korektor_server korlib ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
+endif (WITH_REST_SERVER)
+
 create_default_target_launcher(korektor
     RUNTIME_LIBRARY_DIRS
 	${korektor_path}
