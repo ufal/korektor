@@ -462,10 +462,10 @@ namespace ngramchecker {
 			suggestions.clear();
 
 			u16string u_text = MyUtils::utf8_to_utf16(text);
-			vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
+			vector<vector<TokenP> > sentences = configuration->tokenizer->Tokenize(u_text);
 
 			unsigned u_index = 0;
-			for (auto&& sentence : tokens) {
+			for (auto&& sentence : sentences) {
 				if (sentence.empty()) continue;
 
 				vector<StagePosibilityP> spv;
