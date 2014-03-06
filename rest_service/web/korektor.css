@@ -1,0 +1,14 @@
+/* menu links center fix*/
+.navbar .nav,
+.navbar .nav > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+    *zoom:1; /* hasLayout ie7 trigger */
+    vertical-align: top;
+}
+
+.main-content-container {
+    margin-left: 1em;
+    margin-right: 1em;
+}
