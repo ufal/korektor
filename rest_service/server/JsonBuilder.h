@@ -23,9 +23,6 @@ class JsonBuilder {
   inline JsonBuilder& close();
   inline JsonBuilder& key(StringPiece str);
   inline JsonBuilder& value(StringPiece str);
-  inline JsonBuilder& value_open();
-  inline JsonBuilder& value_append(StringPiece str);
-  inline JsonBuilder& value_close();
   inline void close_all(); // Close all open objects and arrays
 
   // Return current json
@@ -96,21 +93,9 @@ JsonBuilder& JsonBuilder::key(StringPiece str) {
 }
 
 JsonBuilder& JsonBuilder::value(StringPiece str) {
-  return value_open().value_append(str).value_close();
-}
-
-JsonBuilder& JsonBuilder::value_open() {
   start_element(false);
   json.push_back('"');
-  return *this;
-}
-
-JsonBuilder& JsonBuilder::value_append(StringPiece str) {
   encode(str);
-  return *this;
-}
-
-JsonBuilder& JsonBuilder::value_close() {
   json.push_back('"');
   json.push_back('\n');
   comma_needed = true;
