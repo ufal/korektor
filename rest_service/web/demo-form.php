@@ -1,24 +1,24 @@
 <script type="text/javascript" charset="utf-8"><!--
+  var suggestions;
   function callCorrector(model) {
     var text = jQuery('#input').val();
     jQuery('#error').hide().empty();
     jQuery('#output_header').text("Output (computing...)");
 
+    jQuery('suggestions').hide();
+    suggestions = [];
     jQuery.ajax('http://quest.ms.mff.cuni.cz/korektor/api/' + model,
                 {dataType: "json", data: {data: text}, type: "POST", success: function(json) {
       var result = '';
       for (var i in json.result) {
         var token = json.result[i];
+        if (token.length == 2 && token[0] == token[1]) token.splice(1, 1);
         if (token.length == 1) {
           result += token[0];
-        } else if (token.length == 2) {
-          result += "<span class='single'>" + token[1] + "</span>";
-        } else if (token.length > 2) {
-          result += "<span class='multiple'>" + token[1] + "<div style='visibility:hidden'>"
-          for (var j in token)
-            if (j > 0)
-              result += token[j] + "<br />";
-          result += "</div></span>";
+        } else if (token.length >= 2) {
+          var suggestion = suggestions.length;
+          result += "<span class='" + (token.length > 2 ? "multiple" : "single") + "' id='sugg" + suggestion + "' onmouseover='showSugg(" + suggestion + ")' onmouseout='hideSugg()'>" + token[1] + "</span>";
+          suggestions.push(token);
         }
       }
       jQuery('#output').html(result);
@@ -28,13 +28,46 @@
       jQuery('#output_header').text("Output (done)");
     }});
   }
+
+  var hoveringSuggestions;
+  var hideSuggestions;
+  function overSugg() { hoveringSuggestions = true; }
+  function outSugg() { hoveringSuggestions = false; hideSugg(); }
+
+  function showSugg(suggestion) {
+    clearTimeout(hideSuggestions);
+    var dialog = jQuery('#suggestions').html('').show();
+    var word = jQuery('#sugg' + suggestion);
+    dialog.offset({left: word.offset().left, top: word.offset().top + word.height()});
+    setSuggContent(suggestion);
+  }
+
+  function setSuggContent(suggestion) {
+    var word = jQuery('#sugg' + suggestion).text();
+    var html = "<b>Original</b>";
+    for (var i in suggestions[suggestion]) {
+      if (i == 1) html += "<br/><b>Suggestions</b>";
+      var this_one = word == suggestions[suggestion][i];
+      html += "<br/><span onclick='setSugg(" + suggestion + "," + i + ")'>" + (this_one ? "<b>" : "") + suggestions[suggestion][i] + (this_one ? "</b>" : "") + "</span>";
+    }
+    jQuery('#suggestions').html(html);
+  }
+
+  function hideSugg() {
+    clearTimeout(hideSuggestions);
+    hideSuggestions = setTimeout(function(){if (!hoveringSuggestions) jQuery('#suggestions').hide()}, 300);
+  }
+
+  function setSugg(suggestion, index) {
+    jQuery('#sugg' + suggestion).text(suggestions[suggestion][index]);
+    setSuggContent(suggestion);
+  }
 --></script>
 <style type="text/css"><!--
   #output span.single { color: #800 }
-  #output span.multiple { position: relative; color: #800; text-decoration: underline }
-  #output span.multiple:hover { color: #e00; }
-  #output span div { position: absolute; left: 0; top: 1.5em; white-space: pre; z-index: 1; background-color: #ee4; padding: 3px }
-  #output span:hover div { visibility: visible !important }
+  #output span.multiple { color: #800; text-decoration: underline }
+  #suggestions { padding: 5px; border: 1px solid #990; background-color: #ee4; }
+  #suggestions span { color: #800; text-decoration: underline; cursor: pointer; cursor: hand }
 --></style>
 
 <h3>Input</h3>
@@ -54,3 +87,5 @@ rgin: 0; width: 100%" autofocus>Přílyš žluťoučky kůň ůpěl ďábelské 
 <div style="width: 100%">
   <p id="output" style="white-space: pre-wrap; width: 95%; margin: auto; border: 1px solid gray; background-color: #6D6; min-height: 2em"></p>
 </div>
+
+<div id='suggestions' style='position: absolute; display: none' onmouseover='overSugg()' onmouseout='outSugg()'></div>
