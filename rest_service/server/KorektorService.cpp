@@ -2,8 +2,11 @@
 // Mathematics and Physics, Charles University in Prague, Czech Republic.
 // All rights reserved.
 
+#include <unicode/normlzr.h>
+
 #include "StdAfx.h"
 #include "Spellchecker.hpp"
+#include "Tokenizer.hpp"
 
 #include "KorektorService.h"
 #include "ResponseGenerator.h"
@@ -102,21 +105,49 @@ bool KorektorService::handle_strip(RestRequest& req) {
 
   class generator : public KorektorResponseGenerator {
    public:
-    generator(const char* data) : KorektorResponseGenerator(data) {
-      result.array().value_open();
-    }
+    generator(const char* data) : KorektorResponseGenerator(data) {}
 
     bool next() {
       StringPiece line;
-      if (!get_line(data, line)) {
-        result.value_close();
+      if (!get_line(data, line))
         return false;
-      }
 
-      result.value_append(line);
+      u16string text = MyUtils::utf8_to_utf16(string(line.str, line.len));
+      vector<vector<TokenP>> sentences = tokenizer.Tokenize(text);
+      unsigned text_index = 0;
+      for (auto&& sentence : sentences)
+        for (auto&& token : sentence) {
+          // Strip diacritics from token
+          word.setTo((const UChar*) token->str_u16.c_str(), token->str_u16.size());
+          UErrorCode status = U_ZERO_ERROR;
+          icu::Normalizer::normalize(word, UNORM_NFD, 0, word_decomposed, status);
+
+          word_no_marks.remove();
+          bool changed = false;
+          for (unsigned i = 0; i < word_decomposed.length(); i = word_decomposed.moveIndex32(i, 1)) {
+            UChar32 chr = word_decomposed.char32At(i);
+            if (u_charType(chr) == U_NON_SPACING_MARK ) changed = true;
+            else word_no_marks.append(chr);
+          }
+          if (!changed) continue;
+
+          status = U_ZERO_ERROR;
+          icu::Normalizer::normalize(word_no_marks, UNORM_NFC, 0, word_stripped, status);
+
+          if (text_index < token->first) result.array().value(MyUtils::utf16_to_utf8(text.substr(text_index, token->first - text_index))).close();
+          word_stripped_utf8.clear();
+          result.array().value(token->str_utf8).value(word_stripped.toUTF8String(word_stripped_utf8)).close();
+
+          text_index = token->first + token->length;
+        }
+      if (text_index < text.size()) result.array().value(MyUtils::utf16_to_utf8(text.substr(text_index))).close();
 
       return true;
     }
+   private:
+    Tokenizer tokenizer;
+    UnicodeString word, word_decomposed, word_no_marks, word_stripped;
+    string word_stripped_utf8;
   };
   return req.respond_json(new generator(data));
 }
