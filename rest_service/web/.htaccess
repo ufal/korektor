@@ -1,4 +1,4 @@
-DirectoryIndex demo.php
+DirectoryIndex index.php
 
 RewriteEngine on
 RewriteRule api$ http://korektor:8001/ [QSA,P,L]
