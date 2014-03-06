@@ -1,0 +1,5 @@
+DirectoryIndex demo.php
+
+RewriteEngine on
+RewriteRule api$ http://korektor:8001/ [QSA,P,L]
+RewriteRule api/(.*)$ http://korektor:8001/$1 [QSA,P,L]
