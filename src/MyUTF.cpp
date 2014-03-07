@@ -31,11 +31,11 @@ namespace ngramchecker {
 	string MyUTF::utf16_to_utf8(const u16string &utf16)
 	{
 		vector<char> utf8_vec;
-		utf8_vec.resize(utf16.size() * 2 + 1);
+		utf8_vec.resize(utf16.size() * 3 + 1);
 
 		int32_t destLen;
 		UErrorCode errCode = U_ZERO_ERROR;
-		u_strToUTF8(&utf8_vec[0], utf16.size() * 2, &destLen, (UChar*)&utf16[0], utf16.size(), &errCode);
+		u_strToUTF8(&utf8_vec[0], utf16.size() * 3, &destLen, (UChar*)&utf16[0], utf16.size(), &errCode);
 		utf8_vec[destLen] = 0;
 		return &utf8_vec[0];
 
