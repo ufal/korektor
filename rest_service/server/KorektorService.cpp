@@ -124,7 +124,7 @@ bool KorektorService::handle_strip(RestRequest& req) {
 
           word_no_marks.remove();
           bool changed = false;
-          for (unsigned i = 0; i < word_decomposed.length(); i = word_decomposed.moveIndex32(i, 1)) {
+          for (int i = 0; i < word_decomposed.length(); i = word_decomposed.moveIndex32(i, 1)) {
             UChar32 chr = word_decomposed.char32At(i);
             if (u_charType(chr) == U_NON_SPACING_MARK ) changed = true;
             else word_no_marks.append(chr);
