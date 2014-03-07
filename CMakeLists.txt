@@ -74,6 +74,12 @@ if(USE_ICC)
 	endif(ICC_FOUND)
 endif(USE_ICC)
 
+# ---------------------------------------------------------------------------------------------------
+# Project description (needs to happen after selecting compiler)
+# ---------------------------------------------------------------------------------------------------
+
+project(korektor)
+
 #
 # Platform specific compiler flags
 #
@@ -82,9 +88,7 @@ if (WIN32)
 endif (WIN32)
 
 if(UNIX)
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC -Wall")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall")
-	set(CMAKE_STATIC_LINKER_FLAGS "${CMAKE_STATIC_LINKER_FLAGS} -fPIC")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 endif(UNIX)
 
 if(USE_CLANG)
@@ -93,12 +97,6 @@ if(USE_CLANG)
 	# -Woverloaded-virtual warns about virtual functions with the same name but different parameters
 	#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-format-security -Wno-overloaded-virtual -Wno-reserved-user-defined-literal")
 endif(USE_CLANG)
-
-# ---------------------------------------------------------------------------------------------------
-# Project description (needs to happen after selecting compiler)
-# ---------------------------------------------------------------------------------------------------
-
-project(korektor)
 
 if (USE_GPROF)
 	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -pg")
