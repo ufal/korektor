@@ -1,8 +1,12 @@
 <script type="text/javascript" charset="utf-8"><!--
   var suggestions;
+  var text_original;
+  var text_korektor;
   function callCorrector(model) {
     var text = jQuery('#input').val();
     jQuery('#error').hide().empty();
+    jQuery('#submit_correction').hide();
+    jQuery('#submit_correction_results').empty();
     jQuery('#output_header').text("Output (computing...)");
 
     jQuery('suggestions').hide();
@@ -22,6 +26,10 @@
         }
       }
       jQuery('#output').html(result);
+
+      text_original = text;
+      text_korektor = jQuery('#output').text();
+      jQuery('#submit_correction').show();
     }, error: function(jqXHR, textStatus) {
       jQuery('#error').text("An error occurred: " + textStatus).show();
     }, complete: function() {
@@ -62,6 +70,18 @@
     jQuery('#sugg' + suggestion).text(suggestions[suggestion][index]);
     setSuggContent(suggestion);
   }
+
+  function submitCorrection() {
+    text_corrected = jQuery('#output').text();
+
+    jQuery('#submit_correction_results').empty();
+    jQuery.ajax('http://quest.ms.mff.cuni.cz/korektor/log.php',
+                {dataType: "json", data: {original: text_original, korektor: text_korektor, corrected: text_corrected}, type: "POST", success: function(json) {
+      jQuery('#submit_correction_results').text('Submitted, thanks.');
+    }, error: function(jqXHR, textStatus) {
+      jQuery('#submit_correction_results').text('Cannot submit, sorry.');
+    }});
+  }
 --></script>
 <style type="text/css"><!--
   #output span.single { color: #800 }
@@ -86,6 +106,7 @@ rgin: 0; width: 100%" autofocus>Přílyš žluťoučky kůň ůpěl ďábelské 
 
 <div style="width: 100%">
   <p id="output" style="white-space: pre-wrap; width: 95%; margin: auto; border: 1px solid gray; background-color: #6D6; min-height: 2em"></p>
+  <div id='submit_correction' style='width: 95%; margin: auto; text-align: right; display: none'><span id='submit_correction_results'></span><button type="submit" class="btn btn-primary" onclick="submitCorrection()">Submit corrected text</button></div>
 </div>
 
 <div id='suggestions' style='position: absolute; display: none' onmouseover='overSugg()' onmouseout='outSugg()'></div>
