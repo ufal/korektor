@@ -105,7 +105,7 @@ rgin: 0; width: 100%" autofocus>Přílyš žluťoučky kůň ůpěl ďábelské 
 <h3 id="output_header">Output</h3>
 
 <div style="width: 100%">
-  <p id="output" style="white-space: pre-wrap; width: 95%; margin: auto; border: 1px solid gray; background-color: #6D6; min-height: 2em"></p>
+  <p id="output" style="white-space: pre-wrap; width: 95%; margin: auto; border: 1px solid gray; background-color: #6D6; min-height: 2em" contenteditable="true"></p>
   <div id='submit_correction' style='width: 95%; margin: auto; text-align: right; display: none'><span id='submit_correction_results'></span><button type="submit" class="btn btn-primary" onclick="submitCorrection()">Submit corrected text</button></div>
 </div>
 
