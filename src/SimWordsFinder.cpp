@@ -30,6 +30,14 @@ namespace ngramchecker {
 
 				if (token->sentence_start && MyUtils::IsUpperCase(word_u_str[0])) //On the beginning of the sentence both lower case and upper case starting letter should be tried!
 				{
+					// Make sure all suggestions are capitalized.
+					for (auto&& suggestion : ret) {
+						auto& word = *suggestion.second.first;
+						if (!word.empty() && MyUtils::IsLowerCase(word[0]))
+							word[0] = MyUtils::ToUpper(word[0]);
+					}
+
+					// Try searching for word without first capital letter.
 					u16string word_str_lc = word_u_str;
 					word_str_lc[0] = MyUtils::ToLower(word_u_str[0]);
 
