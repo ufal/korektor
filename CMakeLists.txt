@@ -132,7 +132,11 @@ if (WIN32)
 else(WIN32)
 	find_package(ICU 4.8 REQUIRED)
 	set(korektor_incs ${korektor_incs} ${ICU_INCLUDE_DIRS})
-	set(korektor_libs ${korektor_libs} ${ICU_LIBRARIES})
+	if (STATIC_LINKING)
+		set(korektor_libs ${korektor_libs} -Wl,-Bstatic ${ICU_LIBRARIES} -Wl,-Bdynamic)
+	else (STATIC_LINKING)
+		set(korektor_libs ${korektor_libs} ${ICU_LIBRARIES})
+	endif (STATIC_LINKING)
 endif(WIN32)
 
 
@@ -190,6 +194,12 @@ if (USE_CLANG AND USE_CXX)
 	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++")
 endif (USE_CLANG AND USE_CXX)
 
+#
+# Static linking
+#
+if (UNIX AND STATIC_LINKING)
+	set(korektor_libs ${korektor_libs} -static-libstdc++ -static-libgcc)
+endif (UNIX AND STATIC_LINKING)
 
 add_library(korlib STATIC ${korlib_srcs} ${korlib_hdrs})
 target_link_libraries(korlib ${korektor_libs})
@@ -212,17 +222,18 @@ target_link_libraries(tokenize korlib ${korektor_libs})
 add_executable(morphology_from_h2mor ${CMAKE_CURRENT_SOURCE_DIR}/tools/morphology_from_h2mor.cpp)
 target_link_libraries(morphology_from_h2mor ${korektor_libs})
 
-if (WITH_REST_SERVER)
-  file(GLOB korektor_server_srcs "rest_service/server/*.cpp")
-  add_executable(korektor_server ${korektor_server_srcs})
-  include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd)
-  target_link_libraries(korektor_server korlib ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
-endif (WITH_REST_SERVER)
+if (UNIX AND WITH_REST_SERVER)
+	file(GLOB korektor_server_srcs "rest_service/server/*.cpp")
+	add_executable(korektor_server ${korektor_server_srcs})
+	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd)
+	if (STATIC_LINKING)
+		target_link_libraries(korektor_server korlib ${korektor_libs} -Wl,-Bstatic -licudata -Wl,-Bdynamic -ldl ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.a)
+	else (STATIC_LINKING)
+		target_link_libraries(korektor_server korlib ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
+	endif (STATIC_LINKING)
+endif (UNIX AND WITH_REST_SERVER)
 
-create_default_target_launcher(korektor
-    RUNTIME_LIBRARY_DIRS
-	${korektor_path}
-)
+create_default_target_launcher(korektor RUNTIME_LIBRARY_DIRS ${korektor_path})
 
 #add_executable(unicode_converting ${unicode_converting_srcs})
 #target_link_libraries(unicode_converting korlib ${korektor_libs})
