@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 			for (unsigned i = 0; i < suggestions.size(); i++) {
 				if (replaced[i].empty()) {
 					cout << suggestions[i].first;
-					if (!suggestions[i].second.empty()) {
+					if (!suggestions[i].second.empty() && !(suggestions[i].second.size() == 1 && suggestions[i].second[0] == suggestions[i].first)) {
 						cout << '\t' << (tokens[i]->isUnknown() ? 'S' : 'G');
 						for (auto&& word : suggestions[i].second)
 							cout << '\t' << word;
