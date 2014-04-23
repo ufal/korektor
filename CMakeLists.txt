@@ -152,8 +152,10 @@ include_directories(${korektor_incs})
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${KOREKTOR_C_FLAGS}")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${KOREKTOR_CXX_FLAGS}")
-set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+if (WITH_THREADS)
+	set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${CMAKE_THREAD_LIBS_INIT}")
+endif (WITH_THREADS)
 
 # ---------------------------------------------------------------------------------------------------
 # Define project source files and dependencies
@@ -171,8 +173,6 @@ set(create_error_model_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/create_error_model
 set(create_morphology_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/create_morphology.cpp)
 set(tokenize_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/tokenize.cpp)
 set(unicode_converting_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/unicode_converting.cpp)
-
-set(korektor_libs ${korektor_libs} ${CMAKE_THREAD_LIBS_INIT})
 
 set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} ${ICC_RELEASE_FLAGS}")
 set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} ${ICC_RELEASE_FLAGS}")
@@ -201,6 +201,14 @@ if (UNIX AND STATIC_LINKING)
 	set(korektor_libs ${korektor_libs} -static-libstdc++ -static-libgcc)
 endif (UNIX AND STATIC_LINKING)
 
+#
+# Threading
+#
+if (WITH_THREADS)
+	set(korektor_libs ${korektor_libs} ${CMAKE_THREAD_LIBS_INIT})
+endif (WITH_THREADS)
+
+
 add_library(korlib STATIC ${korlib_srcs} ${korlib_hdrs})
 target_link_libraries(korlib ${korektor_libs})
 
@@ -227,9 +235,9 @@ if (UNIX AND WITH_REST_SERVER)
 	add_executable(korektor_server ${korektor_server_srcs})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd)
 	if (STATIC_LINKING)
-		target_link_libraries(korektor_server korlib ${korektor_libs} -Wl,-Bstatic -licudata -Wl,-Bdynamic -ldl ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.a)
+		target_link_libraries(korektor_server korlib -pthread ${korektor_libs} -Wl,-Bstatic -licudata -Wl,-Bdynamic -ldl ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.a)
 	else (STATIC_LINKING)
-		target_link_libraries(korektor_server korlib ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
+		target_link_libraries(korektor_server korlib -pthread ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
 	endif (STATIC_LINKING)
 endif (UNIX AND WITH_REST_SERVER)
 
