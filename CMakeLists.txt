@@ -241,6 +241,9 @@ if (UNIX AND WITH_REST_SERVER)
 	endif (STATIC_LINKING)
 endif (UNIX AND WITH_REST_SERVER)
 
+add_executable(korektor_vertical ${CMAKE_CURRENT_SOURCE_DIR}/tools/korektor_vertical.cpp)
+target_link_libraries(korektor_vertical korlib ${korektor_libs})
+
 create_default_target_launcher(korektor RUNTIME_LIBRARY_DIRS ${korektor_path})
 
 #add_executable(unicode_converting ${unicode_converting_srcs})

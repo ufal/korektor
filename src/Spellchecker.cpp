@@ -491,6 +491,25 @@ namespace ngramchecker {
 			if (u_index < u_text.size()) suggestions.emplace_back(MyUtils::utf16_to_utf8(u_text.substr(u_index)), vector<string>());
 		}
 
+		void Spellchecker::GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {
+			suggestions.clear();
+
+			vector<StagePosibilityP> spv;
+			StagePosibilitiesType stage_posibs;
+			decoder->DecodeTokenizedSentence_ReturnStagePosibilities(tokens, spv, stage_posibs);
+			map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+
+			for (unsigned i = 0; i < tokens.size(); i++) {
+				auto sugg_it = sugg.find(i + decoder->GetViterbiOrder() - 1);
+
+				suggestions.emplace_back(tokens[i]->str_utf8, vector<string>());
+				if (sugg_it != sugg.end())
+					for (unsigned j = 0; j < sugg_it->second.size() && j < num_sugg_to_output; j++)
+						suggestions.back().second.emplace_back(sugg_it->second[j]->ToString());
+			}
+		}
+
+
 		Spellchecker::Spellchecker(Configuration* _configuration):
 		configuration(_configuration), decoder(new DecoderMultiFactor(_configuration))
 		{}

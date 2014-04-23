@@ -63,6 +63,7 @@ namespace ngramchecker {
 
 		//return array of tokens, for each token list suggestions from the most probable
 		void GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions);
+		void GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions);
 
 		Spellchecker(Configuration* _configuration);
 
