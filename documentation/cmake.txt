@@ -1,0 +1,17 @@
+CMake
+=====
+
+CMake at least 2.8 is required.
+
+CMake options:
+- UNIX / WIN32 (set automatically)
+- CMAKE_BUILD_TYPE={Release,Debug}
+
+- UNIX & WITH_REST_SERVER: Also build REST server.
+- UNIX & STATIC_LINKING: Link libstdc++ and libgcc statically.
+- UNIX & WITH_REST_SERVER & STATIC_LINKING: Link libmicrohttpd statically.
+
+- USE_CLANG: use clang
+  - USE_CLANG & USE_CXX: use libc++
+- USE_ICC: use icc
+- USE_GPROF: compile with -pg

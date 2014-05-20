@@ -1,0 +1,20 @@
+Binárka korektor=vertical je obdoba binárky korektor, ale používá tokenizovaný
+vstup a následující formát vstupu a výstupu:
+
+- vstup: jednoduchý vertikální formát, co řádka, to slovo, prázdná
+  řádka znamená konec věty.
+
+  Pokud řádka obsahuje tabulátor, slovo za tabulátorem se použije jako
+  fixní náhrada. Tedy "potřebujou(tab)potřebujou" způsobí, že se slovo
+  nijak automaticky nenahrazuje, ale zůstane, jak je. Je možné použít
+  i "potřebujou(tab)potřebují" a potom dojde vždy k nahrazení za
+  "potřebují".
+
+- výstup: obdobný vertikální formát, co řádka, to slovo, prázdná řádka
+  konec věty. Řádky přesně odpovídají řádkám na vstupu.
+
+  První slovo na řádce je původní token. Pokud byly nalezeny opravy,
+  následuje tabulátor, S nebo G, a tabulátorem oddělené opravy od té
+  nejpravděpodobnější. Hodnota S (spelling) značí překlep (tj. opravu
+  neznámého slova), hodnota G (grammar) značí opravu gramatiky (tj.
+  opravu známého slova).
