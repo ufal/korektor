@@ -34,7 +34,9 @@
         <div class="navbar-inner" style="text-align: center">
           <div class="nav-collapse">
             <ul class="nav">
-              <li <?php if ($main_page == 'index.php') echo ' class="active"'?>><a href="demo.php">Demo</a></li>
+              <li <?php if ($main_page == 'info.php') echo ' class="active"'?>><a href="info.php">Basic Info</a></li>
+              <li <?php if ($main_page == 'demo.php') echo ' class="active"'?>><a href="demo.php">Demo</a></li>
+              <li <?php if ($main_page == 'api-reference.php') echo ' class="active"'?>><a href="api-reference.php">REST API Documentation</a></li>
             </ul>
           </div>
         </div>

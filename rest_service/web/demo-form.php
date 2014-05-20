@@ -90,6 +90,16 @@
   #suggestions span { color: #800; text-decoration: underline; cursor: pointer; cursor: hand }
 --></style>
 
+<p>The demo is freely available for testing. Respect the
+<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA</a>
+licence of the models &ndash; <b>explicit written permission of the authors is
+required for any commercial exploitation of the system</b>. If you run the
+demo, you agree that the data obtained during testing can be used for further
+improvemenets of the system. If you perform corrections to the output (either
+by choosing other suggestions or by manually correcting the text), please use
+the Submit corrected text button to send the corrected text to us. All comments
+and reactions are welcomed.</p>
+
 <h3>Input</h3>
 <p id="error" style="width: 95%; margin: auto; border: 1px solid gray; background-color: #D66; display: none"></p>
 <table style="width: 95%; margin: auto">
