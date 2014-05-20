@@ -142,6 +142,7 @@ endif(WIN32)
 
 set(korektor_incs ${korektor_incs}	${CMAKE_CURRENT_BINARY_DIR}
 									${CMAKE_CURRENT_SOURCE_DIR}/include
+									${CMAKE_CURRENT_SOURCE_DIR}/include/unilib
 									${CMAKE_CURRENT_SOURCE_DIR}/include/create_error_model)
 									
 include_directories(${korektor_incs})
@@ -164,8 +165,8 @@ endif (WITH_THREADS)
 #
 # Korektor source files
 #
-file(GLOB korlib_hdrs "include/*.hpp")
-file(GLOB korlib_srcs "src/*.cpp")
+file(GLOB korlib_hdrs "include/*.hpp" "include/unilib/*.hpp")
+file(GLOB korlib_srcs "src/*.cpp" "src/unilib/*.cpp")
 
 set(korektor_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/korektor.cpp)
 set(create_lm_binary_srcs ${CMAKE_CURRENT_SOURCE_DIR}/tools/create_lm_binary.cpp)
