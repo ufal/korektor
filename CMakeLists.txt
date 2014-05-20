@@ -124,21 +124,6 @@ if(USE_OPENMP)
 	endif(OPENMP_FOUND)
 endif(USE_OPENMP)
 
-#setting ICU libraries
-if (WIN32)
-	set(ICU_LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/external/icu/x86/lib/)
-	set(korektor_libs ${korektor_libs} ${ICU_LIB_DIR}/icuuc.lib ${ICU_LIB_DIR}/icuio.lib)
-	set(korektor_path ${korektor_path} ${CMAKE_CURRENT_SOURCE_DIR}/external/icu/x86/bin/)
-else(WIN32)
-	find_package(ICU 4.8 REQUIRED)
-	set(korektor_incs ${korektor_incs} ${ICU_INCLUDE_DIRS})
-	if (STATIC_LINKING)
-		set(korektor_libs ${korektor_libs} -Wl,-Bstatic ${ICU_LIBRARIES} -Wl,-Bdynamic)
-	else (STATIC_LINKING)
-		set(korektor_libs ${korektor_libs} ${ICU_LIBRARIES})
-	endif (STATIC_LINKING)
-endif(WIN32)
-
 
 set(korektor_incs ${korektor_incs}	${CMAKE_CURRENT_BINARY_DIR}
 									${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -236,7 +221,7 @@ if (UNIX AND WITH_REST_SERVER)
 	add_executable(korektor_server ${korektor_server_srcs})
 	include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd)
 	if (STATIC_LINKING)
-		target_link_libraries(korektor_server korlib -pthread -lrt ${korektor_libs} -Wl,-Bstatic -licudata -Wl,-Bdynamic -ldl ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.a)
+		target_link_libraries(korektor_server korlib -pthread -lrt ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.a)
 	else (STATIC_LINKING)
 		target_link_libraries(korektor_server korlib -pthread -lrt ${korektor_libs} ${CMAKE_CURRENT_SOURCE_DIR}/rest_service/libmicrohttpd/libmicrohttpd.so)
 	endif (STATIC_LINKING)
