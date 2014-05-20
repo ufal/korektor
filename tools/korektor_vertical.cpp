@@ -36,8 +36,11 @@ int main(int argc, char* argv[])
 
 			TokenP token(new Token(para_length, word.size(), word));
 
-			int wordID = configuration.lexicon->GetWordID(word);
-			token->InitLexiconInformation(wordID, replaced.back().empty() ? configuration.lexicon->CorrectionIsAllowed(wordID) : false);
+			if (configuration.lexicon) {
+				int wordID = configuration.lexicon->GetWordID(word);
+				token->InitLexiconInformation(wordID, replaced.back().empty() ? configuration.lexicon->CorrectionIsAllowed(wordID) : false);
+			}
+			token->correction_is_allowed = token->correction_is_allowed && MyUtils::ContainsLetter(token->str_u16);
 			token->sentence_start = tokens.empty();
 			tokens.emplace_back(token);
 

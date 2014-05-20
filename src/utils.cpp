@@ -83,6 +83,15 @@ namespace ngramchecker {
 			return "false";
 	}
 
+	bool MyUtils::ContainsLetter(const u16string &ustr)
+	{
+		for (auto&& uchar : ustr)
+			if (MyUTF::is_alpha(uchar))
+				return true;
+
+		return false;
+	}
+
 	capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &ustr)
 	{
 		capitalization_type ct = all_lower_case;

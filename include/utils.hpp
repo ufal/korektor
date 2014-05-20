@@ -131,6 +131,8 @@ namespace ngramchecker {
 			return MyUTF::toupper(uchar);
 		}
 
+		static bool ContainsLetter(const u16string &ustr);
+
 		//gets the capitalization type for the given string - i.e. whether it's all lowercase, all upercase, first letter capital, or something crazy
 		static capitalization_type Get_u16string_capitalization_type(const u16string &ustr);
 

@@ -62,6 +62,7 @@ namespace ngramchecker {
 						int wordID = lexicon->GetWordID(token->str_u16);
 						token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
 					}
+					token->correction_is_allowed = token->correction_is_allowed && MyUtils::ContainsLetter(token->str_u16);
 
 					tokens.push_back(token);
 
@@ -76,6 +77,7 @@ namespace ngramchecker {
 						int wordID = lexicon->GetWordID(token->str_u16);
 						token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
 					}
+					token->correction_is_allowed = token->correction_is_allowed && MyUtils::ContainsLetter(token->str_u16);
 
 					tokens.push_back(token);
 

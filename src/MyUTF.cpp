@@ -65,4 +65,9 @@ namespace ngramchecker {
 	{
 		return unicode::category(ch16) & (unicode::L | unicode::Nd);
 	}
+
+	bool MyUTF::is_alpha(char16_t ch16)
+	{
+		return unicode::category(ch16) & unicode::L;
+	}
 }

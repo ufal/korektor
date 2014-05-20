@@ -37,8 +37,6 @@ namespace ngramchecker {
 		static u16string utf8_to_utf16(const string &utf8);
 
 		static bool is_punct(char16_t ch16);
-		static bool is_blank(char16_t ch16);
-		static bool is_control(char16_t ch16);
 		static bool is_alphanum(char16_t ch16);
 		static bool is_alpha(char16_t ch16);
 	};
