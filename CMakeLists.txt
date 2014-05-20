@@ -109,22 +109,8 @@ endif (USE_GPROF)
 find_package(Threads REQUIRED)
 
 # ---------------------------------------------------------------------------------------------------
-# Optional external libraries
+# Set include directories
 # ---------------------------------------------------------------------------------------------------
-
-#
-# Check for OpenMP usage
-#
-if(USE_OPENMP)
-	find_package(OpenMP)
-	if(OPENMP_FOUND)
-		set(SCRIBE_C_FLAGS "${SCRIBE_C_FLAGS} ${OpenMP_C_FLAGS}")
-		set(SCRIBE_CXX_FLAGS "${SCRIBE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-		set(WITH_OPENMP ON)
-	endif(OPENMP_FOUND)
-endif(USE_OPENMP)
-
-
 set(korektor_incs ${korektor_incs}	${CMAKE_CURRENT_BINARY_DIR}
 									${CMAKE_CURRENT_SOURCE_DIR}/include
 									${CMAKE_CURRENT_SOURCE_DIR}/include/unilib
