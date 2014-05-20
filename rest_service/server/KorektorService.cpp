@@ -2,11 +2,14 @@
 // Mathematics and Physics, Charles University in Prague, Czech Republic.
 // All rights reserved.
 
-#include <unicode/normlzr.h>
-
 #include "StdAfx.h"
 #include "Spellchecker.hpp"
 #include "Tokenizer.hpp"
+
+#include "utf8.hpp"
+#include "unicode.hpp"
+#include "uninorms.hpp"
+using namespace ufal::unilib;
 
 #include "KorektorService.h"
 #include "ResponseGenerator.h"
@@ -118,25 +121,20 @@ bool KorektorService::handle_strip(RestRequest& req) {
       for (auto&& sentence : sentences)
         for (auto&& token : sentence) {
           // Strip diacritics from token
-          word.setTo((const UChar*) token->str_u16.c_str(), token->str_u16.size());
-          UErrorCode status = U_ZERO_ERROR;
-          icu::Normalizer::normalize(word, UNORM_NFD, 0, word_decomposed, status);
+          utf8::decode(token->str_utf8, token_utf32);
+          uninorms::nfd(token_utf32);
 
-          word_no_marks.remove();
-          bool changed = false;
-          for (int i = 0; i < word_decomposed.length(); i = word_decomposed.moveIndex32(i, 1)) {
-            UChar32 chr = word_decomposed.char32At(i);
-            if (u_charType(chr) == U_NON_SPACING_MARK ) changed = true;
-            else word_no_marks.append(chr);
-          }
-          if (!changed) continue;
+          stripped_utf32.clear();
+          for (auto&& chr : token_utf32)
+            if (unicode::category(chr) & ~unicode::Mn)
+              stripped_utf32 += chr;
+          if (stripped_utf32.size() == token_utf32.size()) continue;
 
-          status = U_ZERO_ERROR;
-          icu::Normalizer::normalize(word_no_marks, UNORM_NFC, 0, word_stripped, status);
+          uninorms::nfc(stripped_utf32);
 
           if (text_index < token->first) result.array().value(MyUtils::utf16_to_utf8(text.substr(text_index, token->first - text_index))).close();
-          word_stripped_utf8.clear();
-          result.array().value(token->str_utf8).value(word_stripped.toUTF8String(word_stripped_utf8)).close();
+          utf8::encode(stripped_utf32, stripped);
+          result.array().value(token->str_utf8).value(stripped).close();
 
           text_index = token->first + token->length;
         }
@@ -146,8 +144,8 @@ bool KorektorService::handle_strip(RestRequest& req) {
     }
    private:
     Tokenizer tokenizer;
-    UnicodeString word, word_decomposed, word_no_marks, word_stripped;
-    string word_stripped_utf8;
+    string stripped;
+    u32string token_utf32, stripped_utf32;
   };
   return req.respond_json(new generator(data));
 }
