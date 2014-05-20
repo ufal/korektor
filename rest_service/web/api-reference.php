@@ -103,11 +103,16 @@ only changes in diacritics are performed. The output format is
 <a href="http://en.wikipedia.org/wiki/JSON">JSON</a> in the following format:</p>
 
 <h3>Success</h3>
-<pre class="prettyprint lang-json">
+<!--<pre class="prettyprint lang-json">
 {
  "model": "Model used"
 ,"acknowledgements": ["URL with acknowledgements", ...]
 ,"result": [ suggestion, suggestion, ... ]
+}
+</pre>-->
+<pre class="prettyprint lang-json">
+{
+ "result": [ suggestion, suggestion, ... ]
 }
 </pre>
 
@@ -134,7 +139,7 @@ The described API can be comfortably used by <code>curl</code>. Several examples
 <h5>Using Files as Input (files must be in UTF-8 encoding)</h5>
 <pre class="prettyprint lang-sh">curl -F 'data=@input_file' http://quest.ms.mff.cuni.cz/korektor/api/auto_correct</pre>
 
-<h5>Specifying Additional Parameters</h5>
-<pre class="prettyprint lang-sh">curl -F 'data=@input_file' -F 'output=vertical' http://quest.ms.mff.cuni.cz/korektor/api/auto_correct</pre>
+<!--<h5>Specifying Additional Parameters</h5>
+<pre class="prettyprint lang-sh">curl -F 'data=@input_file' -F 'output=vertical' http://quest.ms.mff.cuni.cz/korektor/api/auto_correct</pre>-->
 
 <?php require('footer.php') ?>
