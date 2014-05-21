@@ -25,13 +25,8 @@ class KorektorService : public RestService {
   virtual bool handle(RestRequest& req) override;
 
  private:
-  bool handle_strip(RestRequest& req);
-
-
-  const char* get_data(RestRequest& req, JsonBuilder& error);
-  const char* get_model(RestRequest& req, JsonBuilder& error);
-  unsigned get_suggestions(RestRequest& req, JsonBuilder& error);
-  static bool get_line(const char*& data, StringPiece& line);
+  bool handle_correct(RestRequest& req);
+  bool handle_suggestions(RestRequest& req);
 
   class Spellchecker {
    public:
@@ -39,14 +34,19 @@ class KorektorService : public RestService {
   };
   class SpellcheckerProvider {
    public:
-    virtual Spellchecker* new_provider() const = 0;
+    virtual Spellchecker* new_spellchecker() const = 0;
   };
   class KorektorProvider;
   class StripDiacriticsProvider;
 
+  const char* get_data(RestRequest& req, JsonBuilder& error);
+  const SpellcheckerProvider* get_provider(RestRequest& req, string& model, JsonBuilder& error);
+  unsigned get_suggestions(RestRequest& req, JsonBuilder& error);
+  static bool get_line(const char*& data, StringPiece& line);
+
   unordered_map<string, unique_ptr<SpellcheckerProvider>> spellcheckers;
-  string default_spellchecker;
-  JsonBuilder json_spellcheckers;
+  string default_model;
+  JsonBuilder json_models;
 };
 
 } // namespace ngramchecker
