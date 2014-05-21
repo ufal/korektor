@@ -13,3 +13,4 @@ libkorlib.a
 morphology_from_h2mor
 spellchecking_h2mor_d.conf
 tokenize
+*.swp
