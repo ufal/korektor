@@ -36,7 +36,7 @@ namespace ngramchecker {
 
 		shared_ptr<DecoderBase> decoder;
 
-		map<uint32_t, vector<StagePosibilityP> > MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities);	
+		map<uint32_t, vector<StagePosibilityP> > MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities);
 	
 	public:
 

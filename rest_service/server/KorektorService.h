@@ -6,7 +6,6 @@
 #define KOREKTOR_SERVICE_H
 
 #include "StdAfx.h"
-#include "Configuration.hpp"
 
 #include "JsonBuilder.h"
 #include "RestService.h"
@@ -21,17 +20,33 @@ struct SpellcheckerDescription {
 
 class KorektorService : public RestService {
  public:
-  bool init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
+  void init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
 
   virtual bool handle(RestRequest& req) override;
 
  private:
   bool handle_strip(RestRequest& req);
 
+
   const char* get_data(RestRequest& req, JsonBuilder& error);
+  const char* get_model(RestRequest& req, JsonBuilder& error);
+  unsigned get_suggestions(RestRequest& req, JsonBuilder& error);
   static bool get_line(const char*& data, StringPiece& line);
 
-  unordered_map<string, unique_ptr<Configuration>> spellcheckers;
+  class Spellchecker {
+   public:
+    virtual void suggestions(const string& str, unsigned num, vector<pair<string, vector<string>>>& suggestions) = 0;
+  };
+  class SpellcheckerProvider {
+   public:
+    virtual Spellchecker* new_provider() const = 0;
+  };
+  class KorektorProvider;
+  class StripDiacriticsProvider;
+
+  unordered_map<string, unique_ptr<SpellcheckerProvider>> spellcheckers;
+  string default_spellchecker;
+  JsonBuilder json_spellcheckers;
 };
 
 } // namespace ngramchecker

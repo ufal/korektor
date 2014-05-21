@@ -50,8 +50,7 @@ int main(int argc, char* argv[]) {
     spellcheckers.emplace_back(argv[argi], argv[argi + 1]);
 
   // Initialize the service
-  if (!service.init(spellcheckers))
-    fprintf(stderr, "Cannot load specified models!\n"), exit(1);
+  service.init(spellcheckers);
 
   // Daemonize
   if (daemonize) {
