@@ -17,7 +17,7 @@
 </tr>
 <tr>
     <th>Status</th>
-    <td>beta</td>
+    <td>Beta</td>
 </tr>
 <tr>
     <th>OS</th>
