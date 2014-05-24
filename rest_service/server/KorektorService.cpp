@@ -215,7 +215,10 @@ bool KorektorService::handle_correct(RestRequest& req) {
 
 const char* KorektorService::get_data(RestRequest& req, JsonBuilder& error) {
   auto data_it = req.params.find("data");
-  if (data_it == req.params.end()) return error.clear().object().key("error").value("Required argument 'data' is missing."), nullptr;
+  if (data_it == req.params.end()) {
+    error.clear().object().key("error").value("Required argument 'data' is missing.");
+    return nullptr;
+  }
 
   return data_it->second.c_str();
 }
@@ -223,8 +226,13 @@ const char* KorektorService::get_data(RestRequest& req, JsonBuilder& error) {
 const KorektorService::SpellcheckerProvider* KorektorService::get_provider(RestRequest& req, string& model, JsonBuilder& error) {
   auto data_it = req.params.find("model");
   model = data_it == req.params.end() ? default_model : data_it->second;
+
   auto spellchecker_it = spellcheckers.find(model);
-  if (spellchecker_it == spellcheckers.end()) return error.clear().object().key("error").value("Specified model '" + model + "' does not exist."), nullptr;
+  if (spellchecker_it == spellcheckers.end()) {
+    error.clear().object().key("error").value("Specified model '" + model + "' does not exist.");
+    return nullptr;
+  }
+
   return spellchecker_it->second.get();
 }
 
