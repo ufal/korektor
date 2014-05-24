@@ -11,8 +11,8 @@
 
     jQuery('suggestions').hide();
     suggestions = [];
-    jQuery.ajax('http://quest.ms.mff.cuni.cz/korektor/api/' + model,
-                {dataType: "json", data: {data: text}, type: "POST", success: function(json) {
+    jQuery.ajax('http://quest.ms.mff.cuni.cz/korektor/api/suggestions',
+                {dataType: "json", data: {model: model, data: text}, type: "POST", success: function(json) {
       var result = '';
       for (var i in json.result) {
         var token = json.result[i];
@@ -106,9 +106,9 @@ and reactions are welcomed.</p>
   <tr><td colspan="3" style="text-align: center"><textarea id="input" rows="10" cols="80" style="border: 1px solid gray; padding: 0; ma
 rgin: 0; width: 100%" autofocus>Přílyš žluťoučky kůň ůpěl ďábelské ódi.</textarea></td></tr>
   <tr>
-      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('auto_correct')">Autocorrect</button></td>
+      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('czech-spellchecker')">Autocorrect</button></td>
       <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('strip_diacritics')">Strip Diacritics</button></td>
-      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('generate_diacritics')">Generate Diacritics</button></td>
+      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('czech-diacritics_generator')">Generate Diacritics</button></td>
 </tr>
 </table>
 
