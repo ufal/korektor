@@ -143,8 +143,8 @@ void KorektorService::init(const vector<SpellcheckerDescription>& spellchecker_d
 
 // Handle a request
 bool KorektorService::handle(RestRequest& req) {
-  if (req.url == "/correct") return handle_correct(req);
   if (req.url == "/models") return req.respond_json(json_models);
+  if (req.url == "/correct") return handle_correct(req);
   if (req.url == "/suggestions") return handle_suggestions(req);
   return req.respond_not_found();
 }
