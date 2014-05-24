@@ -233,7 +233,7 @@ unsigned KorektorService::get_suggestions(RestRequest& req, JsonBuilder& error) 
   if (data_it == req.params.end()) return 5;
 
   int suggestions = atoi(data_it->second.c_str());
-  if (suggestions <= 0) return error.clear().object().key("error").value("Specified number of suggestions '" + data_it->second + "' is not a positive integer"), 0;
+  if (suggestions <= 0) return error.clear().object().key("error").value("Specified number of suggestions '" + data_it->second + "' is not a positive integer."), 0;
 
   return suggestions;
 }
