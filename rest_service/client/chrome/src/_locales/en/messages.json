@@ -1,0 +1,9 @@
+{
+  "app_name": { "message": "Korektor Spellchecker" },
+  "app_desc": { "message": "Allow using Korektor service on editable controls." },
+  "menu_korektor": { "message": "&Korektor" },
+  "menu_korektor_spellcheck": { "message": "&Spellcheck" },
+  "menu_korektor_generate_diacritics": { "message": "&Generate diacritics" },
+  "menu_korektor_strip_diacritics": { "message": "S&trip diacritics" },
+  "korektor_error": { "message": "An error occurred when accessing the Korektor service." }
+}

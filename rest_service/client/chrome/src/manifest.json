@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "__MSG_app_name__Korektor Spellchecker",
+  "description": "__MSG_app_desc__",
+  "default_locale": "en",
+  "version": "1.0",
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "http://quest.ms.mff.cuni.cz/"
+  ],
+  "background": {
+    "scripts": ["korektor.js"],
+    "persistent": false
+  }
+}
