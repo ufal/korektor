@@ -9,7 +9,7 @@
 </tr>
 <tr>
     <th>Homepage</th>
-    <td><a href="https://redmine.ms.mff.cuni.cz/projects/korektor">https://redmine.ms.mff.cuni.cz/projects/korektor</a></td>
+    <td><a href="http://ufal.mff.cuni.cz/korektor">http://ufal.mff.cuni.cz/korektor</a></td>
 </tr>
 <tr>
     <th>Development repository</th>
