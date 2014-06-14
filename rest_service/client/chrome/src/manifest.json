@@ -7,7 +7,7 @@
   "permissions": [
     "activeTab",
     "contextMenus",
-    "http://quest.ms.mff.cuni.cz/"
+    "http://lindat.mff.cuni.cz/"
   ],
   "background": {
     "scripts": ["korektor.js"],
