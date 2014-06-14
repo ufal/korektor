@@ -27,11 +27,11 @@ class MHD_PostProcessorDeleter {
   }
 };
 
-class microhttpd_request : public RestRequest {
+class MicrohttpdRequest : public RestRequest {
  public:
   static bool initialize();
 
-  microhttpd_request(MHD_Connection* connection, const char* url, const char* method, unsigned max_post_size);
+  MicrohttpdRequest(MHD_Connection* connection, const char* url, const char* method, unsigned max_post_size);
 
   int handle(RestService* service);
   bool process_post_data(const char* post_data, size_t post_data_len);
@@ -61,10 +61,10 @@ class microhttpd_request : public RestRequest {
   static unique_ptr<MHD_Response, MHD_ResponseDeleter> response_not_allowed, response_not_found, response_too_large, response_unsupported_post_data, response_invalid_utf8;
   static regex_t supported_content_type, supported_transfer_encoding;
 };
-unique_ptr<MHD_Response, MHD_ResponseDeleter> microhttpd_request::response_not_allowed, microhttpd_request::response_not_found, microhttpd_request::response_too_large, microhttpd_request::response_unsupported_post_data, microhttpd_request::response_invalid_utf8;
-regex_t microhttpd_request::supported_content_type, microhttpd_request::supported_transfer_encoding;
+unique_ptr<MHD_Response, MHD_ResponseDeleter> MicrohttpdRequest::response_not_allowed, MicrohttpdRequest::response_not_found, MicrohttpdRequest::response_too_large, MicrohttpdRequest::response_unsupported_post_data, MicrohttpdRequest::response_invalid_utf8;
+regex_t MicrohttpdRequest::supported_content_type, MicrohttpdRequest::supported_transfer_encoding;
 
-microhttpd_request::microhttpd_request(MHD_Connection* connection, const char* url, const char* method, unsigned max_post_size)
+MicrohttpdRequest::MicrohttpdRequest(MHD_Connection* connection, const char* url, const char* method, unsigned max_post_size)
   : RestRequest(url), connection(connection), method(method), remaining_post_limit(max_post_size + 1), unsupported_post_data(false) {
   if (strcmp(method, MHD_HTTP_METHOD_POST) == 0) {
     post_processor.reset(MHD_create_post_processor(connection, 1<<15, &post_iterator, this));
@@ -72,7 +72,7 @@ microhttpd_request::microhttpd_request(MHD_Connection* connection, const char* u
   }
 }
 
-bool microhttpd_request::initialize() {
+bool MicrohttpdRequest::initialize() {
   static string not_allowed = "Requested method is not allowed.\r\n";
   static string not_found = "Requested URL was not found.\r\n";
   static string too_large = "Request was too large.\r\n";
@@ -103,7 +103,7 @@ bool microhttpd_request::initialize() {
   return true;
 }
 
-int microhttpd_request::handle(RestService* service) {
+int MicrohttpdRequest::handle(RestService* service) {
   // Check that method is supported
   if (method != MHD_HTTP_METHOD_HEAD && method != MHD_HTTP_METHOD_GET && method != MHD_HTTP_METHOD_POST)
     return MHD_queue_response(connection, MHD_HTTP_METHOD_NOT_ALLOWED, response_not_allowed.get());
@@ -132,11 +132,11 @@ int microhttpd_request::handle(RestService* service) {
   return service->handle(*this) ? MHD_YES : MHD_NO;
 }
 
-bool microhttpd_request::process_post_data(const char* post_data, size_t post_data_len) {
+bool MicrohttpdRequest::process_post_data(const char* post_data, size_t post_data_len) {
   return post_processor && MHD_post_process(post_processor.get(), post_data, post_data_len) == MHD_YES;
 }
 
-bool microhttpd_request::respond_json(StringPiece json) {
+bool MicrohttpdRequest::respond_json(StringPiece json) {
   unique_ptr<MHD_Response, MHD_ResponseDeleter> response(create_response(json));
   if (!response) return false;
   if (MHD_add_response_header(response.get(), MHD_HTTP_HEADER_CONTENT_TYPE, "application/json") != MHD_YES) return false;
@@ -144,7 +144,7 @@ bool microhttpd_request::respond_json(StringPiece json) {
   return MHD_queue_response(connection, MHD_HTTP_OK, response.get()) == MHD_YES;
 }
 
-bool microhttpd_request::respond_json(ResponseGenerator* generator) {
+bool MicrohttpdRequest::respond_json(ResponseGenerator* generator) {
   this->generator.reset(generator);
   unique_ptr<MHD_Response, MHD_ResponseDeleter> response(create_generator_response(generator));
   if (!response) return false;
@@ -153,25 +153,25 @@ bool microhttpd_request::respond_json(ResponseGenerator* generator) {
   return MHD_queue_response(connection, MHD_HTTP_OK, response.get()) == MHD_YES;
 }
 
-bool microhttpd_request::respond_not_found() {
+bool MicrohttpdRequest::respond_not_found() {
   return MHD_queue_response(connection, MHD_HTTP_NOT_FOUND, response_not_found.get());
 }
 
-MHD_Response* microhttpd_request::create_permanent_response(const string& data) {
+MHD_Response* MicrohttpdRequest::create_permanent_response(const string& data) {
   unique_ptr<MHD_Response, MHD_ResponseDeleter> response(MHD_create_response_from_buffer(data.size(), (void*) data.c_str(), MHD_RESPMEM_PERSISTENT));
   if (response && MHD_add_response_header(response.get(), MHD_HTTP_HEADER_CONNECTION, "close") != MHD_YES)
     response.reset();
   return response.release();
 }
 
-MHD_Response* microhttpd_request::create_response(StringPiece data) {
+MHD_Response* MicrohttpdRequest::create_response(StringPiece data) {
   unique_ptr<MHD_Response, MHD_ResponseDeleter> response(MHD_create_response_from_buffer(data.len, (void*) data.str, MHD_RESPMEM_MUST_COPY));
   if (response && MHD_add_response_header(response.get(), MHD_HTTP_HEADER_CONNECTION, "close") != MHD_YES)
     response.reset();
   return response.release();
 }
 
-MHD_Response* microhttpd_request::create_generator_response(ResponseGenerator* generator) {
+MHD_Response* MicrohttpdRequest::create_generator_response(ResponseGenerator* generator) {
   unique_ptr<MHD_Response, MHD_ResponseDeleter> response(MHD_create_response_from_callback(-1, 1024, generator_callback, generator, nullptr));
   if (response && MHD_add_response_header(response.get(), MHD_HTTP_HEADER_CONNECTION, "close") != MHD_YES)
     response.reset();
@@ -179,8 +179,8 @@ MHD_Response* microhttpd_request::create_generator_response(ResponseGenerator* g
 }
 
 
-int microhttpd_request::key_value_iterator(void* cls, MHD_ValueKind kind, const char* key, const char* value) {
-  auto self = (microhttpd_request*) cls;
+int MicrohttpdRequest::key_value_iterator(void* cls, MHD_ValueKind kind, const char* key, const char* value) {
+  auto self = (MicrohttpdRequest*) cls;
   if ((kind == MHD_POSTDATA_KIND || kind == MHD_GET_ARGUMENT_KIND) && self->remaining_post_limit) {
     auto value_len = value ? strlen(value) : 0;
     if (self->remaining_post_limit > value_len) {
@@ -193,8 +193,8 @@ int microhttpd_request::key_value_iterator(void* cls, MHD_ValueKind kind, const 
   return MHD_YES;
 }
 
-int microhttpd_request::post_iterator(void* cls, MHD_ValueKind kind, const char* key, const char* /*filename*/, const char* content_type, const char* transfer_encoding, const char* data, uint64_t off, size_t size) {
-  auto self = (microhttpd_request*) cls;
+int MicrohttpdRequest::post_iterator(void* cls, MHD_ValueKind kind, const char* key, const char* /*filename*/, const char* content_type, const char* transfer_encoding, const char* data, uint64_t off, size_t size) {
+  auto self = (MicrohttpdRequest*) cls;
   if (kind == MHD_POSTDATA_KIND && self->remaining_post_limit) {
     // Check that content_type and transfer_encoding are supported
     if ((content_type && regexec(&supported_content_type, content_type, 0, nullptr, 0) != 0) ||
@@ -220,7 +220,7 @@ int microhttpd_request::post_iterator(void* cls, MHD_ValueKind kind, const char*
   return MHD_YES;
 }
 
-ssize_t microhttpd_request::generator_callback(void* cls, uint64_t /*pos*/, char* buf, size_t max) {
+ssize_t MicrohttpdRequest::generator_callback(void* cls, uint64_t /*pos*/, char* buf, size_t max) {
   auto generator = (ResponseGenerator*) cls;
   bool end = false;
   StringPiece data;
@@ -237,7 +237,7 @@ ssize_t microhttpd_request::generator_callback(void* cls, uint64_t /*pos*/, char
   return data_len;
 }
 
-bool microhttpd_request::valid_utf8(const string& text) {
+bool MicrohttpdRequest::valid_utf8(const string& text) {
   for (auto str = (const unsigned char*) text.c_str(); *str; str++)
     if (*str >= 0x80) {
       if (*str < 0xC0) return false;
@@ -263,7 +263,7 @@ bool MicrohttpdServer::start(RestService* service, unsigned port, unsigned max_c
   this->service = service;
   this->max_post_size = max_post_size;
 
-  if (!microhttpd_request::initialize()) return false;
+  if (!MicrohttpdRequest::initialize()) return false;
 
   daemon = MHD_start_daemon(MHD_USE_THREAD_PER_CONNECTION | MHD_USE_POLL, port, nullptr, nullptr, &handle_request, this,
                             MHD_OPTION_CONNECTION_LIMIT, max_connections,
@@ -277,11 +277,11 @@ bool MicrohttpdServer::start(RestService* service, unsigned port, unsigned max_c
 
 int MicrohttpdServer::handle_request(void* cls, struct MHD_Connection* connection, const char* url, const char* method, const char* /*version*/, const char* upload_data, size_t* upload_data_size, void** con_cls) {
   auto self = (MicrohttpdServer*) cls;
-  auto request = (microhttpd_request*) *con_cls;
+  auto request = (MicrohttpdRequest*) *con_cls;
 
   // Do we have a new request?
   if (!request) {
-    if (!(request = new microhttpd_request(connection, url, method, self->max_post_size)))
+    if (!(request = new MicrohttpdRequest(connection, url, method, self->max_post_size)))
       return fprintf(stderr, "Cannot allocate new request!\n"), MHD_NO;
 
     *con_cls = request;
@@ -302,7 +302,7 @@ int MicrohttpdServer::handle_request(void* cls, struct MHD_Connection* connectio
 }
 
 void MicrohttpdServer::request_completed(void* /*cls*/, struct MHD_Connection* /*connection*/, void** con_cls, MHD_RequestTerminationCode /*toe*/) {
-  auto request = (microhttpd_request*) *con_cls;
+  auto request = (MicrohttpdRequest*) *con_cls;
   if (request) delete request;
 }
 
