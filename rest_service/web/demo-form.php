@@ -11,7 +11,7 @@
 
     jQuery('suggestions').hide();
     suggestions = [];
-    jQuery.ajax('http://lindat.mff.cuni.cz/services/korektor/api/suggestions',
+    jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/api/suggestions',
                 {dataType: "json", data: {model: model, data: text}, type: "POST", success: function(json) {
       var result = '';
       for (var i in json.result) {
@@ -75,7 +75,7 @@
     text_corrected = jQuery('#output').text();
 
     jQuery('#submit_correction_results').empty();
-    jQuery.ajax('http://lindat.mff.cuni.cz/services/korektor/log.php',
+    jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/log.php',
                 {dataType: "json", data: {original: text_original, korektor: text_korektor, corrected: text_corrected}, type: "POST", success: function(json) {
       jQuery('#submit_correction_results').text('Submitted, thanks.');
     }, error: function(jqXHR, textStatus) {
