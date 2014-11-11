@@ -13,7 +13,7 @@
 </tr>
 <tr>
     <th>Development repository</th>
-    <td><a href="https://redmine.ms.mff.cuni.cz/korektor.git">https://redmine.ms.mff.cuni.cz/korektor.git</a></td>
+    <td><a href="https://github.com/ufal/korektor.git">https://github.com/ufal/korektor.git</a></td>
 </tr>
 <tr>
     <th>Status</th>
