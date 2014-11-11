@@ -64,7 +64,7 @@ namespace ngramchecker {
 		bool diagnostics;
 
 		Configuration() {}
-		Configuration(const string &exec_name, const string &conf_file);
+		Configuration(const string &conf_file);
 
 		bool is_initialized()
 		{

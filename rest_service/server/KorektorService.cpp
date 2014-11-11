@@ -61,7 +61,7 @@ bool KorektorResponseGenerator::generate() {
 // Spellchecker implementation using Korektor
 class KorektorService::KorektorProvider : public KorektorService::SpellcheckerProvider {
  public:
-  KorektorProvider(const string& file) : configuration(new Configuration(string(), file)) {}
+  KorektorProvider(const string& file) : configuration(new Configuration(file)) {}
 
   class KorektorSpellchecker : public Spellchecker {
    public:

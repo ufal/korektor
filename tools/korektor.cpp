@@ -27,7 +27,7 @@ int main(int argc, char** argv)
 	}
 
 
-	ConfigurationP configuration(new Configuration(argv[0], argv[1]));
+	ConfigurationP configuration(new Configuration(argv[1]));
 	Spellchecker spellchecker = Spellchecker(configuration.get());
 
 	//uint range_from, range_length;

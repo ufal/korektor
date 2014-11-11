@@ -55,7 +55,7 @@ namespace ngramchecker {
 
 };
 
-Configuration::Configuration(const string &exec_name, const string &conf_file)
+Configuration::Configuration(const string &conf_file)
 {
 	last_enabled_factor_index = 0;
 	diagnostics = false;

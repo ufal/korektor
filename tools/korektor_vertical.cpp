@@ -12,7 +12,7 @@ int main(int argc, char* argv[])
 	}
 
 	// Load the spell checker
-	Configuration configuration(argv[0], argv[1]);
+	Configuration configuration(argv[1]);
 	Spellchecker spellchecker(&configuration);
 
 	// Perform the correction
