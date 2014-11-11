@@ -7,10 +7,9 @@
 #include "Spellchecker.hpp"
 #include "Tokenizer.hpp"
 
-#include "utf8.hpp"
-#include "unicode.hpp"
-#include "uninorms.hpp"
-using namespace ufal::unilib;
+#include "utf8.h"
+#include "unicode.h"
+#include "uninorms.h"
 
 #include "KorektorService.h"
 #include "ResponseGenerator.h"

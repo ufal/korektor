@@ -8,10 +8,9 @@
 
 #include "MyPackedArray.hpp"
 
-#include "utf8.hpp"
-#include "utf16.hpp"
-#include "unicode.hpp"
-using namespace ufal::unilib;
+#include "utf8.h"
+#include "utf16.h"
+#include "unicode.h"
 
 
 #ifndef uint
