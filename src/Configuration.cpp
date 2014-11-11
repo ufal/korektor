@@ -115,8 +115,6 @@ Configuration::Configuration(const string &exec_name, const string &conf_file)
 	string data_directory = application_directory + "data/";
 #endif
 
-	string error_model_file;// = data_directory + "error_model.bin";
-
 	vector<SimWordsFinder::SearchConfig> search_configs;
 
 	mode_string = "tag_errors";
