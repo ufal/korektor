@@ -15,7 +15,7 @@ namespace ngramchecker {
 
 	//for some factors, there are a lot of possibilities per word, however the number of sets of values that can be assigned to a word is limited
 	//for example: in Czech language many word forms can be either first person singular or first person plural - i.e. these two posibilities form a set that tends to reocur
-	//another example: adjectives like 'jarní' can stand for all cases in both singular and plural per each gender - this forms a reocuring set of more than 40 possibilities
+	//another example: adjectives like 'jarnÃ­' can stand for all cases in both singular and plural per each gender - this forms a reocuring set of more than 40 possibilities
 	//for some factors, it is more efficient to collect descriptors of all groups and specify just a group ID per word rather than the list of factor values
 	//morpho_grpuping struct contains definition of such grouped factor - i.e. which group contains which factors
 	struct morpho_grouping {
@@ -233,7 +233,10 @@ namespace ngramchecker {
 			morpho_word_lists.clear();
 			ifstream ifs;
 			ifs.open(filename.c_str(), ios::in | ios::binary);
-			assert(ifs.is_open());
+			if (!ifs.is_open()) {
+				cerr << "Opening morpholex vocabulary file " << filename << " failed!" << endl;
+				exit(1);
+			}
 
 			uint num_f;
 			ifs.read((char*)&num_f, sizeof(uint32_t));

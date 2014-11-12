@@ -82,11 +82,7 @@ namespace ngramchecker {
 			if (s == "" || s[0] == '#')  //comment
 				continue;
 
-			if (s == "diagnostics")
-			{
-				diagnostics = true;
-			}
-			else if (s.substr(0, 9) == "morpholex")
+			if (s.substr(0, 9) == "morpholex")
 			{
 				string morpholex_file = configuration_directory + ConvertPathSeparators(s.substr(10));
 				ifstream ifs;
@@ -176,6 +172,12 @@ namespace ngramchecker {
 					exit(1);
 				}
 			}
+			else if (s.compare(0, 11, "diagnostics") == 0)
+			{
+				diagnostics = true;
+				morphology->initMorphoWordLists(configuration_directory + ConvertPathSeparators(s.substr(12)));
+				morphology->initMorphoWordMaps();
+			}
 		}
 
 		st_pos_multifactor_cash = MyCash_StagePosibilityP(new MyCash_StagePosibility(5000, 20));
@@ -188,13 +190,6 @@ namespace ngramchecker {
 		//search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 2, 9));
 
 		simWordsFinder = SimWordsFinderP(new SimWordsFinder(this, search_configs));
-
-		//TODO: morphology vocab file should be set in configuration file as well!
-		if (diagnostics)
-		{
-			morphology->initMorphoWordLists(configuration_directory + "morphology_h2mor_freq2_vocab.bin");
-			morphology->initMorphoWordMaps();
-		}
 
 		if (is_initialized() == false)
 		{
