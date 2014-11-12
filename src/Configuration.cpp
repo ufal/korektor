@@ -57,44 +57,10 @@ namespace ngramchecker {
 		last_enabled_factor_index = 0;
 		diagnostics = false;
 
-		/*size_t slash_pos = exec_name.rfind('\\');
-		size_t slash2_pos = exec_name.rfind('/');*/
-
-		size_t slash_pos = conf_file.rfind('\\');
-		size_t slash2_pos = conf_file.rfind('/');
-
-		if (slash_pos == string::npos && slash2_pos == string::npos)
-		{
-			//slash_pos = 0;
-			//exit(1);
-			//throw std::bad_exception("Can't determine the application directory!");
-		}
-
-		string application_directory;
-
-		/*if (slash_pos == string::npos)
-			application_directory = exec_name.substr(0, slash2_pos + 1);
-		else if (slash2_pos == string::npos)
-			application_directory = exec_name.substr(0, slash_pos + 1);
-		else
-			application_directory = exec_name.substr(0, max(slash_pos, slash2_pos + 1));
-
-		cerr << "Application directory: " << application_directory << endl;*/
-
-		if (slash_pos == string::npos && slash2_pos == string::npos)
-			application_directory = "";
-		else if (slash_pos == string::npos)
-			application_directory = conf_file.substr(0, slash2_pos + 1);
-		else if (slash2_pos == string::npos)
-			application_directory = conf_file.substr(0, slash_pos + 1);
-		else
-			application_directory = conf_file.substr(0, max(slash_pos, slash2_pos + 1));
-
-		cerr << "Application directory: " << application_directory << endl;
-
+		auto slash_pos = conf_file.find_last_of("\\/");
+		string configuration_directory = slash_pos == string::npos ? string() : conf_file.substr(0, slash_pos + 1);
 
 		ifstream ifs;
-		//string conf_file_abs = application_directory + conf_file;
 		ifs.open((conf_file).c_str());
 
 		if (ifs.is_open() == false)
@@ -105,12 +71,6 @@ namespace ngramchecker {
 		}
 		
 		viterbi_order = 1;
-
-#ifdef WIN32
-		string data_directory = application_directory + "data\\";
-#else
-		string data_directory = application_directory + "data/";
-#endif
 
 		vector<SimWordsFinder::SearchConfig> search_configs;
 
@@ -128,7 +88,7 @@ namespace ngramchecker {
 			}
 			else if (s.substr(0, 9) == "morpholex")
 			{
-				string morpholex_file = data_directory + s.substr(10);
+				string morpholex_file = configuration_directory + ConvertPathSeparators(s.substr(10));
 				ifstream ifs;
 				ifs.open(morpholex_file.c_str(), ios::binary);
 				if (ifs.is_open() == false)
@@ -149,7 +109,7 @@ namespace ngramchecker {
 			}
 			else if (s.substr(0, 10) == "errormodel")
 			{
-				string error_model_file = data_directory + s.substr(11);
+				string error_model_file = configuration_directory + ConvertPathSeparators(s.substr(11));
 
 				ErrorModelBasicP emb = ErrorModelBasic::fromBinaryFile(error_model_file);
 				errorModel = emb;
@@ -163,7 +123,7 @@ namespace ngramchecker {
 
 				FATAL_CONDITION(toks.size() == 4, s);
 
-				ZipLMP lm = ZipLMP(new ZipLM(data_directory + toks[1]));
+				ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
 				LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm, 5000, 5000));
 				LoadLM(lm_wrapper);
 
@@ -232,7 +192,7 @@ namespace ngramchecker {
 		//TODO: morphology vocab file should be set in configuration file as well!
 		if (diagnostics)
 		{
-			morphology->initMorphoWordLists(data_directory + "morphology_h2mor_freq2_vocab.bin");
+			morphology->initMorphoWordLists(configuration_directory + "morphology_h2mor_freq2_vocab.bin");
 			morphology->initMorphoWordMaps();
 		}
 
@@ -242,7 +202,17 @@ namespace ngramchecker {
 			cerr << "Configuration was not initialized proparly!" << endl;
 			exit(1);
 		}
+	}
 
+	string Configuration::ConvertPathSeparators(const string &path) {
+#ifdef _WIN32
+		char to_replace = '/', replace_by = '\\';
+#else
+		char to_replace = '\\', replace_by = '/';
+#endif
+		string result = path;
+		replace(result.begin(), result.end(), to_replace, replace_by);
+		return result;
 	}
 
 };

@@ -49,7 +49,7 @@ namespace ngramchecker {
 		vector<LMWrapperP> factor_LMS;
 		uint last_enabled_factor_index;
 
-		
+		string ConvertPathSeparators(const string &path);
 
 	public:
 
