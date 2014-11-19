@@ -1,3 +1,13 @@
+/// @file Token.hpp
+/// @brief Definition of a token
+/// @date 2012
+/// @copyright
+/// Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+///
+///
+///
+
 /*
 Copyright (c) 2012, Charles University in Prague 
 All rights reserved.

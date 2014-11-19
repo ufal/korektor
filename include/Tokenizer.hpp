@@ -1,3 +1,6 @@
+/// @file Tokenizer.hpp
+/// @brief Simple Tokenizer
+///
 #ifndef _KOREKTOR_TOKENIZER_HPP
 #define _KOREKTOR_TOKENIZER_HPP
 
@@ -13,7 +16,7 @@ namespace ngramchecker {
 
 	class Tokenizer {
 
-		LexiconP lexicon;
+		LexiconP lexicon; ///< lexicon
 
 	public:
 
@@ -24,6 +27,14 @@ namespace ngramchecker {
 			lexicon = _lexicon;
 		}
 
+		/// @brief Tokenize the given text
+		///
+		/// This function tokenizes the given text and returns the
+		/// tokens in a vector
+		///
+		/// @param text The input text
+		/// @return The tokens
+		///
 		vector<vector<TokenP> > Tokenize(const u16string &text)
 		{
 			vector<TokenP> tokens;
@@ -113,6 +124,15 @@ namespace ngramchecker {
 
 		}
 
+		/// @brief Tokenizes the given text
+		///
+		/// Given the input text and the output stream, this function tokenizes
+		/// the input and writes the output to the output stream.
+		///
+		/// @param text The input text
+		/// @param os The output stream
+		/// @return Void
+		///
 		void TokenizeToStream(const u16string &text, ostream &os)
 		{
 			vector<vector<TokenP> > tokens = Tokenize(text);
