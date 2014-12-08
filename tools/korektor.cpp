@@ -19,6 +19,7 @@
 #include "MyUTF.hpp"
 //#include "DecoderMultiFactor2.hpp"
 
+/// @brief Help message
 void print_help()
 {
 	cerr << "usage: ./korektor configuration_file <input_text >output_text" << endl;
