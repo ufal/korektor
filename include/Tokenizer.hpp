@@ -14,6 +14,7 @@ namespace ngramchecker {
 
 	enum matcher_type { undef, sentence_end, special_class, token };
 
+	/// @brief Tokenizer class for sentence tokenization
 	class Tokenizer {
 
 		LexiconP lexicon; ///< lexicon

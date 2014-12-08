@@ -297,6 +297,9 @@ namespace ngramchecker {
 			return results;
 		}
 
+		/// @brief returns autocorrected text
+		///
+		///
 		string Spellchecker::CheckText(const string &text)
 		{
 			u16string u_text = MyUtils::utf8_to_utf16(text);

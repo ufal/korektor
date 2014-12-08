@@ -37,13 +37,15 @@ struct Pair_StagePosibilityP_double_comparer : less<pair<uint32_t, double> >
 	}
 };
 
-//Decoder is responsible for finding the solution (i.e. the corrected sentence)
-//The steps are:
-//1) similar words to the input tokens are found
-//2) All the candidate words from step 1) are morphologically analysed
-//(after step 1) and 2), we have lists of possible corrections for each input token
-//3) Decoding of the sentence
-//4) Ordering the suggestion list for each mispelled word found
+/// @brief Class for finding the spelling corrected sentence
+///
+/// Decoder is responsible for finding the solution (i.e. the corrected sentence)
+/// The steps are:
+/// 1) similar words to the input tokens are found
+/// 2) All the candidate words from step 1) are morphologically analysed
+/// (after step 1) and 2), we have lists of possible corrections for each input token
+/// 3) Decoding of the sentence
+/// 4) Ordering the suggestion list for each mispelled word found
 class DecoderBase
 {
 

@@ -89,8 +89,10 @@ namespace ngramchecker {
 			return enabled_factors[index];
 		}
 
+		/// @brief Loads lexicon and morphology
 		void LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _morphology);
 
+		/// @brief Loads the language model
 		void LoadLM(LMWrapperP lm);
 
 		void EnableFactor(const string &fac_name, float weight, uint order);
