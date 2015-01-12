@@ -46,6 +46,8 @@ namespace ngramchecker {
 		cerr << endl;
 	}
 
+	/// @brief Returns time string
+	/// @return Time string
 	string MyUtils::GetTimeString()
 	{
 		string ret;
@@ -62,7 +64,6 @@ namespace ngramchecker {
 	}
 
 	/// @brief String to Boolean conversion
-	///
 	/// @param str The values are "true" or "false"
 	/// @return Returns 0 or 1 based on the given input string
 	bool MyUtils::StrToBool(string str)
@@ -79,7 +80,6 @@ namespace ngramchecker {
 	}
 
 	/// @brief String to double conversion
-	///
 	/// @param str input string
 	/// @return Value in double
 	double MyUtils::StrToDouble(string str)
@@ -88,7 +88,6 @@ namespace ngramchecker {
 	}
 
 	/// @brief String to integer conversion
-	///
 	/// @param str input string
 	/// @return Intger value
 	uint32_t MyUtils::StrToInt(string str)
@@ -97,7 +96,6 @@ namespace ngramchecker {
 	}
 
 	/// @brief Boolean to String conversion
-	///
 	/// @param value boolean
 	/// @return Returns "true" or "false" based on the input value
 	string MyUtils::BoolToString(bool value)
@@ -108,7 +106,6 @@ namespace ngramchecker {
 			return "false";
 	}
 	/// @brief Check whether the given string contains letter
-	///
 	/// @param ustr String
 	/// @return boolean
 	bool MyUtils::ContainsLetter(const u16string &ustr)

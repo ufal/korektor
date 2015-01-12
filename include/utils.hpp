@@ -3,6 +3,12 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file utils.hpp
+/// @class MyUtils MyUtils.hpp "MyUtils.hpp"
+/// @brief Utility functions
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #ifndef MICHALISEKSPELL_UTILS_HPP_
 #define MICHALISEKSPELL_UTILS_HPP_
 
@@ -22,7 +28,9 @@ namespace ngramchecker {
 			seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
 		}
 
-		//utility for writing a string to a binary stream
+		/// @brief Utility for writing a string to binary stream
+		/// @param ofs Output stream
+		/// @param s Input string
 		static void WriteString(ostream &ofs, const string &s)
 		{
 			FATAL_CONDITION(uint16_t(s.length()) == s.length(), "");
@@ -31,7 +39,9 @@ namespace ngramchecker {
 			ofs.write(s.data(), sizeof(char) * len);
 		}
 
-		/// @brief utility for reading a string value from a binary stream
+		/// @brief Utility for reading a string value from a binary stream
+		/// @param ifs Input stream
+		/// @return Read string
 		static string ReadString(istream &ifs)
 		{
 			uint16_t len;
@@ -52,15 +62,17 @@ namespace ngramchecker {
 			return ret;
 		}
 
-		//random number in a range
+		/// @brief random number in a range
 		static double RandomNumber(double min, double max);
 		
-		//random number in a range
+		/// @brief random number in a range
 		static int randomR(int lowest, int range);
 
 		static double minus_log_10_rand01();
 
-		//minimal number of bits needed for representing the given unsigned int value
+		/// @brief minimal number of bits needed for representing the given unsigned int value
+		/// @param value Integer input
+		/// @return Required bits in integer
 		static uint32_t BitsNeeded(uint32_t value)
 		{
 			uint32_t ret = 0;
@@ -93,50 +105,82 @@ namespace ngramchecker {
 
 		static string GetTimeString();
 
+		/// @brief String to Boolean conversion
+		///
+		/// @param str The values are "true" or "false"
+		/// @return Returns 0 or 1 based on the given input string
 		static bool StrToBool(string str);
 
+		/// @brief String to double conversion
+		///
+		/// @param str input string
+		/// @return Value in double
 		static double StrToDouble(string str);
 
+		/// @brief String to integer conversion
+		///
+		/// @param str input string
+		/// @return Intger value
 		static uint32_t StrToInt(string str);
 
+		/// @brief Boolean to String conversion
+		///
+		/// @param value boolean
+		/// @return Returns "true" or "false" based on the input value
 		static string BoolToString(bool value);
 
+
+		/// @brief UTF-16 to UTF-8 conversion
+		/// @return UTF-8 string
 		static string utf16_to_utf8(const u16string &ustr)
 		{
 			return MyUTF::utf16_to_utf8(ustr);
 		}
 
+		/// @brief UTF-8 to UTF-16 conversion
+		/// @return UTF-16 string
 		static u16string utf8_to_utf16(const string &str)
 		{
 			return MyUTF::utf8_to_utf16(str);
 		}
 
+		/// @brief Check whether the character is in uppercase
+		/// @return boolean
 		static bool IsUpperCase(char16_t uchar)
 		{
 			return MyUTF::tolower(uchar) != uchar;
 		}
 
+		/// @brief Check whether the character is in lowercase
+		/// @return boolean
 		static bool IsLowerCase(char16_t uchar)
 		{
 			return MyUTF::toupper(uchar) != uchar;
 		}
 
+		/// @brief Change the character to lowercase
+		/// @return Lowercase character
 		static char16_t ToLower(char16_t uchar)
 		{
 			return MyUTF::tolower(uchar);
 		}
 
+		/// @brief Change the character to uppercase
+		/// @return Uppercase character
 		static char16_t ToUpper(char16_t uchar)
 		{
 			return MyUTF::toupper(uchar);
 		}
 
+		/// @brief Check whether the given string contains letter
+		/// @param ustr String
+		/// @return boolean
 		static bool ContainsLetter(const u16string &ustr);
 
-		//gets the capitalization type for the given string - i.e. whether it's all lowercase, all upercase, first letter capital, or something crazy
+		/// @brief gets the capitalization type for the given string - i.e. whether it's all lowercase, all upercase, first letter capital, or something crazy
 		static capitalization_type Get_u16string_capitalization_type(const u16string &ustr);
 
-		//wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
+		/// @brief wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
 		static bool SafeReadline(istream &istr, string &str)
 		{
 			if (!std::getline(istr, str))
@@ -151,7 +195,7 @@ namespace ngramchecker {
 			}
 		}
 
-		//split the string in s into toks, characters contained in delims form a set of delimiters (i.e. they are not included into toks)
+		/// @brief split the string in s into toks, characters contained in delims form a set of delimiters (i.e. they are not included into toks)
 		static void Split(vector<string> &toks, const string &s, const string &delims)
 		{
 			toks.clear();
@@ -178,6 +222,9 @@ namespace ngramchecker {
 
 		}
 
+		/// @brief String to float conversion
+		/// @param Input string
+		/// @return float
 		static float my_atof(const string &str)
 		{
 			float ret = (float)std::atof(str.c_str());
@@ -188,6 +235,9 @@ namespace ngramchecker {
 			return ret;
 		}
 
+		/// @brief String to integer conversion
+		/// @param Input string
+		/// @return int
 		static int my_atoi(const string &str)
 		{
 			int ret = std::atoi(str.c_str());
@@ -198,6 +248,9 @@ namespace ngramchecker {
 			return ret;
 		}
 
+		/// @brief Integer to string conversion
+		/// @param Input integer
+		/// @return string
 		static string my_itoa(int val)
 		{
 			static char buffer[200];
@@ -207,7 +260,7 @@ namespace ngramchecker {
 
 	};
 
-	//hashing function for u16string
+	///hashing function for u16string
 	struct u16string_hash
 	{
 		size_t operator()(const u16string &val) const
