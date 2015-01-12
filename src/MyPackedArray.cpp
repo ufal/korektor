@@ -3,6 +3,11 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file MyPackedArray.cpp
+/// @brief Implementation of memory efficient array
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #include "MyPackedArray.hpp"
 #include "utils.hpp"
 
@@ -31,6 +36,7 @@ namespace ngramchecker {
 				return num_bytes;
 			}
 
+			/// @brief Returns the bits per value
 			uint32_t MyPackedArray::GetBitsPerValue() const
 			{
 				return bits_per_value;
@@ -42,6 +48,9 @@ namespace ngramchecker {
 					delete[] data;
 			}
 
+			/// @brief Initialize the array using another array
+			///
+			/// @param val Packed array
 			MyPackedArray::MyPackedArray(const MyPackedArray& val)
 			{
 				bits_per_value = val.bits_per_value;
@@ -56,6 +65,10 @@ namespace ngramchecker {
 				//cerr << "MyPackedArray: copy constructor\n";
 			}
 
+			/// @brief Copy the array using assignment operator
+			///
+			/// @param val Packed array
+			/// @return Reference to the copied array
 			MyPackedArray& MyPackedArray::operator=(const MyPackedArray& val)
 			{
 				if (this != &val)
@@ -79,6 +92,9 @@ namespace ngramchecker {
 				return *this;
 			}
 
+			/// @brief Initialize the array using binary stream
+			///
+			/// @param ifs Input stream
 			MyPackedArray::MyPackedArray(istream &ifs)
 			{
 				string check_string = MyUtils::ReadString(ifs);
@@ -96,6 +112,9 @@ namespace ngramchecker {
 
 			}
 
+			/// @brief Write the array to output stream
+			///
+			/// @param ofs Output stream
 			void MyPackedArray::WriteToStream(ostream &ofs) const
 			{
 				MyUtils::WriteString(ofs, "MPA");
@@ -108,6 +127,9 @@ namespace ngramchecker {
 
 			}
 
+			/// @brief Initialize the array from a vector of values
+			///
+			/// @param values Vector of values
 			MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
 			{
 				uint32_t max = 0;

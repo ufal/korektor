@@ -31,7 +31,7 @@ namespace ngramchecker {
 			ofs.write(s.data(), sizeof(char) * len);
 		}
 
-		//utility for reading a string value from a binary stream
+		/// @brief utility for reading a string value from a binary stream
 		static string ReadString(istream &ifs)
 		{
 			uint16_t len;

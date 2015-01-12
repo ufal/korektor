@@ -35,7 +35,7 @@ namespace ngramchecker {
 		///
 		/// @param text The input text
 		/// @return The tokens
-		///
+		/// @todo The tokenization at the moment is English specific. It should be generic.
 		vector<vector<TokenP> > Tokenize(const u16string &text)
 		{
 			vector<TokenP> tokens;
