@@ -3,6 +3,12 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file MyPackedArray.hpp
+/// @class MyPackedArray MyPackedArray.hpp "MyPackedArray.hpp"
+/// @brief Header file for the implementation of memory efficient array
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #ifndef _MY_PACKED_ARRAY_HPP_
 #define _MY_PACKED_ARRAY_HPP_
 
@@ -11,12 +17,13 @@ All rights reserved.
 
 namespace ngramchecker {
 
+	/// @brief This class implements memory efficient array
 	class MyPackedArray {
 		private:
-			uint32_t bits_per_value;
-			uint32_t num_values;
-			uint32_t num_bytes;
-			unsigned char* data;
+			uint32_t bits_per_value; ///< bits per value
+			uint32_t num_values; ///< number of items in the array
+			uint32_t num_bytes; ///< size of the array
+			unsigned char* data; ///< pointer to the actual data
 			uint32_t output_mask;
 
 
@@ -47,18 +54,26 @@ namespace ngramchecker {
 			~MyPackedArray();
 
 			MyPackedArray() { data = NULL; }
+
+			/// @brief Initialize the array using another array
 			MyPackedArray(const MyPackedArray& val);
 
+			/// @brief Copy the array using assignment operator
 			MyPackedArray& operator=(const MyPackedArray& val);
 
+			/// @brief Initialize the array using binary stream
 			MyPackedArray(istream &ifs);
 
+			/// @brief Initialize the array from file
 			MyPackedArray(const string filename);
 
+			/// @brief Write the array to output stream
 			void WriteToStream(ostream &ofs) const;
 
+			/// @brief Write the array to file
 			void SaveToFile(const string filename) const;
 
+			/// @brief Initialize the array from a vector of values
 			MyPackedArray(const vector<uint32_t> &values);
 
 			static void TestIt()
