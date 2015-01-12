@@ -3,6 +3,11 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file typedefs.hpp
+/// @brief Type definitions
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #ifndef _TYPEDEFS_HPP_
 #define _TYPEDEFS_HPP_
 
