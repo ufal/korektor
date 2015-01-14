@@ -52,6 +52,8 @@ namespace ngramchecker {
 			last_enabled_factor_index = index;
 	}
 
+	/// @brief Initialization from configuration file
+	/// @param conf_file filename
 	Configuration::Configuration(const string &conf_file)
 	{
 		last_enabled_factor_index = 0;
@@ -199,6 +201,8 @@ namespace ngramchecker {
 		}
 	}
 
+	/// @brief Convert path separators to the one used by the current OS
+	/// @param path Path to the file or directory
 	string Configuration::ConvertPathSeparators(const string &path) {
 #ifdef _WIN32
 		char to_replace = '/', replace_by = '\\';

@@ -3,6 +3,9 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file Lexicon.hpp
+
+
 #ifndef _LEXICON_HPP_
 #define _LEXICON_HPP_
 
