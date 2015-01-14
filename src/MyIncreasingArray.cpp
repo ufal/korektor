@@ -3,6 +3,12 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+
+/// @file MyIncreasingArray.cpp
+/// @brief Data structure for efficiently storing integer
+///        arrays whose values are in an increasing order.
+///
+
 #include "MyIncreasingArray.hpp"
 #include "MyPackedArray.hpp"
 
@@ -24,6 +30,9 @@ namespace ngramchecker {
 			shifted_offsets.WriteToStream(ofs);
 		}
 
+		/// @brief Initializing the construction of increasing array from vector
+		///
+		/// @param vec Vector of integer values
 		MyIncreasingArray::MyIncreasingArray(vector<uint32_t> &vec)
 		{
 			uint32_t max_val = vec.back();

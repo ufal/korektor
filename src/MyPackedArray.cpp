@@ -25,12 +25,17 @@ namespace ngramchecker {
 				}
 			}
 
-
+			/// @brief Get the number of items in the packed array
+			///
+			/// @return Number of items
 			uint32_t MyPackedArray::GetSize() const
 			{
 				return num_values;
 			}
 
+			/// @brief Get the number of bytes required to store the packed array
+			///
+			/// @return Number of bytes
 			uint32_t MyPackedArray::GetNumberOfBytes() const
 			{
 				return num_bytes;
