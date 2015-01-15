@@ -1,3 +1,6 @@
+/// @file Morphology.hpp
+/// @class Morphology Morphology.hpp "Morphology.hpp"
+
 #ifndef MORPHOLOGY_HPP_
 #define MORPHOLOGY_HPP_
 

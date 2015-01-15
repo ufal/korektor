@@ -3,8 +3,10 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
-/// @file Lexicon.hpp
-
+/// @file Lexicon.cpp
+/// @class Lexicon Lexicon.hpp "Lexicon.hpp"
+/// @copyright Copyright (c) 2012, Charles University in Prague
+///           All rights reserved.
 
 #ifndef _LEXICON_HPP_
 #define _LEXICON_HPP_
@@ -24,19 +26,26 @@ namespace ngramchecker {
 	class lexicon_node;
 	SP_DEF(lexicon_node);
 
-	//this class is used just during the lexicon construction!
+	/// @class lexicon_node Lexicon.hpp "Lexicon.hpp"
+	/// @brief This class is used just during the lexicon construction!
+	///
 	class lexicon_node {
 	public:
-		uint node_id;
-		map<char16_t, lexicon_nodeP> edges;
+		uint node_id; ///< Node ID
+		map<char16_t, lexicon_nodeP> edges; ///< Nodes leaving the edge
 
-		static uint num_nodes;
-		static map<uint, lexicon_nodeP> nodes_map;
+		static uint num_nodes; ///< Total nodes in the lexicon
+		static map<uint, lexicon_nodeP> nodes_map; ///< (id, node) map
 
 	private:
 		lexicon_node(uint _node_id): node_id(_node_id) {}
 
 	public:
+
+		/// @brief Create a lexicon node with the given id
+		///
+		/// @param _node_id Node ID
+		/// @return Pointer to created lexicon node
 		static lexicon_nodeP create_node(uint _node_id)
 		{
 			lexicon_nodeP ret = lexicon_nodeP(new lexicon_node(_node_id));
@@ -53,12 +62,12 @@ namespace ngramchecker {
 	private:
 
 	  CompIncreasingArray  states_arcpointer;
-	  uint32_t* arcs_nextstate;
-	  char16_t* arcs_char;
+	  uint32_t* arcs_nextstate; ///< Pointer to child node IDs
+	  char16_t* arcs_char; ///< Pointer to child node labels
 
-	  uint32_t num_words;
-	  uint32_t root_id;
-	  uint32_t num_arcs;
+	  uint32_t num_words; ///< Number of words in the lexicon
+	  uint32_t root_id; ///< Root ID
+	  uint32_t num_arcs; ///< Number of edges in the lexicon
 
 	  unordered_set<uint32_t> noncorrectable_word_ids;
 
@@ -88,6 +97,9 @@ namespace ngramchecker {
 
 	  Lexicon(const vector<u16string> &words);
 
+	  /// @brief Get the number of words in the lexicon
+	  ///
+	  /// @return Number of words in the lexicon
 	  uint32_t NumWords() { return num_words; }
 
 	  static Lexicon fromUTF8Strings(const vector<string> &words);
