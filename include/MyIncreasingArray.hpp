@@ -20,9 +20,9 @@ namespace ngramchecker {
 
 	class MyIncreasingArray {
 	private:
-		uint32_t multiplier; ///< multiplier for approximating function
-		int32_t value_shift;
-		MyPackedArray shifted_offsets;
+		uint32_t multiplier; ///< Multiplier for approximating function
+		int32_t value_shift; ///< How much deviation from the original values
+		MyPackedArray shifted_offsets; ///< Stored values
 
 	public:
 
