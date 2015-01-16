@@ -47,6 +47,10 @@ namespace ngramchecker {
 				return bits_per_value;
 			}
 
+			uint32_t MyPackedArray::GetOutputMask() const {
+				return output_mask;
+			}
+
 			MyPackedArray::~MyPackedArray()
 			{
 				if (data != NULL)

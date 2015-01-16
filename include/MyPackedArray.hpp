@@ -39,6 +39,8 @@ namespace ngramchecker {
 
 			uint32_t GetBitsPerValue() const;
 
+			uint32_t GetOutputMask() const;
+
 			/// @brief Get the array value at index
 			///
 			/// @param index Valid index
