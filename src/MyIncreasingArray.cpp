@@ -14,13 +14,18 @@ All rights reserved.
 
 namespace ngramchecker {
 
-
+		/// @brief Initialize the constructor from input stream
+		///
+		/// @param ifs Input stream
 		MyIncreasingArray::MyIncreasingArray(istream &ifs):
 			multiplier(MyUtils::Read_uint32_t(ifs)),
 			value_shift((int32_t)MyUtils::Read_uint32_t(ifs)),
 			shifted_offsets(ifs)
 		{}
 
+		/// @brief Write the array to the output stream
+		///
+		/// @param ofs Output stream
 		void MyIncreasingArray::WriteToStream(ostream &ofs) const
 		{
 
