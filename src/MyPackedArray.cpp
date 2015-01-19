@@ -41,12 +41,17 @@ namespace ngramchecker {
 				return num_bytes;
 			}
 
-			/// @brief Returns the bits per value
+			/// @brief Get bits per value
+			///
+			/// @return Bits per value (integer)
 			uint32_t MyPackedArray::GetBitsPerValue() const
 			{
 				return bits_per_value;
 			}
 
+			/// @brief Get output mask
+			///
+			/// @return Output mask (integer)
 			uint32_t MyPackedArray::GetOutputMask() const {
 				return output_mask;
 			}

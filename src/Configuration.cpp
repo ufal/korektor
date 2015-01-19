@@ -53,7 +53,8 @@ namespace ngramchecker {
 	}
 
 	/// @brief Initialization from configuration file
-	/// @param conf_file filename
+	///
+	/// @param conf_file Absolute path to the configuration file
 	Configuration::Configuration(const string &conf_file)
 	{
 		last_enabled_factor_index = 0;

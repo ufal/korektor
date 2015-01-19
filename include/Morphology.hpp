@@ -303,6 +303,9 @@ namespace ngramchecker {
 			cerr << "Printing out morphology succesfully finished!" << endl;
 		}
 
+		/// @brief Morphology constructor initialization
+		///
+		/// @param ifs Input stream
 		Morphology(ifstream &ifs)
 		{			
 			string checkIT = MyUtils::ReadString(ifs);

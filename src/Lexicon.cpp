@@ -68,7 +68,11 @@ namespace ngramchecker {
 		  return *this;
 	  }
 
+	  /// @brief Get the number of states
+	  ///
+	  /// @return Number of states (integer)
 	  uint32_t Lexicon::NumStates() const { return states_arcpointer.GetSize(); }
+
 
 	  int Lexicon::ContainsSuffix(uint32_t stateID, const u16string &word, uint32_t start_char_index) const
 	  {
@@ -148,6 +152,8 @@ namespace ngramchecker {
 	  }
 
 	  /// @brief Constructor initialization from an input stream
+	  ///
+	  /// @param ifs Input stream
 	  Lexicon::Lexicon(istream &ifs)
 	  {
 		  string checkIT = MyUtils::ReadString(ifs);
@@ -179,6 +185,9 @@ namespace ngramchecker {
 
 	  }
 
+	  /// @brief Get the word ID
+	  ///
+	  /// @return Word ID (integer)
 	  int Lexicon::GetWordID(const u16string &word_iso) const //return value -1 for out of vocabulary words!
 	  {
 			return ContainsSuffix(root_id, word_iso, 0);
@@ -293,6 +302,9 @@ namespace ngramchecker {
 		  return Lexicon(uc_words);
 	  }
 
+	  /// @brief Write lexicon to output stream
+	  ///
+	  /// @param ofs Output stream
 	  void Lexicon::WriteToStream(ostream &ofs) const
 	  {
 		  MyUtils::WriteString(ofs, "Lexicon");
