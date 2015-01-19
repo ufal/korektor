@@ -303,7 +303,7 @@ namespace ngramchecker {
 			cerr << "Printing out morphology succesfully finished!" << endl;
 		}
 
-		/// @brief Morphology constructor initialization
+		/// @brief Morphology constructor initialization. Reads morph data from file.
 		///
 		/// @param ifs Input stream
 		Morphology(ifstream &ifs)

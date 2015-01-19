@@ -42,6 +42,7 @@ namespace ngramchecker {
 		/// @brief Utility for reading a string value from a binary stream
 		/// @param ifs Input stream
 		/// @return Read string
+		/// @todo This routine should be better renamed
 		static string ReadString(istream &ifs)
 		{
 			uint16_t len;
