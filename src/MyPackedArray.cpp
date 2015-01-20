@@ -184,7 +184,11 @@ namespace ngramchecker {
 				for (uint32_t i = 0; i < values.size(); i++)
 				{
 					int bites_left = bits_per_value;
+
+					// moves to the next byte once the values
+					// fill up the current byte
 					byte_pointer = (i * num_bits) >> 3;
+
 					bit_pointer = (i * num_bits) % 8;
 
 					curr_value = values[i];
