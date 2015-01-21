@@ -16,26 +16,37 @@ namespace ngramchecker {
 
 	class CompIncreasingArray {
 	private:
-		uint32_t log2_size_of_parts;
-		uint32_t bit_mask;
-		uint32_t num_values;
-		uint32_t last_val_last_index;
-		vector<MyIncreasingArrayP> mia_vec;
+		uint32_t log2_size_of_parts; ///< Exponent of 2
+		uint32_t bit_mask; ///< Maximum value
+		uint32_t num_values; ///< Array size
+		uint32_t last_val_last_index; ///< -
+		vector<MyIncreasingArrayP> mia_vec; ///< Each vector element points to the subgroup of the original data
 
 
 	public:
 
+		/// @brief Get the number of items in the data sequence
+		///
+		/// @return Number of items (unsigned integer)
 		inline uint32_t GetSize() const
 		{
 			return num_values;
 		}
 
-		//TODO: optimize this instead of / and % use >> and &
+		/// @brief Get the value at a given index
+		///
+		/// @param i Index
+		/// @return The value at the given index (unsigned integer)
+		/// @todo optimize this instead of / and % use >> and &
 		inline uint32_t GetValueAt(uint32_t i) const
 		{
 			return mia_vec[i >> log2_size_of_parts]->GetValueAt(i & bit_mask);
 		}
 
+		/// @brief Get the first and last index in the group where the given index is located
+		///
+		/// @param i Index
+		/// @return Pair <first (integer), last (integer)>
 		inline CompIA_First_Last_IndexPair GetFirstLastIndexPair(uint32_t i) const
 		{
 
@@ -60,6 +71,8 @@ namespace ngramchecker {
 		}
 
 		void WriteToStream(ostream &ofs) const;
+
+		/// @todo Undefined routine
 		void WriteToStreamNew(ostream &ofs) const;
 
 		CompIncreasingArray() {}

@@ -10,7 +10,9 @@ All rights reserved.
 namespace ngramchecker {
 
 
-
+		/// @brief Write the data structure to output stream
+		///
+		/// @param ofs Output stream
 		void CompIncreasingArray::WriteToStream(ostream &ofs) const
 		{
 			MyUtils::WriteString(ofs, "CIA");
@@ -26,6 +28,9 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Constructor initialization from input stream/file
+		///
+		/// @param Input stream
 		CompIncreasingArray::CompIncreasingArray(istream &ifs)
 		{
 			string check_string = MyUtils::ReadString(ifs);
@@ -47,6 +52,12 @@ namespace ngramchecker {
 			bit_mask = (1 << log2_size_of_parts) - 1;
 		}
 
+		/// @brief Divide the large sequence of unsigned integers into small groups and store them
+		///        individually in MyIncreasingArray data structure.
+		///
+		/// @param val Vector of increasing integer array
+		/// @param _last_val_last_index -
+		/// @todo The variable _last_val_last_index is not used
 		CompIncreasingArray::CompIncreasingArray(vector<uint32_t> &val, uint32_t _last_val_last_index)
 		{
 			num_values = val.size();
