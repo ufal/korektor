@@ -3,6 +3,18 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file MyBitArray.hpp
+/// @class MyBitArray
+/// @brief Class for storing array efficiently
+///
+/// This class implements a data structure for storing array of integer values in a memory efficient manner.
+/// Not every value would require a fixed width memory space, thus the class uses only the necessary
+/// amount of space required to store the value. The implementation is similar to \ref MyPackedArray , but consumes less than or equal
+/// memory space.
+
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #ifndef _MY_BIT_ARRAY_HPP_
 #define _MY_BIT_ARRAY_HPP_
 
@@ -13,9 +25,9 @@ namespace ngramchecker {
 
 	class MyBitArray {
 		private:
-			uint32_t num_bytes;
-			unsigned char* data;
-			vector<uint32_t> output_mask;
+			uint32_t num_bytes; ///< Number of bytes required to store the values
+			unsigned char* data; ///< Pointer to the actual data
+			vector<uint32_t> output_mask; ///< Maximum value that can be stored for different bit size
 
 
 
@@ -33,11 +45,18 @@ namespace ngramchecker {
 				}
 			}
 
+			/// @brief Get the number bytes required to store the data
+			///
+			/// @return The number of bytes (integer)
 			inline uint32_t GetNumberOfBytes() const
 			{
 				return num_bytes;
 			}
 
+			/// @brief Get the value at index
+			///
+			/// @param index Index value
+			/// @param num_bits Number of bits required to store the value
 			inline uint32_t GetValueAt(uint32_t index, uint num_bits) const
 			{
 				uint32_t byte_pointer = index >> 3;
@@ -71,12 +90,16 @@ namespace ngramchecker {
 				return retVal;*/
 			}
 
+			/// @brief Destructor that frees the memory of data
 			~MyBitArray()
 			{
 				if (data != NULL)
 					delete[] data;
 			}
 
+			/// @brief Constructor initialization from another \see MyBitArray object
+			///
+			/// @param val Object of type
 			MyBitArray(const MyBitArray& val)
 			{
 				num_bytes = val.num_bytes;
@@ -92,6 +115,9 @@ namespace ngramchecker {
 				cerr << "MyBitArray: copy constructor\n";
 			}
 
+			/// @brief Constructor initialization using assignment operator
+			///
+			/// @param val Object of type
 			MyBitArray& operator=(const MyBitArray& val)
 			{
 				if (this != &val)
@@ -116,8 +142,12 @@ namespace ngramchecker {
 				return *this;
 			}
 
+			/// @brief Default constructor
 			MyBitArray(): num_bytes(0), data(NULL) {}
 
+			/// @brief Constructor initialization from input stream/file
+			///
+			/// @param ifs Input stream
 			MyBitArray(istream &ifs)
 			{
 				string check_string = MyUtils::ReadString(ifs);
@@ -146,6 +176,9 @@ namespace ngramchecker {
 
 			}
 
+			/// @brief Write the output to output stream
+			///
+			/// @param ofs Output stream
 			void WriteToStream(ostream &ofs) const
 			{
 				MyUtils::WriteString(ofs, "MBA");
@@ -157,6 +190,9 @@ namespace ngramchecker {
 
 			}
 
+			/// @brief Constructor initialization from vector of pairs
+			///
+			/// @param values Vector of pairs of integers
 			MyBitArray(const vector<pair<uint32_t, uint> > &values)
 			{
 				uint32_t bits_needed = 0;

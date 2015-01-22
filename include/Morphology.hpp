@@ -85,9 +85,9 @@ namespace ngramchecker {
 
 		uint num_factors;
 		map<string, uint> factor_names;
-		vector<uint> bits_per_value; //number of bits needed to store a factorID for the particular factor
-		vector<uint> bits_per_children; //number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
-		vector<morpho_dependencyP> dependencies; //list of all factor dependencies
+		vector<uint> bits_per_value; ///< number of bits needed to store a factorID for the particular factor
+		vector<uint> bits_per_children; ///< number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
+		vector<morpho_dependencyP> dependencies; ///< list of all factor dependencies
 		vector<morpho_groupingP> groupings;
 		
 		//probability values mapping used for obtaining emission probabilities
@@ -190,6 +190,8 @@ namespace ngramchecker {
 
 	public:
 		
+		/// @brief Get the factor map
+
 		map<string, uint>& GetFactorMap()
 		{
 			return factor_names;

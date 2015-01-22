@@ -12,6 +12,10 @@
 
 namespace ngramchecker {
 
+	/// @brief Loads lexicon and morphology
+	///
+	/// @param _lexicon Lexicon
+	/// @param _morphology Morphology
 	void Configuration::LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _morphology)
 	{
 		lexicon = _lexicon;
