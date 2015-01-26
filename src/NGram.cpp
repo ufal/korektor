@@ -3,10 +3,16 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file NGram.cpp
+/// @class NGram NGram.hpp "NGram.hpp"
+
 #include "NGram.hpp"
 
 namespace ngramchecker {
 
+		/// @brief Initialize N-gram from another N-gram
+		///
+		/// @param val Instance of N-gram
 		NGram::NGram(const NGram &val):
 			order(val.order), prob(val.prob), backoff(val.backoff)
 		{
@@ -14,6 +20,9 @@ namespace ngramchecker {
 			memcpy(word_ids, val.word_ids, sizeof(uint32_t) * order);
 		}
 
+		/// @brief Initialize N-gram from another N-gram through assignment operator
+		///
+		/// @param val Instance of N-gram
 		NGram& NGram::operator=(const NGram& val)
 		{
 			if (&val != this)
@@ -33,6 +42,12 @@ namespace ngramchecker {
 			return *this;
 		}
 
+		/// @brief Initialize N-gram through constructor arguments
+		///
+		/// @param order N-gram order
+		/// @param IDs Pointer to word ids
+		/// @param _prob N-gram probability
+		/// @param _backoff Backoff weight
 		NGram::NGram(uint32_t order, uint32_t *IDs, double _prob, double _backoff):
 			order(order), prob(_prob), backoff(_backoff), word_ids(IDs)
 		{}
@@ -43,12 +58,16 @@ namespace ngramchecker {
 			return false;
 		}
 
+		/// @brief Destructor
 		NGram::~NGram()
 		{
 			if (word_ids != NULL)
 				delete[] word_ids;
 		}
 
+		/// @brief N-gram to string representation
+		///
+		/// @return N-gram string representation (string)
 		string NGram::ToString()
 		{
 			stringstream strs;
