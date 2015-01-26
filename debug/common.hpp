@@ -13,5 +13,8 @@
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
+
+#define MORPHLEXFILE "/net/projects/korektor/models/korektor-czech-130202/data/morphology_h2mor_freq2.bin"
 
 #endif /* DEBUG_COMMON_HPP_ */
