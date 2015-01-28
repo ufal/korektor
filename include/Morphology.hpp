@@ -314,6 +314,8 @@ namespace ngramchecker {
 
 			ifs.read((char*)&num_factors, sizeof(uint32_t));
 
+			cout << "Number of factors : " << num_factors << endl;
+
 			FATAL_CONDITION(num_factors < 20, "");
 			for (size_t i = 0; i < num_factors; i++)
 			{
@@ -321,19 +323,27 @@ namespace ngramchecker {
 				groupings.push_back(morpho_groupingP());
 			}
 
+
 			MyStaticStringArray factor_mssa = MyStaticStringArray(ifs);
-			
+			cout << "Factor Names --------->" << endl;
+			cout << "[";
 			for (uint i = 0; i < factor_mssa.GetSize(); i++)
 			{
 				factor_names[factor_mssa.GetStringAt(i)] = i;
+				cout << factor_mssa.GetStringAt(i) << ", " ;
 			}
+			cout << "]" << endl;
 
 
 			uint num_dependencies;
 			ifs.read((char*)&num_dependencies, sizeof(uint32_t));
 
+			cout << "Number of dependencies: " << num_dependencies << endl;
+
 			assert(num_dependencies < num_factors);
 
+			cout << "governor: governed --------->" << endl;
+			cout << "[" ;
 			for (uint i = 0; i < num_dependencies; i++)
 			{
 				uint governing;
@@ -341,15 +351,21 @@ namespace ngramchecker {
 				ifs.read((char*)&governing, sizeof(uint32_t));
 				ifs.read((char*)&governed, sizeof(uint32_t));
 
+				cout << governing << ":" << governed << ", ";
+
 				assert(governing < governed);
 
 				//MyPackedArrayP dep_array = MyPackedArrayP(new MyPackedArray(ifs));
 
 				dependencies[governed] = morpho_dependencyP(new morpho_dependency(governing, MyPackedArray(ifs)));
 			}
-	
+			cout << "]" << endl;
+
 			uint num_grouped;
 			ifs.read((char*)&num_grouped, sizeof(uint32_t));
+
+			cout << "Number of groups: " << num_grouped << endl;
+			cout << endl;
 
 			assert(num_grouped < num_factors);
 
@@ -358,33 +374,77 @@ namespace ngramchecker {
 				uint factor_index;
 				ifs.read((char*)&factor_index, sizeof(uint32_t));
 
+				cout << "Factor Index: " << factor_index << endl;
+
 				CompIncreasingArray group_offsets = CompIncreasingArray(ifs);
 				MyPackedArray group_values = MyPackedArray(ifs);
+
+				cout << "Group offsets, -------->  " << group_offsets.GetSize() << endl;
+				cin.get();
+				cout << "[";
+				for (uint32_t myi = 0; myi < group_offsets.GetSize(); myi++) {
+					cout << group_offsets.GetValueAt(myi) << ", ";
+				}
+				cout << "]" << endl;
+
+				cout << "Group values, -------->  " << group_values.GetSize() << endl;
+				cin.get();
+				cout << "[";
+				for (uint32_t myi = 0; myi < group_values.GetSize(); myi++) {
+					cout << group_values.GetValueAt(myi) << ", ";
+				}
+				cout << "]" << endl;
 
 				groupings[factor_index] = morpho_groupingP(new morpho_grouping(group_values, group_offsets));
 			}
 
+			cout << "Bits per value for each factor: "<< endl;
 
+			cout << "[" ;
 			for (uint i = 0; i < num_factors; i++)
 			{
 				uint bpv;
 				ifs.read((char*)&bpv, sizeof(uint32_t));
 				assert(bpv < 64);
 				bits_per_value.push_back(bpv);
+				cout << bpv << ", ";
 			}
-	
+			cout << "]" << endl;
+
+			cout << "Bits per child for each factor: "<< endl;
+			cout << "[" ;
 			for (uint i = 0; i < num_factors - 1; i++)
 			{
 				uint bpch;
 				ifs.read((char*)&bpch, sizeof(uint32_t));
 				assert(bpch < 64);
-				bits_per_children.push_back(bpch);				
+				bits_per_children.push_back(bpch);
+				cout << bpch << ", ";
 			}
+			cout << "]" << endl;
 
+			cin.get();
+			cout << "----------------------------" << endl;
+			cout << "Value mapping ???" << endl;
+			cout << "----------------------------" << endl;
 			value_mapping = ValueMapping(ifs);
+			cin.get();
+			cout << "----------------------------" << endl;
+			cout << "Form offsets ???" << endl;
+			cout << "----------------------------" << endl;
 
 			formOffsets = CompIncreasingArray(ifs);
+
+			cout << "Form offsets size : "<< formOffsets.GetSize() << endl;
+			cout << "[" ;
+			for (uint32_t myi = 0 ; myi < formOffsets.GetSize(); myi++) {
+				cout << formOffsets.GetValueAt(myi) << ", ";
+			}
+			cout << "]" << endl;
+			cin.get();
+
 			morphoData = MyBitArray(ifs);
+
 		}
 
 		void WriteToStream(ostream &ofs)

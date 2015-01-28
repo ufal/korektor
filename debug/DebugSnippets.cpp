@@ -45,7 +45,7 @@ void step_morphology() {
 
 void step_value_mapping()
 {
-	std::vector<double> values{3,8};
+	std::vector<double> values{7, 3,8};
 	uint32_t bpv = 4;
-	ValueMapping vm(values, 3);
+	ValueMapping vm(values, 4);
 }
