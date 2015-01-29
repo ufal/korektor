@@ -3,6 +3,7 @@
 /// @brief Class for loading, accessing, manipulating morphology lexicon.
 ///
 /// This class provides various functions to access the morphology data from file.
+/// @todo PrintOut function should be traced thoroughly
 
 #ifndef MORPHOLOGY_HPP_
 #define MORPHOLOGY_HPP_
@@ -257,6 +258,11 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Get the morphology for a particular form
+		///
+		/// @param form_id Word form id
+		/// @param configuration Pointer to the instance of @ref Configuration class
+		/// @return Factor list
 		vector<FactorList> GetMorphology(uint form_id, Configuration* configuration)
 		{
 			vector<FactorList> ret;
@@ -275,6 +281,10 @@ namespace ngramchecker {
 			return ret;
 		}
 
+		/// @brief Print out morphology
+		///
+		/// @param ofs Output stream
+		/// @param configuration Pointer to the instance of @ref Configuration class
 		void PrintOut(ostream &ofs, Configuration* configuration)
 		{
 			FATAL_CONDITION(morpho_word_lists.size() > 0, "");
