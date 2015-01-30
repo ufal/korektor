@@ -144,6 +144,14 @@ namespace ngramchecker {
 			ofs.close();
 		}
 
+		/// @brief Creates the language model instance from the ARPA format language model stored in 'text_file'
+		///
+		/// @param text_file N-gram text file in ARPA format
+		/// @param morphology Morphology
+		/// @param _factor_name Factor name
+		/// @param lm_order LM order
+		/// @param not_in_lm_cost @todo variable for ?
+		/// @return Language model object of type @ref ZipLM
 		ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, uint lm_order, double not_in_lm_cost)
 		{
 			cerr << "Creating from text file..." << endl;
