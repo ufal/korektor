@@ -18,7 +18,7 @@ namespace ngramchecker {
 	class ErrorModelOutput {
 	public:
 		uint32_t edit_dist; ///< Edit distance
-		float cost; ///< Cost involved
+		float cost; ///< Cost involved in substitution/insertion/deletion/swap
 
 		/// @brief Constructor initialization
 		///

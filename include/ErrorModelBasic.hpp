@@ -22,6 +22,8 @@ namespace ngramchecker {
 	class ErrorModelBasic;
 	SP_DEF(ErrorModelBasic);
 
+	/// @struct char16_pair_hash ErrorModelBasic.hpp "ErrorModelBasic.hpp"
+	/// @brief Generates hash value given 2 strings
 	struct char16_pair_hash : std::unary_function<pair<char16_t, char16_t>, size_t>
 	{
 		size_t operator()(const pair<char16_t, char16_t> &val) const
@@ -32,7 +34,8 @@ namespace ngramchecker {
 			return seed;
 		}
 	};
-
+	/// @struct char16_triple_hash ErrorModelBasic.hpp "ErrorModelBasic.hpp"
+	/// @brief Generates hash value given 3 strings
 	struct char16_triple_hash : std::unary_function<triple(char16_t, char16_t, char16_t), size_t>
 	{
 		size_t operator()(const triple(char16_t, char16_t, char16_t) &val) const
@@ -43,7 +46,6 @@ namespace ngramchecker {
 			MyUtils::HashCombine(seed, SECOND(val));
 			MyUtils::HashCombine(seed, THIRD(val));
 
-
 			return seed;
 		}
 	};
@@ -52,18 +54,18 @@ namespace ngramchecker {
 	{
 	private:
 
-		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> substitution_map;
-		unordered_map<triple(char16_t, char16_t, char16_t), ErrorModelOutput, char16_triple_hash> insertion_map;
-		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> deletion_map;
-		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> swap_map;
+		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> substitution_map; ///< Substitution map
+		unordered_map<triple(char16_t, char16_t, char16_t), ErrorModelOutput, char16_triple_hash> insertion_map; ///< Insertion map
+		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> deletion_map; ///< Deletion map
+		unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> swap_map; ///< Swap map
 
 		//if the operation cost is not found in the particular hash map, then the default cost and edit distance is used
-		ErrorModelOutput substitution_default;
-		ErrorModelOutput insertion_default;
-		ErrorModelOutput deletion_default;
-		ErrorModelOutput swap_default;
-		ErrorModelOutput case_mismatch_cost;
-		uint min_operation_edit_distance;
+		ErrorModelOutput substitution_default; ///< Default substitution cost/edit distance
+		ErrorModelOutput insertion_default; ///< Default insertion cost/edit distance
+		ErrorModelOutput deletion_default; ///< Default deletion cost/edit distance
+		ErrorModelOutput swap_default; ///< Default swap cost/edit distance
+		ErrorModelOutput case_mismatch_cost; ///< Default case mismatch cost/edit distance
+		uint min_operation_edit_distance; ///< @todo variable for ?
 
 	public:
 
@@ -226,7 +228,10 @@ namespace ngramchecker {
 
 		}
 
-
+		/// @brief Create binary output from text input
+		///
+		/// @param text_input Text input
+		/// @param binary_output Binary output
 		static void CreateBinaryFormFromTextForm(const string &text_input, const string &binary_output)
 		{
 			ifstream ifs;
@@ -507,6 +512,7 @@ namespace ngramchecker {
 				return fit->second;
 		}
 
+		/// @todo Function for ?
 		virtual uint32_t MinOperationEditDistance() { return min_operation_edit_distance; }
 
 		/// @brief Check whether two strings are identical
