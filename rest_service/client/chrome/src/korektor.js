@@ -14,7 +14,7 @@ function onKorektor(info) {
       code: 'if (document.activeElement && "value" in document.activeElement) {' +
             '  var c = document.activeElement;' +
             '  var xhr = new XMLHttpRequest();' +
-            '  xhr.open("POST", "http://lindat.mff.cuni.cz/services/korektor/api/correct", true);' +
+            '  xhr.open("POST", "https://lindat.mff.cuni.cz/services/korektor/api/correct", true);' +
             '  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");' +
             '  xhr.responseType = "text";' +
             '  xhr.onreadystatechange = function(a,e) {' +
