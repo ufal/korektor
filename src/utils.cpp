@@ -3,11 +3,21 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file utils.cpp
+/// @brief Utility functions
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #include "utils.hpp"
 #include <time.h>
 
 namespace ngramchecker {
 
+	/// @brief Generates a random number between the given range
+	///
+	/// @param min Lower bound
+	/// @param max Upper bound
+	/// @return Random number
 	double MyUtils::RandomNumber(double min, double max)
 	{
 		return ((double)rand() / RAND_MAX) * (max - min) + min;
@@ -36,6 +46,8 @@ namespace ngramchecker {
 		cerr << endl;
 	}
 
+	/// @brief Returns time string
+	/// @return Time string
 	string MyUtils::GetTimeString()
 	{
 		string ret;
@@ -51,6 +63,9 @@ namespace ngramchecker {
 		return ret;
 	}
 
+	/// @brief String to Boolean conversion
+	/// @param str The values are "true" or "false"
+	/// @return Returns 0 or 1 based on the given input string
 	bool MyUtils::StrToBool(string str)
 	{
 		if (str == "true")
@@ -64,17 +79,25 @@ namespace ngramchecker {
 		}
 	}
 
+	/// @brief String to double conversion
+	/// @param str input string
+	/// @return Value in double
 	double MyUtils::StrToDouble(string str)
 	{
 		return my_atof(str);
 	}
 
+	/// @brief String to integer conversion
+	/// @param str input string
+	/// @return Intger value
 	uint32_t MyUtils::StrToInt(string str)
 	{
 		return my_atoi(str);
 	}
 
-
+	/// @brief Boolean to String conversion
+	/// @param value boolean
+	/// @return Returns "true" or "false" based on the input value
 	string MyUtils::BoolToString(bool value)
 	{
 		if (value)
@@ -82,7 +105,9 @@ namespace ngramchecker {
 		else
 			return "false";
 	}
-
+	/// @brief Check whether the given string contains letter
+	/// @param ustr String
+	/// @return boolean
 	bool MyUtils::ContainsLetter(const u16string &ustr)
 	{
 		for (auto&& uchar : ustr)

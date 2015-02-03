@@ -3,6 +3,9 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file ErrorModel.hpp
+/// @brief Data structure and relevant functions for the implementation of error model
+
 #ifndef ERRORMODEL_HPP_
 #define ERRORMODEL_HPP_
 
@@ -10,17 +13,28 @@ All rights reserved.
 
 namespace ngramchecker {
 
+	/// @class ErrorModelOutput ErrorModel.hpp "ErrorModel.hpp"
+	/// @brief Class for error model output. It contains two members, namely edit distance and the cost involved.
 	class ErrorModelOutput {
 	public:
-		uint32_t edit_dist;
-		float cost;
+		uint32_t edit_dist; ///< Edit distance
+		float cost; ///< Cost involved in substitution/insertion/deletion/swap
 
+		/// @brief Constructor initialization
+		///
+		/// @param _edit_dist Edit distance
+		/// @param _cost Cost
 		ErrorModelOutput(uint32_t _edit_dist, float _cost): edit_dist(_edit_dist), cost(_cost) {}
 
+		/// @brief Default constructor
 		ErrorModelOutput(): edit_dist(0), cost(0.0f) {}
 	};
 
-	//do we actually want the functions here to be virtual? As long as there is just a single implementation, it's useless.
+	//
+	/// @class ErrorModel ErrorModel.hpp "ErrorModel.hpp"
+	/// @brief Abstract base class for Error model.
+	///
+	/// @todo do we actually want the functions here to be virtual? As long as there is just a single implementation, it's useless.
 	class ErrorModel
 	{
 	public:

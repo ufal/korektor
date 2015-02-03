@@ -1,7 +1,12 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
+
+/// @file Lexicon.cpp
+/// @class Lexicon Lexicon.hpp "Lexicon.hpp"
+/// @copyright Copyright (c) 2012, Charles University in Prague
+///           All rights reserved.
 
 #include "Lexicon.hpp"
 #include "utils.hpp"
@@ -14,7 +19,10 @@ namespace ngramchecker {
 	  uint lexicon_node::num_nodes = 0;
 	  map<uint, lexicon_nodeP> lexicon_node::nodes_map = map<uint, lexicon_nodeP>();
 
-  	  Lexicon::Lexicon(const Lexicon& val)
+	  /// @brief Initialize lexicon from another lexicon
+	  ///
+	  /// @param val Lexicon
+	  Lexicon::Lexicon(const Lexicon& val)
 	  {
 		  num_arcs = val.num_arcs;
 
@@ -29,7 +37,10 @@ namespace ngramchecker {
 		  root_id = val.root_id;
 	  }
 
-
+	  /// @brief Copy constructor
+	  ///
+	  /// @param val Lexicon
+	  /// @return Reference to created lexicon
 	  Lexicon& Lexicon::operator=(const Lexicon& val)
 	  {
 		  if (this != &val)
@@ -57,7 +68,11 @@ namespace ngramchecker {
 		  return *this;
 	  }
 
+	  /// @brief Get the number of states
+	  ///
+	  /// @return Number of states (integer)
 	  uint32_t Lexicon::NumStates() const { return states_arcpointer.GetSize(); }
+
 
 	  int Lexicon::ContainsSuffix(uint32_t stateID, const u16string &word, uint32_t start_char_index) const
 	  {
@@ -77,7 +92,10 @@ namespace ngramchecker {
 	  }
 
 
-
+	  /// @brief Check whether the node of the given node ID is a dictionary word
+	  ///
+	  /// @param state_ID Node ID
+	  /// @return "true" if the node is a word "false" otherwise
 	  bool Lexicon::StateIsWord(uint32_t state_ID) const
 	  {
 		  return state_ID < root_id;
@@ -97,7 +115,7 @@ namespace ngramchecker {
 		  uint32_t rightIndex = index_pair.second;
 		  uint32_t actIndex;
 
-		  while (true) 
+		  while (true)
 		  {
 			  actIndex = (leftIndex + rightIndex) >> 1;
 			  char16_t arc_char = arcs_char[actIndex];
@@ -133,6 +151,9 @@ namespace ngramchecker {
 		  return -1;
 	  }
 
+	  /// @brief Constructor initialization from an input stream
+	  ///
+	  /// @param ifs Input stream
 	  Lexicon::Lexicon(istream &ifs)
 	  {
 		  string checkIT = MyUtils::ReadString(ifs);
@@ -164,11 +185,21 @@ namespace ngramchecker {
 
 	  }
 
+	  /// @brief Get the word ID
+	  ///
+	  /// @return Word ID (integer)
 	  int Lexicon::GetWordID(const u16string &word_iso) const //return value -1 for out of vocabulary words!
 	  {
 			return ContainsSuffix(root_id, word_iso, 0);
 	  }
 
+	  /// @brief Create an entry for given word in the lexicon
+	  ///
+	  /// @param node Current node
+	  /// @param next_inner_node_id ID of the current node
+	  /// @param curr_word Word to be added in the lexicon
+	  /// @param char_index Current position within the word
+	  /// @param words_map (word, ID) map
 	void Lexicon::create_lexicon_rec(lexicon_nodeP &node, uint &next_inner_node_id, const u16string &curr_word, uint char_index, map<u16string, uint> &words_map)
 	{
 		char16_t ch = curr_word[char_index];
@@ -201,7 +232,9 @@ namespace ngramchecker {
 		}
 	}
 
-
+	/// @brief Initialize lexicon from the vector of words. The strings must be in UTF-16 format.
+	///
+	/// @param words Vector of words
 	  Lexicon::Lexicon(const vector<u16string> &words)
 	  {
 		    lexicon_node::num_nodes = 0;
@@ -230,7 +263,7 @@ namespace ngramchecker {
 			for (uint i = 0; i < lexicon_node::num_nodes; i++)
 			{
 				lexicon_nodeP node = lexicon_node::nodes_map[i];
-				
+
 				offsets.push_back(curr_offset);
 
 				for (map<char16_t, lexicon_nodeP>::iterator it = node->edges.begin(); it != node->edges.end(); it++)
@@ -247,11 +280,15 @@ namespace ngramchecker {
 
 			arcs_nextstate = new uint32_t[num_arcs];
 			memcpy(arcs_nextstate, edges_endpoint.data(), num_arcs * sizeof(uint32_t));
-			
+
 			arcs_char = new char16_t[num_arcs];
 			memcpy(arcs_char, edges_char.data(), num_arcs * sizeof(char16_t));
 	  }
 
+	  /// @brief Initialize lexicon from a vector of words
+	  ///
+	  /// @param words Vector of words
+	  /// @return Lexicon created from the given vector or words
 	  Lexicon Lexicon::fromUTF8Strings(const vector<string> &words)
 	  {
 		  vector<u16string> uc_words;
@@ -265,6 +302,9 @@ namespace ngramchecker {
 		  return Lexicon(uc_words);
 	  }
 
+	  /// @brief Write lexicon to output stream
+	  ///
+	  /// @param ofs Output stream
 	  void Lexicon::WriteToStream(ostream &ofs) const
 	  {
 		  MyUtils::WriteString(ofs, "Lexicon");
@@ -325,7 +365,7 @@ namespace ngramchecker {
 			  prefix.erase(prefix.length() - 1, 1);
 			  if (index >= max_index) return;
 			  //prefix.pop_back();
-			  
+
 		  }
 
 	  }
@@ -587,4 +627,5 @@ namespace ngramchecker {
 		  return noncorrectable_word_ids.find(wordID) == noncorrectable_word_ids.end();
 	  }
 }
+
 

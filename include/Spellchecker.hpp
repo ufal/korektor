@@ -40,28 +40,28 @@ namespace ngramchecker {
 	
 	public:
 
-		//this was relevant for the spell-server front-end
+		/// @brief this was relevant for the spell-server front-end
 		vector<TextCheckingResultP> GetCheckingResults(const string &sentence);
 		
-		//this was relevant for the spell-server front-end
+		/// @brief this was relevant for the spell-server front-end
 		vector<string> GetContextFreeSuggestions(const string &word);
 
-		//this was relevant for the spell-server front-end
+		/// @brief this was relevant for the spell-server front-end
 		void FindMisspelledWord(const string &text, uint32_t &range_from, uint32_t &range_length);
 		
-		//this was relevant for the spell-server front-end
+		/// @brief this was relevant for the spell-server front-end
 		vector<TextCheckingResultP> GetCheckingResultsFirstSentence(const string &text, uint &range_from, uint &range_length);
 
-		//returns autocorrected text
+		/// @brief returns autocorrected text
 		string CheckText(const string &sentence);
 
-		//marks correction in a way that is useful for evaluation - make distinction between real-word-errors and normal spelling errors
+		/// @brief marks correction in a way that is useful for evaluation - make distinction between real-word-errors and normal spelling errors
 		string DecodeEvaluation(const string &text, uint32_t num_sugg_to_output);
 		
-		//marks mispelled words and correction using a XML tag
+		/// @brief marks mispelled words and correction using a XML tag
 		string command_line_mode(const string &text, uint32_t num_sugg_to_output);
 
-		//return array of tokens, for each token list suggestions from the most probable
+		/// @brief return array of tokens, for each token list suggestions from the most probable
 		void GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions);
 		void GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions);
 

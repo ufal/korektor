@@ -3,6 +3,14 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file MyPackedArray.hpp
+/// @class MyPackedArray MyPackedArray.hpp "MyPackedArray.hpp"
+/// @brief Data structure for the implementation of memory efficient array
+///
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+///
+
 #ifndef _MY_PACKED_ARRAY_HPP_
 #define _MY_PACKED_ARRAY_HPP_
 
@@ -13,11 +21,11 @@ namespace ngramchecker {
 
 	class MyPackedArray {
 		private:
-			uint32_t bits_per_value;
-			uint32_t num_values;
-			uint32_t num_bytes;
-			unsigned char* data;
-			uint32_t output_mask;
+			uint32_t bits_per_value; ///< bits per value
+			uint32_t num_values; ///< number of items in the array
+			uint32_t num_bytes; ///< size of the array
+			unsigned char* data; ///< pointer to the actual data
+			uint32_t output_mask; ///< the maximum value that the packed array can hold
 
 
 
@@ -31,6 +39,12 @@ namespace ngramchecker {
 
 			uint32_t GetBitsPerValue() const;
 
+			uint32_t GetOutputMask() const;
+
+			/// @brief Get the array value at index
+			///
+			/// @param index Valid index
+			/// @return Array value at index
 			inline uint32_t GetValueAt(uint32_t index) const
 			{
 				uint32_t bit = index * bits_per_value;
@@ -47,18 +61,26 @@ namespace ngramchecker {
 			~MyPackedArray();
 
 			MyPackedArray() { data = NULL; }
+
+			/// @brief Initialize the array using another array
 			MyPackedArray(const MyPackedArray& val);
 
+			/// @brief Copy the array using assignment operator
 			MyPackedArray& operator=(const MyPackedArray& val);
 
+			/// @brief Initialize the array using binary stream
 			MyPackedArray(istream &ifs);
 
+			/// @brief Initialize the array from file
 			MyPackedArray(const string filename);
 
+			/// @brief Write the array to output stream
 			void WriteToStream(ostream &ofs) const;
 
+			/// @brief Write the array to file
 			void SaveToFile(const string filename) const;
 
+			/// @brief Initialize the array from a vector of values
 			MyPackedArray(const vector<uint32_t> &values);
 
 			static void TestIt()

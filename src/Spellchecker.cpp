@@ -3,6 +3,11 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file Spellchecker.cpp
+/// @brief Main spellchecker source code
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #include "Spellchecker.hpp"
 #include "TextCheckingResult.hpp"
 #include "Token.hpp"
@@ -292,6 +297,9 @@ namespace ngramchecker {
 			return results;
 		}
 
+		/// @brief returns autocorrected text
+		///
+		///
 		string Spellchecker::CheckText(const string &text)
 		{
 			u16string u_text = MyUtils::utf8_to_utf16(text);
@@ -382,6 +390,7 @@ namespace ngramchecker {
 
 			return ret.str();
 		}
+
 
 		string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_output)
 		{

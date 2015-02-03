@@ -1,3 +1,5 @@
+/// @file Configuration.h
+
 #ifndef _KOREKTOR_CONFIGURATION_HPP
 #define _KOREKTOR_CONFIGURATION_HPP
 
@@ -39,6 +41,7 @@ namespace ngramchecker {
 	SP_DEF(MyCash_StagePosibility);
 
 
+	/// @class Configuration Configuration.h "Configuration.h"
 	class Configuration
 	{
 		map<string, uint> factor_map;
@@ -64,6 +67,9 @@ namespace ngramchecker {
 		bool diagnostics;
 
 		Configuration() {}
+
+		/// @brief Initialization from configuration file
+		/// @param conf_file filename
 		Configuration(const string &conf_file);
 
 		bool is_initialized()
@@ -89,8 +95,10 @@ namespace ngramchecker {
 			return enabled_factors[index];
 		}
 
+		/// @brief Loads lexicon and morphology
 		void LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _morphology);
 
+		/// @brief Loads the language model
 		void LoadLM(LMWrapperP lm);
 
 		void EnableFactor(const string &fac_name, float weight, uint order);

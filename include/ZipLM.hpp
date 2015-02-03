@@ -3,6 +3,10 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file ZipLM.hpp
+/// @brief Class for creating, manipulating language models
+/// @class ZipLM ZipLM.hpp "ZipLM.hpp"
+
 #ifndef ZIPLM_HPP_
 #define ZIPLM_HPP_
 

@@ -1,3 +1,9 @@
+/// @file korektor.cpp
+/// @brief Main Korektor executable
+///
+/// usage: ./korektor configuration_file <input_text >output_text
+
+
 #include "StdAfx.h"
 #include "Configuration.hpp"
 #include "ZipLM.hpp"
@@ -13,11 +19,13 @@
 #include "MyUTF.hpp"
 //#include "DecoderMultiFactor2.hpp"
 
+/// @brief Help message
 void print_help()
 {
 	cerr << "usage: ./korektor configuration_file <input_text >output_text" << endl;
 }
 
+/// @brief Main entry point
 int main(int argc, char** argv)
 {
 	if (argc < 2)

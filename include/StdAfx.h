@@ -3,6 +3,11 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file StdAfx.hpp
+/// @brief Common header file
+/// @copyright Copyright (c) 2012, Charles University in Prague
+/// All rights reserved.
+
 #ifndef COMMONHEADER_HPP_
 #define COMMONHEADER_HPP_
 

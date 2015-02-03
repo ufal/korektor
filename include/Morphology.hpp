@@ -1,3 +1,10 @@
+/// @file Morphology.hpp
+/// @class Morphology Morphology.hpp "Morphology.hpp"
+/// @brief Class for loading, accessing, manipulating morphology lexicon.
+///
+/// This class provides various functions to access the morphology data from file.
+/// @todo PrintOut function should be traced thoroughly
+
 #ifndef MORPHOLOGY_HPP_
 #define MORPHOLOGY_HPP_
 
@@ -80,24 +87,20 @@ namespace ngramchecker {
 	class Morphology {
 
 
-		uint num_factors;
-		map<string, uint> factor_names;
-		vector<uint> bits_per_value; //number of bits needed to store a factorID for the particular factor
-		vector<uint> bits_per_children; //number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
-		vector<morpho_dependencyP> dependencies; //list of all factor dependencies
+		uint num_factors; ///< Number of factors
+		map<string, uint> factor_names; ///< Factor names
+		vector<uint> bits_per_value; ///< Number of bits needed to store a factorID for the particular factor
+		vector<uint> bits_per_children; ///< Number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
+		vector<morpho_dependencyP> dependencies; ///< List of all factor dependencies
 		vector<morpho_groupingP> groupings;
 		
-		//probability values mapping used for obtaining emission probabilities
-		//i.e. (mapping between packed representation of probs used in morphoData and normal floating numbers) 
-		ValueMapping value_mapping;
+		ValueMapping value_mapping; ///< Probability values mapping used for obtaining emission probabilities, i.e. (mapping between packed representation of probs used in morphoData and normal floating numbers)
 
 		vector<uint> group_members_pom;
 
-		//contains offsets into the morphoData bit array denoting where the morphological information for a particular factor starts
-		CompIncreasingArray formOffsets;
+		CompIncreasingArray formOffsets; ///< Contains offsets into the morphoData bit array denoting where the morphological information for a particular factor starts
 
-		//bit array containing the morphological information
-		MyBitArray morphoData;
+		MyBitArray morphoData; ///< Bit array containing the morphological information
 
 		//morpho_word_lists and morpho_maps suits only debuggind purposes and usually are not loaded at all
 		vector<MyStaticStringArrayP> morpho_word_lists;
@@ -187,11 +190,17 @@ namespace ngramchecker {
 
 	public:
 		
+		/// @brief Get the factor map
+		///
+		/// @return Hash map containing factor names as keys and indices as values
 		map<string, uint>& GetFactorMap()
 		{
 			return factor_names;
 		}
 
+		/// @brief Get the factor string
+		///
+		/// @return Factor string
 		string GetFactorString(uint factor_index, uint ID)
 		{
 			return morpho_word_lists[factor_index]->GetStringAt(ID);
@@ -249,6 +258,11 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Get the morphology for a particular form
+		///
+		/// @param form_id Word form id
+		/// @param configuration Pointer to the instance of @ref Configuration class
+		/// @return Factor list
 		vector<FactorList> GetMorphology(uint form_id, Configuration* configuration)
 		{
 			vector<FactorList> ret;
@@ -267,6 +281,10 @@ namespace ngramchecker {
 			return ret;
 		}
 
+		/// @brief Print out morphology
+		///
+		/// @param ofs Output stream
+		/// @param configuration Pointer to the instance of @ref Configuration class
 		void PrintOut(ostream &ofs, Configuration* configuration)
 		{
 			FATAL_CONDITION(morpho_word_lists.size() > 0, "");
@@ -300,6 +318,9 @@ namespace ngramchecker {
 			cerr << "Printing out morphology succesfully finished!" << endl;
 		}
 
+		/// @brief Morphology constructor initialization. Reads morph data from file.
+		///
+		/// @param ifs Input stream
 		Morphology(ifstream &ifs)
 		{			
 			string checkIT = MyUtils::ReadString(ifs);
@@ -381,6 +402,9 @@ namespace ngramchecker {
 			morphoData = MyBitArray(ifs);
 		}
 
+		/// @brief Write the morphology to output stream
+		///
+		/// @param ofs Output stream
 		void WriteToStream(ostream &ofs)
 		{
 			MyUtils::WriteString(ofs, "Morphology");

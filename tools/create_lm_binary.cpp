@@ -1,3 +1,8 @@
+/// @file create_lm_binary.cpp
+/// @brief Tool for creating language model (LM) binaries
+///
+/// Usage: ./create_lm_binary [ARPA language model] [binary morphology] [binary vocabulary] [factor name] [language model order] [output binary language model]
+
 #include "StdAfx.h"
 #include "Morphology.hpp"
 #include "ZipLM.hpp"

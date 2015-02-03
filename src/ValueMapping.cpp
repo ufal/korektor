@@ -3,12 +3,21 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
+/// @file ValueMapping.cpp
+/// @class ValueMapping ValueMapping.hpp "ValueMapping.hpp"
+/// @brief Data structure for mapping the array of values to larger
+/// set of values that includes the original set as well as more values within the range of the original set.
+///
+/// @todo Logic is still not clear
 #include "ValueMapping.hpp"
 #include "utils.hpp"
 
 namespace ngramchecker {
 
-
+		/// @brief Get the closest value in the larger mapped set
+		///
+		/// @param value Value from the original set
+		/// @return Value close to the supplied parameter in the mapped set
 		uint32_t ValueMapping::GetCenterID(double value) const
 		{
 			uint32_t left = 0;
@@ -40,6 +49,9 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Write the mapped set data structure to the output stream
+		///
+		/// @param ofs Output stream
 		void ValueMapping::writeToStream(ostream &ofs) const
 		{
 			uint32_t num_centers = sorted_centers.size();
@@ -52,12 +64,18 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Constructor initialization from already mapped set. Only sorting is done in the constructor.
+		///
+		/// @param centers Vector of values
 		ValueMapping::ValueMapping(vector<double> centers)
 		{
 			sort(centers.begin(), centers.end());
 			sorted_centers = centers;
 		}
 
+		/// @brief Constructor initialization from input stream
+		///
+		/// @param ifs Input stream
 		ValueMapping::ValueMapping(istream &ifs)
 		{
 			uint32_t num_centers;
@@ -73,7 +91,10 @@ namespace ngramchecker {
 
 		}
 
-
+		/// @brief Constructor. Initializes the data structure from vector of values. Larger set is constructed from this vector.
+		///
+		/// @param values Vector of values
+		/// @param bits_per_value Bits per value
 		ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value): num_bits_per_value(bits_per_value)
 		{
 			uint32_t num_classes = 1;
