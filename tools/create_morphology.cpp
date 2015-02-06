@@ -29,6 +29,8 @@ uint node_id_counter;
 class morpho_node;
 SP_DEF(morpho_node);
 
+
+/// @class morpho_node
 class morpho_node {
 public:
 	uint factor_id;
@@ -183,22 +185,25 @@ struct Dependency {
 		governing_factor(_governing_factor), governed_factor(_governed_factor), dependency_map(_dependency_map) {}
 };
 
+
+/// @struct CM_variables
+/// @brief Data structure that takes care of various components in creating morphological representation of the morphological lexicon
 struct CM_variables {
-	vector<string> factors; //name of the factors;
-	morpho_nodeP root; //root of the morphology tree;
-	vector<vector<morpho_nodeP> > levels; //level sets of the morphology tree;
-	vector<uint> bits_per_value; //number of bits needed to store a factorID for the particular factor
-	vector<uint> bits_per_children; //number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
-	vector<bool> is_factor_grouped; //true if the factors at the given levels are grouped;
+	vector<string> factors; ///< Name of the factors;
+	morpho_nodeP root; ///< Root of the morphology tree;
+	vector<vector<morpho_nodeP> > levels; ///< Level sets of the morphology tree;
+	vector<uint> bits_per_value; ///< Number of bits needed to store a factorID for the particular factor
+	vector<uint> bits_per_children; ///<  Number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
+	vector<bool> is_factor_grouped; ///< True if the factors at the given levels are grouped;
 	vector<bool> is_factor_dependant;
-	vector<vector<string> > factor_string_lists;
+	vector<vector<string> > factor_string_lists; ///< Stores individual factor strings in vector
 	vector<uint32_t> factor_next_id;
 	vector<map<string, uint32_t> > factor_dictionaries;
-	vector<Dependency> dependencies; //list of all factor dependencies
+	vector<Dependency> dependencies; ///< List of all factor dependencies
 	map<uint32_t, vector<GroupFactorsP> > groupings;
 	vector<pair<uint, uint> > bit_array_data;
 	map<uint, uint> node_group_map;
-	uint num_factors;
+	uint num_factors; ///< Number of factors
 	map<pair<uint, uint>, bool> is_dependence;
 	map<pair<uint, uint>, map<uint, uint> > dep_struct;
 	Emissions emissions;
