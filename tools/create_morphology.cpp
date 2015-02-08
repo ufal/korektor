@@ -1,3 +1,7 @@
+/// @file create_morphology.cpp
+/// @brief Tool for creating internal binary representation of morphology and lexicon from external text files
+
+
 #include <vector>
 #include <map>
 #include <string>
@@ -31,14 +35,22 @@ SP_DEF(morpho_node);
 
 
 /// @class morpho_node
+/// @brief Fundamental unit for storing individual factors such as forms, lemmas and tags.
+///
+/// The class @ref morpho_node is used for storing individual factors such as forms, lemmas and tags.
+/// Each form, lemma or tag is an instance of @ref morpho_node.
+///
 class morpho_node {
 public:
-	uint factor_id;
-	uint node_id;
-	uint num_children;
+	uint factor_id; ///< ID within the factor (forms, lemmas, tags, ...)
+	uint node_id; ///< Overall node ID
+	uint num_children; ///< Number of children of this node
 	//map<uint, morpho_nodeP > children;
-	map<uint, morpho_nodeP> children;
+	map<uint, morpho_nodeP> children; ///< Children of this node
 
+	/// @brief Constructor initialization
+	///
+	/// @param _factor_id Factor ID.
 	morpho_node(uint _factor_id): factor_id(_factor_id), num_children(0)
 	{
 		node_id = node_id_counter;
@@ -113,22 +125,38 @@ public:
 
 };
 
+/// @class GroupFactors
+/// @brief Class for a group of individual factors (lemmas, tags, forms etc.)
+///
+/// Class for grouping individual factors. Each group is a vector of factors such as lemmas, forms, or tags.
+/// Internally groups will be used to reduce the space by replacing the group with some group identifier representing
+/// that particular group.
 class GroupFactors {
 private:
-	vector<uint> factor_ids;
+	vector<uint> factor_ids; ///< Individual factor IDs
 public:
 
+	/// @brief Constructor initialization from a vector of factor ids
+	///
+	/// @param _factor_ids Vector of factor ids
 	GroupFactors(vector<uint> &_factor_ids)
 	{
 		factor_ids = _factor_ids;
 		std::sort(factor_ids.begin(), factor_ids.end());
 	}
 
+	/// @brief Get the size of the group, i.e. the number of factors in the group
+	///
+	/// @return Size of the group (integer)
 	uint NumFactors()
 	{
 		return factor_ids.size();
 	}
 
+	/// @brief Get the factor id at a given index
+	///
+	/// @param index Index in the group vector
+	/// @return The factor id at the given index
 	uint GetFactorAt(uint index)
 	{
 		return factor_ids[index];
@@ -175,9 +203,12 @@ struct GroupFactorsP_ihash: std::unary_function<GroupFactorsP, std::size_t>
 
 typedef unordered_map<GroupFactorsP, uint, GroupFactorsP_ihash, GroupFactorsP_iequal_to> map_GroupFactorsP;
 
+
+/// @struct Dependency
+/// @brief Data structure for maintaining dependencies between factors
 struct Dependency {
-	uint governing_factor;
-	uint governed_factor;
+	uint governing_factor; ///< Governing factor
+	uint governed_factor; ///< Dependent factor
 
 	map<uint, uint> dependency_map;
 
@@ -187,7 +218,7 @@ struct Dependency {
 
 
 /// @struct CM_variables
-/// @brief Data structure that takes care of various components in creating morphological representation of the morphological lexicon
+/// @brief Data structure that takes care of various components in creating internal morphological representation of the morphological lexicon
 struct CM_variables {
 	vector<string> factors; ///< Name of the factors;
 	morpho_nodeP root; ///< Root of the morphology tree;
@@ -208,6 +239,9 @@ struct CM_variables {
 	map<pair<uint, uint>, map<uint, uint> > dep_struct;
 	Emissions emissions;
 
+	/// @brief Initialize the datastructure
+	///
+	/// @param _num_factors Number of factors
 	void init(uint _num_factors)
 	{
 		num_factors = _num_factors;
