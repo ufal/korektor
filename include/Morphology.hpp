@@ -206,6 +206,10 @@ namespace ngramchecker {
 			return morpho_word_lists[factor_index]->GetStringAt(ID);
 		}
 
+
+		/// @brief Initialize the factor maps for each factor sets
+		///
+		/// Each factor contains set of strings. For each factor, this function creates a map of the form <string, int>.
 		void initMorphoWordMaps()
 		{
 			morpho_maps.clear();
@@ -222,6 +226,11 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Get the ID for the string in the given factor
+		///
+		/// @param factor_index Index of the factor in which we should look for the id of the string
+		/// @param str String for which we should find the ID
+		/// @return Factor ID, i.e. ID of the string within the given factor
 		int GetFactorID(uint factor_index, const string &str)
 		{
 			if (morpho_maps.size() == 0)
@@ -237,6 +246,12 @@ namespace ngramchecker {
 
 		}
 
+		/// @brief Read the vocabulary from binary file
+		///
+		/// This function reads the vocabulary from binary file.
+		/// The binary file contains the number of factors and the vocabulary for each factor.
+		///
+		/// @param filename File name of the binary lexicon
 		void initMorphoWordLists(string filename)
 		{
 			morpho_word_lists.clear();
