@@ -8,6 +8,15 @@
 
 namespace ngramchecker {
 
+		/// @brief Binarize the LM from plain text input
+		///
+		/// @param _factor_name Name of the factor for which the LM is being constructed
+		/// @param _order N-gram order
+		/// @param _not_in_lm_cost @todo Default LM probability
+		/// @param _probs Probabilities for each N-gram order (n...1)
+		/// @param _bows Backoff weights for each N-gram except the highest order (n-1...1)
+		/// @param _ids Word IDs
+		/// @param _offsets @todo Offsets ?
 		ZipLM::ZipLM(const string &_factor_name, uint32_t _order, double _not_in_lm_cost, vector<vector<double> > &_probs, vector<vector<double> > &_bows,
 				vector<vector<uint32_t> > &_ids, vector<vector<uint32_t> > &_offsets)
 		{
@@ -64,6 +73,9 @@ namespace ngramchecker {
 			}
 		}
 
+		/// @brief Read the LM from already binarized file
+		///
+		/// @param bin_file Binary file name
 		ZipLM::ZipLM(string bin_file)
 		{
 			filename = bin_file;
@@ -109,7 +121,9 @@ namespace ngramchecker {
 
 		}
 
-
+		/// @brief Write the binary LM to file
+		///
+		/// @param out_file Output file name
 		void ZipLM::SaveInBinaryForm(string out_file)
 		{
 			cerr << "Saving in binary form..." << endl;

@@ -36,7 +36,7 @@ namespace ngramchecker {
 
 		/// @brief Constructor initialization
 		///
-		/// @param order N-
+		/// @param order N-gram order
 		NGram(uint32_t _order): order(_order)
 		{
 			word_ids = new uint32_t[order];

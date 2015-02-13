@@ -29,15 +29,16 @@ namespace ngramchecker {
 	class Morphology;
 	SP_DEF(Morphology);
 
-	//LM_tuple represents a node of a language model tree, it contains the extent of the higher level ngrams (next level child nodes) by 'nlevel_offset' and 'nlevel_entries'
-	//, it also stores ngram probability 'prob' and back-off weight 'bow'
+	/// @struct LM_tuple
+	/// @brief LM_tuple represents a node of a language model tree, it contains the extent of the higher level ngrams (next level child nodes) by 'nlevel_offset' and 'nlevel_entries'
+	/// , it also stores ngram probability 'prob' and back-off weight 'bow'
 	struct LM_tuple {
 		//uint32_t word_id;
 		uint nlevel_offset;
 		int nlevel_entries;
 
-		float prob;
-		float bow;
+		float prob; ///< Probability
+		float bow; ///< Backoff weight
 
 	};
 
