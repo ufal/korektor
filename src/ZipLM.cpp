@@ -181,7 +181,9 @@ namespace ngramchecker {
 
 		}
 
-
+		/// @brief Get the maximum value among the unigram IDs
+		///
+		/// @return Maximum unigram ID
 		uint32_t ZipLM::MaxUnigramID()
 		{
 			return probs[0]->GetSize() - 1;

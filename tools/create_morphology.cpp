@@ -50,7 +50,7 @@ public:
 
 	/// @brief Constructor initialization
 	///
-	/// @param _factor_id Factor ID.
+	/// @param _factor_id Factor ID, i.e., ID within that factor.
 	morpho_node(uint _factor_id): factor_id(_factor_id), num_children(0)
 	{
 		node_id = node_id_counter;
@@ -61,17 +61,28 @@ public:
 
 const uint MINIMAL_COUNT_FOR_ADDING_NEW_WORD = 200;
 
+
+/// @struct Emissions
+/// @brief Data structure for emission counts
 struct Emissions {
 	
 	//map<pair<uint, pair<uint, uint> >, uint> jointCounts;
 	//map<> counts;
 
-	map<triple(uint, uint, uint), uint> jointCounts;
-	map<pair<uint, uint>, uint> counts;
+	map<triple(uint, uint, uint), uint> jointCounts; ///< Joint count
+	map<pair<uint, uint>, uint> counts; ///< Individual count
 
-	ValueMappingP value_mapping;
+	ValueMappingP value_mapping; ///< Mapped emission costs
 
 public:
+
+	/// @brief Update the count for the morphological entry. The function updates the joint count (factor_index, factor_id, form_id)
+	/// as well as the factor counts (factor_index, factor_id)
+	///
+	/// @param form_id Top level factor ID (first factor)
+	/// @param factor_index Factor index
+	/// @param factor_id Factor ID within the factor
+	/// @param count How much should be incremented (default = 1)
 	void AddCount(uint form_id, uint factor_index, uint factor_id, uint count = 1)
 	{
 		triple(uint, uint, uint) key = make_triple(factor_index, factor_id, form_id);
@@ -98,6 +109,12 @@ public:
 
 	}
 
+	/// @brief Get the emission cost. Emission cost = count (<factor_index, factor_id, form_id>) /  count (<factor_index, factor_id>)
+	///
+	/// @param form_id Top level factor ID (first factor)
+	/// @param factor_index Factor index
+	/// @param factor_id Factor ID within the factor
+	/// @return The emission cost
 	double GetEmissionCost(uint form_id, int factor_index, uint factor_id)
 	{
 		triple(uint, uint, uint) key_joint = make_triple(factor_index, factor_id, form_id);
@@ -106,11 +123,19 @@ public:
 		return (-log((double)jointCounts[key_joint] / (double)counts[key])) / log(10.0);
 	}
 
+	/// @brief Get the mapped emission cost from the mapped emission costs
+	///
+	/// @param form_id Top level factor ID (first factor)
+	/// @param factor_index Factor index
+	/// @param factor_id Factor ID within the factor
+	/// @return Pair <mapped emission cost, bits per value>
 	pair<uint, uint> GetEmissionCostMapped(uint form_id, int factor_index, uint factor_id)
 	{
 		return make_pair(value_mapping->GetCenterID(GetEmissionCost(form_id, factor_index, factor_id)), value_mapping->BitsPerValue());
 	}
 
+	/// @brief Initialize the mapping of emission costs
+	///
 	void init_value_mapping()
 	{
 		vector<double> costs;
@@ -218,7 +243,7 @@ struct Dependency {
 
 
 /// @struct CM_variables
-/// @brief Data structure that takes care of various components in creating internal morphological representation of the morphological lexicon
+/// @brief Data structure that takes care of various components in creating internal morphological representation of the morphological lexicon.
 struct CM_variables {
 	vector<string> factors; ///< Name of the factors;
 	morpho_nodeP root; ///< Root of the morphology tree;
@@ -521,6 +546,11 @@ bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add
 		return true;
 }
 
+/// @fn string createSpecialMorphologyEntry(const string &spec)
+/// @brief Create morphology entry for special tokens such as <s>, </s> and so on.
+///
+/// @param spec Special token for which the morphology entry must be created
+/// @return Full morphology entry similar to morphology entry in the dictionaries for special tokens
 string createSpecialMorphologyEntry(const string &spec)
 {
 	stringstream strs;
