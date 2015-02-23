@@ -1,6 +1,28 @@
 #!/usr/bin/env python
 
-# Usage: ./create_data_from_cnc.py <input_file> <output_directory>
+"""
+Usage: ./create_data_from_cnc.py <input_file> <output_directory>
+The program reads the input data in CNC format and outputs several files needed for
+training models.
+
+The following files are created in the <output_directory>
+
+1. morphlex.txt - This file is used by korektor morphology tool for creating morphological lexicon.
+                  Each line of the morphlex.txt has of the format - "form|lemma|POS"
+
+2. freq.txt - This file contains frequency counts for the morphological lexicon. The format of the file is
+                  "form|lemma|POS freq_count"
+
+3. forms.txt - One sentence per line from the CNC corpus
+
+4. lemmas.txt - One sentence per line from the CNC corpus, but lemmas instead of forms
+
+5. tags.txt - Once sentence per line. The file contains tags for each form in the CNC corpus (forms.txt)
+
+6. forms_tags.txt - Once sentence per line. This file contains both forms and tags and are delimited by '/'
+
+"""
+
 import codecs
 import re
 import sys
@@ -20,6 +42,7 @@ def write_data(filename, outputDir):
         sentence = []
         senOfLemmas = []
         senOfTags = []
+        senOfFormTags = []
         senStarted = False
 
         # patterns in CNC file
@@ -35,10 +58,12 @@ def write_data(filename, outputDir):
                 fHandles[2].write(' '.join(sentence) + '\n')
                 fHandles[3].write(' '.join(senOfLemmas) + '\n')
                 fHandles[4].write(' '.join(senOfTags) + '\n')
+                fHandles[5].write(' '.join(senOfFormTags) + '\n')
                 senStarted = False
                 sentence = []
                 senOfLemmas = []
                 senOfTags = []
+                senOfFormTags = []
 
             if senStarted:
                 lineC = re.sub(r'\n$', r'', line)
@@ -52,6 +77,7 @@ def write_data(filename, outputDir):
                     sentence.append(tokens[0])
                     senOfLemmas.append(tokens[1])
                     senOfTags.append(tokens[2])
+                    senOfFormTags.append(tokens[0] + '/' + tokens[2])
 
                     # frequency counts
                     tokTuple = (tokens[0], tokens[1], tokens[2])
