@@ -1,8 +1,8 @@
 #include "StdAfx.h"
-
-#include "Configuration.hpp"
-#include "Spellchecker.hpp"
-#include "Tokenizer.hpp"
+#include "korlib/Configuration.hpp"
+#include "korlib/Spellchecker.hpp"
+#include "korlib/Tokenizer.hpp"
+#include "korlib/utils.hpp"
 
 int main(int argc, char* argv[])
 {

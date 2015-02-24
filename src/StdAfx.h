@@ -45,8 +45,8 @@ All rights reserved.
 
 using namespace std;
 
-#include "typedefs.hpp"
-#include "constants.hpp"
+#include "korlib/typedefs.hpp"
+#include "korlib/constants.hpp"
 
 using namespace ngramchecker;
 

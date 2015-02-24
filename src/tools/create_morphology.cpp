@@ -7,15 +7,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "MyBitArray.hpp"
-#include "MyPackedArray.hpp"
-#include "CompIncreasingArray.hpp"
-#include "utils.hpp"
 #include "StdAfx.h"
-#include "MyStaticStringArray.hpp"
-#include "Morphology.hpp"
-#include "Lexicon.hpp"
-#include "ValueMapping.hpp"
+#include "korlib/MyBitArray.hpp"
+#include "korlib/utils.hpp"
+#include "korlib/Morphology.hpp"
+#include "korlib/Lexicon.hpp"
 
 #define MAX_GROUP_COUNT 100000
 

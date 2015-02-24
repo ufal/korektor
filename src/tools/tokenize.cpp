@@ -9,8 +9,8 @@
 #include <stdint.h>
 #include "StdAfx.h"
 
-#include "Token.hpp"
-#include "Tokenizer.hpp"
+#include "korlib/Token.hpp"
+#include "korlib/Tokenizer.hpp"
 
 #ifndef uint
 #define uint uint32_t

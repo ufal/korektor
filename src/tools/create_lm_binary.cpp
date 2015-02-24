@@ -4,8 +4,8 @@
 /// Usage: ./create_lm_binary [ARPA language model] [binary morphology] [binary vocabulary] [factor name] [language model order] [output binary language model]
 
 #include "StdAfx.h"
-#include "Morphology.hpp"
-#include "ZipLM.hpp"
+#include "korlib/Morphology.hpp"
+#include "korlib/ZipLM.hpp"
 
 int main(int argc, char** argv)
 {

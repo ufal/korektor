@@ -1,29 +1,21 @@
-﻿#include <string>
+#include <string>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <iostream>
 #include <fstream>
-
 #include <stdint.h>
-#include <StdAfx.h>
 
-#ifndef uint
-#define uint uint32_t
-#endif
+#include "StdAfx.h"
 
-using namespace std;
+#include "korlib/utils.hpp"
+#include "korlib/MyUnicodeInputStream.hpp"
+#include "korlib/ErrorModelBasic.hpp"
 
-#include "utils.hpp"
-#include "MyUnicodeInputStream.hpp"
-#include "ErrorModelBasic.hpp"
-
-
-#include "error_hierarchy.hpp"
-
-#include "get_error_signature.hpp"
-#include "create_error_hierarchy.hpp"
-#include "estimate_error_model.hpp"
+#include "create_error_model/error_hierarchy.hpp"
+#include "create_error_model/get_error_signature.hpp"
+#include "create_error_model/create_error_hierarchy.hpp"
+#include "create_error_model/estimate_error_model.hpp"
 
 using namespace ngramchecker;
 

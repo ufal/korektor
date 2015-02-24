@@ -8,6 +8,7 @@ All rights reserved.
 #include "Token.hpp"
 #include "Configuration.hpp"
 #include "Morphology.hpp"
+#include "constants.hpp"
 
 namespace ngramchecker {
 

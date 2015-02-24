@@ -5,19 +5,11 @@
 
 
 #include "StdAfx.h"
-#include "Configuration.hpp"
-#include "ZipLM.hpp"
-#include "LMWrapper.hpp"
-#include "Morphology.hpp"
-#include "Lexicon.hpp"
-#include "ErrorModelBasic.hpp"
-#include "SimWordsFinder.hpp"
-#include "Token.hpp"
-#include "utils.hpp"
-#include "Spellchecker.hpp"
-#include "Tokenizer.hpp"
-#include "MyUTF.hpp"
-//#include "DecoderMultiFactor2.hpp"
+#include "korlib/Configuration.hpp"
+#include "korlib/Lexicon.hpp"
+#include "korlib/Spellchecker.hpp"
+#include "korlib/Tokenizer.hpp"
+#include "korlib/utils.hpp"
 
 /// @brief Help message
 void print_help()
