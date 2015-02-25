@@ -22,7 +22,6 @@ All rights reserved.
 #include <vector>
 #include <set>
 #include <string>
-//#include <ctime>
 #include <cstdlib>
 #include <string.h>
 #include <fstream>
@@ -37,11 +36,6 @@ All rights reserved.
 #include <unordered_set>
 #include <unordered_map>
 #include <memory>
-
-//boost:
-//#include <boost/lexical_cast.hpp>
-//#include <boost/algorithm/string.hpp>
-//#include <boost/functional/hash.hpp>
 
 using namespace std;
 
@@ -62,10 +56,5 @@ using namespace ngramchecker;
 #define FIRST(A) A.first
 #define SECOND(A) A.second.first
 #define THIRD(A) A.second.second
-
-
-
-//#pragma warning( disable : 4800 )
-//#pragma warning( disable : 4503 )
 
 #endif /* COMMONHEADER_HPP_ */
