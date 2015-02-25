@@ -13,15 +13,6 @@
 #ifndef _TYPEDEFS_HPP_
 #define _TYPEDEFS_HPP_
 
-#if defined(_MSC_VER) || defined(__BORLANDC__)
-typedef unsigned __int64 ulong64;
-typedef signed __int64 long64;
-#else
-typedef unsigned long long ulong64;
-typedef signed long long long64;
-
-#endif
-
 #include <memory>
 
 using namespace std;

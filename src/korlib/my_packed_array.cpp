@@ -181,7 +181,7 @@ MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
 
   uint32_t byte_pointer;
   uint32_t bit_pointer;
-  ulong64 curr_value;
+  uint64_t curr_value;
   unsigned char* ukaz;
   for (uint32_t i = 0; i < values.size(); i++)
   {

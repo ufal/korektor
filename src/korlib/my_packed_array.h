@@ -51,7 +51,7 @@ class MyPackedArray {
     uint32_t byte_pointer = bit >> 3;
     uint32_t bit_offset = bit % 8;
 
-    ulong64 retVal = *((ulong64*)&(data[byte_pointer]));
+    uint64_t retVal = *((uint64_t*)&(data[byte_pointer]));
     retVal = (retVal >> bit_offset) & output_mask;
 
     return (uint32_t)retVal;

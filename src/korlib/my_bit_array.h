@@ -63,12 +63,12 @@ class MyBitArray {
     uint32_t byte_pointer = index >> 3;
     uint32_t bit_offset = index % 8;
 
-    ulong64 retVal = *((ulong64*)&(data[byte_pointer]));
+    uint64_t retVal = *((uint64_t*)&(data[byte_pointer]));
     retVal = (retVal >> bit_offset) & output_mask[num_bits];
 
     return (uint32_t)retVal;
 
-//    ulong64 retVal = 0;
+//    uint64_t retVal = 0;
 //    unsigned char* ukaz = (unsigned char*)&retVal;
 //
 //    uint32_t byte_pointer = index >> 3;
@@ -221,7 +221,7 @@ class MyBitArray {
     uint32_t byte_pointer;
     uint32_t bit_pointer;
     uint32_t bit_position = 0;
-    ulong64 curr_value;
+    uint64_t curr_value;
     unsigned char* ukaz;
     for (uint32_t i = 0; i < values.size(); i++)
     {
