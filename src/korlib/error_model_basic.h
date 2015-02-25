@@ -12,6 +12,8 @@
 #ifndef _ERROR_MODEL_BASIC_HPP
 #define _ERROR_MODEL_BASIC_HPP
 
+#include <tuple>
+
 #include "common.h"
 #include "error_model.h"
 #include "utils.h"
@@ -35,15 +37,15 @@ struct char16_pair_hash : std::unary_function<pair<char16_t, char16_t>, size_t>
 };
 /// @struct char16_triple_hash error_model_basic.h "error_model_basic.h"
 /// @brief Generates hash value given 3 strings
-struct char16_triple_hash : std::unary_function<triple(char16_t, char16_t, char16_t), size_t>
+struct char16_triple_hash : std::unary_function<tuple<char16_t, char16_t, char16_t>, size_t>
 {
-  size_t operator()(const triple(char16_t, char16_t, char16_t) &val) const
+  size_t operator()(const tuple<char16_t, char16_t, char16_t> &val) const
   {
     size_t seed = 0;
 
-    MyUtils::HashCombine(seed, FIRST(val));
-    MyUtils::HashCombine(seed, SECOND(val));
-    MyUtils::HashCombine(seed, THIRD(val));
+    MyUtils::HashCombine(seed, get<0>(val));
+    MyUtils::HashCombine(seed, get<1>(val));
+    MyUtils::HashCombine(seed, get<2>(val));
 
     return seed;
   }
@@ -54,7 +56,7 @@ class ErrorModelBasic : public ErrorModel
  private:
 
   unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> substitution_map; ///< Substitution map
-  unordered_map<triple(char16_t, char16_t, char16_t), ErrorModelOutput, char16_triple_hash> insertion_map; ///< Insertion map
+  unordered_map<tuple<char16_t, char16_t, char16_t>, ErrorModelOutput, char16_triple_hash> insertion_map; ///< Insertion map
   unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> deletion_map; ///< Deletion map
   unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> swap_map; ///< Swap map
 
@@ -130,19 +132,19 @@ class ErrorModelBasic : public ErrorModel
         char16_t ch2 = signature[3];
         char16_t ch3 = signature[4];
 
-        insertion_map[make_triple(ch1, ch2, ch3)] = emo;
+        insertion_map[make_tuple(ch1, ch2, ch3)] = emo;
 
         char16_t ch1_uc = MyUtils::ToUpper(ch1);
         char16_t ch2_uc = MyUtils::ToUpper(ch2);
         char16_t ch3_uc = MyUtils::ToUpper(ch3);
 
-        insertion_map[make_triple(ch1_uc, ch2, ch3)] = emo;
-        insertion_map[make_triple(ch1, ch2_uc, ch3)] = emo;
-        insertion_map[make_triple(ch1_uc, ch2_uc, ch3)] = emo;
-        insertion_map[make_triple(ch1, ch2, ch3_uc)] = emo;
-        insertion_map[make_triple(ch1_uc, ch2, ch3_uc)] = emo;
-        insertion_map[make_triple(ch1, ch2_uc, ch3_uc)] = emo;
-        insertion_map[make_triple(ch1_uc, ch2_uc, ch3_uc)] = emo;
+        insertion_map[make_tuple(ch1_uc, ch2, ch3)] = emo;
+        insertion_map[make_tuple(ch1, ch2_uc, ch3)] = emo;
+        insertion_map[make_tuple(ch1_uc, ch2_uc, ch3)] = emo;
+        insertion_map[make_tuple(ch1, ch2, ch3_uc)] = emo;
+        insertion_map[make_tuple(ch1_uc, ch2, ch3_uc)] = emo;
+        insertion_map[make_tuple(ch1, ch2_uc, ch3_uc)] = emo;
+        insertion_map[make_tuple(ch1_uc, ch2_uc, ch3_uc)] = emo;
       }
       else if (signature.substr(0, 2) == MyUtils::utf8_to_utf16("d_"))
       {
@@ -196,9 +198,9 @@ class ErrorModelBasic : public ErrorModel
 
     for (auto it = insertion_map.begin(); it != insertion_map.end(); it++)
     {
-      ofs.write((char*)&(FIRST(it->first)), sizeof(char16_t));
-      ofs.write((char*)&(SECOND(it->first)), sizeof(char16_t));
-      ofs.write((char*)&(THIRD(it->first)), sizeof(char16_t));
+      ofs.write((char*)&(get<0>(it->first)), sizeof(char16_t));
+      ofs.write((char*)&(get<1>(it->first)), sizeof(char16_t));
+      ofs.write((char*)&(get<2>(it->first)), sizeof(char16_t));
       ofs.write((char*)&(it->second.cost), sizeof(float));
       ofs.write((char*)&(it->second.edit_dist), sizeof(uint32_t));
     }
@@ -378,7 +380,7 @@ class ErrorModelBasic : public ErrorModel
       ifs.read((char*)&cost, sizeof(float));
       ifs.read((char*)&ed_dist, sizeof(uint32_t));
 
-      insertion_map[make_triple(ch1, ch2, ch3)] = ErrorModelOutput(ed_dist, cost);
+      insertion_map[make_tuple(ch1, ch2, ch3)] = ErrorModelOutput(ed_dist, cost);
     }
 
     uint num_dels;
@@ -475,7 +477,7 @@ class ErrorModelBasic : public ErrorModel
   /// @return An object of type @ref ErrorModelOutput containing the insertion cost and edit distance
   virtual ErrorModelOutput InsertionCost(char16_t inserted_char, char16_t previous_char, char16_t next_char)
   {
-    auto fit = insertion_map.find(make_triple(inserted_char, previous_char, next_char));
+    auto fit = insertion_map.find(make_tuple(inserted_char, previous_char, next_char));
     if (fit == insertion_map.end())
       return insertion_default;
     else

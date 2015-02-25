@@ -50,11 +50,4 @@ using namespace ngramchecker;
 
 #define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
 
-#define triple(A, B, C) pair<A, pair<B, C> >
-#define make_triple(A, B, C) std::make_pair(A, std::make_pair(B, C))
-
-#define FIRST(A) A.first
-#define SECOND(A) A.second.first
-#define THIRD(A) A.second.second
-
 #endif /* COMMONHEADER_HPP_ */

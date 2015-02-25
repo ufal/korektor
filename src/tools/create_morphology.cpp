@@ -6,6 +6,7 @@
 #include <sstream>
 #include <stdint.h>
 #include <stdio.h>
+#include <tuple>
 
 #include "common.h"
 #include "korlib/my_bit_array.h"
@@ -48,7 +49,7 @@ struct Emissions {
   //map<pair<uint, pair<uint, uint> >, uint> jointCounts;
   //map<> counts;
 
-  map<triple(uint, uint, uint), uint> jointCounts;
+  map<tuple<uint, uint, uint>, uint> jointCounts;
   map<pair<uint, uint>, uint> counts;
 
   ValueMappingP value_mapping;
@@ -56,7 +57,7 @@ struct Emissions {
  public:
   void AddCount(uint form_id, uint factor_index, uint factor_id, uint count = 1)
   {
-    triple(uint, uint, uint) key = make_triple(factor_index, factor_id, form_id);
+    tuple<uint, uint, uint> key = make_tuple(factor_index, factor_id, form_id);
 
     if (jointCounts.find(key) == jointCounts.end())
     {
@@ -82,7 +83,7 @@ struct Emissions {
 
   double GetEmissionCost(uint form_id, int factor_index, uint factor_id)
   {
-    triple(uint, uint, uint) key_joint = make_triple(factor_index, factor_id, form_id);
+    tuple<uint, uint, uint> key_joint = make_tuple(factor_index, factor_id, form_id);
     pair<uint, uint> key = make_pair(factor_index, factor_id);
 
     return (-log((double)jointCounts[key_joint] / (double)counts[key])) / log(10.0);
@@ -96,10 +97,10 @@ struct Emissions {
   void init_value_mapping()
   {
     vector<double> costs;
-    for (map<triple(uint, uint, uint), uint>::iterator it = jointCounts.begin(); it != jointCounts.end(); it++)
+    for (map<tuple<uint, uint, uint>, uint>::iterator it = jointCounts.begin(); it != jointCounts.end(); it++)
     {
-      triple(uint, uint, uint) key = it->first;
-      costs.push_back(GetEmissionCost(THIRD(key), FIRST(key), SECOND(key)));
+      tuple<uint, uint, uint> key = it->first;
+      costs.push_back(GetEmissionCost(get<2>(key), get<0>(key), get<1>(key)));
     }
 
     value_mapping = ValueMappingP(new ValueMapping(costs, 8));
