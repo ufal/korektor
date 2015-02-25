@@ -123,6 +123,8 @@ class Morphology {
 
   void get_morphology_rec(uint level, FactorList &flist, vector<FactorList> &ret, uint& bit_offset, Configuration *configuration, int next_factor = -1)
   {
+    FATAL_CONDITION(level < FactorList::MAX_FACTORS, "Too many factors encountered!");
+
     bool current_level_enabled = configuration->FactorIsEnabled(level);
 
 
@@ -339,7 +341,7 @@ class Morphology {
 
     ifs.read((char*)&num_factors, sizeof(uint32_t));
 
-    FATAL_CONDITION(num_factors < 20, "");
+    FATAL_CONDITION(num_factors <= FactorList::MAX_FACTORS, "Too many factors!");
     for (size_t i = 0; i < num_factors; i++)
     {
       dependencies.push_back(morpho_dependencyP());

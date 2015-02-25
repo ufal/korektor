@@ -139,10 +139,6 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  uint last_enabled_factor = configuration->GetLastEnabledFactorIndex();
-  //Decoder2<3, 3> decoder(configuration.get());
-
-
   while (MyUtils::SafeReadline(cin, s))
   {
     if (configuration->mode_string == "tag_errors")

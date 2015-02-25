@@ -121,12 +121,8 @@ bool MyUtils::ContainsLetter(const u16string &ustr)
 
 capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &ustr)
 {
-  capitalization_type ct = all_lower_case;
-
   if (MyUtils::IsUpperCase(ustr[0]))
   {
-    ct = first_upper_case;
-
     for (uint i = 1; i < ustr.length(); i++)
     {
       if (MyUtils::IsUpperCase(ustr[i]) == false)

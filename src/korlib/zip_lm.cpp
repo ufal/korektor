@@ -78,17 +78,10 @@ void ZipLM::get_lm_tuple(uint32_t _order, uint32_t _offset, LM_tuple &ret)
   else
     bow = 0;
 
-  uint32_t word_id;
-  if (_order > 0)
-    word_id = ids[_order]->GetValueAt(_offset);
-  else
-    word_id = _offset;
-
   if (_order < lm_order - 1)
   {
     CompIA_First_Last_IndexPair offset_pair = offsets[_order]->GetFirstLastIndexPair(_offset);
 
-    //ret.word_id = word_id;
     ret.nlevel_offset = offset_pair.first;
     ret.nlevel_entries = offset_pair.second - offset_pair.first + 1;
     ret.prob = prob;
@@ -97,7 +90,6 @@ void ZipLM::get_lm_tuple(uint32_t _order, uint32_t _offset, LM_tuple &ret)
   }
   else
   {
-    //ret.word_id = word_id;
     ret.nlevel_offset = 1;
     ret.nlevel_entries = 0;
     ret.prob = prob;
@@ -151,6 +143,8 @@ void ZipLM::GetNGramForNGramKey(NGram &ngram_key, NGram &ngram_ret)
   uint ret_order = 0;
 
   LM_tuple lm_tup;
+  lm_tup.prob = not_in_lm_cost; // Default for not-found ngram
+  lm_tup.bow = 0; // Default for not-found ngram
 
   for (uint32_t order = 0; order < input_order; order++)
   {
@@ -163,26 +157,16 @@ void ZipLM::GetNGramForNGramKey(NGram &ngram_key, NGram &ngram_ret)
     get_lm_tuple(order, offset, lm_tup);
 
     ret_order++;
-    //ids.push_back(tok_id);
 
     start_offset = lm_tup.nlevel_offset;
     end_offset = lm_tup.nlevel_offset + lm_tup.nlevel_entries - 1;
   }
 
-  if (ret_order == 0)
-  {
-    ngram_ret.order = 0;
-    ngram_ret.prob = not_in_lm_cost;
-    ngram_ret.backoff = 0;
-  }
-  else
-  {
-    ngram_ret.order = ret_order;
+  ngram_ret.order = ret_order;
+  if (ret_order)
     memcpy(ngram_ret.word_ids, ngram_key.word_ids, ngram_ret.order * sizeof(uint32_t));
-    ngram_ret.prob = lm_tup.prob;
-    ngram_ret.backoff = lm_tup.bow;
-  }
-
+  ngram_ret.prob = lm_tup.prob;
+  ngram_ret.backoff = lm_tup.bow;
 }
 
 

@@ -17,6 +17,8 @@
 /// @struct FactorList factor_list.h "factor_list.h"
 /// @brief Data structure for factors.
 struct FactorList {
-  uint factors[4];
-  float emission_costs[4];
+  enum { MAX_FACTORS = 4 };
+
+  uint factors[MAX_FACTORS];
+  float emission_costs[MAX_FACTORS];
 };

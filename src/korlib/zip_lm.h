@@ -42,7 +42,6 @@ struct LM_tuple {
 
   float prob;
   float bow;
-
 };
 
 class ZipLM;

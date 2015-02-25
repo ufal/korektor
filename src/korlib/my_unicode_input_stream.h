@@ -23,7 +23,7 @@ class MyUTF8InputStream
   bool closed;
 
 
-  MyUTF8InputStream(const MyUTF8InputStream& val) {}
+  MyUTF8InputStream(const MyUTF8InputStream&) {}
   MyUTF8InputStream() {}
 
  public:

@@ -211,6 +211,8 @@ struct CM_variables {
 
   void init(uint _num_factors)
   {
+    FATAL_CONDITION(_num_factors <= FactorList::MAX_FACTORS, "Too many factors!");
+
     num_factors = _num_factors;
 
     for (size_t i = 0; i < num_factors; i++)
@@ -359,8 +361,8 @@ void resolve_dependencies()
   for (uint i = 1; i < cm.levels.size(); i++)
   {
     bool dependant = false;
-    uint best_governing_factor;
-    uint best_governing_factor_vocab_size;
+    uint best_governing_factor = 0; // To keep compiler happy
+    uint best_governing_factor_vocab_size = 0; // To keep compiler happy
 
     for (uint j = 0; j < i; j++)
     {

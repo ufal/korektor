@@ -151,10 +151,10 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
     for (uint32_t i = 0; i < values.size(); i++)
     {
 
-      double minDist = 100;
-      uint32_t candidateCenter;
+      double minDist = fabs(centers[0] - values[i]);
+      uint32_t candidateCenter = 0;
 
-      for (uint32_t j = 0; j < centers.size(); j++)
+      for (uint32_t j = 1; j < centers.size(); j++)
       {
         if (fabs(centers[j] - values[i]) < minDist)
         {

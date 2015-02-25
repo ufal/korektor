@@ -36,8 +36,7 @@ using namespace ngramchecker;
 // sentence end:           ([.?!:]) [[:upper:]]
 // token:                  \b([.<.>/?;:'"\\\\\\[{\\]}=+-_()*&^%$#@!]|\w+)\b
 
-
-int main(int argc, char** argv)
+int main()
 {
   Tokenizer tokenizer;
   string s;

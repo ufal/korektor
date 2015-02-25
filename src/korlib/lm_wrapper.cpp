@@ -17,18 +17,13 @@ namespace ngramchecker {
 //!!! The ordering of IDs is not reversed anymore !!!
 void LMWrapper::GetNGram(NGram& ngram_key, NGram& ngram_ret)
 {
-  size_t hash_key = ngram_hash_function(ngram_key);
-
   LM->GetNGramForNGramKey(ngram_key, ngram_ret);
 
   uint32_t start_undef = ngram_ret.order + 1;
   uint32_t end_undef = ngram_key.order;
 
   for (uint32_t undef_order = start_undef; undef_order <= end_undef; undef_order++)
-  {
     ngram_key.order = undef_order;
-    size_t undef_hash = ngram_hash_function(ngram_key);
-  }
 
   ngram_key.order = end_undef;
 }
@@ -41,8 +36,6 @@ LMWrapper::LMWrapper(ZipLMP _LM):
 
 double LMWrapper::GetProb(NGram& ngram_key, NGram& ngram_pom)
 {
-  size_t key_hash = ngram_hash_function(ngram_key);
-
   GetNGram(ngram_key, ngram_pom);
 
   double ret_prob = ngram_pom.prob;
