@@ -3,9 +3,9 @@ Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
-#include "StdAfx.h"
-#include "constants.hpp"
-#include "ErrorModel.hpp"
+#include "common.h"
+#include "constants.h"
+#include "error_model.h"
 
 namespace ngramchecker {
 

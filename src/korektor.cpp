@@ -4,12 +4,12 @@
 /// usage: ./korektor configuration_file <input_text >output_text
 
 
-#include "StdAfx.h"
-#include "korlib/Configuration.hpp"
-#include "korlib/Lexicon.hpp"
-#include "korlib/Spellchecker.hpp"
-#include "korlib/Tokenizer.hpp"
-#include "korlib/utils.hpp"
+#include "common.h"
+#include "korlib/configuration.h"
+#include "korlib/lexicon.h"
+#include "korlib/spellchecker.h"
+#include "korlib/tokenizer.h"
+#include "korlib/utils.h"
 
 /// @brief Help message
 void print_help()

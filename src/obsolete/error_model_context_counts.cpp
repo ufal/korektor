@@ -4,12 +4,12 @@
 #include <unordered_set>
 #include <iostream>
 #include <fstream>
-
 #include <stdint.h>
-#include <StdAfx.h>
+
+#include "common.h"
 
 
-#include "MyUnicodeInputStream.hpp"
+#include "my_unicode_input_stream.h"
 
 using namespace std;
 

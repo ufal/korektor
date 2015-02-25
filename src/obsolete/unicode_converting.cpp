@@ -7,11 +7,11 @@
 #include <cstdlib>
 #include <stdlib.h>
 #include <stdio.h>
-#include "MyPackedArray.hpp"
+#include "my_packed_array.h"
 
-#include "StdAfx.h"
+#include "common.h"
 
-#include "MyUTF.hpp"
+#include "my_utf.h"
 
 using namespace std;
 

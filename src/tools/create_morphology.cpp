@@ -7,11 +7,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "StdAfx.h"
-#include "korlib/MyBitArray.hpp"
-#include "korlib/utils.hpp"
-#include "korlib/Morphology.hpp"
-#include "korlib/Lexicon.hpp"
+#include "common.h"
+#include "korlib/my_bit_array.h"
+#include "korlib/utils.h"
+#include "korlib/morphology.h"
+#include "korlib/lexicon.h"
 
 #define MAX_GROUP_COUNT 100000
 

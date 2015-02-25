@@ -8,7 +8,7 @@ All rights reserved.
 /// @copyright Copyright (c) 2012, Charles University in Prague
 /// All rights reserved.
 
-#include "utils.hpp"
+#include "utils.h"
 #include <time.h>
 
 namespace ngramchecker {

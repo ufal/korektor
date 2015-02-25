@@ -7,10 +7,10 @@
 #include <map>
 #include <string>
 #include <stdint.h>
-#include "StdAfx.h"
+#include "common.h"
 
-#include "korlib/Token.hpp"
-#include "korlib/Tokenizer.hpp"
+#include "korlib/token.h"
+#include "korlib/tokenizer.h"
 
 #ifndef uint
 #define uint uint32_t

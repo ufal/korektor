@@ -7,7 +7,7 @@
 
 typedef uint32_t uint;
 
-#include "utils.hpp"
+#include "utils.h"
 
 using namespace std;
 

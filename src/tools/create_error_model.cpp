@@ -6,16 +6,16 @@
 #include <fstream>
 #include <stdint.h>
 
-#include "StdAfx.h"
+#include "common.h"
 
-#include "korlib/utils.hpp"
-#include "korlib/MyUnicodeInputStream.hpp"
-#include "korlib/ErrorModelBasic.hpp"
+#include "korlib/utils.h"
+#include "korlib/my_unicode_input_stream.h"
+#include "korlib/error_model_basic.h"
 
-#include "create_error_model/error_hierarchy.hpp"
-#include "create_error_model/get_error_signature.hpp"
-#include "create_error_model/create_error_hierarchy.hpp"
-#include "create_error_model/estimate_error_model.hpp"
+#include "create_error_model/error_hierarchy.h"
+#include "create_error_model/get_error_signature.h"
+#include "create_error_model/create_error_hierarchy.h"
+#include "create_error_model/estimate_error_model.h"
 
 using namespace ngramchecker;
 
