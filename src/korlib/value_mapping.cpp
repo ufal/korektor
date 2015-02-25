@@ -17,7 +17,8 @@
 #include "value_mapping.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @brief Get the closest value in the larger mapped set
 ///
@@ -241,4 +242,6 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
   sorted_centers = centers;
 
 }
-}
+
+} // namespace korektor
+} // namespace ufal

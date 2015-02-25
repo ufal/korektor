@@ -12,12 +12,11 @@
 #include "common.h"
 #include "factor_list.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class Configuration;
 SP_DEF(Configuration);
-
-
 
 //TODO: reorganize this class for better cache usage - it's use in the main computation loop, so it shouldn't be that wasteful - the actual literal strings should be
 //moved somewhere else
@@ -118,4 +117,5 @@ class StagePosibility_Letter : public StagePosibility
 SP_DEF(StagePosibility_Letter);
 #endif
 
-}
+} // namespace korektor
+} // namespace ufal

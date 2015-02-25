@@ -10,7 +10,8 @@
 #include "token.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 Token::Token(uint _first, uint _length, const u16string &_str):
   first(_first), length(_length), initialized(false), correction_is_allowed(false), str_u16(_str), str_utf8(MyUtils::utf16_to_utf8(_str)) {}
@@ -26,4 +27,5 @@ void Token::InitLexiconInformation(uint _ID, bool _correction_is_allowed)
   correction_is_allowed = _correction_is_allowed;
 }
 
-}
+} // namespace korektor
+} // namespace ufal

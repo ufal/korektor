@@ -14,7 +14,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 struct Token {
   uint first;
@@ -47,4 +48,5 @@ struct TokenP_compare: std::less<TokenP>
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

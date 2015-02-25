@@ -11,7 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 enum TextCheckingResultType { grammar, spelling };
 
@@ -60,4 +61,5 @@ SP_DEF(SpellingCheckingResult);
 SP_DEF(TextCheckingResult);
 typedef shared_ptr<vector<shared_ptr<TextCheckingResult> > > vectorP_TextCheckingResultP;
 
-}
+} // namespace korektor
+} // namespace ufal

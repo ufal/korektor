@@ -14,7 +14,8 @@
 #include "morphology.h"
 #include "constants.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 {
@@ -249,4 +250,5 @@ DecoderBase::DecoderBase(Configuration* _configuration)
   viterbi_order = _configuration->viterbi_order;
 }
 
-}
+} // namespace korektor
+} // namespace ufal

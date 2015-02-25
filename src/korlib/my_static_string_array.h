@@ -16,8 +16,8 @@
 #include "common.h"
 #include "comp_increasing_array.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 class MyStaticStringArray {
   char* data; ///< Pointer to string data
@@ -144,4 +144,6 @@ class MyStaticStringArray {
 };
 
 SP_DEF(MyStaticStringArray);
-}
+
+} // namespace korektor
+} // namespace ufal

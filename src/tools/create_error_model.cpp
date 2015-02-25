@@ -26,7 +26,7 @@
 #include "create_error_model/create_error_hierarchy.h"
 #include "create_error_model/estimate_error_model.h"
 
-using namespace ngramchecker;
+using namespace ufal::korektor;
 
 std::map<u16string, hierarchy_nodeP> hierarchy_node::hierarchy_map;
 hierarchy_nodeP hierarchy_node::root;

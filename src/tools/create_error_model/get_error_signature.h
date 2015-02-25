@@ -9,6 +9,9 @@
 
 #pragma once
 
+namespace ufal {
+namespace korektor {
+
 bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signature)
 {
   for (uint i = 0; i < misspelled.length(); i++)
@@ -125,7 +128,8 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
     }
   }
 
-
-
   return false;
 }
+
+} // namespace korektor
+} // namespace ufal

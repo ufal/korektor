@@ -13,7 +13,8 @@
 #include "utils.h"
 #include <time.h>
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @brief Generates a random number between the given range
 ///
@@ -157,4 +158,5 @@ capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &
 
 }
 
-}
+} // namespace korektor
+} // namespace ufal

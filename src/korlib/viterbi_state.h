@@ -11,7 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class ViterbiState;
 SP_DEF(ViterbiState);
@@ -92,6 +93,5 @@ struct ViterbiStateP_ihash: std::unary_function<ViterbiStateP, std::size_t>
   }
 };
 
-
-
-}
+} // namespace korektor
+} // namespace ufal

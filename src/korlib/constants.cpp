@@ -11,8 +11,8 @@
 #include "constants.h"
 #include "error_model.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 bool MyConstants::isMacOS = false;
 
@@ -94,4 +94,5 @@ string MyConstants::directory_evaluation_tagger;
 string MyConstants::filename_evaluation_correction_heldout_prefix;
 string MyConstants::filename_evaluation_correction_test_prefix;
 
-}
+} // namespace korektor
+} // namespace ufal

@@ -23,8 +23,7 @@
 #define uint uint32_t
 #endif
 
-using namespace std;
-using namespace ngramchecker;
+using namespace ufal::korektor;
 
 // floating point number:  [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?
 // date: yyyy-mm-dd        (19|20)\d\d([- /.])(0[1-9]|1[012])\2(0[1-9]|[12][0-9]|3[01])

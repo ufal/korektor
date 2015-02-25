@@ -9,6 +9,9 @@
 
 #include "text_checking_result.h"
 
+namespace ufal {
+namespace korektor {
+
 TextCheckingResult::TextCheckingResult(uint32_t _range_from, uint32_t _range_length, vector<string> &_suggestions, TextCheckingResultType _type, string _orig_word):
   range_from(_range_from), range_length(_range_length), type(_type), orig_word(_orig_word)
 {
@@ -68,3 +71,6 @@ string GrammarCheckingResult::ToString()
   ret = strs.str();
   return ret;
 }
+
+} // namespace korektor
+} // namespace ufal

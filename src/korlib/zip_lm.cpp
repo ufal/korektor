@@ -15,7 +15,8 @@
 #include "utils.h"
 #include "morphology.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 int ZipLM::search_for_id(uint32_t _order, uint32_t word_id, int start_offset, int end_offset)
 {
@@ -183,5 +184,5 @@ const uint32_t ZipLM::bits_per_bigram_bow = 8;
 const uint32_t ZipLM::bits_per_higher_order_prob = 8;
 const uint32_t ZipLM::bits_per_higher_order_bow = 8;
 
-
-}
+} // namespace korektor
+} // namespace ufal

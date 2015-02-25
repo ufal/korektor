@@ -23,7 +23,8 @@
 #include "morphology.h"
 #include "constants.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities) {
 
@@ -524,5 +525,5 @@ Spellchecker::Spellchecker(Configuration* _configuration):
   configuration(_configuration), decoder(new DecoderMultiFactor(_configuration))
 {}
 
-}
-
+} // namespace korektor
+} // namespace ufal

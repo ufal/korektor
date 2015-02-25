@@ -11,7 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 struct Token;
 SP_DEF(Token);
@@ -52,4 +53,6 @@ class SimWordsFinder {
 };
 
 SP_DEF(SimWordsFinder);
-}
+
+} // namespace korektor
+} // namespace ufal

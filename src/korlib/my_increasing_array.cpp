@@ -14,7 +14,8 @@
 #include "my_increasing_array.h"
 #include "my_packed_array.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @brief Initialize the constructor from input stream
 ///
@@ -91,4 +92,5 @@ MyIncreasingArray::MyIncreasingArray(vector<uint32_t> &vec)
   }
 }
 
-}
+} // namespace korektor
+} // namespace ufal

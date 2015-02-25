@@ -16,7 +16,8 @@
 #include <cstddef>
 #include <string>
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class unicode {
   enum : uint8_t {
@@ -95,6 +96,7 @@ char32_t unicode::titlecase(char32_t chr) {
   return chr;
 }
 
-} // namespace ngramchecker
+} // namespace korektor
+} // namespace ufal
 
 #endif // NGRAMCHECKER_UNICODE_H

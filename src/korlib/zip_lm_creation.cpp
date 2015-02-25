@@ -15,7 +15,8 @@
 #include "utils.h"
 #include "morphology.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 ZipLM::ZipLM(const string &_factor_name, uint32_t _order, double _not_in_lm_cost, vector<vector<double> > &_probs, vector<vector<double> > &_bows,
              vector<vector<uint32_t> > &_ids, vector<vector<uint32_t> > &_offsets)
@@ -379,4 +380,5 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
   return ret_lm;
 }
 
-}
+} // namespace korektor
+} // namespace ufal

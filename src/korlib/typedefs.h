@@ -13,10 +13,11 @@
 #pragma once
 
 #include <memory>
+#include "common.h"
 
-using namespace std;
+namespace ufal {
+namespace korektor {
 
-namespace ngramchecker {
 typedef shared_ptr<string> stringP;
 typedef shared_ptr<u16string> u16stringP;
 
@@ -27,4 +28,5 @@ typedef unordered_map<uint32_t, pair<u16stringP, double> > Similar_Words_Map;
 enum StagePosibility_type { MultiFactor, Letter };
 enum capitalization_type { all_upper_case, all_lower_case, first_upper_case, weird };
 
-}
+} // namespace korektor
+} // namespace ufal

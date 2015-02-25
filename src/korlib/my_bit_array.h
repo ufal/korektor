@@ -21,7 +21,8 @@
 #include "common.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyBitArray {
  private:
@@ -284,5 +285,5 @@ class MyBitArray {
 
 SP_DEF(MyBitArray);
 
-
-}
+} // namespace korektor
+} // namespace ufal

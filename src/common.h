@@ -38,13 +38,6 @@
 #include <unordered_map>
 #include <memory>
 
-using namespace std;
-
-#include "korlib/typedefs.h"
-#include "korlib/constants.h"
-
-using namespace ngramchecker;
-
 #ifndef uint
 #define uint uint32_t
 #endif
@@ -52,3 +45,14 @@ using namespace ngramchecker;
 #define FATAL_CONDITION(expr, error_text) if (!(expr)) { std::cerr << "FATAL ERROR: The condition ( " << #expr << " ) failed. " << error_text << std::endl; exit(1); }
 
 #define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
+
+namespace ufal {
+namespace korektor {
+
+using namespace std;
+
+} // namespace korektor
+} // namespace ufal
+
+#include "korlib/typedefs.h"
+#include "korlib/constants.h"

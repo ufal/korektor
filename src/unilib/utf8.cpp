@@ -12,7 +12,8 @@
 
 #include "utf8.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 bool utf8::valid(const char* str) {
   for (const unsigned char*& ptr = (const unsigned char*&) str; *ptr; ptr++)
@@ -73,4 +74,5 @@ void utf8::encode(const std::u32string& str, std::string& encoded) {
 
 const char utf8::REPLACEMENT_CHAR;
 
-} // namespace ngramchecker
+} // namespace korektor
+} // namespace ufal

@@ -11,8 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 class ValueMapping {
  private:
@@ -53,4 +53,6 @@ class ValueMapping {
 };
 
 SP_DEF(ValueMapping);
-}
+
+} // namespace korektor
+} // namespace ufal

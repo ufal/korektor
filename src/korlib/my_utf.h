@@ -13,9 +13,8 @@
 #include <string>
 #include "common.h"
 
-using namespace std;
-
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyPackedArray;
 
@@ -49,5 +48,5 @@ class MyUTF
   static bool is_alpha(char16_t ch16);
 };
 
-
-}
+} // namespace korektor
+} // namespace ufal

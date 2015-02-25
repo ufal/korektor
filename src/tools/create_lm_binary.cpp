@@ -16,6 +16,8 @@
 #include "korlib/morphology.h"
 #include "korlib/zip_lm.h"
 
+using namespace ufal::korektor;
+
 int main(int argc, char** argv)
 {
   if (argc != 7) { cerr << "Expected 6 arguments!" << endl; return -1; }

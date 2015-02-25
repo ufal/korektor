@@ -12,7 +12,8 @@
 
 #include "ngram.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @brief Initialize N-gram from another N-gram
 ///
@@ -83,4 +84,6 @@ string NGram::ToString()
   strs << endl << "prob = " << prob << ", bow = " << backoff << endl;
   return strs.str();
 }
-}
+
+} // namespace korektor
+} // namespace ufal

@@ -13,7 +13,8 @@
 #include "stage_posibility.h"
 #include "decoder_base.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 //class StagePosibility;
 //SP_DEF(StagePosibility);
@@ -72,4 +73,5 @@ class Spellchecker {
 
 };
 
-}
+} // namespace korektor
+} // namespace ufal

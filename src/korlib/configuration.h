@@ -11,7 +11,8 @@
 
 #pragma once
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class LMWrapper;
 SP_DEF(LMWrapper);
@@ -108,4 +109,6 @@ class Configuration
 };
 
 SP_DEF(Configuration);
-}
+
+} // namespace korektor
+} // namespace ufal

@@ -14,7 +14,8 @@
 #include "configuration.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret)
 {
@@ -151,4 +152,5 @@ Similar_Words_Map SimWordsFinder::Find(const TokenP &token)
   return swm;
 }
 
-}
+} // namespace korektor
+} // namespace ufal

@@ -11,7 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyConstants {
  public:
@@ -97,4 +98,6 @@ class MyConstants {
   static const uint32_t name_id = 3;
 
 };
-}
+
+} // namespace korektor
+} // namespace ufal

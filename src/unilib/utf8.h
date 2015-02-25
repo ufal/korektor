@@ -17,7 +17,8 @@
 #include <iterator>
 #include <string>
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class utf8 {
  public:
@@ -240,6 +241,7 @@ template<class F> void utf8::map(F f, const std::string& str, std::string& resul
   map(f, str.c_str(), result);
 }
 
-} // namespace ngramchecker
+} // namespace korektor
+} // namespace ufal
 
 #endif // NGRAMCHECKER_UTF8_H

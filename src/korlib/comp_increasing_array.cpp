@@ -11,8 +11,8 @@
 #include "comp_increasing_array.h"
 #include "utils.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 /// @brief Write the data structure to output stream
 ///
@@ -91,4 +91,5 @@ CompIncreasingArray::CompIncreasingArray(vector<uint32_t> &val, uint32_t _last_v
   last_val_last_index = _last_val_last_index;
 }
 
-}
+} // namespace korektor
+} // namespace ufal

@@ -14,7 +14,8 @@
 #include "value_mapping.h"
 #include "my_packed_array.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyMappedDoubleArray {
  private:
@@ -40,4 +41,6 @@ class MyMappedDoubleArray {
 };
 
 SP_DEF(MyMappedDoubleArray);
-}
+
+} // namespace korektor
+} // namespace ufal

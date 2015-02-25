@@ -12,9 +12,8 @@
 #include <string>
 #include "utils.h"
 
-using namespace std;
-
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyUTF8InputStream
 {
@@ -77,4 +76,5 @@ class MyUTF8InputStream
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

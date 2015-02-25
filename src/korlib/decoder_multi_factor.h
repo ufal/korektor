@@ -14,8 +14,8 @@
 #include "ngram.h"
 #include "factor_list.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 struct MorphoNode;
 SP_DEF(MorphoNode);
@@ -48,4 +48,5 @@ class DecoderMultiFactor : public DecoderBase
 
 };
 
-}
+} // namespace korektor
+} // namespace ufal

@@ -19,7 +19,8 @@
 #include "zip_lm.h"
 #include "lm_wrapper.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @brief Loads lexicon and morphology
 ///
@@ -226,4 +227,5 @@ string Configuration::ConvertPathSeparators(const string &path) {
   return result;
 }
 
-};
+} // namespace korektor
+} // namespace ufal

@@ -14,7 +14,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 /// @class ErrorModelOutput error_model.h "error_model.h"
 /// @brief Class for error model output. It contains two members, namely edit distance and the cost involved.
@@ -68,6 +69,5 @@ class ErrorModel
 
 SP_DEF(ErrorModel);
 
-//ErrorModelTypoP errorModel;
-
-}
+} // namespace korektor
+} // namespace ufal

@@ -9,6 +9,9 @@
 
 #pragma once
 
+namespace ufal {
+namespace korektor {
+
 class hierarchy_node;
 typedef shared_ptr<hierarchy_node> hierarchy_nodeP;
 
@@ -18,10 +21,10 @@ class hierarchy_node {
   static u16string generateRandomString(uint min_length, uint range)
   {
     u16string ret;
-    uint length = ngramchecker::MyUtils::randomR(min_length, range);
+    uint length = MyUtils::randomR(min_length, range);
 
     for (uint i = 0; i < length; i++)
-      ret += central_chars[ngramchecker::MyUtils::randomR(0, central_chars.length())];
+      ret += central_chars[MyUtils::randomR(0, central_chars.length())];
 
     return ret;
   }
@@ -145,7 +148,7 @@ class hierarchy_node {
         counter += (*it)->num_governed_leaves;
       }
 
-      int r_num = ngramchecker::MyUtils::randomR(0, counter);
+      int r_num = MyUtils::randomR(0, counter);
 
       uint i = 0;
       while (i + 1 < offsets.size() && offsets[i + 1] < r_num) i++;
@@ -320,7 +323,8 @@ class hierarchy_node {
     {
       output_result_rec((*it), level + 1, prop_level, propagated_value, prop_signature, out_vec);
     }
-
   }
-
 };
+
+} // namespace korektor
+} // namespace ufal

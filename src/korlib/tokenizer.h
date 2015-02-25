@@ -18,7 +18,8 @@
 #include "utils.h"
 
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 enum matcher_type { undef, sentence_end, special_class, token };
 
@@ -161,4 +162,6 @@ class Tokenizer {
 };
 
 SP_DEF(Tokenizer);
-}
+
+} // namespace korektor
+} // namespace ufal

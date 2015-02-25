@@ -16,7 +16,8 @@
 #include "common.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyPackedArray {
  private:
@@ -105,4 +106,5 @@ class MyPackedArray {
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

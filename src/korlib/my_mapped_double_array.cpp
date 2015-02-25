@@ -11,8 +11,8 @@
 #include "value_mapping.h"
 #include "my_packed_array.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 void MyMappedDoubleArray::WriteToStream(ostream &ofs) const
 {
@@ -38,4 +38,5 @@ MyMappedDoubleArray::MyMappedDoubleArray(istream &ifs):
   value_mapping(ifs), mpa(ifs)
 {}
 
-}
+} // namespace korektor
+} // namespace ufal

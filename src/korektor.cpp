@@ -19,6 +19,8 @@
 #include "korlib/tokenizer.h"
 #include "korlib/utils.h"
 
+using namespace ufal::korektor;
+
 /// @brief Help message
 void print_help()
 {

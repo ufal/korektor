@@ -12,7 +12,8 @@
 #include "ngram.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 //!!! The ordering of IDs is not reversed anymore !!!
 void LMWrapper::GetNGram(NGram& ngram_key, NGram& ngram_ret)
@@ -95,4 +96,6 @@ string LMWrapper::FactorName()
 }
 
 NGram_ihash LMWrapper::ngram_hash_function;
-}
+
+} // namespace korektor
+} // namespace ufal

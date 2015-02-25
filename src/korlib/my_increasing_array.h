@@ -18,7 +18,8 @@
 
 #include "my_packed_array.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyIncreasingArray {
  private:
@@ -54,4 +55,6 @@ class MyIncreasingArray {
 };
 
 SP_DEF(MyIncreasingArray);
-}
+
+} // namespace korektor
+} // namespace ufal

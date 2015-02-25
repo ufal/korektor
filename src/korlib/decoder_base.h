@@ -13,8 +13,8 @@
 #include "viterbi_state.h"
 #include "token.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 class StagePosibility;
 SP_DEF(StagePosibility);
@@ -91,4 +91,5 @@ class DecoderBase
 
 SP_DEF(DecoderBase);
 
-}
+} // namespace korektor
+} // namespace ufal

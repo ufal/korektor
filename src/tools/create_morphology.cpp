@@ -25,10 +25,7 @@
 
 #define MAX_GROUP_COUNT 100000
 
-using namespace std;
-
-using namespace ngramchecker;
-
+using namespace ufal::korektor;
 
 uint node_id_counter;
 

@@ -11,7 +11,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class u16stringReplacing {
   u16string ustring;
@@ -34,4 +35,5 @@ class u16stringReplacing {
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

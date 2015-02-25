@@ -13,7 +13,8 @@
 
 #include "my_increasing_array.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 typedef pair<uint32_t, uint32_t> CompIA_First_Last_IndexPair;
 
@@ -86,4 +87,6 @@ class CompIncreasingArray {
 };
 
 SP_DEF(CompIncreasingArray);
-}
+
+} // namespace korektor
+} // namespace ufal

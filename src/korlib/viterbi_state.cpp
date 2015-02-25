@@ -11,7 +11,8 @@
 #include "stage_posibility.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 bool ViterbiState::CheckIt()
 {
@@ -89,4 +90,6 @@ string ViterbiState::ToString()
 
   return strs.str();
 }
-}
+
+} // namespace korektor
+} // namespace ufal

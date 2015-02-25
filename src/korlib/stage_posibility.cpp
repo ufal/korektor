@@ -11,8 +11,8 @@
 #include "utils.h"
 #include "configuration.h"
 
-namespace ngramchecker {
-
+namespace ufal {
+namespace korektor {
 
 string StagePosibilityNew::ToString()
 {
@@ -95,4 +95,6 @@ StagePosibilityP StagePosibility_Letter::SentenceEndSP()
   return StagePosibilityP(new StagePosibility_Letter(GlobalVars::stringMapper->MapChar(','), 0));
 }
 #endif
-}
+
+} // namespace korektor
+} // namespace ufal

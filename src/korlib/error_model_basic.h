@@ -23,7 +23,8 @@
 #include "error_model.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class ErrorModelBasic;
 SP_DEF(ErrorModelBasic);
@@ -533,4 +534,5 @@ class ErrorModelBasic : public ErrorModel
 
 };
 
-}
+} // namespace korektor
+} // namespace ufal

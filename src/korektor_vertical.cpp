@@ -13,6 +13,8 @@
 #include "korlib/tokenizer.h"
 #include "korlib/utils.h"
 
+using namespace ufal::korektor;
+
 int main(int argc, char* argv[])
 {
   if (argc < 2) {

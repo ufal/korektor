@@ -15,7 +15,8 @@
 
 #include <string>
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class uninorms {
  public:
@@ -48,6 +49,7 @@ class uninorms {
   static const char32_t decomposition_data[];
 };
 
-} // namespace ngramchecker
+} // namespace korektor
+} // namespace ufal
 
 #endif // NGRAMCHECKER_UNINORMS_H

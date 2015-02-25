@@ -16,7 +16,8 @@
 #include "comp_increasing_array.h"
 #include "error_model.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 uint lexicon_node::num_nodes = 0;
 map<uint, lexicon_nodeP> lexicon_node::nodes_map = map<uint, lexicon_nodeP>();
@@ -628,6 +629,6 @@ bool Lexicon::CorrectionIsAllowed(int wordID) const
 {
   return noncorrectable_word_ids.find(wordID) == noncorrectable_word_ids.end();
 }
-}
 
-
+} // namespace korektor
+} // namespace ufal

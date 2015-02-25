@@ -26,7 +26,8 @@
 #include "configuration.h"
 #include "factor_list.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 //for some factors, there are a lot of possibilities per word, however the number of sets of values that can be assigned to a word is limited
 //for example: in Czech language many word forms can be either first person singular or first person plural - i.e. these two posibilities form a set that tends to reocur
@@ -491,4 +492,6 @@ class Morphology {
 };
 
 SP_DEF(Morphology);
-}
+
+} // namespace korektor
+} // namespace ufal

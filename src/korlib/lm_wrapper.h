@@ -13,7 +13,8 @@
 #include "ngram.h"
 #include "zip_lm.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 struct identity_hash : std::unary_function<size_t, size_t>
 {
@@ -58,4 +59,5 @@ class LMWrapper {
 
 SP_DEF(LMWrapper);
 
-}
+} // namespace korektor
+} // namespace ufal

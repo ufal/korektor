@@ -16,7 +16,8 @@
 #include "morphology.h"
 #include "lm_wrapper.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next)
 {
@@ -188,5 +189,5 @@ DecoderMultiFactor::DecoderMultiFactor(Configuration* _configuration):
 
 }
 
-
-}
+} // namespace korektor
+} // namespace ufal

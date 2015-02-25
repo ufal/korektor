@@ -16,7 +16,8 @@
 #include "common.h"
 #include "my_utf.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyUtils {
  public:
@@ -274,4 +275,5 @@ struct u16string_hash
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

@@ -7,9 +7,13 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+#pragma once
+
 #include "korlib/utils.h"
 #include "error_hierarchy.h"
 
+namespace ufal {
+namespace korektor {
 
 const uint MINIMAL_ERROR_COUNT = 4;
 const float error_count_normalization = 100;
@@ -122,3 +126,6 @@ class EstimateErrorModel
     estimate_error_model_rec(hierarchy_root);
   }
 };
+
+} // namespace korektor
+} // namespace ufal

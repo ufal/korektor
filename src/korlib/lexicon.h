@@ -16,7 +16,8 @@
 #include "my_packed_array.h"
 #include "comp_increasing_array.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class ErrorModel;
 SP_DEF(ErrorModel);
@@ -133,4 +134,5 @@ class Lexicon {
 
 SP_DEF(Lexicon);
 
-}
+} // namespace korektor
+} // namespace ufal

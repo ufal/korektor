@@ -13,7 +13,8 @@
 #include "my_packed_array.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 void MyPackedArray::PrintBits() const
 {
@@ -223,6 +224,7 @@ MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
   }
 #endif
   //PrintBits();
+}
 
-}
-}
+} // namespace korektor
+} // namespace ufal

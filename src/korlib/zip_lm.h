@@ -15,7 +15,8 @@
 
 #include "common.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 class MyPackedArray;
 SP_DEF(MyPackedArray);
@@ -115,4 +116,5 @@ class ZipLM {
   void TestIt(string textFile);
 };
 
-}
+} // namespace korektor
+} // namespace ufal

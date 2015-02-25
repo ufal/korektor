@@ -15,7 +15,8 @@
 #include "common.h"
 #include "utils.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 //class NGram;
 
@@ -124,4 +125,5 @@ struct NGram_compare: std::less<NGram>
   }
 };
 
-}
+} // namespace korektor
+} // namespace ufal

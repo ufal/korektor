@@ -12,7 +12,8 @@
 
 #include "utf16.h"
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 bool utf16::valid(const char16_t* str) {
   for (; *str; str++)
@@ -55,4 +56,5 @@ void utf16::encode(const std::u32string& str, std::u16string& encoded) {
 
 const char16_t utf16::REPLACEMENT_CHAR;
 
-} // namespace ngramchecker
+} // namespace korektor
+} // namespace ufal

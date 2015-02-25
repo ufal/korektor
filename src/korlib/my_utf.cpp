@@ -26,7 +26,8 @@
 #define uint uint32_t
 #endif
 
-namespace ngramchecker {
+namespace ufal {
+namespace korektor {
 
 char16_t MyUTF::tolower(char16_t ch16)
 {
@@ -78,4 +79,6 @@ bool MyUTF::is_alpha(char16_t ch16)
 {
   return unicode::category(ch16) & unicode::L;
 }
-}
+
+} // namespace korektor
+} // namespace ufal
