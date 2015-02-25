@@ -46,8 +46,8 @@ uint32_t MyConstants::default_stage_posibility_cash_capacity = 10000;
 
 string MyConstants::global_lemma_signs_symbols = "aehlnstvx";
 
-/*uint32_t MyConstants::default_similar_words_lookup_max_ed_dist_1round = 1;
-  uint32_t MyConstants::default_similar_words_lookup_max_ed_dist_2round = 2;*/
+//uint32_t MyConstants::default_similar_words_lookup_max_ed_dist_1round = 1;
+//uint32_t MyConstants::default_similar_words_lookup_max_ed_dist_2round = 2;
 double MyConstants::default_similar_words_lookup_max_cost_1round = 20;
 double MyConstants::default_similar_words_lookup_max_cost_2round = 40;
 

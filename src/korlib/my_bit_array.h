@@ -68,27 +68,27 @@ class MyBitArray {
 
     return (uint32_t)retVal;
 
-    /*ulong64 retVal = 0;
-      unsigned char* ukaz = (unsigned char*)&retVal;
-
-      uint32_t byte_pointer = index >> 3;
-      uint32_t bit_pointer = index % 8;
-
-      int bits_left = num_bits;
-      ukaz[0] = data[byte_pointer];
-      bits_left -= 8 - bit_pointer;
-      uint32_t offset = 1;
-
-      while (bits_left > 0)
-      {
-      bits_left -= 8;
-      ukaz[offset] = data[byte_pointer + offset];
-      offset++;
-      }
-
-      retVal = (retVal >> bit_pointer) & output_mask[num_bits];
-
-      return retVal;*/
+//    ulong64 retVal = 0;
+//    unsigned char* ukaz = (unsigned char*)&retVal;
+//
+//    uint32_t byte_pointer = index >> 3;
+//    uint32_t bit_pointer = index % 8;
+//
+//    int bits_left = num_bits;
+//    ukaz[0] = data[byte_pointer];
+//    bits_left -= 8 - bit_pointer;
+//    uint32_t offset = 1;
+//
+//    while (bits_left > 0)
+//    {
+//      bits_left -= 8;
+//      ukaz[offset] = data[byte_pointer + offset];
+//      offset++;
+//    }
+//
+//    retVal = (retVal >> bit_pointer) & output_mask[num_bits];
+//
+//    return retVal;
   }
 
   /// @brief Destructor that frees the memory of data

@@ -79,10 +79,10 @@ ZipLM::ZipLM(string bin_file)
   ifstream ifs;
   ifs.open(bin_file.c_str(), ios::in | ios::binary);
 
-  /*if (! ifs.is_open())
-    {
-    cerr << "Opening: " << bin_file << endl;
-    }*/
+//  if (! ifs.is_open())
+//  {
+//    cerr << "Opening: " << bin_file << endl;
+//  }
   assert(ifs.is_open());
 
   factor_name = MyUtils::ReadString(ifs);

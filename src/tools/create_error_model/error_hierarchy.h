@@ -277,14 +277,14 @@ class hierarchy_node {
 
   static void output_result_rec(hierarchy_nodeP &node, uint level, uint prop_level, float inherited_prob, u16string prop_signature, vector<pair<u16string, ErrorModelOutput>> &out_vec)
   {
-    /*if (level == 1)
-      {
-      if (node->is_output_node)
-      {
-      out_vec.push_back(make_pair(node->signature, ErrorModelOutput(node->edit_distance, node->error_prob)));
-    //ofs << MyUtils::utf16_to_utf8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
-    }
-    }*/
+//    if (level == 1)
+//    {
+//      if (node->is_output_node)
+//      {
+//        out_vec.push_back(make_pair(node->signature, ErrorModelOutput(node->edit_distance, node->error_prob)));
+//        //ofs << MyUtils::utf16_to_utf8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
+//      }
+//    }
 
     if (node->children.empty())
     {

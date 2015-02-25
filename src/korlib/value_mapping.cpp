@@ -227,10 +227,10 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
 
   sort(centers.begin(), centers.end());
 
-  /*for (uint32_t i = 0; i < centers.size(); i++)
-    {
-    cout << "center " << i << ": " << centers[i] << endl;
-    }*/
+//  for (uint32_t i = 0; i < centers.size(); i++)
+//  {
+//    cout << "center " << i << ": " << centers[i] << endl;
+//  }
 
   cerr << "Value mapping finished!" << endl;
 

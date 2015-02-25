@@ -42,7 +42,7 @@ class ErrorModelOutput {
 class ErrorModel
 {
  public:
-  static const float impossible_cost/* = 1000*/;
+  static const float impossible_cost;
   static const float max_cost;
   static const float name_cost;
   static const float unknown_cost;

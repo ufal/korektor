@@ -817,44 +817,44 @@ int main(int argc, char** argv)
       configuration->EnableFactor(*it, 0.5, 3);
   }
 
-  /*configuration->EnableFactor("lemma", 0.15, 3);
-    configuration->EnableFactor("form", 0.5, 3);
-    configuration->EnableFactor("tag", 0.35, 3);
-    configuration->EnableFactor("short", 0.1, 3);*/
+//  configuration->EnableFactor("lemma", 0.15, 3);
+//  configuration->EnableFactor("form", 0.5, 3);
+//  configuration->EnableFactor("tag", 0.35, 3);
+//  configuration->EnableFactor("short", 0.1, 3);
 
   testout << "MORPHOLOGY\n=======================================================================\n";
   morphology->PrintOut(testout, configuration.get());
 
   testout.close();
 
-  /*ifstream ifstest;
-    vector<string> test_lines;
-
-    ifstest.open(test_file.c_str(), ios::in);
-    assert(ifstest.is_open());
-
-    while (MyUtils::SafeReadline(ifstest, s))
-    {
-    if (s != "")
-    test_lines.push_back(s);
-    }
-
-    cerr << "finishing test, sorting..." << endl;
-    std::sort(test_lines.begin(), test_lines.end());
-    std::sort(orig_lines.begin(), orig_lines.end());
-
-    cerr << "checking consistency..." << endl;
-    cerr << "test_lines: " << test_lines.size() << endl;
-    cerr << "orig_lines: " << orig_lines.size() << endl;
-  //FATAL_CONDITION(test_lines.size() == orig_lines.size(), "");
-
-  for (uint i = 0; i < test_lines.size(); i++)
-  {
-  cout << i << endl;
-  //if (test_lines[i] != orig_lines[i])
-  cout << test_lines[i] << " --- " << orig_lines[i] << endl;
-  FATAL_CONDITION(test_lines[i] == orig_lines[i], "");
-  }*/
+//  ifstream ifstest;
+//  vector<string> test_lines;
+//
+//  ifstest.open(test_file.c_str(), ios::in);
+//  assert(ifstest.is_open());
+//
+//  while (MyUtils::SafeReadline(ifstest, s))
+//  {
+//    if (s != "")
+//      test_lines.push_back(s);
+//  }
+//
+//  cerr << "finishing test, sorting..." << endl;
+//  std::sort(test_lines.begin(), test_lines.end());
+//  std::sort(orig_lines.begin(), orig_lines.end());
+//
+//  cerr << "checking consistency..." << endl;
+//  cerr << "test_lines: " << test_lines.size() << endl;
+//  cerr << "orig_lines: " << orig_lines.size() << endl;
+//  //FATAL_CONDITION(test_lines.size() == orig_lines.size(), "");
+//
+//  for (uint i = 0; i < test_lines.size(); i++)
+//  {
+//    cout << i << endl;
+//    //if (test_lines[i] != orig_lines[i])
+//    cout << test_lines[i] << " --- " << orig_lines[i] << endl;
+//    FATAL_CONDITION(test_lines[i] == orig_lines[i], "");
+//  }
 
   cerr << "OK!\n";
   exit(0);

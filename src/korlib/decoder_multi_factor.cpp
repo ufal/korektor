@@ -134,11 +134,6 @@ vector<vector<StagePosibilityP> > DecoderMultiFactor::init_inner_stage_posibilit
   if (tokens.size() == 0)
     return ret;
 
-  /*vector<uint32_t> word_vec0_lc = tokens[0].GetWordVector();
-    string word_str0_lc = tokens[0].GetWordStringISO();
-
-    if (GlobalVars::stringMapper)*/
-
   for (uint32_t i = 0; i < tokens.size(); i++)
   {
     u16string& u_word = tokens[i]->str_u16;

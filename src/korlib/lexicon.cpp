@@ -435,10 +435,10 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
       if ((uint)word.length() > 1)
       {
-        /*if (i == 0)
-          emo = errModel->DeletionCost(word[i], char16_t(' '));
-          else
-          emo = errModel->DeletionCost(word[i], word[i - 1]);*/
+//        if (i == 0)
+//          emo = errModel->DeletionCost(word[i], char16_t(' '));
+//        else
+//          emo = errModel->DeletionCost(word[i], word[i - 1]);
 
         if (i == 0)
           emo = errModel->InsertionCost(word[i], char16_t(' '), word[i + 1]);
@@ -542,12 +542,12 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
       char16_t character = arcs_char[j];
       uint32_t arc_nextstate = arcs_nextstate[j];
 
-      /*if (i == 0)
-        emo = errModel->InsertionCost(character, char16_t(' '), word[0]);
-        else if (i == word.length())
-        emo = errModel->InsertionCost(character, word[i - 1], char16_t(' '));
-        else
-        emo = errModel->InsertionCost(character, word[i - 1], word[i]);*/
+//      if (i == 0)
+//        emo = errModel->InsertionCost(character, char16_t(' '), word[0]);
+//      else if (i == word.length())
+//        emo = errModel->InsertionCost(character, word[i - 1], char16_t(' '));
+//      else
+//        emo = errModel->InsertionCost(character, word[i - 1], word[i]);
 
       if (i == 0)
         emo = errModel->DeletionCost(character, char16_t(' '));

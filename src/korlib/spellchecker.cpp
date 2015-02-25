@@ -189,19 +189,18 @@ void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, 
         range_length = (*it2)->length;
 
         return;
-        /*SimWordsFinderP swfs = configuration->simWordsFinder SimWordsFinderSpelling::CreateWithCustomMaxCosts(GlobalVars::errorModelTypoP, ErrorModelP(), true, 0, 0);
-
-        //TODO: check if word is needed here!
-        Token tok = Token((*it2)->str);
-        Similar_Words_Map swm = swfs->Find(tok, true);
-
-        if (swm.empty() || swm.begin()->second.second > 0)
-        {
-        range_from = (*it2)->first;
-        range_length = (*it2)->length;
-        return;
-        }*/
-
+//        SimWordsFinderP swfs = configuration->simWordsFinder SimWordsFinderSpelling::CreateWithCustomMaxCosts(GlobalVars::errorModelTypoP, ErrorModelP(), true, 0, 0);
+//
+//        //TODO: check if word is needed here!
+//        Token tok = Token((*it2)->str);
+//        Similar_Words_Map swm = swfs->Find(tok, true);
+//
+//        if (swm.empty() || swm.begin()->second.second > 0)
+//        {
+//          range_from = (*it2)->first;
+//          range_length = (*it2)->length;
+//          return;
+//        }
       }
     }
   }

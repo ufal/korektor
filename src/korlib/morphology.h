@@ -77,20 +77,21 @@ struct morpho_dependency {
 SP_DEF(morpho_dependency);
 
 
-
-/*struct MorphoNode;
-  SP_DEF(MorphoNode);
+#if 0
+struct MorphoNode;
+SP_DEF(MorphoNode);
 
 //TODO: well this is no good! Keep it simple! :)
 struct MorphoNode {
-uint level;
-uint factorID;
-MorphoNodeP parent;
-double emission_cost;
+  uint level;
+  uint factorID;
+  MorphoNodeP parent;
+  double emission_cost;
 
-MorphoNode(uint _level, uint _factorID): level(_level), factorID(_factorID) {}
-MorphoNode(uint _level): level(_level) {}
-};*/
+  MorphoNode(uint _level, uint _factorID): level(_level), factorID(_factorID) {}
+  MorphoNode(uint _level): level(_level) {}
+};
+#endif
 
 
 class Morphology {

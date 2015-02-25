@@ -154,11 +154,10 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
         }
 
 
-        /*if (transition_cost < 0)
-          {
-          cerr << "!!! transition_cost < 0 !!! == " << transition_cost << ", (might happen, because of prob. values quantizations)" <<endl;
-        //exit(1);
-        }*/
+//        if (transition_cost < 0)
+//        {
+//          cerr << "!!! transition_cost < 0 !!! == " << transition_cost << ", (might happen, because of prob. values quantizations)" <<endl;
+//        }
 
         cost += transition_cost;
 
