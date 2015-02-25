@@ -127,7 +127,7 @@ Configuration::Configuration(const string &conf_file)
       FATAL_CONDITION(toks.size() == 4, s);
 
       ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
-      LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm, 5000, 5000));
+      LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm));
       LoadLM(lm_wrapper);
 
       string order_str = toks[2];
@@ -186,8 +186,6 @@ Configuration::Configuration(const string &conf_file)
       morphology->initMorphoWordMaps();
     }
   }
-
-  st_pos_multifactor_cash = MyCash_StagePosibilityP(new MyCash_StagePosibility(5000, 20));
 
   tokenizer = TokenizerP(new Tokenizer() );
   tokenizer->initLexicon(lexicon);

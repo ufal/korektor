@@ -13,7 +13,7 @@ full: exe lib
 C_FLAGS += $(call include_dir,.)
 
 UNILIB_O = unilib/unicode unilib/uninorms unilib/utf8 unilib/utf16
-KORLIB_O = korlib/comp_increasing_array korlib/configuration korlib/decoder_base korlib/decoder_multi_factor korlib/lm_wrapper korlib/lexicon korlib/my_cash2 korlib/my_increasing_array korlib/my_mapped_double_array korlib/my_packed_array korlib/my_utf korlib/ngram korlib/sim_words_finder korlib/spellchecker korlib/stage_posibility korlib/text_checking_result korlib/token korlib/value_mapping korlib/viterbi_state korlib/zip_lm korlib/zip_lm_creation korlib/constants korlib/utils $(UNILIB_O)
+KORLIB_O = korlib/comp_increasing_array korlib/configuration korlib/decoder_base korlib/decoder_multi_factor korlib/lm_wrapper korlib/lexicon korlib/my_increasing_array korlib/my_mapped_double_array korlib/my_packed_array korlib/my_utf korlib/ngram korlib/sim_words_finder korlib/spellchecker korlib/stage_posibility korlib/text_checking_result korlib/token korlib/value_mapping korlib/viterbi_state korlib/zip_lm korlib/zip_lm_creation korlib/constants korlib/utils $(UNILIB_O)
 
 # library
 $(call lib,libkorlib): $(call obj,$(KORLIB_O))

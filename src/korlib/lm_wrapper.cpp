@@ -8,26 +8,12 @@ All rights reserved.
 #include "ngram.h"
 #include "utils.h"
 
-// #define CACHING_ENABLED
-
 namespace ngramchecker {
 
 //!!! The ordering of IDs is not reversed anymore !!!
 void LMWrapper::GetNGram(NGram& ngram_key, NGram& ngram_ret)
 {
   size_t hash_key = ngram_hash_function(ngram_key);
-
-#ifdef CACHING_ENABLED
-  if (ngram_cash.IsCashed(hash_key))
-  {
-    triple(uint, double, double) trp = ngram_cash.GetCashedValue(hash_key);
-    ngram_ret.order = FIRST(trp);
-    ngram_ret.prob = SECOND(trp);
-    ngram_ret.backoff = THIRD(trp);
-    memcpy(ngram_ret.word_ids, ngram_key.word_ids, sizeof(uint32_t) * ngram_ret.order);
-    return;
-  }
-#endif
 
   LM->GetNGramForNGramKey(ngram_key, ngram_ret);
 
@@ -38,65 +24,20 @@ void LMWrapper::GetNGram(NGram& ngram_key, NGram& ngram_ret)
   {
     ngram_key.order = undef_order;
     size_t undef_hash = ngram_hash_function(ngram_key);
-
-#ifdef CACHING_ENABLED
-    if (! ngram_cash.IsCashed(undef_hash))
-      ngram_cash.StoreValueForKey(undef_hash, make_triple(0, 0.0, 0.0));
-#endif
   }
 
   ngram_key.order = end_undef;
-
-#ifdef CACHING_ENABLED
-  if (ngram_ret.order > 0)
-  {
-    if (ngram_ret.order == ngram_key.order)
-    {
-      ngram_cash.StoreValueForKey(hash_key, make_triple(ngram_ret.order, ngram_ret.prob, ngram_ret.backoff));
-    }
-    else
-    {
-      WARNING(true, "This code shouldn't have been called in the current verion!");
-      size_t ret_hash = ngram_hash_function(ngram_ret);
-      if (! ngram_cash.IsCashed(ret_hash) )
-        ngram_cash.StoreValueForKey(ret_hash, make_triple(ngram_ret.order, ngram_ret.prob, ngram_ret.backoff));
-    }
-
-
-  }
-#endif
-
 }
 
-LMWrapper::LMWrapper(ZipLMP _LM, uint32_t ngram_cash_capacity, uint32_t ngram_probs_cash_capacity):
+LMWrapper::LMWrapper(ZipLMP _LM):
   LM(_LM),
   _lookups(0),
-  _hits(0),
-  ngram_cash(ngram_cash_capacity),
-  ngram_probs_cash(ngram_probs_cash_capacity)
+  _hits(0)
 {}
 
 double LMWrapper::GetProb(NGram& ngram_key, NGram& ngram_pom)
 {
   size_t key_hash = ngram_hash_function(ngram_key);
-
-#ifdef CACHING_ENABLED
-  if (ngram_probs_cash.IsCashed(key_hash))
-  {
-    return ngram_probs_cash.GetCashedValue(key_hash);
-  }
-#endif
-
-
-  /*if (ngram_cash.IsCashed(key_hash))
-    {
-    triple(uint, double, double) trp = ngram_cash.GetCashedValue(key_hash);
-
-    if (FIRST(trp) != 0)
-    {
-    return  SECOND(trp);
-    }
-    }*/
 
   GetNGram(ngram_key, ngram_pom);
 
@@ -123,14 +64,8 @@ double LMWrapper::GetProb(NGram& ngram_key, NGram& ngram_pom)
     if (ngram_pom.order == 0)
       break;
 
-
-
     ngram_key.order = ngram_pom.order - 1;
   }
-
-#ifdef CACHING_ENABLED
-  ngram_probs_cash.StoreValueForKey(key_hash, ret_prob);
-#endif
 
   ngram_key.word_ids--;
   ngram_key.order = ngram_orig_order;
@@ -145,12 +80,6 @@ bool LMWrapper::ContainsNGram(NGram& ngram_key, NGram& ngram_pom)
   GetNGram(ngram_key, ngram_pom);
 
   return (ngram_pom.order > 0);
-}
-
-void LMWrapper::ClearCash()
-{
-  /*ngram_cash.;
-    cashed_ids.clear();*/
 }
 
 void LMWrapper::PrintStats()

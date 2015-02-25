@@ -12,7 +12,6 @@ All rights reserved.
 #define _LEXICON_HPP_
 
 #include "common.h"
-#include "my_cash.h"
 #include "my_packed_array.h"
 #include "comp_increasing_array.h"
 

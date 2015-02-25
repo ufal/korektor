@@ -3,8 +3,6 @@
 #ifndef _KOREKTOR_CONFIGURATION_HPP
 #define _KOREKTOR_CONFIGURATION_HPP
 
-#include "my_cash.h"
-
 namespace ngramchecker {
 
 class LMWrapper;
@@ -37,9 +35,6 @@ struct string_bool_hasher : std::unary_function<pair<string, bool>, size_t>
   }
 };
 
-typedef MyCash<pair<string, bool>, vector<StagePosibilityP>, string_bool_hasher> MyCash_StagePosibility;
-SP_DEF(MyCash_StagePosibility);
-
 
 /// @class Configuration configuration.h "configuration.h"
 class Configuration
@@ -57,7 +52,6 @@ class Configuration
  public:
 
   uint viterbi_order;
-  MyCash_StagePosibilityP st_pos_multifactor_cash;
   LexiconP lexicon;
   MorphologyP morphology;
   TokenizerP tokenizer;
@@ -74,7 +68,7 @@ class Configuration
 
   bool is_initialized()
   {
-    return viterbi_order > 0 && viterbi_order < 50 && st_pos_multifactor_cash && lexicon && morphology
+    return viterbi_order > 0 && viterbi_order < 50 && lexicon && morphology
         && tokenizer && errorModel && simWordsFinder;
   }
 

@@ -12,8 +12,6 @@ All rights reserved.
 #include "morphology.h"
 #include "lm_wrapper.h"
 
-// #define CACHING_ENABLED
-
 namespace ngramchecker {
 
 double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next)
@@ -144,14 +142,6 @@ vector<vector<StagePosibilityP> > DecoderMultiFactor::init_inner_stage_posibilit
     vector<StagePosibilityP> vec_stage_pos;
 
 
-#ifdef CACHING_ENABLED
-    auto pair = make_pair(tokens[i]->str_utf8, tokens[i]->sentence_start);
-    if (configuration->st_pos_multifactor_cash->IsCashed(pair))
-    {
-      vec_stage_pos = configuration->st_pos_multifactor_cash->GetCashedValue(pair);
-    }
-    else
-#endif
     {
       Similar_Words_Map msw = configuration->simWordsFinder->Find(tokens[i]);
 
@@ -183,10 +173,6 @@ vector<vector<StagePosibilityP> > DecoderMultiFactor::init_inner_stage_posibilit
       }
 
       std::sort(vec_stage_pos.begin(), vec_stage_pos.end(), StagePosibility_sort_cost());
-
-#ifdef CACHING_ENABLED
-      configuration->st_pos_multifactor_cash->StoreValueForKey(pair, vec_stage_pos);
-#endif
     }
     ret.push_back(vec_stage_pos);
   }
