@@ -1,3 +1,12 @@
+// This file is part of korektor <http://github.com/ufal/korektor/>.
+//
+// Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty
+// of Mathematics and Physics, Charles University in Prague, Czech Republic.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted under 3-clause BSD licence.
+
 /// @file error_model_basic.h
 /// @class ErrorModelBasic error_model.h "error_model.h"
 /// @brief This class implements the error model
@@ -5,9 +14,6 @@
 /// @todo <OL>
 ///   <LI>Replace the general purpose hash table with custom linear hashing container (since there will be no removing of elements) - it will improve memory use patterns, i.e. greater locality etc. </LI>
 /// </OL>
-///
-///
-///
 
 #ifndef _ERROR_MODEL_BASIC_HPP
 #define _ERROR_MODEL_BASIC_HPP

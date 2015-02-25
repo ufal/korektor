@@ -1,12 +1,14 @@
-/*
-Copyright (c) 2012, Charles University in Prague
-All rights reserved.
-*/
+// This file is part of korektor <http://github.com/ufal/korektor/>.
+//
+// Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty
+// of Mathematics and Physics, Charles University in Prague, Czech Republic.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted under 3-clause BSD licence.
 
 /// @file typedefs.h
 /// @brief Type definitions
-/// @copyright Copyright (c) 2012, Charles University in Prague
-/// All rights reserved.
 
 #ifndef _TYPEDEFS_HPP_
 #define _TYPEDEFS_HPP_
