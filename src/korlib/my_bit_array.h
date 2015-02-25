@@ -138,7 +138,7 @@ class MyBitArray {
 
     }
 
-    cerr << "MyPackedArray: assignemt operator\n";
+//    cerr << "MyPackedArray: assignemt operator\n";
     return *this;
   }
 
