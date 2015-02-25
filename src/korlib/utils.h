@@ -17,9 +17,6 @@
 #include "common.h"
 #include "my_utf.h"
 
-#define FATAL_CONDITION(expr, error_text) if (!(expr)) { std::cerr << "FATAL ERROR! The condition ( " << #expr << " ) failed. " << error_text << std::endl; string dummy_string; std::cin >> dummy_string; exit(-1); }
-#define WARNING(expr, error_text) if (!(expr)) { std::cerr << "FATAL ERROR! The condition ( " << #expr << " ) failed. " << error_text << std::endl; }
-#define FATAL(error_text) std::cerr << "FATAL ERROR: " << error_text << endl; string dummy_string; std::cin >> dummy_string; exit(-1);
 namespace ngramchecker {
 
 class MyUtils {

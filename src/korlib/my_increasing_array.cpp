@@ -87,7 +87,7 @@ MyIncreasingArray::MyIncreasingArray(vector<uint32_t> &vec)
 
   for (uint32_t i = 0; i < vec.size(); i++)
   {
-    WARNING(vec[i] == GetValueAt(i), "MIA i = " << i << ", vec[i] = " << vec[i] << ", GetVal[i] = " << GetValueAt(i));
+    FATAL_CONDITION(vec[i] == GetValueAt(i), "MIA i = " << i << ", vec[i] = " << vec[i] << ", GetVal[i] = " << GetValueAt(i));
   }
 }
 
