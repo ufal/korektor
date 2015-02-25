@@ -14,8 +14,7 @@
 /// This class provides various functions to access the morphology data from file.
 /// @todo PrintOut function should be traced thoroughly
 
-#ifndef MORPHOLOGY_HPP_
-#define MORPHOLOGY_HPP_
+#pragma once
 
 #include "common.h"
 #include "my_packed_array.h"
@@ -493,4 +492,3 @@ class Morphology {
 
 SP_DEF(Morphology);
 }
-#endif //MORPHOLOGY_HPP_

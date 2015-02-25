@@ -10,8 +10,7 @@
 /// @file tokenizer.h
 /// @brief Simple Tokenizer
 
-#ifndef _KOREKTOR_TOKENIZER_HPP
-#define _KOREKTOR_TOKENIZER_HPP
+#pragma once
 
 #include "common.h"
 #include "lexicon.h"
@@ -163,5 +162,3 @@ class Tokenizer {
 
 SP_DEF(Tokenizer);
 }
-
-#endif

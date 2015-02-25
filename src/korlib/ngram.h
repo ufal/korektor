@@ -10,8 +10,7 @@
 /// @file ngram.h
 /// @class NGram ngram.h "ngram.h"
 
-#ifndef NGRAM_HPP_
-#define NGRAM_HPP_
+#pragma once
 
 #include "common.h"
 #include "utils.h"
@@ -126,5 +125,3 @@ struct NGram_compare: std::less<NGram>
 };
 
 }
-
-#endif /* NGRAM_HPP_ */

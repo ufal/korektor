@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef TEXTCHECKINGRESULT_HPP_
-#define TEXTCHECKINGRESULT_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -62,5 +61,3 @@ SP_DEF(TextCheckingResult);
 typedef shared_ptr<vector<shared_ptr<TextCheckingResult> > > vectorP_TextCheckingResultP;
 
 }
-
-#endif /* TEXTCHECKINGRESULT_HPP_ */

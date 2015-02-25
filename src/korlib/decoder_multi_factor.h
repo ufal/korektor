@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef DECODERMULTIFACTOR_HPP_
-#define DECODERMULTIFACTOR_HPP_
+#pragma once
 
 #include "common.h"
 #include "decoder_base.h"
@@ -50,5 +49,3 @@ class DecoderMultiFactor : public DecoderBase
 };
 
 }
-
-#endif /* DECODERMULTIFACTOR_HPP_ */

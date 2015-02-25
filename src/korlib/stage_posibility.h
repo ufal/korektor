@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef STAGEPOSIBILITY_HPP_
-#define STAGEPOSIBILITY_HPP_
+#pragma once
 
 #include "common.h"
 #include "factor_list.h"
@@ -120,6 +119,3 @@ SP_DEF(StagePosibility_Letter);
 #endif
 
 }
-
-
-#endif /* STAGEPOSIBILITY_HPP_ */

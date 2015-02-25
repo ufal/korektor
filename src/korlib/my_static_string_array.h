@@ -11,8 +11,7 @@
 /// @class MyStaticStringArray my_static_string_array.h "my_static_string_array.h"
 /// @brief Class for storing array of strings as data
 
-#ifndef _MY_STATIC_STRING_ARRAY
-#define _MY_STATIC_STRING_ARRAY
+#pragma once
 
 #include "common.h"
 #include "comp_increasing_array.h"
@@ -146,5 +145,3 @@ class MyStaticStringArray {
 
 SP_DEF(MyStaticStringArray);
 }
-
-#endif

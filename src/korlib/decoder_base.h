@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef DECODERBASE_HPP_
-#define DECODERBASE_HPP_
+#pragma once
 
 #include "common.h"
 #include "viterbi_state.h"
@@ -93,5 +92,3 @@ class DecoderBase
 SP_DEF(DecoderBase);
 
 }
-
-#endif /* DECODERBASE_HPP_ */

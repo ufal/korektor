@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef _CONSTANTS_HPP_
-#define _CONSTANTS_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -99,4 +98,3 @@ class MyConstants {
 
 };
 }
-#endif //_CONSTANTS_HPP_

@@ -10,8 +10,7 @@
 /// @file token.h
 /// @brief Definition of a token
 
-#ifndef TOKEN_HPP_
-#define TOKEN_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -49,5 +48,3 @@ struct TokenP_compare: std::less<TokenP>
 };
 
 }
-
-#endif /* TOKEN_HPP_ */

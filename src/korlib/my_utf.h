@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef _MYUTF_H_
-#define _MYUTF_H_
+#pragma once
 
 #include <stdint.h>
 #include <string>
@@ -52,4 +51,3 @@ class MyUTF
 
 
 }
-#endif

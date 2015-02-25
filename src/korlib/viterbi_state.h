@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef VITERBISTATE_HPP_
-#define VITERBISTATE_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -96,5 +95,3 @@ struct ViterbiStateP_ihash: std::unary_function<ViterbiStateP, std::size_t>
 
 
 }
-
-#endif /* VITERBISTATE_HPP_ */

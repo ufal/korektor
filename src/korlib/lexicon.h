@@ -10,8 +10,7 @@
 /// @file lexicon.cpp
 /// @class Lexicon lexicon.h "lexicon.h"
 
-#ifndef _LEXICON_HPP_
-#define _LEXICON_HPP_
+#pragma once
 
 #include "common.h"
 #include "my_packed_array.h"
@@ -135,5 +134,3 @@ class Lexicon {
 SP_DEF(Lexicon);
 
 }
-
-#endif  //_LEXICON_HPP_

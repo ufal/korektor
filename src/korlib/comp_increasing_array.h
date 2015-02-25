@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef COMPINCREASINGARRAY_HPP_
-#define COMPINCREASINGARRAY_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -88,5 +87,3 @@ class CompIncreasingArray {
 
 SP_DEF(CompIncreasingArray);
 }
-
-#endif /* COMPINCREASINGARRAY_HPP_ */

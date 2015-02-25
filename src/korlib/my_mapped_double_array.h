@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef MYMAPPEDDOUBLEARRAY_HPP_
-#define MYMAPPEDDOUBLEARRAY_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -42,5 +41,3 @@ class MyMappedDoubleArray {
 
 SP_DEF(MyMappedDoubleArray);
 }
-
-#endif /* MYMAPPEDDOUBLEARRAY_HPP_ */

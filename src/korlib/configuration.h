@@ -9,8 +9,7 @@
 
 /// @file configuration.h
 
-#ifndef _KOREKTOR_CONFIGURATION_HPP
-#define _KOREKTOR_CONFIGURATION_HPP
+#pragma once
 
 namespace ngramchecker {
 
@@ -110,5 +109,3 @@ class Configuration
 
 SP_DEF(Configuration);
 }
-
-#endif //_KOREKTOR_CONFIGURATION_HPP

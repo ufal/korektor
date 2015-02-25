@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef SPELLCHECKER_HPP_
-#define SPELLCHECKER_HPP_
+#pragma once
 
 #include "common.h"
 #include "stage_posibility.h"
@@ -74,5 +73,3 @@ class Spellchecker {
 };
 
 }
-
-#endif /* SPELLCHECKER_HPP_ */

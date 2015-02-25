@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef _USTRING_REPLACING_HPP
-#define _USTRING_REPLACING_HPP
+#pragma once
 
 #include "common.h"
 
@@ -36,5 +35,3 @@ class u16stringReplacing {
 };
 
 }
-
-#endif //_USTRING_REPLACING_HPP

@@ -12,8 +12,7 @@
 /// @brief Data structure for efficiently storing integer
 ///        arrays whose values are in an increasing order.
 
-#ifndef MYINCREASINGARRAY_HPP_
-#define MYINCREASINGARRAY_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -56,5 +55,3 @@ class MyIncreasingArray {
 
 SP_DEF(MyIncreasingArray);
 }
-
-#endif /* MYINCREASINGARRAY_HPP_ */

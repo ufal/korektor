@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef SIM_WORDS_FINDER_HPP_
-#define SIM_WORDS_FINDER_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -54,5 +53,3 @@ class SimWordsFinder {
 
 SP_DEF(SimWordsFinder);
 }
-
-#endif /* SIM_WORDS_FINDER_HPP_ */

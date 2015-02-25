@@ -15,8 +15,7 @@
 ///   <LI>Replace the general purpose hash table with custom linear hashing container (since there will be no removing of elements) - it will improve memory use patterns, i.e. greater locality etc. </LI>
 /// </OL>
 
-#ifndef _ERROR_MODEL_BASIC_HPP
-#define _ERROR_MODEL_BASIC_HPP
+#pragma once
 
 #include <tuple>
 
@@ -535,4 +534,3 @@ class ErrorModelBasic : public ErrorModel
 };
 
 }
-#endif //_ERROR_MODEL_BASIC_HPP

@@ -11,8 +11,7 @@
 /// @class MyPackedArray my_packed_array.h "my_packed_array.h"
 /// @brief Data structure for the implementation of memory efficient array
 
-#ifndef _MY_PACKED_ARRAY_HPP_
-#define _MY_PACKED_ARRAY_HPP_
+#pragma once
 
 #include "common.h"
 #include "utils.h"
@@ -107,5 +106,3 @@ class MyPackedArray {
 };
 
 }
-
-#endif //_MY_PACKED_ARRAY_HPP_

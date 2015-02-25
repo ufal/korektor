@@ -11,8 +11,7 @@
 /// @brief Class for creating, manipulating language models
 /// @class ZipLM zip_lm.h "zip_lm.h"
 
-#ifndef ZIPLM_HPP_
-#define ZIPLM_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -117,5 +116,3 @@ class ZipLM {
 };
 
 }
-
-#endif // ZIPLM_HPP_

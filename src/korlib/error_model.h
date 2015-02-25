@@ -10,8 +10,7 @@
 /// @file error_model.h
 /// @brief Data structure and relevant functions for the implementation of error model
 
-#ifndef ERRORMODEL_HPP_
-#define ERRORMODEL_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -72,6 +71,3 @@ SP_DEF(ErrorModel);
 //ErrorModelTypoP errorModel;
 
 }
-
-
-#endif /* ERRORMODEL_HPP_ */

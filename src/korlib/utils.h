@@ -11,8 +11,7 @@
 /// @class MyUtils MyUtils.h "MyUtils.h"
 /// @brief Utility functions
 
-#ifndef MICHALISEKSPELL_UTILS_HPP_
-#define MICHALISEKSPELL_UTILS_HPP_
+#pragma once
 
 #include "common.h"
 #include "my_utf.h"
@@ -276,5 +275,3 @@ struct u16string_hash
 };
 
 }
-
-#endif /* MICHALISEKSPELL_UTILS_HPP_ */

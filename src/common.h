@@ -10,8 +10,7 @@
 /// @file common.h
 /// @brief Common header file
 
-#ifndef COMMONHEADER_HPP_
-#define COMMONHEADER_HPP_
+#pragma once
 
 #ifdef WIN32
 #pragma warning(disable : 4996)
@@ -53,5 +52,3 @@ using namespace ngramchecker;
 #define FATAL_CONDITION(expr, error_text) if (!(expr)) { std::cerr << "FATAL ERROR: The condition ( " << #expr << " ) failed. " << error_text << std::endl; exit(1); }
 
 #define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
-
-#endif /* COMMONHEADER_HPP_ */

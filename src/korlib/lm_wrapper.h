@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef LMWRAPPER_HPP_
-#define LMWRAPPER_HPP_
+#pragma once
 
 #include "common.h"
 #include "ngram.h"
@@ -60,5 +59,3 @@ class LMWrapper {
 SP_DEF(LMWrapper);
 
 }
-
-#endif /* LMWRAPPER_HPP_ */

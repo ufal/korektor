@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef _VALUE_MAPPING_HPP_
-#define _VALUE_MAPPING_HPP_
+#pragma once
 
 #include "common.h"
 
@@ -55,5 +54,3 @@ class ValueMapping {
 
 SP_DEF(ValueMapping);
 }
-
-#endif //_VALUE_MAPPING_HPP_

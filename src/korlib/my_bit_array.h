@@ -16,8 +16,7 @@
 /// amount of space required to store the value. The implementation is similar to \ref MyPackedArray , but consumes less than or equal
 /// memory space.
 
-#ifndef _MY_BIT_ARRAY_HPP_
-#define _MY_BIT_ARRAY_HPP_
+#pragma once
 
 #include "common.h"
 #include "utils.h"
@@ -287,5 +286,3 @@ SP_DEF(MyBitArray);
 
 
 }
-
-#endif //_MY_BIT_ARRAY_HPP_

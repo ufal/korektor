@@ -10,8 +10,7 @@
 /// @file typedefs.h
 /// @brief Type definitions
 
-#ifndef _TYPEDEFS_HPP_
-#define _TYPEDEFS_HPP_
+#pragma once
 
 #include <memory>
 
@@ -29,4 +28,3 @@ enum StagePosibility_type { MultiFactor, Letter };
 enum capitalization_type { all_upper_case, all_lower_case, first_upper_case, weird };
 
 }
-#endif

@@ -7,8 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#ifndef _GET_ERROR_SIGNATURE_HPP
-#define _GET_ERROR_SIGNATURE_HPP
+#pragma once
 
 bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signature)
 {
@@ -130,5 +129,3 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
 
   return false;
 }
-
-#endif
