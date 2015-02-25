@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 

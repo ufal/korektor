@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
@@ -13,30 +13,30 @@ All rights reserved.
 
 namespace ngramchecker {
 
-	class MyMappedDoubleArray {
-	private:
-		ValueMapping value_mapping;
-		MyPackedArray mpa;
+class MyMappedDoubleArray {
+ private:
+  ValueMapping value_mapping;
+  MyPackedArray mpa;
 
-	public:
-		inline uint32_t GetSize() const
-		{
-			return mpa.GetSize();
-		}
+ public:
+  inline uint32_t GetSize() const
+  {
+    return mpa.GetSize();
+  }
 
-		inline double GetValueAt(uint32_t index) const
-		{
-			return value_mapping.GetDouble(mpa.GetValueAt(index));
-		}
+  inline double GetValueAt(uint32_t index) const
+  {
+    return value_mapping.GetDouble(mpa.GetValueAt(index));
+  }
 
-		void WriteToStream(ostream &ofs) const;
+  void WriteToStream(ostream &ofs) const;
 
-		MyMappedDoubleArray(vector<double> &values, uint32_t bits_per_value);
+  MyMappedDoubleArray(vector<double> &values, uint32_t bits_per_value);
 
-		MyMappedDoubleArray(istream &ifs);
-	};
+  MyMappedDoubleArray(istream &ifs);
+};
 
-	SP_DEF(MyMappedDoubleArray);
+SP_DEF(MyMappedDoubleArray);
 }
 
 #endif /* MYMAPPEDDOUBLEARRAY_HPP_ */

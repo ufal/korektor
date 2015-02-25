@@ -32,13 +32,13 @@ using namespace ngramchecker;
 
 int main(int argc, char** argv)
 {
-	Tokenizer tokenizer;
-	string s;
+  Tokenizer tokenizer;
+  string s;
 
-	while (std::getline(cin, s))
-	{
-		tokenizer.TokenizeToStream(MyUtils::utf8_to_utf16(s), cout);
-	}
+  while (std::getline(cin, s))
+  {
+    tokenizer.TokenizeToStream(MyUtils::utf8_to_utf16(s), cout);
+  }
 
-	return 0;
+  return 0;
 }

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
@@ -31,10 +31,10 @@ typedef shared_ptr<vector<vector<StagePosibilityP> > > StagePosibilitiesType;
 
 struct Pair_StagePosibilityP_double_comparer : less<pair<uint32_t, double> >
 {
-	bool operator()(const pair<StagePosibilityP, double> &val1, const pair<StagePosibilityP, double> &val2)
-	{
-		return val1.second < val2.second;
-	}
+  bool operator()(const pair<StagePosibilityP, double> &val1, const pair<StagePosibilityP, double> &val2)
+  {
+    return val1.second < val2.second;
+  }
 };
 
 /// @brief Class for finding the spelling corrected sentence
@@ -49,40 +49,40 @@ struct Pair_StagePosibilityP_double_comparer : less<pair<uint32_t, double> >
 class DecoderBase
 {
 
-private:
+ private:
 
-	StagePosibilitiesType stage_posibilities;
+  StagePosibilitiesType stage_posibilities;
 
-	virtual vector<vector<StagePosibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens) = 0;
+  virtual vector<vector<StagePosibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens) = 0;
 
-	void init_posibilities(const vector<TokenP> &tokens);
+  void init_posibilities(const vector<TokenP> &tokens);
 
-	virtual double ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next) = 0;
+  virtual double ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next) = 0;
 
-	virtual StagePosibilityP sentence_start_SP() = 0;
-	virtual StagePosibilityP sentence_end_SP() = 0;
+  virtual StagePosibilityP sentence_start_SP() = 0;
+  virtual StagePosibilityP sentence_end_SP() = 0;
 
-protected:
+ protected:
 
-	uint32_t viterbi_order;
+  uint32_t viterbi_order;
 
-	DecoderBase(Configuration* _configuration);
+  DecoderBase(Configuration* _configuration);
 
-public:
+ public:
 
-	virtual double ComputeTransitionCostSPSequence(vector<StagePosibilityP> &sp_vec, uint32_t start_index, uint32_t end_index) = 0;
+  virtual double ComputeTransitionCostSPSequence(vector<StagePosibilityP> &sp_vec, uint32_t start_index, uint32_t end_index) = 0;
 
-	Configuration* configuration;
+  Configuration* configuration;
 
-	uint32_t GetViterbiOrder();
+  uint32_t GetViterbiOrder();
 
-	TransitionCostComputationP GetTransitionCostComputation();
+  TransitionCostComputationP GetTransitionCostComputation();
 
-	vector<StagePosibilityP>  DecodeTokenizedSentence(const vector<TokenP> &tokens);
+  vector<StagePosibilityP>  DecodeTokenizedSentence(const vector<TokenP> &tokens);
 
-	void DecodeTokenizedSentence_ReturnStagePosibilities(const vector<TokenP> &tokens, vector<StagePosibilityP> &decoded_sequence, StagePosibilitiesType &_stage_posibilities);
+  void DecodeTokenizedSentence_ReturnStagePosibilities(const vector<TokenP> &tokens, vector<StagePosibilityP> &decoded_sequence, StagePosibilitiesType &_stage_posibilities);
 
-	string DecodeSentence(string sentence);
+  string DecodeSentence(string sentence);
 
 };
 

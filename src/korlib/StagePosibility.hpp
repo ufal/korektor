@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
@@ -11,107 +11,109 @@ All rights reserved.
 
 namespace ngramchecker {
 
-	class Configuration;
-	SP_DEF(Configuration);
+class Configuration;
+SP_DEF(Configuration);
 
 
 
-	//TODO: reorganize this class for better cache usage - it's use in the main computation loop, so it shouldn't be that wasteful - the actual literal strings should be
-	//moved somewhere else
-	class StagePosibility {
-	public:
-		StagePosibility_type type;
+//TODO: reorganize this class for better cache usage - it's use in the main computation loop, so it shouldn't be that wasteful - the actual literal strings should be
+//moved somewhere else
+class StagePosibility {
+ public:
+  StagePosibility_type type;
 
-		virtual float EmmisionProbability() = 0;
-		virtual string ToString() = 0;
-		virtual bool IsOriginal() = 0;
-		virtual size_t UniqueIdentifier() = 0;
-		virtual uint32_t FormIdentifier() = 0;
-		virtual bool IsUnknown() = 0;
-		virtual u16string &To_u16string() = 0;
+  virtual float EmmisionProbability() = 0;
+  virtual string ToString() = 0;
+  virtual bool IsOriginal() = 0;
+  virtual size_t UniqueIdentifier() = 0;
+  virtual uint32_t FormIdentifier() = 0;
+  virtual bool IsUnknown() = 0;
+  virtual u16string &To_u16string() = 0;
 
-		StagePosibility(StagePosibility_type _type): type(_type) {}
-	};
+  StagePosibility(StagePosibility_type _type): type(_type) {}
+};
 
-	SP_DEF(StagePosibility);
-
-
-	struct StagePosibility_Identifying_comparer : less<StagePosibilityP> {
-		bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
-		{
-			return sp1->UniqueIdentifier() < sp2->UniqueIdentifier();
-		}
-	};
-
-	struct StagePosibility_Form_comparer : less<StagePosibilityP> {
-		bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
-		{
-			return sp1->FormIdentifier() < sp2->FormIdentifier();
-		}
-	};
+SP_DEF(StagePosibility);
 
 
-	struct StagePosibility_sort_cost : less<StagePosibilityP> {
-		bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
-		{
-			return sp1->EmmisionProbability() < sp2->EmmisionProbability();
-		}
-	};
+struct StagePosibility_Identifying_comparer : less<StagePosibilityP> {
+  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+  {
+    return sp1->UniqueIdentifier() < sp2->UniqueIdentifier();
+  }
+};
 
-	class StagePosibilityNew : public StagePosibility {
-		u16string word;
-		bool original;
-		float emission_prob;
-		FactorList factorList;
-		uint32_t form_id;
-		size_t uniq_id;
+struct StagePosibility_Form_comparer : less<StagePosibilityP> {
+  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+  {
+    return sp1->FormIdentifier() < sp2->FormIdentifier();
+  }
+};
 
-	public:
-		virtual float EmmisionProbability() { return emission_prob; }
-		virtual string ToString();
-		virtual size_t UniqueIdentifier() { return uniq_id; }
-		virtual uint32_t FormIdentifier() { return form_id; }
-		virtual bool IsOriginal() { return original; }
-		virtual bool IsUnknown();
-		inline FactorList GetFactorList() { return factorList; }
-		virtual u16string &To_u16string() { return word; }
 
-		StagePosibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration *_conf, float error_model_cost);
+struct StagePosibility_sort_cost : less<StagePosibilityP> {
+  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+  {
+    return sp1->EmmisionProbability() < sp2->EmmisionProbability();
+  }
+};
 
-	};
+class StagePosibilityNew : public StagePosibility {
+  u16string word;
+  bool original;
+  float emission_prob;
+  FactorList factorList;
+  uint32_t form_id;
+  size_t uniq_id;
 
-	SP_DEF(StagePosibilityNew);
+ public:
+  virtual float EmmisionProbability() { return emission_prob; }
+  virtual string ToString();
+  virtual size_t UniqueIdentifier() { return uniq_id; }
+  virtual uint32_t FormIdentifier() { return form_id; }
+  virtual bool IsOriginal() { return original; }
+  virtual bool IsUnknown();
+  inline FactorList GetFactorList() { return factorList; }
+  virtual u16string &To_u16string() { return word; }
 
-	/*class StagePosibility_Letter : public StagePosibility
-	{
+  StagePosibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration *_conf, float error_model_cost);
 
-	private:
-		UChar letter;
+};
 
-	public:
-		StagePosibility_Letter(UChar _letter);
+SP_DEF(StagePosibilityNew);
 
-		virtual double EmmisionProbability();
+#if 0
+class StagePosibility_Letter : public StagePosibility
+{
 
-		virtual string ToString();
+ private:
+  UChar letter;
 
-		virtual bool IsOriginal();
+ public:
+  StagePosibility_Letter(UChar _letter);
 
-		virtual uint32_t UniqueIdentifier();
+  virtual double EmmisionProbability();
 
-		virtual uint32_t FormIdentifier();
+  virtual string ToString();
 
-		virtual bool IsUnknown();
+  virtual bool IsOriginal();
 
-		uint32_t LetterID();
+  virtual uint32_t UniqueIdentifier();
 
-		static StagePosibilityP SentenceStartSP();
+  virtual uint32_t FormIdentifier();
 
-		static StagePosibilityP SentenceEndSP();
+  virtual bool IsUnknown();
 
-	};
+  uint32_t LetterID();
 
-	SP_DEF(StagePosibility_Letter);*/
+  static StagePosibilityP SentenceStartSP();
+
+  static StagePosibilityP SentenceEndSP();
+
+};
+
+SP_DEF(StagePosibility_Letter);
+#endif
 
 }
 

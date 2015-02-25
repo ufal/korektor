@@ -12,211 +12,211 @@
 
 namespace ngramchecker {
 
-	/// @brief Loads lexicon and morphology
-	///
-	/// @param _lexicon Lexicon
-	/// @param _morphology Morphology
-	void Configuration::LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _morphology)
-	{
-		lexicon = _lexicon;
-		morphology = _morphology;
-		
-		factor_map = morphology->GetFactorMap();
-		
-		for (auto it = factor_map.begin(); it != factor_map.end(); it++)
-			factor_names.push_back("");
+/// @brief Loads lexicon and morphology
+///
+/// @param _lexicon Lexicon
+/// @param _morphology Morphology
+void Configuration::LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _morphology)
+{
+  lexicon = _lexicon;
+  morphology = _morphology;
 
-		for (auto it = factor_map.begin(); it != factor_map.end(); it++)
-			factor_names[it->second] = it->first;
+  factor_map = morphology->GetFactorMap();
 
-		for (auto it = factor_names.begin(); it != factor_names.end(); it++)
-		{
-				enabled_factors.push_back(false);
-				factor_weights.push_back(0.0f);
-				factor_LMS.push_back(LMWrapperP());
-				factor_orders.push_back(0);
-		}
+  for (auto it = factor_map.begin(); it != factor_map.end(); it++)
+    factor_names.push_back("");
 
-	}
+  for (auto it = factor_map.begin(); it != factor_map.end(); it++)
+    factor_names[it->second] = it->first;
 
-	void Configuration::LoadLM(LMWrapperP lm)
-	{
-		uint index = factor_map[lm->FactorName()];
-		factor_LMS[index] = lm;
-	}
+  for (auto it = factor_names.begin(); it != factor_names.end(); it++)
+  {
+    enabled_factors.push_back(false);
+    factor_weights.push_back(0.0f);
+    factor_LMS.push_back(LMWrapperP());
+    factor_orders.push_back(0);
+  }
 
-	void Configuration::EnableFactor(const string &fac_name, float weight, uint order)
-	{
-		uint index = factor_map[fac_name];
-		enabled_factors[index] = true;
-		factor_weights[index] = weight;
-		factor_orders[index] = order;
+}
 
-		if (index > last_enabled_factor_index)
-			last_enabled_factor_index = index;
-	}
+void Configuration::LoadLM(LMWrapperP lm)
+{
+  uint index = factor_map[lm->FactorName()];
+  factor_LMS[index] = lm;
+}
 
-	/// @brief Initialization from configuration file
-	///
-	/// @param conf_file Absolute path to the configuration file
-	Configuration::Configuration(const string &conf_file)
-	{
-		last_enabled_factor_index = 0;
-		diagnostics = false;
+void Configuration::EnableFactor(const string &fac_name, float weight, uint order)
+{
+  uint index = factor_map[fac_name];
+  enabled_factors[index] = true;
+  factor_weights[index] = weight;
+  factor_orders[index] = order;
 
-		auto slash_pos = conf_file.find_last_of("\\/");
-		string configuration_directory = slash_pos == string::npos ? string() : conf_file.substr(0, slash_pos + 1);
+  if (index > last_enabled_factor_index)
+    last_enabled_factor_index = index;
+}
 
-		ifstream ifs;
-		ifs.open((conf_file).c_str());
+/// @brief Initialization from configuration file
+///
+/// @param conf_file Absolute path to the configuration file
+Configuration::Configuration(const string &conf_file)
+{
+  last_enabled_factor_index = 0;
+  diagnostics = false;
 
-		if (ifs.is_open() == false)
-		{
-			cerr << "Opening configuration file " << conf_file << "failed!" << endl;
-			exit(1);
-			//throw std::bad_exception("Can't open configuration file!");
-		}
-		
-		viterbi_order = 1;
+  auto slash_pos = conf_file.find_last_of("\\/");
+  string configuration_directory = slash_pos == string::npos ? string() : conf_file.substr(0, slash_pos + 1);
 
-		vector<SimWordsFinder::SearchConfig> search_configs;
+  ifstream ifs;
+  ifs.open((conf_file).c_str());
 
-		mode_string = "tag_errors";
-		string s;
+  if (ifs.is_open() == false)
+  {
+    cerr << "Opening configuration file " << conf_file << "failed!" << endl;
+    exit(1);
+    //throw std::bad_exception("Can't open configuration file!");
+  }
 
-		while (MyUtils::SafeReadline(ifs, s))
-		{
-			if (s == "" || s[0] == '#')  //comment
-				continue;
+  viterbi_order = 1;
 
-			if (s.substr(0, 9) == "morpholex")
-			{
-				string morpholex_file = configuration_directory + ConvertPathSeparators(s.substr(10));
-				ifstream ifs;
-				ifs.open(morpholex_file.c_str(), ios::binary);
-				if (ifs.is_open() == false)
-				{
-					cerr << "Opening morpholex file " << morpholex_file << " failed!" << endl;
-					exit(1);
-					//throw std::bad_exception("Can't open morpholex file!");
-				}
+  vector<SimWordsFinder::SearchConfig> search_configs;
 
-				MorphologyP morphology = MorphologyP(new Morphology(ifs));
-				LexiconP lexicon = LexiconP(new Lexicon(ifs));
+  mode_string = "tag_errors";
+  string s;
 
-				LoadMorphologyAndLexicon(lexicon, morphology);
+  while (MyUtils::SafeReadline(ifs, s))
+  {
+    if (s == "" || s[0] == '#')  //comment
+      continue;
 
-				//cerr << "morpholex loaded!" << endl;
-				
-				ifs.close();
-			}
-			else if (s.substr(0, 10) == "errormodel")
-			{
-				string error_model_file = configuration_directory + ConvertPathSeparators(s.substr(11));
+    if (s.substr(0, 9) == "morpholex")
+    {
+      string morpholex_file = configuration_directory + ConvertPathSeparators(s.substr(10));
+      ifstream ifs;
+      ifs.open(morpholex_file.c_str(), ios::binary);
+      if (ifs.is_open() == false)
+      {
+        cerr << "Opening morpholex file " << morpholex_file << " failed!" << endl;
+        exit(1);
+        //throw std::bad_exception("Can't open morpholex file!");
+      }
 
-				ErrorModelBasicP emb = ErrorModelBasic::fromBinaryFile(error_model_file);
-				errorModel = emb;
-				//cerr << "error model loaded" << endl;
-			}
-			else if (s.substr(0, 2) == "lm")
-			{
-				vector<string> toks;
+      MorphologyP morphology = MorphologyP(new Morphology(ifs));
+      LexiconP lexicon = LexiconP(new Lexicon(ifs));
 
-				MyUtils::Split(toks, s, "-");
+      LoadMorphologyAndLexicon(lexicon, morphology);
 
-				FATAL_CONDITION(toks.size() == 4, s);
+      //cerr << "morpholex loaded!" << endl;
 
-				ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
-				LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm, 5000, 5000));
-				LoadLM(lm_wrapper);
+      ifs.close();
+    }
+    else if (s.substr(0, 10) == "errormodel")
+    {
+      string error_model_file = configuration_directory + ConvertPathSeparators(s.substr(11));
 
-				string order_str = toks[2];
-				uint order = MyUtils::my_atoi(order_str);
-				
-				string weight_str = toks[3];
-				float weight = MyUtils::my_atof(weight_str);
+      ErrorModelBasicP emb = ErrorModelBasic::fromBinaryFile(error_model_file);
+      errorModel = emb;
+      //cerr << "error model loaded" << endl;
+    }
+    else if (s.substr(0, 2) == "lm")
+    {
+      vector<string> toks;
 
-				EnableFactor(lm->GetFactorName(), weight, order);
+      MyUtils::Split(toks, s, "-");
 
-				if (viterbi_order < order)
-					viterbi_order = order;
+      FATAL_CONDITION(toks.size() == 4, s);
 
-				//cerr << "language model " << toks[1] << " loaded!" << endl;
-			}
-			else if (s.substr(0, 6) == "search")
-			{
-				vector<string> toks;
-				MyUtils::Split(toks, s, "-");
+      ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
+      LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm, 5000, 5000));
+      LoadLM(lm_wrapper);
 
-				FATAL_CONDITION(toks.size() == 4, s);
+      string order_str = toks[2];
+      uint order = MyUtils::my_atoi(order_str);
 
-				SimWordsFinder::casing_treatment ct;
+      string weight_str = toks[3];
+      float weight = MyUtils::my_atof(weight_str);
 
-				if (toks[1] == "case_sensitive")
-					ct = SimWordsFinder::case_sensitive;
-				else if (toks[1] == "ignore_case")
-					ct = SimWordsFinder::ignore_case;
-				else if (toks[1] == "ignore_case_keep_orig")
-					ct = SimWordsFinder::ignore_case_keep_orig;
-				else
-				{
-					cerr << s << endl << toks[1] << " - invalid value of casing treatment" << endl;
-					exit(1); 
-				}
+      EnableFactor(lm->GetFactorName(), weight, order);
 
-				uint max_edit_distance = MyUtils::my_atoi(toks[2]);
-				float max_cost = MyUtils::my_atof(toks[3]);
+      if (viterbi_order < order)
+        viterbi_order = order;
 
-				search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));
-			}
-			else if (s.substr(0, 4) == "mode")
-			{
-				mode_string = s.substr(5);
+      //cerr << "language model " << toks[1] << " loaded!" << endl;
+    }
+    else if (s.substr(0, 6) == "search")
+    {
+      vector<string> toks;
+      MyUtils::Split(toks, s, "-");
 
-				if (mode_string != "autocorrect" && mode_string != "tag_errors")
-				{
-					cerr << s << endl << " - invalid value of output mode" << endl;
-					exit(1);
-				}
-			}
-			else if (s.compare(0, 11, "diagnostics") == 0)
-			{
-				diagnostics = true;
-				morphology->initMorphoWordLists(configuration_directory + ConvertPathSeparators(s.substr(12)));
-				morphology->initMorphoWordMaps();
-			}
-		}
+      FATAL_CONDITION(toks.size() == 4, s);
 
-		st_pos_multifactor_cash = MyCash_StagePosibilityP(new MyCash_StagePosibility(5000, 20));
+      SimWordsFinder::casing_treatment ct;
 
-		tokenizer = TokenizerP(new Tokenizer() );
-		tokenizer->initLexicon(lexicon);
-		
-		//search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::case_sensitive, 1, 6));
-		//search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 1, 6));
-		//search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 2, 9));
+      if (toks[1] == "case_sensitive")
+        ct = SimWordsFinder::case_sensitive;
+      else if (toks[1] == "ignore_case")
+        ct = SimWordsFinder::ignore_case;
+      else if (toks[1] == "ignore_case_keep_orig")
+        ct = SimWordsFinder::ignore_case_keep_orig;
+      else
+      {
+        cerr << s << endl << toks[1] << " - invalid value of casing treatment" << endl;
+        exit(1);
+      }
 
-		simWordsFinder = SimWordsFinderP(new SimWordsFinder(this, search_configs));
+      uint max_edit_distance = MyUtils::my_atoi(toks[2]);
+      float max_cost = MyUtils::my_atof(toks[3]);
 
-		if (is_initialized() == false)
-		{
-			//throw std::bad_exception("configuration is not initialized!");
-			cerr << "Configuration was not initialized proparly!" << endl;
-			exit(1);
-		}
-	}
+      search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));
+    }
+    else if (s.substr(0, 4) == "mode")
+    {
+      mode_string = s.substr(5);
 
-	/// @brief Convert path separators to the one used by the current OS
-	/// @param path Path to the file or directory
-	string Configuration::ConvertPathSeparators(const string &path) {
+      if (mode_string != "autocorrect" && mode_string != "tag_errors")
+      {
+        cerr << s << endl << " - invalid value of output mode" << endl;
+        exit(1);
+      }
+    }
+    else if (s.compare(0, 11, "diagnostics") == 0)
+    {
+      diagnostics = true;
+      morphology->initMorphoWordLists(configuration_directory + ConvertPathSeparators(s.substr(12)));
+      morphology->initMorphoWordMaps();
+    }
+  }
+
+  st_pos_multifactor_cash = MyCash_StagePosibilityP(new MyCash_StagePosibility(5000, 20));
+
+  tokenizer = TokenizerP(new Tokenizer() );
+  tokenizer->initLexicon(lexicon);
+
+  //search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::case_sensitive, 1, 6));
+  //search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 1, 6));
+  //search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 2, 9));
+
+  simWordsFinder = SimWordsFinderP(new SimWordsFinder(this, search_configs));
+
+  if (is_initialized() == false)
+  {
+    //throw std::bad_exception("configuration is not initialized!");
+    cerr << "Configuration was not initialized proparly!" << endl;
+    exit(1);
+  }
+}
+
+/// @brief Convert path separators to the one used by the current OS
+/// @param path Path to the file or directory
+string Configuration::ConvertPathSeparators(const string &path) {
 #ifdef _WIN32
-		char to_replace = '/', replace_by = '\\';
+  char to_replace = '/', replace_by = '\\';
 #else
-		char to_replace = '\\', replace_by = '/';
+  char to_replace = '\\', replace_by = '/';
 #endif
-		string result = path;
-		replace(result.begin(), result.end(), to_replace, replace_by);
-		return result;
-	}
+  string result = path;
+  replace(result.begin(), result.end(), to_replace, replace_by);
+  return result;
+}
 
 };

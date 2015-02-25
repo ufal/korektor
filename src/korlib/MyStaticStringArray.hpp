@@ -11,131 +11,131 @@
 namespace ngramchecker {
 
 
-	class MyStaticStringArray {
-		char* data; ///< Pointer to string data
-		uint32_t data_size; ///< Size of the data
-		CompIncreasingArray offsets;
+class MyStaticStringArray {
+  char* data; ///< Pointer to string data
+  uint32_t data_size; ///< Size of the data
+  CompIncreasingArray offsets;
 
-		char pom_data[1000];
+  char pom_data[1000];
 
-	public:
+ public:
 
-		/// @brief Get the data size
-		///
-		/// @return Data size
-		uint32_t GetSize()
-		{
-			return offsets.GetSize();
-		}
+  /// @brief Get the data size
+  ///
+  /// @return Data size
+  uint32_t GetSize()
+  {
+    return offsets.GetSize();
+  }
 
-		/// @brief Get the string value at a given index
-		///
-		/// @param index Index value
-		/// @return String value at the index
-		string GetStringAt(size_t index)
-		{
-			CompIA_First_Last_IndexPair index_pair = offsets.GetFirstLastIndexPair(index);
-			
-			uint len = index_pair.second - index_pair.first + 1; 
-			
-			memcpy(pom_data, &(data[index_pair.first]), len);
+  /// @brief Get the string value at a given index
+  ///
+  /// @param index Index value
+  /// @return String value at the index
+  string GetStringAt(size_t index)
+  {
+    CompIA_First_Last_IndexPair index_pair = offsets.GetFirstLastIndexPair(index);
 
-			pom_data[len] = 0;
+    uint len = index_pair.second - index_pair.first + 1;
 
-			string ret = pom_data;
-			return ret;
-		}
+    memcpy(pom_data, &(data[index_pair.first]), len);
 
-		/// @brief Initialize the array from input stream
-		///
-		/// @param ifs Input stream
-		MyStaticStringArray(istream &ifs)
-		{
-			ifs.read((char*)&data_size, sizeof(uint32_t));
+    pom_data[len] = 0;
 
-			data = new char[data_size];
-			ifs.read(data, data_size);
-			offsets = CompIncreasingArray(ifs);
-		}
+    string ret = pom_data;
+    return ret;
+  }
 
-		/// @brief Initialize the array from a vector of strings
-		///
-		/// @param vals Vector of strings
-		MyStaticStringArray(vector<string> &vals)
-		{
-			uint32_t bytes_needed = 0;
-			vector<uint32_t> offs;
+  /// @brief Initialize the array from input stream
+  ///
+  /// @param ifs Input stream
+  MyStaticStringArray(istream &ifs)
+  {
+    ifs.read((char*)&data_size, sizeof(uint32_t));
 
-			for (size_t i = 0; i < vals.size(); i++)
-			{
-				offs.push_back(bytes_needed);
-				bytes_needed += vals[i].length();
-			}
+    data = new char[data_size];
+    ifs.read(data, data_size);
+    offsets = CompIncreasingArray(ifs);
+  }
 
-			data = new char[bytes_needed];
+  /// @brief Initialize the array from a vector of strings
+  ///
+  /// @param vals Vector of strings
+  MyStaticStringArray(vector<string> &vals)
+  {
+    uint32_t bytes_needed = 0;
+    vector<uint32_t> offs;
 
-			for (size_t i = 0; i < vals.size(); i++)
-			{
-				memcpy(&(data[offs[i]]), vals[i].c_str(), vals[i].length());
-			}
+    for (size_t i = 0; i < vals.size(); i++)
+    {
+      offs.push_back(bytes_needed);
+      bytes_needed += vals[i].length();
+    }
 
-			offsets = CompIncreasingArray(offs, bytes_needed - 1);
+    data = new char[bytes_needed];
 
-			data_size = bytes_needed;
-		}
+    for (size_t i = 0; i < vals.size(); i++)
+    {
+      memcpy(&(data[offs[i]]), vals[i].c_str(), vals[i].length());
+    }
 
-		/// @brief Write the array to output stream
-		///
-		/// @param ofs Output stream
-		void WriteToStream(ostream &ofs)
-		{
-			ofs.write((char*)&data_size, sizeof(uint32_t));
+    offsets = CompIncreasingArray(offs, bytes_needed - 1);
 
-			ofs.write(data, data_size);
+    data_size = bytes_needed;
+  }
 
-			offsets.WriteToStream(ofs);
-		}
+  /// @brief Write the array to output stream
+  ///
+  /// @param ofs Output stream
+  void WriteToStream(ostream &ofs)
+  {
+    ofs.write((char*)&data_size, sizeof(uint32_t));
 
-		/// @brief Destructor
-		~MyStaticStringArray()
-		{
-			delete[] data;
-		}
+    ofs.write(data, data_size);
 
-		/// @brief Initialize the array from another static string array
-		///
-		/// @param val MyStaticStringArray
-		MyStaticStringArray(const MyStaticStringArray &val)
-		{
-			offsets = val.offsets;
-			data_size = val.data_size;
+    offsets.WriteToStream(ofs);
+  }
 
-			data = new char[data_size];
+  /// @brief Destructor
+  ~MyStaticStringArray()
+  {
+    delete[] data;
+  }
 
-			memcpy(data, val.data, data_size);
-		}
+  /// @brief Initialize the array from another static string array
+  ///
+  /// @param val MyStaticStringArray
+  MyStaticStringArray(const MyStaticStringArray &val)
+  {
+    offsets = val.offsets;
+    data_size = val.data_size;
 
-		/// @brief Copy the static array through assignment operator (copy constructor)
-		///
-		/// @param val MyStaticStringArray
-		/// @return MyStaticStringArray
-		MyStaticStringArray& operator=(const MyStaticStringArray &val)
-		{
-			if (this != &val)
-			{
-				char* new_data = new char[val.data_size];
-				memcpy(new_data, val.data, val.data_size);
-				data_size = val.data_size;
-				offsets = val.offsets;
-				delete[] data;
-				data = new_data;
-			}
+    data = new char[data_size];
 
-			return *this;
-		}
-	};
+    memcpy(data, val.data, data_size);
+  }
 
-	SP_DEF(MyStaticStringArray);
+  /// @brief Copy the static array through assignment operator (copy constructor)
+  ///
+  /// @param val MyStaticStringArray
+  /// @return MyStaticStringArray
+  MyStaticStringArray& operator=(const MyStaticStringArray &val)
+  {
+    if (this != &val)
+    {
+      char* new_data = new char[val.data_size];
+      memcpy(new_data, val.data, val.data_size);
+      data_size = val.data_size;
+      offsets = val.offsets;
+      delete[] data;
+      data = new_data;
+    }
+
+    return *this;
+  }
+};
+
+SP_DEF(MyStaticStringArray);
 }
 
 #endif

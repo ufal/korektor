@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
@@ -9,46 +9,46 @@ All rights reserved.
 #include "StdAfx.h"
 
 namespace ngramchecker {
-	
-	struct Token;
-	SP_DEF(Token);
 
-	class Configuration;
+struct Token;
+SP_DEF(Token);
 
-	class SimWordsFinder {
-	public:
+class Configuration;
 
-		enum casing_treatment { case_sensitive, ignore_case_keep_orig, ignore_case };
+class SimWordsFinder {
+ public:
 
-		struct SearchConfig
-		{
-			casing_treatment casing;
-			uint max_ed_dist;
-			float max_cost;
+  enum casing_treatment { case_sensitive, ignore_case_keep_orig, ignore_case };
 
-			SearchConfig(casing_treatment _casing, uint _max_ed_dist, float _max_cost):
-				casing(_casing), max_ed_dist(_max_ed_dist), max_cost(_max_cost) {}
-		};
+  struct SearchConfig
+  {
+    casing_treatment casing;
+    uint max_ed_dist;
+    float max_cost;
 
-	private:
-		Configuration* configuration;
-		vector<SearchConfig> search_configs;
+    SearchConfig(casing_treatment _casing, uint _max_ed_dist, float _max_cost):
+      casing(_casing), max_ed_dist(_max_ed_dist), max_cost(_max_cost) {}
+  };
 
-		void Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret);
+ private:
+  Configuration* configuration;
+  vector<SearchConfig> search_configs;
 
-		void Find_basic_ignore_case(const TokenP &token, bool keep_orig_casing, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret);
+  void Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret);
 
-	public:
-			SimWordsFinder(Configuration* _configuration, const vector<SearchConfig> &_search_configs):
-				configuration(_configuration), search_configs(_search_configs)
-			{}
+  void Find_basic_ignore_case(const TokenP &token, bool keep_orig_casing, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret);
 
-			Similar_Words_Map Find(const TokenP &token);
+ public:
+  SimWordsFinder(Configuration* _configuration, const vector<SearchConfig> &_search_configs):
+    configuration(_configuration), search_configs(_search_configs)
+  {}
 
-			vector<SearchConfig> GetSearchConfigs() { return search_configs; }
-	};
+  Similar_Words_Map Find(const TokenP &token);
 
-	SP_DEF(SimWordsFinder);
+  vector<SearchConfig> GetSearchConfigs() { return search_configs; }
+};
+
+SP_DEF(SimWordsFinder);
 }
 
 #endif /* SIM_WORDS_FINDER_HPP_ */

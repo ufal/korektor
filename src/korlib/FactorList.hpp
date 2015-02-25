@@ -8,6 +8,6 @@
 /// @struct FactorList FactorList.hpp "FactorList.hpp"
 /// @brief Data structure for factors.
 struct FactorList {
-	uint factors[4];
-	float emission_costs[4];
+  uint factors[4];
+  float emission_costs[4];
 };

@@ -7,67 +7,67 @@
 using namespace std;
 
 namespace ngramchecker {
-	
-	class MyUTF8InputStream
-	{
-		ifstream ifs;
-		bool closed;
 
-		
-		MyUTF8InputStream(const MyUTF8InputStream& val) {}
-		MyUTF8InputStream() {}
+class MyUTF8InputStream
+{
+  ifstream ifs;
+  bool closed;
 
-	public:
 
-		MyUTF8InputStream(const string filename): ifs(filename.c_str()), closed(false)
-		{
-			if (ifs.is_open() == false)
-			{
-				cerr << "Can't open file " << filename << endl;
-				exit(-123);
-			}
-		}
+  MyUTF8InputStream(const MyUTF8InputStream& val) {}
+  MyUTF8InputStream() {}
 
-		bool ReadLineUS(u16string &us)
-		{
-			if (closed == true) return false;
+ public:
 
-			if (ifs.eof())
-			{
-				ifs.close();
-				closed = true;
-				return false;
-			}
-			else
-			{
-				string s;
-				getline(ifs, s);
-				
-				if (s.length() > 0 && s[s.length() - 1] == '\n') s.erase(--s.end());
-				if (s.length() > 0 && s[s.length() - 1] == '\r') s.erase(--s.end());
-				if (s.length() > 1 && s[s.length() - 2] == '\r') s.erase(s.end() - 2, s.end() - 1);
+  MyUTF8InputStream(const string filename): ifs(filename.c_str()), closed(false)
+  {
+    if (ifs.is_open() == false)
+    {
+      cerr << "Can't open file " << filename << endl;
+      exit(-123);
+    }
+  }
 
-				//utf8 text files created on Windows contain this character at a beginning of the file (and you don't want that...)
+  bool ReadLineUS(u16string &us)
+  {
+    if (closed == true) return false;
 
-				us = MyUTF::utf8_to_utf16(s);
+    if (ifs.eof())
+    {
+      ifs.close();
+      closed = true;
+      return false;
+    }
+    else
+    {
+      string s;
+      getline(ifs, s);
 
-				while ((!us.empty()) &&  *us.begin() >= 0xD800)
-					us.erase(us.begin());
+      if (s.length() > 0 && s[s.length() - 1] == '\n') s.erase(--s.end());
+      if (s.length() > 0 && s[s.length() - 1] == '\r') s.erase(--s.end());
+      if (s.length() > 1 && s[s.length() - 2] == '\r') s.erase(s.end() - 2, s.end() - 1);
 
-				return true;
-			}
-		}
+      //utf8 text files created on Windows contain this character at a beginning of the file (and you don't want that...)
 
-		bool ReadLineString(string &s)
-		{
-			u16string us;
-			bool ret = ReadLineUS(us);
+      us = MyUTF::utf8_to_utf16(s);
 
-			if (ret == true)
-				s = MyUTF::utf16_to_utf8(us);
-			return ret;
-		}
-	};
+      while ((!us.empty()) &&  *us.begin() >= 0xD800)
+        us.erase(us.begin());
+
+      return true;
+    }
+  }
+
+  bool ReadLineString(string &s)
+  {
+    u16string us;
+    bool ret = ReadLineUS(us);
+
+    if (ret == true)
+      s = MyUTF::utf16_to_utf8(us);
+    return ret;
+  }
+};
 
 }
 #endif

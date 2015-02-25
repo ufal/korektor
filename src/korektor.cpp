@@ -14,141 +14,141 @@
 /// @brief Help message
 void print_help()
 {
-	cerr << "usage: ./korektor configuration_file <input_text >output_text" << endl;
+  cerr << "usage: ./korektor configuration_file <input_text >output_text" << endl;
 }
 
 /// @brief Main entry point
 int main(int argc, char** argv)
 {
-	if (argc < 2)
-	{
-		print_help();
-		exit(1);
-	}
+  if (argc < 2)
+  {
+    print_help();
+    exit(1);
+  }
 
 
-	ConfigurationP configuration(new Configuration(argv[1]));
-	Spellchecker spellchecker = Spellchecker(configuration.get());
+  ConfigurationP configuration(new Configuration(argv[1]));
+  Spellchecker spellchecker = Spellchecker(configuration.get());
 
-	//uint range_from, range_length;
-	//spellchecker.FindMisspelledWord("mrkev brambora pstrah", range_from, range_length);
+  //uint range_from, range_length;
+  //spellchecker.FindMisspelledWord("mrkev brambora pstrah", range_from, range_length);
 
-	//vector<TextCheckingResultP> result = spellchecker.GetCheckingResultsFirstSentence("Podlaha je pstrah. To je dobre\nFakt!", range_from, range_length);
+  //vector<TextCheckingResultP> result = spellchecker.GetCheckingResultsFirstSentence("Podlaha je pstrah. To je dobre\nFakt!", range_from, range_length);
 
-	//vector<string> suggestions = spellchecker.GetContextFreeSuggestions("pstryh");
+  //vector<string> suggestions = spellchecker.GetContextFreeSuggestions("pstryh");
 
-	string s;
-	string out;
+  string s;
+  string out;
 
-	if (argc >= 4 && strcmp(argv[2], "-gold") == 0)
-	{
-		ifstream gold_ifs(argv[3]);
-		if (gold_ifs.is_open() == false)
-		{
-			cerr << "Can't open gold data file!" << endl;
-			exit(1);
-		}
-		
-		uint fail = 0;
-		uint success = 0;
+  if (argc >= 4 && strcmp(argv[2], "-gold") == 0)
+  {
+    ifstream gold_ifs(argv[3]);
+    if (gold_ifs.is_open() == false)
+    {
+      cerr << "Can't open gold data file!" << endl;
+      exit(1);
+    }
 
-		string gold_s;
+    uint fail = 0;
+    uint success = 0;
 
-		uint counter = 0;
+    string gold_s;
 
-		while (MyUtils::SafeReadline(cin, s))
-		{
-			counter++;
+    uint counter = 0;
 
-			if (counter % 100 == 0) cerr << counter << endl;
+    while (MyUtils::SafeReadline(cin, s))
+    {
+      counter++;
 
-			if (gold_ifs.eof())
-			{
-				cerr << "Error: Gold data have fewer lines than input data!" << endl;
-				exit(1);
-			}
+      if (counter % 100 == 0) cerr << counter << endl;
 
-			MyUtils::SafeReadline(gold_ifs, gold_s);
+      if (gold_ifs.eof())
+      {
+        cerr << "Error: Gold data have fewer lines than input data!" << endl;
+        exit(1);
+      }
 
-			out = spellchecker.CheckText(s);
+      MyUtils::SafeReadline(gold_ifs, gold_s);
 
-			vector<vector<TokenP>> out_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(out));
-			vector<vector<TokenP>> gold_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(gold_s));
+      out = spellchecker.CheckText(s);
 
-			if (out_toks.size() != gold_toks.size())
-			{
-				cerr << "Error: input line splitted into different numbers of sentences in input data and gold data!" << endl;
-				cerr << "output: " << out << endl << endl;
-				cerr << "gold: " << gold_s << endl << endl;
-				exit(1);
-			}
-			
-			for (uint i = 0; i < out_toks.size(); i++)
-			{
-				vector<TokenP> &out_t = out_toks[i];
-				vector<TokenP> &gold_t = gold_toks[i];
+      vector<vector<TokenP>> out_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(out));
+      vector<vector<TokenP>> gold_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(gold_s));
 
-				if (out_t.size() != gold_t.size())
-				{
-					cerr << "warning: different number of tokens per sentence on line '" << s << "' ! Sentence skipped!" << endl;
-					continue;
-				}
+      if (out_toks.size() != gold_toks.size())
+      {
+        cerr << "Error: input line splitted into different numbers of sentences in input data and gold data!" << endl;
+        cerr << "output: " << out << endl << endl;
+        cerr << "gold: " << gold_s << endl << endl;
+        exit(1);
+      }
 
-				bool contains_error = false;
-				for (uint j = 0; j < out_t.size(); j++)
-				{
-					uint gold_wid = configuration->lexicon->GetWordID(gold_t[j]->str_u16);
+      for (uint i = 0; i < out_toks.size(); i++)
+      {
+        vector<TokenP> &out_t = out_toks[i];
+        vector<TokenP> &gold_t = gold_toks[i];
 
-					//specific to current lexicon! (28 special words - punctuation and so - we don't care about these)
-					if (gold_wid >= 28)
-					{
-						if (gold_t[j]->str_utf8 == out_t[j]->str_utf8)
-							success++;
-						else
-						{
-							contains_error = true;
-							//failures.push_back("GOLD: " + gold_t[j]->str_utf8 + " - OUT: " + out_t[j]->str_utf8);
-							fail++;
-						}
-					}
-				}
+        if (out_t.size() != gold_t.size())
+        {
+          cerr << "warning: different number of tokens per sentence on line '" << s << "' ! Sentence skipped!" << endl;
+          continue;
+        }
 
-				if (contains_error)
-				{
-					cout << "GOLD:";
-					for (uint j = 0; j < gold_t.size(); j++)
-						cout << " " << gold_t[j]->str_utf8;
-					cout << "\nOUT:";
-					for (uint j = 0; j < out_t.size(); j++)
-						cout << " " << out_t[j]->str_utf8;
-					cout << endl << endl;
-				}
-			}
-		}
+        bool contains_error = false;
+        for (uint j = 0; j < out_t.size(); j++)
+        {
+          uint gold_wid = configuration->lexicon->GetWordID(gold_t[j]->str_u16);
 
-		cout << "accuracy = " << success / (float)(success + fail) << endl;
+          //specific to current lexicon! (28 special words - punctuation and so - we don't care about these)
+          if (gold_wid >= 28)
+          {
+            if (gold_t[j]->str_utf8 == out_t[j]->str_utf8)
+              success++;
+            else
+            {
+              contains_error = true;
+              //failures.push_back("GOLD: " + gold_t[j]->str_utf8 + " - OUT: " + out_t[j]->str_utf8);
+              fail++;
+            }
+          }
+        }
 
-		return 0;
-	}
+        if (contains_error)
+        {
+          cout << "GOLD:";
+          for (uint j = 0; j < gold_t.size(); j++)
+            cout << " " << gold_t[j]->str_utf8;
+          cout << "\nOUT:";
+          for (uint j = 0; j < out_t.size(); j++)
+            cout << " " << out_t[j]->str_utf8;
+          cout << endl << endl;
+        }
+      }
+    }
 
-	uint last_enabled_factor = configuration->GetLastEnabledFactorIndex();
-	//Decoder2<3, 3> decoder(configuration.get());
+    cout << "accuracy = " << success / (float)(success + fail) << endl;
+
+    return 0;
+  }
+
+  uint last_enabled_factor = configuration->GetLastEnabledFactorIndex();
+  //Decoder2<3, 3> decoder(configuration.get());
 
 
-	while (MyUtils::SafeReadline(cin, s))
-	{
-		if (configuration->mode_string == "tag_errors")
-		{
-			out = spellchecker.command_line_mode(s, 5);
-		}
-		else if (configuration->mode_string == "autocorrect")
-		{
-			out = spellchecker.CheckText(s);
-		}
+  while (MyUtils::SafeReadline(cin, s))
+  {
+    if (configuration->mode_string == "tag_errors")
+    {
+      out = spellchecker.command_line_mode(s, 5);
+    }
+    else if (configuration->mode_string == "autocorrect")
+    {
+      out = spellchecker.CheckText(s);
+    }
 
-		cout << out << endl;
-	}
+    cout << out << endl;
+  }
 
-	exit(0);
-	return 0;
+  exit(0);
+  return 0;
 }

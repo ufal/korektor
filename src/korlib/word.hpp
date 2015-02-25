@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2012, Charles University in Prague 
+Copyright (c) 2012, Charles University in Prague
 All rights reserved.
 */
 
@@ -9,9 +9,9 @@ All rights reserved.
 
 /*namespace ngramchecker {
 
-	struct Word {
-		uint32_t factors[3];
-	};
+struct Word {
+  uint32_t factors[3];
+};
 
 }*/
 

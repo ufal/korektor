@@ -5,26 +5,26 @@
 
 namespace ngramchecker {
 
-	class u16stringReplacing {
-		u16string ustring;
-		int offset;
-		uint first_allowed_start;
-	public:
-		u16stringReplacing(const u16string &_ustring): ustring(_ustring), offset(0), first_allowed_start(0) {}
+class u16stringReplacing {
+  u16string ustring;
+  int offset;
+  uint first_allowed_start;
+ public:
+  u16stringReplacing(const u16string &_ustring): ustring(_ustring), offset(0), first_allowed_start(0) {}
 
-		void Replace(uint start, uint length, const u16string &replacement)
-		{
-			assert(start >= first_allowed_start);
-			ustring.replace(start + offset, length, replacement);
-			offset += replacement.length() - length;
-			first_allowed_start = start + length;
-		}
+  void Replace(uint start, uint length, const u16string &replacement)
+  {
+    assert(start >= first_allowed_start);
+    ustring.replace(start + offset, length, replacement);
+    offset += replacement.length() - length;
+    first_allowed_start = start + length;
+  }
 
-		u16string GetResult()
-		{
-			return ustring;
-		}
-	};
+  u16string GetResult()
+  {
+    return ustring;
+  }
+};
 
 }
 

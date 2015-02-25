@@ -24,170 +24,170 @@ hierarchy_nodeP hierarchy_node::root;
 
 void print_help()
 {
-	cerr << "Two possible argument setups:" << endl;
-	cerr << "-- error model training" << endl;
-	cerr << "     -train in:error_hierarchy in:spelling_errors in:word_list_with_frequencies out:error_model_txt" << endl;
-	cerr << "-- error model binarization" << endl;
-	cerr << "     -binarize in:error_model_txt out:error_model_binary" << endl;
+  cerr << "Two possible argument setups:" << endl;
+  cerr << "-- error model training" << endl;
+  cerr << "     -train in:error_hierarchy in:spelling_errors in:word_list_with_frequencies out:error_model_txt" << endl;
+  cerr << "-- error model binarization" << endl;
+  cerr << "     -binarize in:error_model_txt out:error_model_binary" << endl;
 }
 
 int main(int argc, char** argv)
 {
 
-	if (argc < 2)
-	{
-		print_help();
-		exit(1);
-	}
+  if (argc < 2)
+  {
+    print_help();
+    exit(1);
+  }
 
-	cerr << argv[1] << endl;
+  cerr << argv[1] << endl;
 
-	if (strcmp(argv[1], "-binarize") == 0)
-	{
-		if (argc < 4)
-		{
-			print_help();
-			exit(1);
-		}
+  if (strcmp(argv[1], "-binarize") == 0)
+  {
+    if (argc < 4)
+    {
+      print_help();
+      exit(1);
+    }
 
-		ErrorModelBasic::CreateBinaryFormFromTextForm(argv[2], argv[3]);
-	}
-	else if (strcmp(argv[1], "-train") == 0)
-	{
+    ErrorModelBasic::CreateBinaryFormFromTextForm(argv[2], argv[3]);
+  }
+  else if (strcmp(argv[1], "-train") == 0)
+  {
 
-		if (argc < 6)
-		{
-			print_help();
-		}
-	
-		cerr << "reading error hierarchy..." << endl;
+    if (argc < 6)
+    {
+      print_help();
+    }
 
-		ifstream ifs_hierarchy;
-		ifs_hierarchy.open(argv[2]);
-		FATAL_CONDITION(ifs_hierarchy.is_open(), "the file " << argv[2] << " is not opened!");
+    cerr << "reading error hierarchy..." << endl;
 
-		hierarchy_node::ReadHierarchy(ifs_hierarchy);
+    ifstream ifs_hierarchy;
+    ifs_hierarchy.open(argv[2]);
+    FATAL_CONDITION(ifs_hierarchy.is_open(), "the file " << argv[2] << " is not opened!");
 
-		ifs_hierarchy.close();
+    hierarchy_node::ReadHierarchy(ifs_hierarchy);
 
-		cerr << "hierarchy read!" << endl;
+    ifs_hierarchy.close();
 
-		//hierarchy_node::print_hierarchy_rec(hierarchy_node::root, 0, cerr);
+    cerr << "hierarchy read!" << endl;
 
-		string error_line;
-		MyUTF8InputStream utf8_errors(argv[3]);
-	
-		while (utf8_errors.ReadLineString(error_line))
-		{
-			if (error_line.empty() || error_line.substr(0, 2) == "//")
-				continue;
+    //hierarchy_node::print_hierarchy_rec(hierarchy_node::root, 0, cerr);
 
-			vector<string> toks;
-			MyUtils::Split(toks, error_line, " \t");
+    string error_line;
+    MyUTF8InputStream utf8_errors(argv[3]);
 
-			FATAL_CONDITION(toks.size() == 2, "____" << error_line << "____");
+    while (utf8_errors.ReadLineString(error_line))
+    {
+      if (error_line.empty() || error_line.substr(0, 2) == "//")
+        continue;
 
-			u16string signature;
-			if (GetErrorSignature(MyUtils::utf8_to_utf16(toks[0]), MyUtils::utf8_to_utf16(toks[1]), signature))
-			{
-				if (hierarchy_node::ContainsNode(signature))
-				{
-					hierarchy_nodeP hnode = hierarchy_node::GetNode(signature);
-					hnode->error_count++;
-				}
-			}
-			else
-			{
-				cerr << "error not recognized: " << error_line << endl;
-			}
-		}
+      vector<string> toks;
+      MyUtils::Split(toks, error_line, " \t");
 
-		MyUTF8InputStream utf8_context(argv[4]);
+      FATAL_CONDITION(toks.size() == 2, "____" << error_line << "____");
 
-		string s;
-		vector<string> toks;
+      u16string signature;
+      if (GetErrorSignature(MyUtils::utf8_to_utf16(toks[0]), MyUtils::utf8_to_utf16(toks[1]), signature))
+      {
+        if (hierarchy_node::ContainsNode(signature))
+        {
+          hierarchy_nodeP hnode = hierarchy_node::GetNode(signature);
+          hnode->error_count++;
+        }
+      }
+      else
+      {
+        cerr << "error not recognized: " << error_line << endl;
+      }
+    }
 
-		map<u16string, uint32_t> context_map;
+    MyUTF8InputStream utf8_context(argv[4]);
 
-		while(utf8_context.ReadLineString(s))
-		{
-			MyUtils::Split(toks, s, " ");
+    string s;
+    vector<string> toks;
 
-			if (s.empty()) continue;
+    map<u16string, uint32_t> context_map;
 
-			FATAL_CONDITION(toks.size() == 2, "--" << s << "--");
+    while(utf8_context.ReadLineString(s))
+    {
+      MyUtils::Split(toks, s, " ");
 
-			u16string key = MyUtils::utf8_to_utf16(toks[0]);
-			uint32_t count = MyUtils::my_atoi(toks[1]);
+      if (s.empty()) continue;
 
-			for (uint i = 0; i < key.length(); i++)
-				if (key[i] == char16_t('+'))
-					key[i] = char16_t(' ');
+      FATAL_CONDITION(toks.size() == 2, "--" << s << "--");
 
-			if (context_map.find(key) != context_map.end())
-			{
-				cerr << "key already found in the map!!!!!!" << MyUtils::utf16_to_utf8(key) << "!!!" << endl;
-				context_map[key] += count;
-			}
-			else
-			{
-				context_map[key] = count;
-			}
-		}
+      u16string key = MyUtils::utf8_to_utf16(toks[0]);
+      uint32_t count = MyUtils::my_atoi(toks[1]);
 
-		EstimateErrorModel eem = EstimateErrorModel(hierarchy_node::root, context_map);
-		eem.Estimate();
+      for (uint i = 0; i < key.length(); i++)
+        if (key[i] == char16_t('+'))
+          key[i] = char16_t(' ');
 
-		ofstream ofs_errmodel_txt;
-		ofs_errmodel_txt.open(argv[5]);
-		if (!ofs_errmodel_txt.is_open())
-		{
-			cerr << "Can't create " << argv[5] << endl;
-			return -10;
-		}
+      if (context_map.find(key) != context_map.end())
+      {
+        cerr << "key already found in the map!!!!!!" << MyUtils::utf16_to_utf8(key) << "!!!" << endl;
+        context_map[key] += count;
+      }
+      else
+      {
+        context_map[key] = count;
+      }
+    }
 
-		vector<pair<u16string, ErrorModelOutput>> out_vec;
+    EstimateErrorModel eem = EstimateErrorModel(hierarchy_node::root, context_map);
+    eem.Estimate();
 
-		hierarchy_node::output_result_rec(hierarchy_node::root, 0, 0, 1.0f, hierarchy_node::root->signature, out_vec);
+    ofstream ofs_errmodel_txt;
+    ofs_errmodel_txt.open(argv[5]);
+    if (!ofs_errmodel_txt.is_open())
+    {
+      cerr << "Can't create " << argv[5] << endl;
+      return -10;
+    }
 
-		ofs_errmodel_txt << "case\t0\t2.0" << endl;
+    vector<pair<u16string, ErrorModelOutput>> out_vec;
 
-		hierarchy_nodeP subs = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("substitutions"));
-		ErrorModelOutput emo_subs = ErrorModelOutput(1, subs->error_prob);
+    hierarchy_node::output_result_rec(hierarchy_node::root, 0, 0, 1.0f, hierarchy_node::root->signature, out_vec);
 
-		ofs_errmodel_txt << "substitutions\t" << emo_subs.edit_dist << "\t" << emo_subs.cost << endl;
+    ofs_errmodel_txt << "case\t0\t2.0" << endl;
 
-		hierarchy_nodeP inserts = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("insertions"));
-		ErrorModelOutput emo_inserts = ErrorModelOutput(1, inserts->error_prob);
-	
-		ofs_errmodel_txt << "insertions\t" << emo_inserts.edit_dist << "\t" << emo_inserts.cost << endl;
+    hierarchy_nodeP subs = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("substitutions"));
+    ErrorModelOutput emo_subs = ErrorModelOutput(1, subs->error_prob);
 
-		hierarchy_nodeP deletes = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("deletions"));
-		ErrorModelOutput emo_deletes = ErrorModelOutput(1, deletes->error_prob);
+    ofs_errmodel_txt << "substitutions\t" << emo_subs.edit_dist << "\t" << emo_subs.cost << endl;
 
-		ofs_errmodel_txt << "deletions\t" << emo_deletes.edit_dist << "\t" << emo_deletes.cost << endl;
+    hierarchy_nodeP inserts = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("insertions"));
+    ErrorModelOutput emo_inserts = ErrorModelOutput(1, inserts->error_prob);
 
-		hierarchy_nodeP swaps = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("swaps"));
-		ErrorModelOutput emo_swaps = ErrorModelOutput(1, swaps->error_prob);
+    ofs_errmodel_txt << "insertions\t" << emo_inserts.edit_dist << "\t" << emo_inserts.cost << endl;
 
-		ofs_errmodel_txt << "swaps\t" << emo_swaps.edit_dist << "\t" << emo_swaps.cost << endl;
+    hierarchy_nodeP deletes = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("deletions"));
+    ErrorModelOutput emo_deletes = ErrorModelOutput(1, deletes->error_prob);
 
-		for (auto it = out_vec.begin(); it != out_vec.end(); it++)
-		{
-			ofs_errmodel_txt << MyUtils::utf16_to_utf8(it->first) << "\t" << it->second.edit_dist << "\t" << it->second.cost << endl;
-		}
+    ofs_errmodel_txt << "deletions\t" << emo_deletes.edit_dist << "\t" << emo_deletes.cost << endl;
 
-		ofs_errmodel_txt.close();
+    hierarchy_nodeP swaps = hierarchy_node::GetNode(MyUtils::utf8_to_utf16("swaps"));
+    ErrorModelOutput emo_swaps = ErrorModelOutput(1, swaps->error_prob);
 
-	}
-	else
-	{
-		print_help();
-		exit(1);
-	}
+    ofs_errmodel_txt << "swaps\t" << emo_swaps.edit_dist << "\t" << emo_swaps.cost << endl;
+
+    for (auto it = out_vec.begin(); it != out_vec.end(); it++)
+    {
+      ofs_errmodel_txt << MyUtils::utf16_to_utf8(it->first) << "\t" << it->second.edit_dist << "\t" << it->second.cost << endl;
+    }
+
+    ofs_errmodel_txt.close();
+
+  }
+  else
+  {
+    print_help();
+    exit(1);
+  }
 
 
-	cerr << "OK!";
-	exit(0);
-	return 0;
+  cerr << "OK!";
+  exit(0);
+  return 0;
 }
