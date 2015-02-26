@@ -12,6 +12,10 @@
 ///
 /// usage: ./korektor configuration_file <input_text >output_text
 
+#include <cstring>
+#include <fstream>
+#include <iostream>
+
 #include "common.h"
 #include "korlib/configuration.h"
 #include "korlib/lexicon.h"

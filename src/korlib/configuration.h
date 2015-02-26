@@ -11,6 +11,10 @@
 
 #pragma once
 
+#include <unordered_map>
+
+#include "common.h"
+
 namespace ufal {
 namespace korektor {
 
@@ -48,7 +52,7 @@ struct string_bool_hasher : std::unary_function<pair<string, bool>, size_t>
 /// @class Configuration configuration.h "configuration.h"
 class Configuration
 {
-  map<string, unsigned> factor_map;
+  unordered_map<string, unsigned> factor_map;
   vector<string> factor_names;
   vector<bool> enabled_factors;
   vector<float> factor_weights;

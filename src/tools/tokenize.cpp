@@ -10,12 +10,9 @@
 /// @file tokenize.cpp
 /// @brief Simple tokenizer
 
-#include <vector>
-#include <map>
-#include <string>
-#include <stdint.h>
-#include "common.h"
+#include <iostream>
 
+#include "common.h"
 #include "korlib/token.h"
 #include "korlib/tokenizer.h"
 
@@ -38,7 +35,19 @@ int main()
 
   while (std::getline(cin, s))
   {
-    tokenizer.TokenizeToStream(MyUtils::utf8_to_utf16(s), cout);
+    u16string text = MyUtils::utf8_to_utf16(s);
+
+    vector<vector<TokenP> > tokens = tokenizer.Tokenize(text);
+    for (auto it = tokens.begin();  it != tokens.end(); it++)
+    {
+      for (auto it2 = it->begin(); it2 != it->end(); it2++)
+      {
+        if (it2 != it->begin())
+          cout << " ";
+        cout << (*it2)->str_utf8;
+      }
+      cout << endl;
+    }
   }
 
   return 0;

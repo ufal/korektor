@@ -9,6 +9,9 @@
 
 #pragma once
 
+#include "common.h"
+#include "korlib/utils.h"
+
 namespace ufal {
 namespace korektor {
 

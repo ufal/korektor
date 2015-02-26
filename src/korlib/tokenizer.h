@@ -133,32 +133,6 @@ class Tokenizer {
     return ret;
 
   }
-
-  /// @brief Tokenizes the given text
-  ///
-  /// Given the input text and the output stream, this function tokenizes
-  /// the input and writes the output to the output stream.
-  ///
-  /// @param text The input text
-  /// @param os The output stream
-  /// @return Void
-  ///
-  void TokenizeToStream(const u16string &text, ostream &os)
-  {
-    vector<vector<TokenP> > tokens = Tokenize(text);
-
-    for (auto it = tokens.begin();  it != tokens.end(); it++)
-    {
-      for (auto it2 = it->begin(); it2 != it->end(); it2++)
-      {
-        if (it2 != it->begin())
-          os << " ";
-        os << (*it2)->str_utf8;
-      }
-      os << endl;
-    }
-
-  }
 };
 
 SP_DEF(Tokenizer);

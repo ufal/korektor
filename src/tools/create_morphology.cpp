@@ -7,21 +7,20 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <vector>
-#include <map>
-#include <string>
+#include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <sstream>
-#include <stdint.h>
-#include <stdio.h>
 #include <tuple>
 
 #include "common.h"
+#include "korlib/configuration.h"
+#include "korlib/lexicon.h"
+#include "korlib/morphology.h"
 #include "korlib/my_bit_array.h"
 #include "korlib/utils.h"
-#include "korlib/morphology.h"
-#include "korlib/lexicon.h"
 
 #define MAX_GROUP_COUNT 100000
 

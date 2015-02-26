@@ -9,28 +9,25 @@
 
 #pragma once
 
+#include <unordered_map>
+
 #include "common.h"
 #include "stage_posibility.h"
-#include "decoder_base.h"
 
 namespace ufal {
 namespace korektor {
 
-//class StagePosibility;
-//SP_DEF(StagePosibility);
+class Configuration;
+SP_DEF(Configuration);
 
-//class TransitionCostComputation;
-//SP_DEF(TransitionCostComputation);
+class DecoderBase;
+SP_DEF(DecoderBase);
 
 class TextCheckingResult;
 SP_DEF(TextCheckingResult);
 
-class Configuration;
-SP_DEF(Configuration);
-
-//class DecoderBase;
-//SP_DEF(DecoderBase);
-
+class Token;
+SP_DEF(Token);
 
 //Spellchecker class the main interface of the application. It receives spell-checking request and delivers the corrected text.
 //The responsibility of Spellchecker is to prepare input for the decoder (i.e. tokenize the sentence), call decoder and process the decoder output in the desired way.
@@ -38,9 +35,9 @@ class Spellchecker {
 
   Configuration* configuration;
 
-  shared_ptr<DecoderBase> decoder;
+  DecoderBaseP decoder;
 
-  map<uint32_t, vector<StagePosibilityP> > MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities);
+  unordered_map<uint32_t, vector<StagePosibilityP> > MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities);
 
  public:
 

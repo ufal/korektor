@@ -8,8 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include "my_mapped_double_array.h"
-#include "value_mapping.h"
-#include "my_packed_array.h"
 
 namespace ufal {
 namespace korektor {

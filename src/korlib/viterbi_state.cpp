@@ -7,9 +7,11 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "viterbi_state.h"
+#include <sstream>
+
 #include "stage_posibility.h"
 #include "utils.h"
+#include "viterbi_state.h"
 
 namespace ufal {
 namespace korektor {

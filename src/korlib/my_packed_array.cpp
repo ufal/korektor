@@ -10,6 +10,9 @@
 /// @file my_packed_array.cpp
 /// @brief Implementation of memory efficient array
 
+#include <cstring>
+#include <iostream>
+
 #include "my_packed_array.h"
 #include "utils.h"
 

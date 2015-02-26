@@ -12,8 +12,12 @@
 ///
 /// Usage: ./create_lm_binary [ARPA language model] [binary morphology] [binary vocabulary] [factor name] [language model order] [output binary language model]
 
+#include <fstream>
+#include <iostream>
+
 #include "common.h"
 #include "korlib/morphology.h"
+#include "korlib/utils.h"
 #include "korlib/zip_lm.h"
 
 using namespace ufal::korektor;

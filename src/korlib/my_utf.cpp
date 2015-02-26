@@ -8,14 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include "my_utf.h"
-#include <iostream>
-#include <vector>
-#include <fstream>
-#include <cstdlib>
-#include <stdlib.h>
-#include <assert.h>
-
-#include "my_packed_array.h"
 
 #include "unilib/utf8.h"
 #include "unilib/utf16.h"

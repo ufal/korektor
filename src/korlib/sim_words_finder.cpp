@@ -7,13 +7,13 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+#include "capitalization_type.h"
+#include "configuration.h"
+#include "error_model.h"
+#include "lexicon.h"
 #include "sim_words_finder.h"
 #include "token.h"
-#include "lexicon.h"
-#include "error_model.h"
-#include "configuration.h"
 #include "utils.h"
-#include "capitalization_type.h"
 
 namespace ufal {
 namespace korektor {

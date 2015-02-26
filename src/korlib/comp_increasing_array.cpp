@@ -7,8 +7,10 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "my_increasing_array.h"
+#include <iostream>
+
 #include "comp_increasing_array.h"
+#include "my_increasing_array.h"
 #include "utils.h"
 
 namespace ufal {

@@ -10,6 +10,9 @@
 /// @file ngram.cpp
 /// @class NGram ngram.h "ngram.h"
 
+#include <cstring>
+#include <sstream>
+
 #include "ngram.h"
 
 namespace ufal {

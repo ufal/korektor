@@ -7,13 +7,16 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "stage_posibility.h"
-#include "utils.h"
 #include "configuration.h"
 #include "constants.h"
+#include "stage_posibility.h"
+#include "utils.h"
 
 namespace ufal {
 namespace korektor {
+
+class Configuration;
+SP_DEF(Configuration);
 
 string StagePosibilityNew::ToString()
 {

@@ -7,10 +7,11 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+#include <iostream>
+
 #include "lm_wrapper.h"
-#include "zip_lm.h"
-#include "ngram.h"
 #include "utils.h"
+#include "zip_lm.h"
 
 namespace ufal {
 namespace korektor {

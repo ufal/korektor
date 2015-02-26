@@ -12,9 +12,13 @@
 
 #pragma once
 
+#include <limits>
+#include <unordered_map>
+#include <unordered_set>
+
 #include "common.h"
-#include "my_packed_array.h"
 #include "comp_increasing_array.h"
+#include "my_packed_array.h"
 #include "similar_words_map.h"
 
 namespace ufal {
@@ -23,41 +27,8 @@ namespace korektor {
 class ErrorModel;
 SP_DEF(ErrorModel);
 
-class SimWordsFinder;
-
 class lexicon_node;
 SP_DEF(lexicon_node);
-
-/// @class lexicon_node lexicon.h "lexicon.h"
-/// @brief This class is used just during the lexicon construction!
-///
-class lexicon_node {
- public:
-  unsigned node_id; ///< Node ID
-  map<char16_t, lexicon_nodeP> edges; ///< Nodes leaving the edge
-
-  static unsigned num_nodes; ///< Total nodes in the lexicon
-  static map<unsigned, lexicon_nodeP> nodes_map; ///< (id, node) map
-
- private:
-  lexicon_node(unsigned _node_id): node_id(_node_id) {}
-
- public:
-
-  /// @brief Create a lexicon node with the given id
-  ///
-  /// @param _node_id Node ID
-  /// @return Pointer to created lexicon node
-  static lexicon_nodeP create_node(unsigned _node_id)
-  {
-    lexicon_nodeP ret = lexicon_nodeP(new lexicon_node(_node_id));
-    num_nodes++;
-    nodes_map[_node_id] = ret;
-    return ret;
-  }
-
-};
-
 
 class Lexicon {
 
@@ -81,7 +52,7 @@ class Lexicon {
 
   int SingleArc_nextstate(uint32_t stateID, char16_t character) const;
 
-  static void create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, map<u16string, unsigned> &words_map);
+  static void create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, unordered_map<u16string, unsigned> &words_map);
 
  public:
 
@@ -120,7 +91,7 @@ class Lexicon {
 
  private:
 
-  void print_words_rec(unsigned node_id, u16string &prefix, map<unsigned, u16string> &words, unsigned &index, uint32_t max_index);
+  void print_words_rec(unsigned node_id, u16string &prefix, unordered_map<unsigned, u16string> &words, unsigned &index, uint32_t max_index);
 
   void AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, double cost, u16string &word, uint32_t word_include_letter_start_index, u16string &prefix) const;
 

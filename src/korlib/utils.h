@@ -30,37 +30,15 @@ class MyUtils {
   /// @brief Utility for writing a string to binary stream
   /// @param ofs Output stream
   /// @param s Input string
-  static void WriteString(ostream &ofs, const string &s)
-  {
-    FATAL_CONDITION(uint16_t(s.length()) == s.length(), "");
-    uint16_t len = s.length();
-    ofs.write((char*)&len, sizeof(uint16_t));
-    ofs.write(s.data(), sizeof(char) * len);
-  }
+  static void WriteString(ostream &ofs, const string &s);
 
   /// @brief Utility for reading a string value from a binary stream
   /// @param ifs Input stream
   /// @return Read string
   /// @todo This routine should be better renamed
-  static string ReadString(istream &ifs)
-  {
-    uint16_t len;
-    ifs.read((char*)&len, sizeof(uint16_t));
-    char* chars = new char[len + 1];
-    ifs.read(chars, len);
-    chars[len] = 0;
-    string ret = chars;
-    delete[] chars;
+  static string ReadString(istream &ifs);
 
-    return ret;
-  }
-
-  static uint32_t Read_uint32_t(istream &is)
-  {
-    uint32_t ret;
-    is.read((char*)&ret, sizeof(uint32_t));
-    return ret;
-  }
+  static uint32_t Read_uint32_t(istream &is);
 
   /// @brief random number in a range
   static double RandomNumber(double min, double max);
@@ -178,19 +156,7 @@ class MyUtils {
   static bool ContainsLetter(const u16string &ustr);
 
   /// @brief wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
-  static bool SafeReadline(istream &istr, string &str)
-  {
-    if (!std::getline(istr, str))
-      return false;
-    else
-    {
-      if (str.length() > 0 && str[str.length() - 1] == '\r')
-      {
-        str.erase(str.length() - 1);
-      }
-      return true;
-    }
-  }
+  static bool SafeReadline(istream &istr, string &str);
 
   /// @brief split the string in s into toks, characters contained in delims form a set of delimiters (i.e. they are not included into toks)
   static void Split(vector<string> &toks, const string &s, const string &delims)

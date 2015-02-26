@@ -32,6 +32,7 @@ class StagePosibility {
 };
 
 SP_DEF(StagePosibility);
+typedef shared_ptr<vector<vector<StagePosibilityP>>> StagePosibilitiesType;
 
 
 struct StagePosibility_Identifying_comparer : less<StagePosibilityP> {

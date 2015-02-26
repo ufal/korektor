@@ -10,14 +10,48 @@
 /// @file lexicon.cpp
 /// @class Lexicon lexicon.h "lexicon.h"
 
+#include <cstring>
+#include <fstream>
+#include <iostream>
+#include <map>
+
+#include "error_model.h"
 #include "lexicon.h"
 #include "utils.h"
-#include "my_packed_array.h"
-#include "comp_increasing_array.h"
-#include "error_model.h"
 
 namespace ufal {
 namespace korektor {
+
+/// @class lexicon_node lexicon.h "lexicon.h"
+/// @brief This class is used during the lexicon construction.
+class lexicon_node {
+ public:
+  unsigned node_id; ///< Node ID
+  map<char16_t, lexicon_nodeP> edges; ///< Nodes leaving the edge
+
+  static unsigned num_nodes; ///< Total nodes in the lexicon
+  static map<unsigned, lexicon_nodeP> nodes_map; ///< (id, node) map
+
+ private:
+  lexicon_node(unsigned _node_id): node_id(_node_id) {}
+
+ public:
+
+  /// @brief Create a lexicon node with the given id
+  ///
+  /// @param _node_id Node ID
+  /// @return Pointer to created lexicon node
+  static lexicon_nodeP create_node(unsigned _node_id)
+  {
+    lexicon_nodeP ret = lexicon_nodeP(new lexicon_node(_node_id));
+    num_nodes++;
+    nodes_map[_node_id] = ret;
+    return ret;
+  }
+
+};
+
+
 
 unsigned lexicon_node::num_nodes = 0;
 map<unsigned, lexicon_nodeP> lexicon_node::nodes_map = map<unsigned, lexicon_nodeP>();
@@ -203,10 +237,10 @@ int Lexicon::GetWordID(const u16string &word_iso) const //return value -1 for ou
 /// @param curr_word Word to be added in the lexicon
 /// @param char_index Current position within the word
 /// @param words_map (word, ID) map
-void Lexicon::create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, map<u16string, unsigned> &words_map)
+void Lexicon::create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, unordered_map<u16string, unsigned> &words_map)
 {
   char16_t ch = curr_word[char_index];
-  map<char16_t, lexicon_nodeP>::iterator it1 = node->edges.find(ch);
+  auto it1 = node->edges.find(ch);
   if (it1 == node->edges.end())
   {
     auto it2 = words_map.find(curr_word.substr(0, char_index + 1));
@@ -249,7 +283,7 @@ Lexicon::Lexicon(const vector<u16string> &words)
   lexicon_nodeP root = lexicon_node::create_node(next_inner_node_id);
   next_inner_node_id++;
 
-  map<u16string, unsigned> words_map;
+  unordered_map<u16string, unsigned> words_map;
   for (unsigned i = 0; i < words.size(); i++)
     words_map[words[i]] = i;
 
@@ -344,7 +378,7 @@ void Lexicon::ArcsConsistencyCheck()
 
 }
 
-void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, map<unsigned, u16string> &words, unsigned &index, uint32_t max_index)
+void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, unordered_map<unsigned, u16string> &words, unsigned &index, uint32_t max_index)
 {
   if (index >= max_index)
     return;
@@ -376,7 +410,7 @@ void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, map<unsigned,
 void Lexicon::PrintWords(ostream &os, uint32_t max_index)
 {
   unsigned index = 0;
-  map<unsigned, u16string> words;
+  unordered_map<unsigned, u16string> words;
   u16string prefix = MyUtils::utf8_to_utf16("");
   print_words_rec(root_id, prefix, words, index, max_index);
 

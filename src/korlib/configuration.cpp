@@ -7,17 +7,19 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "common.h"
-#include "configuration.h"
+#include <algorithm>
+#include <fstream>
+#include <iostream>
 
-#include "morphology.h"
-#include "lexicon.h"
-#include "tokenizer.h"
-#include "lm_wrapper.h"
-#include "sim_words_finder.h"
+#include "configuration.h"
 #include "error_model_basic.h"
-#include "zip_lm.h"
+#include "lexicon.h"
 #include "lm_wrapper.h"
+#include "lm_wrapper.h"
+#include "morphology.h"
+#include "sim_words_finder.h"
+#include "tokenizer.h"
+#include "zip_lm.h"
 
 namespace ufal {
 namespace korektor {

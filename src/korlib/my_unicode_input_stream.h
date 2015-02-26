@@ -9,8 +9,11 @@
 
 #pragma once
 
-#include <string>
-#include "utils.h"
+#include <fstream>
+#include <iostream>
+
+#include "common.h"
+#include "my_utf.h"
 
 namespace ufal {
 namespace korektor {

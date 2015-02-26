@@ -7,6 +7,8 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+#include <sstream>
+
 #include "text_checking_result.h"
 
 namespace ufal {

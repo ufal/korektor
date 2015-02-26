@@ -7,15 +7,18 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "decoder_multi_factor.h"
-#include "stage_posibility.h"
-#include "sim_words_finder.h"
-#include "error_model.h"
+#include <algorithm>
+#include <iostream>
+
 #include "configuration.h"
-#include "ngram.h"
-#include "morphology.h"
-#include "lm_wrapper.h"
 #include "constants.h"
+#include "decoder_multi_factor.h"
+#include "error_model.h"
+#include "lm_wrapper.h"
+#include "morphology.h"
+#include "ngram.h"
+#include "sim_words_finder.h"
+#include "stage_posibility.h"
 
 namespace ufal {
 namespace korektor {

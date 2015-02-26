@@ -9,6 +9,12 @@
 
 #pragma once
 
+#include <unordered_map>
+
+#include "common.h"
+#include "korlib/error_model.h"
+#include "korlib/utils.h"
+
 namespace ufal {
 namespace korektor {
 
@@ -31,7 +37,7 @@ class hierarchy_node {
 #endif
 
  public:
-  static std::map<u16string, hierarchy_nodeP> hierarchy_map;
+  static unordered_map<u16string, hierarchy_nodeP> hierarchy_map;
   static hierarchy_nodeP root;
 
   u16string signature;

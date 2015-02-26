@@ -11,8 +11,11 @@
 /// @brief Data structure for efficiently storing integer
 ///        arrays whose values are in an increasing order.
 
+#include <iostream>
+
 #include "my_increasing_array.h"
 #include "my_packed_array.h"
+#include "utils.h"
 
 namespace ufal {
 namespace korektor {

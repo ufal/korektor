@@ -7,28 +7,21 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <string>
-#include <vector>
-#include <unordered_map>
-#include <unordered_set>
+#include <cstring>
 #include <iostream>
-#include <fstream>
-#include <stdint.h>
 
 #include "common.h"
-
-#include "korlib/utils.h"
-#include "korlib/my_unicode_input_stream.h"
-#include "korlib/error_model_basic.h"
-
-#include "create_error_model/error_hierarchy.h"
-#include "create_error_model/get_error_signature.h"
 #include "create_error_model/create_error_hierarchy.h"
+#include "create_error_model/error_hierarchy.h"
 #include "create_error_model/estimate_error_model.h"
+#include "create_error_model/get_error_signature.h"
+#include "korlib/error_model_basic.h"
+#include "korlib/my_unicode_input_stream.h"
+#include "korlib/utils.h"
 
 using namespace ufal::korektor;
 
-std::map<u16string, hierarchy_nodeP> hierarchy_node::hierarchy_map;
+std::unordered_map<u16string, hierarchy_nodeP> hierarchy_node::hierarchy_map;
 hierarchy_nodeP hierarchy_node::root;
 
 void print_help()
@@ -116,7 +109,7 @@ int main(int argc, char** argv)
     string s;
     vector<string> toks;
 
-    map<u16string, uint32_t> context_map;
+    unordered_map<u16string, uint32_t> context_map;
 
     while(utf8_context.ReadLineString(s))
     {

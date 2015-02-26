@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <unordered_set>
+
 #include "common.h"
 #include "viterbi_state.h"
 #include "token.h"
@@ -18,19 +20,12 @@ namespace korektor {
 
 class StagePosibility;
 SP_DEF(StagePosibility);
+typedef shared_ptr<vector<vector<StagePosibilityP>>> StagePosibilitiesType;
 
 class TransitionCostComputation;
 SP_DEF(TransitionCostComputation);
 
 class Configuration;
-
-typedef unordered_set<ViterbiStateP, ViterbiStateP_ihash, ViterbiStateP_iequal_to> Trellis_stage_set;
-
-typedef vector<shared_ptr<ViterbiState> > Trellis_stage;
-SP_DEF(Trellis_stage);
-SP_DEF(Trellis_stage_set);
-
-typedef shared_ptr<vector<vector<StagePosibilityP> > > StagePosibilitiesType;
 
 struct Pair_StagePosibilityP_double_comparer : less<pair<uint32_t, double> >
 {

@@ -7,15 +7,23 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "decoder_base.h"
-#include "stage_posibility.h"
-#include "token.h"
+#include <algorithm>
+#include <iostream>
+
 #include "configuration.h"
-#include "morphology.h"
 #include "constants.h"
+#include "decoder_base.h"
+#include "morphology.h"
+#include "stage_posibility.h"
 
 namespace ufal {
 namespace korektor {
+
+typedef unordered_set<ViterbiStateP, ViterbiStateP_ihash, ViterbiStateP_iequal_to> Trellis_stage_set;
+SP_DEF(Trellis_stage_set);
+
+typedef vector<shared_ptr<ViterbiState> > Trellis_stage;
+SP_DEF(Trellis_stage);
 
 void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 {

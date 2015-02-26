@@ -7,13 +7,18 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "zip_lm.h"
-#include "my_packed_array.h"
-#include "my_mapped_double_array.h"
+#include <cmath>
+#include <fstream>
+#include <iostream>
+#include <set>
+
 #include "comp_increasing_array.h"
+#include "morphology.h"
+#include "my_mapped_double_array.h"
+#include "my_packed_array.h"
 #include "ngram.h"
 #include "utils.h"
-#include "morphology.h"
+#include "zip_lm.h"
 
 namespace ufal {
 namespace korektor {

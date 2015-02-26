@@ -14,6 +14,10 @@
 ///
 /// @todo Logic is still not clear
 
+#include <algorithm>
+#include <cmath>
+#include <iostream>
+
 #include "value_mapping.h"
 #include "utils.h"
 

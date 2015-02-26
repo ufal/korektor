@@ -9,8 +9,6 @@
 
 #pragma once
 
-#include <stdint.h>
-#include <string>
 #include "common.h"
 
 namespace ufal {

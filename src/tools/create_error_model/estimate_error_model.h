@@ -9,8 +9,12 @@
 
 #pragma once
 
-#include "korlib/utils.h"
+#include <cmath>
+#include <unordered_map>
+
+#include "common.h"
 #include "error_hierarchy.h"
+#include "korlib/utils.h"
 
 namespace ufal {
 namespace korektor {
@@ -21,7 +25,7 @@ const float error_count_normalization = 100;
 class EstimateErrorModel
 {
   hierarchy_nodeP hierarchy_root;
-  map<u16string, uint32_t> context_map;
+  unordered_map<u16string, uint32_t> context_map;
 
   bool estimate_error_model_rec(const hierarchy_nodeP &node)
   {
@@ -118,7 +122,7 @@ class EstimateErrorModel
   }
 
  public:
-  EstimateErrorModel(hierarchy_nodeP _hierarchy_root, const map<u16string, uint32_t> &_context_map):
+  EstimateErrorModel(hierarchy_nodeP _hierarchy_root, const unordered_map<u16string, uint32_t> &_context_map):
     hierarchy_root(_hierarchy_root), context_map(_context_map) {}
 
   void Estimate()

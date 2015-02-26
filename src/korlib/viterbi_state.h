@@ -10,10 +10,12 @@
 #pragma once
 
 #include "common.h"
-#include "stage_posibility.h"
 
 namespace ufal {
 namespace korektor {
+
+class StagePosibility;
+SP_DEF(StagePosibility);
 
 class ViterbiState;
 SP_DEF(ViterbiState);

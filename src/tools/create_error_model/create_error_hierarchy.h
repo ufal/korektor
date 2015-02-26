@@ -9,18 +9,25 @@
 
 #pragma once
 
+#include <unordered_map>
+#include <unordered_set>
+
+#include "common.h"
+#include "error_hierarchy.h"
+#include "korlib/my_unicode_input_stream.h"
+
 namespace ufal {
 namespace korektor {
 
 u16string central_chars;
 u16string context_chars;
 
-std::unordered_set<char16_t> letters_set;
+unordered_set<char16_t> letters_set;
 
-std::unordered_map<char16_t, char16_t> left_neighbour;
-std::unordered_map<char16_t, char16_t> right_neighbour;
-std::unordered_map<char16_t, char16_t> top_neighbour;
-std::unordered_map<char16_t, char16_t> bottom_neighbour;
+unordered_map<char16_t, char16_t> left_neighbour;
+unordered_map<char16_t, char16_t> right_neighbour;
+unordered_map<char16_t, char16_t> top_neighbour;
+unordered_map<char16_t, char16_t> bottom_neighbour;
 
 int CreateErrorHierarchy(const string &layout_file, const string &error_hierarchy_out)
 {

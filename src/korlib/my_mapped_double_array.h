@@ -11,8 +11,8 @@
 
 #include "common.h"
 
-#include "value_mapping.h"
 #include "my_packed_array.h"
+#include "value_mapping.h"
 
 namespace ufal {
 namespace korektor {
