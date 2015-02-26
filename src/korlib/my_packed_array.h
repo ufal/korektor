@@ -31,8 +31,6 @@ class MyPackedArray {
 
  public:
 
-  void PrintBits() const;
-
   uint32_t GetSize() const;
 
   uint32_t GetNumberOfBytes() const;

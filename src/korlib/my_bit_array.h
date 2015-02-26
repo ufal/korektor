@@ -34,18 +34,6 @@ class MyBitArray {
 
  public:
 
-  void PrintBits() const
-  {
-    for (uint32_t i = 0; i < num_bytes; i++)
-    {
-      for (uint32_t j = 0; j < 8; j++)
-      {
-        cout << (1 & (data[i] >> j));
-      }
-      cout << endl;
-    }
-  }
-
   /// @brief Get the number bytes required to store the data
   ///
   /// @return The number of bytes (integer)

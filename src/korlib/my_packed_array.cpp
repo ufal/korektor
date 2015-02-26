@@ -16,18 +16,6 @@
 namespace ufal {
 namespace korektor {
 
-void MyPackedArray::PrintBits() const
-{
-  for (uint32_t i = 0; i < num_bytes; i++)
-  {
-    for (uint32_t j = 0; j < 8; j++)
-    {
-      cout << (1 & (data[i] >> j));
-    }
-    cout << endl;
-  }
-}
-
 /// @brief Get the number of items in the packed array
 ///
 /// @return Number of items
@@ -223,7 +211,6 @@ MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
     assert(val == values[i]);
   }
 #endif
-  //PrintBits();
 }
 
 } // namespace korektor
