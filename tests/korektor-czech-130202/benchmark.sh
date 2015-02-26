@@ -24,3 +24,5 @@ for conf_num in diacritics_h2mor:30 spellchecking_h2mor:4 spellchecking_h2mor_2e
   echo Benchmarking $num-times the $conf model... >&2
   time -p cat `for a in \`seq 1 $num\`; do echo povidky_z_jedne_kapsy.nodia; done` | ../../src/korektor korektor-czech-130202/$conf.conf >/dev/null
 done
+echo >&2
+echo >&2
