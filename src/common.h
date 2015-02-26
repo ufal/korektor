@@ -50,5 +50,4 @@ using namespace std;
 } // namespace korektor
 } // namespace ufal
 
-#include "korlib/typedefs.h"
 #include "korlib/constants.h"
