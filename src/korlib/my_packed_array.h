@@ -14,7 +14,6 @@
 #pragma once
 
 #include "common.h"
-#include "utils.h"
 
 namespace ufal {
 namespace korektor {
@@ -80,28 +79,6 @@ class MyPackedArray {
 
   /// @brief Initialize the array from a vector of values
   MyPackedArray(const vector<uint32_t> &values);
-
-  static void TestIt()
-  {
-
-    vector<uint32_t> vals;
-
-    for (unsigned i = 0; i < 10000000; i++)
-    {
-      vals.push_back(MyUtils::randomR(0, 10000000));
-    }
-
-    MyPackedArray mpa = MyPackedArray(vals);
-
-    for (unsigned j = 0; j < 300; j++)
-    {
-      for (unsigned i = 0; i < 10000000; i++)
-      {
-        FATAL_CONDITION(vals[i] == mpa.GetValueAt(i), "");
-      }
-    }
-    cerr << "Test ok!" << endl;
-  }
 };
 
 } // namespace korektor
