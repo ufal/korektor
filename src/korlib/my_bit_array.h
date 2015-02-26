@@ -239,30 +239,6 @@ class MyBitArray {
     }
 
   }
-
-  static void TestIt(unsigned num_values, unsigned max_value)
-  {
-    vector<pair<uint32_t, unsigned> > vals;
-
-    for (unsigned i = 0; i < num_values; i++)
-    {
-      uint32_t rand_val = MyUtils::randomR(0, max_value + 1);
-      unsigned num_bits = MyUtils::BitsNeeded(rand_val) + MyUtils::randomR(0, 3);
-
-      vals.push_back(make_pair(rand_val, num_bits));
-    }
-
-    MyBitArray mba = MyBitArray(vals);
-
-    unsigned bit_position = 0;
-    for (uint32_t i = 0; i < vals.size(); i++)
-    {
-      assert(mba.GetValueAt(bit_position, vals[i].second) == vals[i].first);
-      bit_position += vals[i].second;
-    }
-
-  }
-
 };
 
 SP_DEF(MyBitArray);

@@ -112,8 +112,6 @@ class ZipLM {
   static ZipLMP createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, unsigned lm_order, double not_in_lm_cost);
 
   uint32_t MaxUnigramID();
-
-  void TestIt(string textFile);
 };
 
 } // namespace korektor
