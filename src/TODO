@@ -1,0 +1,8 @@
+- move hashes to a specific file, check utils inclusion
+- if possible, use unordered_map and unordered_set insead of map and set
+
+- split utf methods to myutf
+- split random methods from myutils
+- rename the my_ files and My classes
+- rename StaticStringArray to StringArray
+- rename Posibi to Possibi
