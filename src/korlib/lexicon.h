@@ -15,6 +15,7 @@
 #include "common.h"
 #include "my_packed_array.h"
 #include "comp_increasing_array.h"
+#include "similar_words_map.h"
 
 namespace ufal {
 namespace korektor {

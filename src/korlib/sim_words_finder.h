@@ -10,6 +10,7 @@
 #pragma once
 
 #include "common.h"
+#include "similar_words_map.h"
 
 namespace ufal {
 namespace korektor {

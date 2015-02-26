@@ -140,7 +140,7 @@ vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
 
     uint32_t formID = it->first;
     double cost = it->second.second;
-    u16string sim_word = *(it->second.first);
+    auto& sim_word = it->second.first;
 
     vector<FactorList> flist = configuration->morphology->GetMorphology(formID, configuration);
 

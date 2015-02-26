@@ -7,25 +7,14 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file typedefs.h
-/// @brief Type definitions
-
 #pragma once
 
-#include <memory>
 #include "common.h"
 
 namespace ufal {
 namespace korektor {
 
-typedef shared_ptr<string> stringP;
-typedef shared_ptr<u16string> u16stringP;
-
-typedef shared_ptr<vector<uint32_t> > vectorP_uint32_t;
-
-
-enum StagePosibility_type { MultiFactor, Letter };
-enum capitalization_type { all_upper_case, all_lower_case, first_upper_case, weird };
+typedef unordered_map<uint32_t, pair<u16string, double> > Similar_Words_Map;
 
 } // namespace korektor
 } // namespace ufal

@@ -23,10 +23,7 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
 
   if (token->correction_is_allowed == false)
   {
-
-    u16stringP word_strP = u16stringP(new u16string(word_u_str));
-
-    ret[token->ID] = make_pair(word_strP, 0.0);
+    ret[token->ID] = make_pair(word_u_str, 0.0);
   }
   else
   {
@@ -37,7 +34,7 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
     {
       // Make sure all suggestions are capitalized.
       for (auto&& suggestion : ret) {
-        auto& word = *suggestion.second.first;
+        auto& word = suggestion.second.first;
         if (!word.empty() && MyUtils::IsLowerCase(word[0]))
           word[0] = MyUtils::ToUpper(word[0]);
       }
@@ -50,8 +47,8 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
 
       for (Similar_Words_Map::iterator it = msw_lc.begin(); it != msw_lc.end(); it++)
       {
-        //word form of founded suggestion should be capitalized!
-        u16string &ustring = *(it->second.first);
+        //word form of found suggestion should be capitalized!
+        auto& ustring = it->second.first;
         if (MyUtils::IsLowerCase(ustring[0]))
           ustring[0] = MyUtils::ToUpper(ustring[0]);
 
@@ -86,8 +83,7 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
   {
     for (Similar_Words_Map::iterator it = ret.begin(); it != ret.end(); it++)
     {
-
-      u16string &sim_w_str = *(it->second.first);
+      auto& sim_w_str = it->second.first;
 
       for (uint32_t j = 0; j < sim_w_str.length(); j++)
       {
@@ -111,8 +107,7 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
   {
     for (Similar_Words_Map::iterator it = ret.begin(); it != ret.end(); it++)
     {
-
-      u16string &sim_w_str = *(it->second.first);
+      auto& sim_w_str = it->second.first;
 
       if (MyUtils::IsLowerCase(sim_w_str[0]))
       {

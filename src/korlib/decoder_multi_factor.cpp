@@ -149,15 +149,15 @@ vector<vector<StagePosibilityP> > DecoderMultiFactor::init_inner_stage_posibilit
       for (Similar_Words_Map::iterator it = msw.begin(); it != msw.end(); it++)
       {
         uint32_t sim_word_id = it->first;
-        u16stringP sim_word_str = it->second.first;
-        bool is_original = configuration->errorModel->StringsAreIdentical(u_word, *sim_word_str);
+        u16string sim_word_str = it->second.first;
+        bool is_original = configuration->errorModel->StringsAreIdentical(u_word, sim_word_str);
         double err_model_cost = it->second.second;
 
         vector<FactorList> f_lists = configuration->morphology->GetMorphology(sim_word_id, configuration);
 
         for (auto it2 = f_lists.begin(); it2 != f_lists.end(); it2++)
         {
-          StagePosibilityP spp = StagePosibilityNewP(new StagePosibilityNew(*it2, is_original, *sim_word_str, configuration, err_model_cost));
+          StagePosibilityP spp = StagePosibilityNewP(new StagePosibilityNew(*it2, is_original, sim_word_str, configuration, err_model_cost));
           vec_stage_pos.push_back(spp);
         }
 

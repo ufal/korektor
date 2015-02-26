@@ -396,7 +396,7 @@ void Lexicon::AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, doub
     for (uint32_t i = word_include_letter_start_index; i <(unsigned) word.length(); i++)
       complete_word += word[i];
 
-    ret[word_id] = pair<u16stringP, double>(u16stringP(new u16string(complete_word)), cost);
+    ret[word_id] = make_pair(complete_word, cost);
   }
   else if (it->second.second > cost)
   {
@@ -606,7 +606,7 @@ vector<u16string> Lexicon::GetSimilarWords_string(u16string word, uint32_t max_e
 
   for (Similar_Words_Map::iterator it = swm.begin(); it != swm.end(); it++)
   {
-    ret.push_back(*(it->second.first));
+    ret.push_back(it->second.first);
   }
 
   return ret;
