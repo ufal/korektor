@@ -15,6 +15,8 @@ fi
 make -C ../../src korektor MODE=release -j4 korektor
 
 # Test various configurations.
+echo Date: `date` >&2
+echo Current revision: `git rev-parse HEAD` >&2
 for conf_num in diacritics_h2mor:30 spellchecking_h2mor:4 spellchecking_h2mor_2edits:1; do
   conf=${conf_num%:*}
   num=${conf_num##*:}
