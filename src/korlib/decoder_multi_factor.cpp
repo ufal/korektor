@@ -15,6 +15,7 @@
 #include "ngram.h"
 #include "morphology.h"
 #include "lm_wrapper.h"
+#include "constants.h"
 
 namespace ufal {
 namespace korektor {

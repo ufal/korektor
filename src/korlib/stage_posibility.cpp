@@ -10,6 +10,7 @@
 #include "stage_posibility.h"
 #include "utils.h"
 #include "configuration.h"
+#include "constants.h"
 
 namespace ufal {
 namespace korektor {

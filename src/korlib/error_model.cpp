@@ -7,17 +7,15 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "constants.h"
+#include "error_model.h"
 
 namespace ufal {
 namespace korektor {
 
-const double MyConstants::prunning_constant = 6;
-
-const uint32_t MyConstants::sentence_start_id = 0;
-const uint32_t MyConstants::sentence_end_id = 1;
-const uint32_t MyConstants::unknown_word_id = 2;
-const uint32_t MyConstants::name_id = 3;
+const float ErrorModel::impossible_cost = 1000;
+const float ErrorModel::max_cost = 100;
+const float ErrorModel::name_cost = 70;
+const float ErrorModel::unknown_cost = 100;
 
 } // namespace korektor
 } // namespace ufal

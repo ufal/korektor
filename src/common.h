@@ -49,5 +49,3 @@ using namespace std;
 
 } // namespace korektor
 } // namespace ufal
-
-#include "korlib/constants.h"
