@@ -12,7 +12,7 @@ if [ \! -d korektor-czech-130202 ]; then
 fi
 
 # Compile korektor.
-make -C ../../src korektor
+make -C ../../src korektor -j4 korektor
 
 # Test various configurations.
 for conf in diacritics_h2mor spellchecking_h2mor spellchecking_h2mor_2edits; do
