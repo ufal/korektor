@@ -25,7 +25,7 @@ bool StagePosibilityNew::IsUnknown()
 }
 
 StagePosibilityNew::StagePosibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration* _conf, float error_model_cost):
-  StagePosibility(MultiFactor), word(_word), original(_original), emission_prob(error_model_cost), factorList(_factorList)
+  word(_word), original(_original), emission_prob(error_model_cost), factorList(_factorList)
 {
 
   uniq_id = 0;
@@ -44,57 +44,6 @@ StagePosibilityNew::StagePosibilityNew(const FactorList &_factorList, bool _orig
 
   form_id = factorList.factors[0];
 }
-
-#if 0
-StagePosibility_Letter::StagePosibility_Letter(UChar _letter):
-  StagePosibility(Letter), letter(_letter) {}
-
-double StagePosibility_Letter::EmmisionProbability()
-{
-  return 0.0;
-}
-
-string StagePosibility_Letter::ToString()
-{
-  assert(1 == 0);
-  return "";
-}
-
-bool StagePosibility_Letter::IsOriginal()
-{
-  return false;
-}
-
-uint32_t StagePosibility_Letter::UniqueIdentifier()
-{
-  return letter;
-}
-
-uint32_t StagePosibility_Letter::FormIdentifier()
-{
-  return letter;
-}
-
-bool StagePosibility_Letter::IsUnknown()
-{
-  return false;
-}
-
-uint32_t StagePosibility_Letter::Letter()
-{
-  return letter;
-}
-
-StagePosibilityP StagePosibility_Letter::SentenceStartSP()
-{
-  return StagePosibilityP(new StagePosibility_Letter(GlobalVars::stringMapper->MapChar('.'), 0));
-}
-
-StagePosibilityP StagePosibility_Letter::SentenceEndSP()
-{
-  return StagePosibilityP(new StagePosibility_Letter(GlobalVars::stringMapper->MapChar(','), 0));
-}
-#endif
 
 } // namespace korektor
 } // namespace ufal

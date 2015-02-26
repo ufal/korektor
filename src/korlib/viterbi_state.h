@@ -10,16 +10,13 @@
 #pragma once
 
 #include "common.h"
+#include "stage_posibility.h"
 
 namespace ufal {
 namespace korektor {
 
 class ViterbiState;
 SP_DEF(ViterbiState);
-
-class StagePosibility;
-SP_DEF(StagePosibility);
-
 
 //TODO: change the structure of ViterbiState
 //template parameters: HISTORY_LENGTH, NUM_FACTORS
@@ -37,18 +34,10 @@ struct ngram_history_struct
 class ViterbiState
 {
  public:
-  StagePosibility_type type;
-
   vector<StagePosibilityP> history;
 
   double distance;
   ViterbiStateP ancestor;
-
- private:
-
-  bool CheckIt();
-
- public:
 
   StagePosibilityP GetYoungestHistory();
 

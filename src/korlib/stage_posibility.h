@@ -22,8 +22,6 @@ SP_DEF(Configuration);
 //moved somewhere else
 class StagePosibility {
  public:
-  StagePosibility_type type;
-
   virtual float EmmisionProbability() = 0;
   virtual string ToString() = 0;
   virtual bool IsOriginal() = 0;
@@ -31,8 +29,6 @@ class StagePosibility {
   virtual uint32_t FormIdentifier() = 0;
   virtual bool IsUnknown() = 0;
   virtual u16string &To_u16string() = 0;
-
-  StagePosibility(StagePosibility_type _type): type(_type) {}
 };
 
 SP_DEF(StagePosibility);
@@ -83,39 +79,6 @@ class StagePosibilityNew : public StagePosibility {
 };
 
 SP_DEF(StagePosibilityNew);
-
-#if 0
-class StagePosibility_Letter : public StagePosibility
-{
-
- private:
-  UChar letter;
-
- public:
-  StagePosibility_Letter(UChar _letter);
-
-  virtual double EmmisionProbability();
-
-  virtual string ToString();
-
-  virtual bool IsOriginal();
-
-  virtual uint32_t UniqueIdentifier();
-
-  virtual uint32_t FormIdentifier();
-
-  virtual bool IsUnknown();
-
-  uint32_t LetterID();
-
-  static StagePosibilityP SentenceStartSP();
-
-  static StagePosibilityP SentenceEndSP();
-
-};
-
-SP_DEF(StagePosibility_Letter);
-#endif
 
 } // namespace korektor
 } // namespace ufal

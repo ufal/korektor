@@ -14,18 +14,6 @@
 namespace ufal {
 namespace korektor {
 
-bool ViterbiState::CheckIt()
-{
-
-  for (uint32_t i = 0; i < history.size(); i++)
-  {
-    if (history[i]->type != type)
-      return false;
-  }
-
-  return true;
-}
-
 StagePosibilityP ViterbiState::GetYoungestHistory()
 {
   return history[history.size() - 1];
@@ -53,15 +41,10 @@ bool ViterbiState::Equals(ViterbiState &state)
 
 ViterbiState::ViterbiState(vector<StagePosibilityP> _history):
   history(_history), distance(0), ancestor(ViterbiStateP())
-{
-  type = _history[0]->type;
-  assert(CheckIt());
-}
+{}
 
 ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePosibilityP next_sp, double _distance):distance(_distance), ancestor(prev_state)
 {
-  type = next_sp->type;
-
   history.reserve(prev_state->history.size());
 
   for (size_t i = 1; i < prev_state->history.size(); i++)
@@ -74,7 +57,6 @@ ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePosibilityP next_sp, d
   //distance = _distance;
 
   //ancestor = prev_state;
-  assert(CheckIt());
 }
 
 string ViterbiState::ToString()
