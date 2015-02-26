@@ -177,9 +177,6 @@ class MyUtils {
   /// @return boolean
   static bool ContainsLetter(const u16string &ustr);
 
-  /// @brief gets the capitalization type for the given string - i.e. whether it's all lowercase, all upercase, first letter capital, or something crazy
-  static capitalization_type Get_u16string_capitalization_type(const u16string &ustr);
-
   /// @brief wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
   static bool SafeReadline(istream &istr, string &str)
   {

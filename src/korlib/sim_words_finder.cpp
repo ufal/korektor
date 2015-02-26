@@ -13,6 +13,7 @@
 #include "error_model.h"
 #include "configuration.h"
 #include "utils.h"
+#include "capitalization_type.h"
 
 namespace ufal {
 namespace korektor {
@@ -77,7 +78,7 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
   u16string &word_u_str = token->str_u16;
   ret = configuration->lexicon->GetSimilarWords(word_u_str, lookup_max_ed_dist, lookup_max_cost, configuration->errorModel, true);
 
-  capitalization_type ct = MyUtils::Get_u16string_capitalization_type(word_u_str);
+ capitalization_type ct = GetCapitalizationType(word_u_str);
 
   if (keep_orig_casing == true)
   {
@@ -89,14 +90,14 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
       {
         switch (ct)
         {
-          case all_upper_case: sim_w_str[j] = MyUtils::ToUpper(sim_w_str[j]); break;
-          case all_lower_case: sim_w_str[j] = MyUtils::ToLower(sim_w_str[j]); break;
-          case first_upper_case: if ( j == 0)
+          case ALL_UPPER_CASE: sim_w_str[j] = MyUtils::ToUpper(sim_w_str[j]); break;
+          case ALL_LOWER_CASE: sim_w_str[j] = MyUtils::ToLower(sim_w_str[j]); break;
+          case FIRST_UPPER_CASE: if ( j == 0)
                                    sim_w_str[j] = MyUtils::ToUpper(sim_w_str[j]);
                                  else
                                    sim_w_str[j] = MyUtils::ToLower(sim_w_str[j]);
                                  break;
-          case weird: break;
+          case WEIRD: break;
         }
       }
 

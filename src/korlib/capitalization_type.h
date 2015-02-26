@@ -7,21 +7,16 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file typedefs.h
-/// @brief Type definitions
-
 #pragma once
 
-#include <memory>
 #include "common.h"
 
 namespace ufal {
 namespace korektor {
 
-typedef shared_ptr<string> stringP;
-typedef shared_ptr<u16string> u16stringP;
+enum capitalization_type { ALL_UPPER_CASE, ALL_LOWER_CASE, FIRST_UPPER_CASE, WEIRD };
 
-typedef shared_ptr<vector<uint32_t> > vectorP_uint32_t;
+capitalization_type GetCapitalizationType(const u16string& ustr);
 
 } // namespace korektor
 } // namespace ufal

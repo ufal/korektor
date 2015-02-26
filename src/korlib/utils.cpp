@@ -120,43 +120,5 @@ bool MyUtils::ContainsLetter(const u16string &ustr)
   return false;
 }
 
-capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &ustr)
-{
-  if (MyUtils::IsUpperCase(ustr[0]))
-  {
-    for (unsigned i = 1; i < ustr.length(); i++)
-    {
-      if (MyUtils::IsUpperCase(ustr[i]) == false)
-      {
-        if (i > 1)
-          return weird;
-        else
-        {
-          for (unsigned j = 2; j < ustr.length(); j++)
-          {
-            if (MyUtils::IsUpperCase(ustr[j]))
-              return weird;
-          }
-        }
-        //otherwise the ct value is first upper case
-        return first_upper_case;
-      }
-    }
-
-    return all_upper_case;
-  }
-  else
-  {
-    for (unsigned i = 1; i < ustr.length(); i++)
-    {
-      if (MyUtils::IsUpperCase(ustr[i]))
-        return weird;
-    }
-
-    return all_lower_case;
-  }
-
-}
-
 } // namespace korektor
 } // namespace ufal
