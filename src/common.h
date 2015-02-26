@@ -12,12 +12,6 @@
 
 #pragma once
 
-#ifdef WIN32
-#pragma warning(disable : 4996)
-#pragma warning(disable : 4503)
-#pragma warning(disable : 4244)
-#endif
-
 //STL:
 #include <map>
 #include <vector>
