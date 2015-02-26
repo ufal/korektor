@@ -250,8 +250,7 @@ class MyBitArray {
     bit_position = 0;
     for (uint32_t i = 0; i < values.size(); i++)
     {
-      uint32_t val = GetValueAt(bit_position, values[i].second);
-      assert(val == values[i].first);
+      assert(GetValueAt(bit_position, values[i].second) == values[i].first);
       bit_position += values[i].second;
     }
 
@@ -274,8 +273,7 @@ class MyBitArray {
     unsigned bit_position = 0;
     for (uint32_t i = 0; i < vals.size(); i++)
     {
-      uint32_t val = mba.GetValueAt(bit_position, vals[i].second);
-      assert(val == vals[i].first);
+      assert(mba.GetValueAt(bit_position, vals[i].second) == vals[i].first);
       bit_position += vals[i].second;
     }
 
