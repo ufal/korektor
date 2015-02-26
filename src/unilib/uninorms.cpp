@@ -1,13 +1,13 @@
 // This file is part of UniLib <http://github.com/ufal/unilib/>.
 //
-// Copyright 2014 by Institute of Formal and Applied Linguistics, Faculty
-// of Mathematics and Physics, Charles University in Prague, Czech Republic.
-// All rights reserved.
+// Copyright 2014 Institute of Formal and Applied Linguistics, Faculty of
+// Mathematics and Physics, Charles University in Prague, Czech Republic.
 //
-// Redistribution and use in source and binary forms, with or without
-// modification, are permitted under 3-clause BSD licence.
+// This Source Code Form is subject to the terms of the Mozilla Public
+// License, v. 2.0. If a copy of the MPL was not distributed with this
+// file, You can obtain one at http://mozilla.org/MPL/2.0/.
 //
-// UniLib version: 2.0
+// UniLib version: 3.0.0
 // Unicode version: 7.0.0
 
 #include "uninorms.h"
@@ -48,7 +48,7 @@ void uninorms::compose(std::u32string& str) {
     } else if (str[old] >= Hangul::SBase && str[old] < Hangul::SBase + Hangul::SCount) {
       // Check Hangul composition LV + T
       if ((str[old] - Hangul::SBase) % Hangul::TCount && old + 1 < str.size() && str[old + 1] > Hangul::TBase && str[old + 1] < Hangul::TBase + Hangul::TCount)
-          str[com] += str[++old] - Hangul::TBase;
+        str[com] += str[++old] - Hangul::TBase;
     } else if (str[old] < CHARS) {
       // Check composition_data
       auto composition = &composition_block[composition_index[str[old] >> 8]][str[old] & 0xFF];
@@ -120,7 +120,7 @@ void uninorms::decompose(std::u32string& str, bool kompatibility) {
         str[--dec] = Hangul::VBase + (s_index % Hangul::NCount) / Hangul::TCount;
         str[--dec] = Hangul::LBase + s_index / Hangul::NCount;
       } else if (str[old] < CHARS) {
-      // Check decomposition_data.
+        // Check decomposition_data.
         auto decomposition = &decomposition_block[decomposition_index[str[old] >> 8]][str[old] & 0xFF];
         int decomposition_len = (decomposition[1] >> 2) - (decomposition[0] >> 2);
         if (decomposition_len && !kompatibility && (decomposition[0] & 1)) decomposition_len = 0;
