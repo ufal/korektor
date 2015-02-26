@@ -56,8 +56,8 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
 
   while (utf8_stream.ReadLineUS(us)) ;
 
-  for (uint i = 0; i < 4; i++)
-    for (uint j = 0; j < keyboard_layout[i].length(); j++)
+  for (unsigned i = 0; i < 4; i++)
+    for (unsigned j = 0; j < keyboard_layout[i].length(); j++)
     {
       //cerr << i << ", " << j << endl;
       char16_t curr_char = keyboard_layout[i][j];
@@ -90,7 +90,7 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
 
   hierarchy_nodeP vadj_sub = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("sub_vadj"), substitutions, context_chars);
 
-  for (uint i = 0; i < central_chars.length(); i++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
   {
     char16_t ch = central_chars[i];
 
@@ -150,7 +150,7 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
   hierarchy_nodeP missing_diac = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("sub_missing_diac"), substitutions, context_chars);
   hierarchy_nodeP redundant_diac = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("sub_redundant_diac"), substitutions, context_chars);
 
-  for (uint i = 0; i < diacritic_chars.length(); i++)
+  for (unsigned i = 0; i < diacritic_chars.length(); i++)
   {
     u16string sig1 = MyUtils::utf8_to_utf16("s_");
     sig1 += no_diacritic_chars[i];
@@ -167,8 +167,8 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
       hierarchy_nodeP missing = hierarchy_node::create_SP(sig2, redundant_diac, context_chars);
   }
 
-  for (uint i = 0; i < central_chars.length(); i++)
-    for (uint j = 0; j < central_chars.length(); j++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
+    for (unsigned j = 0; j < central_chars.length(); j++)
     {
       u16string sig = MyUtils::utf8_to_utf16("s_");
       sig += central_chars[i];
@@ -185,7 +185,7 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
   hierarchy_nodeP hadj_insert = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("insert_hadj"), insertions, context_chars);
   hierarchy_nodeP vadj_insert = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("insert_vadj"), insertions, context_chars);
 
-  for (uint i = 0; i < central_chars.length(); i++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
   {
     char16_t ch = central_chars[i];
 
@@ -289,7 +289,7 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
 
   }
 
-  for (uint i = 0; i < central_chars.length(); i++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
   {
     u16string signature = MyUtils::utf8_to_utf16("i_");
     signature += central_chars[i];
@@ -301,7 +301,7 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
 
   hierarchy_nodeP deletions = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("deletions"), root, context_chars);
 
-  for (uint i = 0; i < central_chars.length(); i++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
   {
     u16string signature = MyUtils::utf8_to_utf16("d_");
     signature += central_chars[i];
@@ -313,8 +313,8 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
 
   hierarchy_nodeP swaps = hierarchy_node::create_SP(MyUtils::utf8_to_utf16("swaps"), root, context_chars);
 
-  for (uint i = 0; i < central_chars.length(); i++)
-    for (uint j = 0; j < central_chars.length(); j++)
+  for (unsigned i = 0; i < central_chars.length(); i++)
+    for (unsigned j = 0; j < central_chars.length(); j++)
     {
       u16string signature = MyUtils::utf8_to_utf16("swap_");
       signature += central_chars[i];

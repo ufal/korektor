@@ -99,7 +99,7 @@ void ZipLM::get_lm_tuple(uint32_t _order, uint32_t _offset, LM_tuple &ret)
   }
 }
 
-bool ZipLM::getFirstLevelTuple(uint word_id, LM_tuple &ret)
+bool ZipLM::getFirstLevelTuple(unsigned word_id, LM_tuple &ret)
 {
   if (word_id > max_unigram_id)
     return false;
@@ -109,7 +109,7 @@ bool ZipLM::getFirstLevelTuple(uint word_id, LM_tuple &ret)
   return true;
 }
 
-bool ZipLM::GetTuple(uint level, uint word_id, uint offset, uint num_entries, LM_tuple &lm_tuple)
+bool ZipLM::GetTuple(unsigned level, unsigned word_id, unsigned offset, unsigned num_entries, LM_tuple &lm_tuple)
 {
   int ret_offset = search_for_id(level, word_id, offset, offset + num_entries - 1);
 
@@ -141,7 +141,7 @@ void ZipLM::GetNGramForNGramKey(NGram &ngram_key, NGram &ngram_ret)
   int start_offset = 0;
   int end_offset = 0;
 
-  uint ret_order = 0;
+  unsigned ret_order = 0;
 
   LM_tuple lm_tup;
   lm_tup.prob = not_in_lm_cost; // Default for not-found ngram

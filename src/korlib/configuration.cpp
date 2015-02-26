@@ -51,13 +51,13 @@ void Configuration::LoadMorphologyAndLexicon(LexiconP _lexicon, MorphologyP _mor
 
 void Configuration::LoadLM(LMWrapperP lm)
 {
-  uint index = factor_map[lm->FactorName()];
+  unsigned index = factor_map[lm->FactorName()];
   factor_LMS[index] = lm;
 }
 
-void Configuration::EnableFactor(const string &fac_name, float weight, uint order)
+void Configuration::EnableFactor(const string &fac_name, float weight, unsigned order)
 {
-  uint index = factor_map[fac_name];
+  unsigned index = factor_map[fac_name];
   enabled_factors[index] = true;
   factor_weights[index] = weight;
   factor_orders[index] = order;
@@ -141,7 +141,7 @@ Configuration::Configuration(const string &conf_file)
       LoadLM(lm_wrapper);
 
       string order_str = toks[2];
-      uint order = MyUtils::my_atoi(order_str);
+      unsigned order = MyUtils::my_atoi(order_str);
 
       string weight_str = toks[3];
       float weight = MyUtils::my_atof(weight_str);
@@ -174,7 +174,7 @@ Configuration::Configuration(const string &conf_file)
         exit(1);
       }
 
-      uint max_edit_distance = MyUtils::my_atoi(toks[2]);
+      unsigned max_edit_distance = MyUtils::my_atoi(toks[2]);
       float max_cost = MyUtils::my_atof(toks[3]);
 
       search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));

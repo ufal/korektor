@@ -21,11 +21,6 @@
 #include "unilib/utf16.h"
 #include "unilib/unicode.h"
 
-
-#ifndef uint
-#define uint uint32_t
-#endif
-
 namespace ufal {
 namespace korektor {
 

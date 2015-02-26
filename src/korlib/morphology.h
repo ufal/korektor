@@ -38,12 +38,12 @@ struct morpho_grouping {
   MyPackedArray group_values;
   CompIncreasingArray group_offsets;
 
-  inline void getGroupMembers(uint groupID, vector<uint> &group_members)
+  inline void getGroupMembers(unsigned groupID, vector<unsigned> &group_members)
   {
 
     group_members.clear();
     CompIA_First_Last_IndexPair index_pair = group_offsets.GetFirstLastIndexPair(groupID);
-    for (uint i = index_pair.first; i <= index_pair.second; i++)
+    for (unsigned i = index_pair.first; i <= index_pair.second; i++)
       group_members.push_back(group_values.GetValueAt(i));
   }
 
@@ -58,20 +58,20 @@ SP_DEF(morpho_grouping);
 //or a word form could determine a lemma (although there are usually exceptions)
 //in such cases - morpho_dependency represents the mapping between governing factor values and the governed factor values
 struct morpho_dependency {
-  uint governing_factor;
+  unsigned governing_factor;
   MyPackedArray dependency_mapping;
 
-  inline uint GetValue(uint governing_factor_id)
+  inline unsigned GetValue(unsigned governing_factor_id)
   {
     return dependency_mapping.GetValueAt(governing_factor_id);
   }
 
-  inline uint GetGoverningFactorIndex()
+  inline unsigned GetGoverningFactorIndex()
   {
     return governing_factor;
   }
 
-  morpho_dependency(uint _governing_factor, const MyPackedArray &dep_mapping): governing_factor(_governing_factor), dependency_mapping(dep_mapping) {}
+  morpho_dependency(unsigned _governing_factor, const MyPackedArray &dep_mapping): governing_factor(_governing_factor), dependency_mapping(dep_mapping) {}
 };
 
 SP_DEF(morpho_dependency);
@@ -83,30 +83,28 @@ SP_DEF(MorphoNode);
 
 //TODO: well this is no good! Keep it simple! :)
 struct MorphoNode {
-  uint level;
-  uint factorID;
+  unsigned level;
+  unsigned factorID;
   MorphoNodeP parent;
   double emission_cost;
 
-  MorphoNode(uint _level, uint _factorID): level(_level), factorID(_factorID) {}
-  MorphoNode(uint _level): level(_level) {}
+  MorphoNode(unsigned _level, unsigned _factorID): level(_level), factorID(_factorID) {}
+  MorphoNode(unsigned _level): level(_level) {}
 };
 #endif
 
 
 class Morphology {
-
-
-  uint num_factors; ///< Number of factors
-  map<string, uint> factor_names; ///< Factor names
-  vector<uint> bits_per_value; ///< Number of bits needed to store a factorID for the particular factor
-  vector<uint> bits_per_children; ///< Number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
+  uint32_t num_factors; ///< Number of factors
+  map<string, unsigned> factor_names; ///< Factor names
+  vector<unsigned> bits_per_value; ///< Number of bits needed to store a factorID for the particular factor
+  vector<unsigned> bits_per_children; ///< Number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
   vector<morpho_dependencyP> dependencies; ///< List of all factor dependencies
   vector<morpho_groupingP> groupings;
 
   ValueMapping value_mapping; ///< Probability values mapping used for obtaining emission probabilities, i.e. (mapping between packed representation of probs used in morphoData and normal floating numbers)
 
-  vector<uint> group_members_pom;
+  vector<unsigned> group_members_pom;
 
   CompIncreasingArray formOffsets; ///< Contains offsets into the morphoData bit array denoting where the morphological information for a particular factor starts
 
@@ -114,14 +112,14 @@ class Morphology {
 
   //morpho_word_lists and morpho_maps suits only debuggind purposes and usually are not loaded at all
   vector<MyStaticStringArrayP> morpho_word_lists;
-  vector<map<string, uint> > morpho_maps;
+  vector<map<string, unsigned> > morpho_maps;
 
 
-  uint last_enabled_factor;
+  unsigned last_enabled_factor;
 
  private:
 
-  void get_morphology_rec(uint level, FactorList &flist, vector<FactorList> &ret, uint& bit_offset, Configuration *configuration, int next_factor = -1)
+  void get_morphology_rec(unsigned level, FactorList &flist, vector<FactorList> &ret, unsigned& bit_offset, Configuration *configuration, int next_factor = -1)
   {
     FATAL_CONDITION(level < FactorList::MAX_FACTORS, "Too many factors encountered!");
 
@@ -138,20 +136,20 @@ class Morphology {
 
     if (next_factor >= 0)
     {
-      flist.factors[level] = (uint)next_factor;
-      //curr_factors.push_back((uint)next_factor);
-      //node->factorID = (uint)next_factor;
+      flist.factors[level] = (unsigned)next_factor;
+      //curr_factors.push_back((unsigned)next_factor);
+      //node->factorID = (unsigned)next_factor;
     }
     else if (dependencies[level])
     {
-      uint cur_fact = dependencies[level]->GetValue(flist.factors[dependencies[level]->GetGoverningFactorIndex()]);
+      unsigned cur_fact = dependencies[level]->GetValue(flist.factors[dependencies[level]->GetGoverningFactorIndex()]);
       flist.factors[level] = cur_fact;
       //node->factorID = cur_fact;
       //curr_factors.push_back(cur_fact);
     }
     else if (level > 0)
     {
-      uint cur_fact = morphoData.GetValueAt(bit_offset, bits_per_value[level]);
+      unsigned cur_fact = morphoData.GetValueAt(bit_offset, bits_per_value[level]);
       flist.factors[level] = cur_fact;
       //curr_factors.push_back(cur_fact);
       //node->factorID = cur_fact;
@@ -168,23 +166,23 @@ class Morphology {
 
         if (groupings[level + 1])
         {
-          uint groupID = morphoData.GetValueAt(bit_offset, bits_per_children[level]);
+          unsigned groupID = morphoData.GetValueAt(bit_offset, bits_per_children[level]);
           bit_offset += bits_per_children[level];
 
-          vector<uint> group_members;
+          vector<unsigned> group_members;
           groupings[level + 1]->getGroupMembers(groupID, group_members);
-          for (uint i = 0; i < group_members.size(); i++)
+          for (unsigned i = 0; i < group_members.size(); i++)
           {
             get_morphology_rec(level + 1, flist, ret, bit_offset, configuration, group_members[i]);
           }
         }
         else
         {
-          uint num_children = morphoData.GetValueAt(bit_offset, bits_per_children[level]);
+          unsigned num_children = morphoData.GetValueAt(bit_offset, bits_per_children[level]);
           num_children++; //there is never zero children so the values are shifted
           bit_offset += bits_per_children[level];
 
-          for (uint i = 0; i < num_children; i++)
+          for (unsigned i = 0; i < num_children; i++)
           {
             get_morphology_rec(level + 1, flist, ret, bit_offset, configuration);
           }
@@ -205,7 +203,7 @@ class Morphology {
   /// @brief Get the factor map
   ///
   /// @return Hash map containing factor names as keys and indices as values
-  map<string, uint>& GetFactorMap()
+  map<string, unsigned>& GetFactorMap()
   {
     return factor_names;
   }
@@ -213,7 +211,7 @@ class Morphology {
   /// @brief Get the factor string
   ///
   /// @return Factor string
-  string GetFactorString(uint factor_index, uint ID)
+  string GetFactorString(unsigned factor_index, unsigned ID)
   {
     return morpho_word_lists[factor_index]->GetStringAt(ID);
   }
@@ -225,16 +223,16 @@ class Morphology {
 
     for (auto it = morpho_word_lists.begin(); it != morpho_word_lists.end(); it++)
     {
-      morpho_maps.push_back(map<string, uint>());
+      morpho_maps.push_back(map<string, unsigned>());
 
-      for (uint i = 0; i < (*it)->GetSize(); i++)
+      for (unsigned i = 0; i < (*it)->GetSize(); i++)
       {
         morpho_maps.back().insert(make_pair((*it)->GetStringAt(i), i));
       }
     }
   }
 
-  int GetFactorID(uint factor_index, const string &str)
+  int GetFactorID(unsigned factor_index, const string &str)
   {
     if (morpho_maps.size() == 0)
       initMorphoWordMaps();
@@ -259,11 +257,11 @@ class Morphology {
       exit(1);
     }
 
-    uint num_f;
+    uint32_t num_f;
     ifs.read((char*)&num_f, sizeof(uint32_t));
     assert(num_f == num_factors);
 
-    for (uint i = 0; i < num_factors; i++)
+    for (unsigned i = 0; i < num_factors; i++)
     {
       morpho_word_lists.push_back(MyStaticStringArrayP(new MyStaticStringArray(ifs)));
       cerr << "initializating word lists: " << i << " : " << morpho_word_lists[i]->GetSize() << " entries" << endl;
@@ -275,7 +273,7 @@ class Morphology {
   /// @param form_id Word form id
   /// @param configuration Pointer to the instance of @ref Configuration class
   /// @return Factor list
-  vector<FactorList> GetMorphology(uint form_id, Configuration* configuration)
+  vector<FactorList> GetMorphology(unsigned form_id, Configuration* configuration)
   {
     vector<FactorList> ret;
     FactorList flist;
@@ -286,7 +284,7 @@ class Morphology {
     if (form_id >= formOffsets.GetSize())
       return ret;
 
-    uint bit_offset = formOffsets.GetValueAt(form_id);
+    unsigned bit_offset = formOffsets.GetValueAt(form_id);
 
     get_morphology_rec(0, flist, ret, bit_offset, configuration);
 
@@ -301,17 +299,17 @@ class Morphology {
   {
     FATAL_CONDITION(morpho_word_lists.size() > 0, "");
 
-    for (uint i = 0; i < formOffsets.GetSize(); i++)
+    for (unsigned i = 0; i < formOffsets.GetSize(); i++)
     {
       //cerr << "printing out node: " << i << endl;
       vector<FactorList> morpho_anal = GetMorphology(i, configuration);
 
-      for (uint j = 0; j < morpho_anal.size(); j++)
+      for (unsigned j = 0; j < morpho_anal.size(); j++)
       {
         FactorList flist = morpho_anal[j];
         vector<string> strs;
 
-        for (uint k = 0; k < configuration->GetLastEnabledFactorIndex(); k++)
+        for (unsigned k = 0; k < configuration->GetLastEnabledFactorIndex(); k++)
         {
           if (configuration->FactorIsEnabled(k))
             strs.push_back(morpho_word_lists[k]->GetStringAt(flist.factors[k]));
@@ -319,7 +317,7 @@ class Morphology {
 
         for (int k = (int)strs.size() - 1; k >= 0; k--)
         {
-          if ((uint)k < strs.size() - 1) ofs << "|";
+          if ((unsigned)k < strs.size() - 1) ofs << "|";
           ofs << strs[k];
         }
         ofs << endl;
@@ -350,21 +348,21 @@ class Morphology {
 
     MyStaticStringArray factor_mssa = MyStaticStringArray(ifs);
 
-    for (uint i = 0; i < factor_mssa.GetSize(); i++)
+    for (unsigned i = 0; i < factor_mssa.GetSize(); i++)
     {
       factor_names[factor_mssa.GetStringAt(i)] = i;
     }
 
 
-    uint num_dependencies;
+    uint32_t num_dependencies;
     ifs.read((char*)&num_dependencies, sizeof(uint32_t));
 
     assert(num_dependencies < num_factors);
 
-    for (uint i = 0; i < num_dependencies; i++)
+    for (unsigned i = 0; i < num_dependencies; i++)
     {
-      uint governing;
-      uint governed;
+      uint32_t governing;
+      uint32_t governed;
       ifs.read((char*)&governing, sizeof(uint32_t));
       ifs.read((char*)&governed, sizeof(uint32_t));
 
@@ -375,14 +373,14 @@ class Morphology {
       dependencies[governed] = morpho_dependencyP(new morpho_dependency(governing, MyPackedArray(ifs)));
     }
 
-    uint num_grouped;
+    uint32_t num_grouped;
     ifs.read((char*)&num_grouped, sizeof(uint32_t));
 
     assert(num_grouped < num_factors);
 
-    for (uint i = 0; i < num_grouped; i++)
+    for (unsigned i = 0; i < num_grouped; i++)
     {
-      uint factor_index;
+      uint32_t factor_index;
       ifs.read((char*)&factor_index, sizeof(uint32_t));
 
       CompIncreasingArray group_offsets = CompIncreasingArray(ifs);
@@ -392,17 +390,17 @@ class Morphology {
     }
 
 
-    for (uint i = 0; i < num_factors; i++)
+    for (unsigned i = 0; i < num_factors; i++)
     {
-      uint bpv;
+      uint32_t bpv;
       ifs.read((char*)&bpv, sizeof(uint32_t));
       assert(bpv < 64);
       bits_per_value.push_back(bpv);
     }
 
-    for (uint i = 0; i < num_factors - 1; i++)
+    for (unsigned i = 0; i < num_factors - 1; i++)
     {
-      uint bpch;
+      uint32_t bpch;
       ifs.read((char*)&bpch, sizeof(uint32_t));
       assert(bpch < 64);
       bits_per_children.push_back(bpch);
@@ -433,13 +431,13 @@ class Morphology {
     MyStaticStringArray mssa = MyStaticStringArray(factor_names_vec);
     mssa.WriteToStream(ofs);
 
-    uint num_dependencies = 0;
+    unsigned num_dependencies = 0;
     for (auto it = dependencies.begin(); it != dependencies.end(); it++)
       if (*it) num_dependencies++;
 
     ofs.write((char*)&num_dependencies, sizeof(uint32_t));
 
-    for (uint i = 0; i < dependencies.size(); i++)
+    for (unsigned i = 0; i < dependencies.size(); i++)
     {
       morpho_dependencyP mp = dependencies[i];
 
@@ -453,13 +451,13 @@ class Morphology {
       mp->dependency_mapping.WriteToStream(ofs);
     }
 
-    uint num_grouped = 0;
+    unsigned num_grouped = 0;
     for (auto it = groupings.begin(); it != groupings.end(); it++)
       if (*it) num_grouped++;
 
     ofs.write((char*)&num_grouped, sizeof(uint32_t));
 
-    for (uint i = 0; i < groupings.size(); i++)
+    for (unsigned i = 0; i < groupings.size(); i++)
     {
       if (! (groupings[i])) continue;
       morpho_groupingP mgp = groupings[i];
@@ -470,12 +468,12 @@ class Morphology {
       mgp->group_values.WriteToStream(ofs);
     }
 
-    for (uint i = 0; i < bits_per_value.size(); i++)
+    for (unsigned i = 0; i < bits_per_value.size(); i++)
     {
       ofs.write((char*)&(bits_per_value[i]), sizeof(uint32_t));
     }
 
-    for (uint i = 0; i < bits_per_children.size(); i++)
+    for (unsigned i = 0; i < bits_per_children.size(); i++)
     {
       ofs.write((char*)&(bits_per_children[i]), sizeof(uint32_t));
     }

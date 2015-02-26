@@ -14,19 +14,19 @@ namespace korektor {
 
 bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signature)
 {
-  for (uint i = 0; i < misspelled.length(); i++)
+  for (unsigned i = 0; i < misspelled.length(); i++)
     misspelled[i] = MyUtils::ToLower(misspelled[i]);
 
-  for (uint i = 0; i < correct.length(); i++)
+  for (unsigned i = 0; i < correct.length(); i++)
     correct[i] = MyUtils::ToLower(correct[i]);
 
   if (misspelled.length() == correct.length())
   {
-    for (uint i = 0; i < misspelled.length(); i++)
+    for (unsigned i = 0; i < misspelled.length(); i++)
     {
       if (misspelled[i] != correct[i] && i + 1 < misspelled.length() && misspelled[i + 1] == correct[i] && misspelled[i] == correct[i + 1])
       {
-        for (uint j = i + 2; j < misspelled.length(); j++)
+        for (unsigned j = i + 2; j < misspelled.length(); j++)
         {
           if (misspelled[j] != correct[j])
           {
@@ -43,7 +43,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
       else if (misspelled[i] != correct[i])
       {
         //--------------------------------Substitution-----------------------------------
-        for (uint j = i + 1; j < misspelled.length(); j++)
+        for (unsigned j = i + 1; j < misspelled.length(); j++)
         {
           if (misspelled[j] != correct[j])
           {
@@ -62,11 +62,11 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
   else if (misspelled.length() == correct.length() + 1)
   {
     //-----------------------------------Insertion---------------------------------------
-    for (uint i = 0; i < correct.length(); i++)
+    for (unsigned i = 0; i < correct.length(); i++)
     {
       if (misspelled[i] != correct[i])
       {
-        for (uint j = i; j < correct.length(); j++)
+        for (unsigned j = i; j < correct.length(); j++)
         {
           if (misspelled[j + 1] != correct[j])
           {
@@ -98,7 +98,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
   else if (misspelled.length() == correct.length() - 1)
   {
     //------------------------------------Deletion-------------------------------------------------
-    for (uint i = 0; i < correct.length(); i++)
+    for (unsigned i = 0; i < correct.length(); i++)
     {
       if (i == correct.length() - 1 && i > 0)
       {
@@ -110,7 +110,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
 
       if (misspelled[i] != correct[i])
       {
-        for (uint j = i; j < misspelled.length(); j++)
+        for (unsigned j = i; j < misspelled.length(); j++)
         {
           if (misspelled[j] != correct[j + 1])
             return false;

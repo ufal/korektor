@@ -47,10 +47,10 @@ double LMWrapper::GetProb(NGram& ngram_key, NGram& ngram_pom)
   int highest_bow_order = ngram_key.order - 1;
   int lowest_bow_order = std::max(1, (int)ngram_pom.order);
 
-  uint ngram_orig_order = ngram_key.order;
+  unsigned ngram_orig_order = ngram_key.order;
 
   ngram_key.word_ids++;
-  ngram_key.order = (uint)highest_bow_order;
+  ngram_key.order = (unsigned)highest_bow_order;
 
   while ((int)ngram_key.order >= lowest_bow_order)
   {

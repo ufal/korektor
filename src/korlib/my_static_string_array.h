@@ -44,7 +44,7 @@ class MyStaticStringArray {
   {
     CompIA_First_Last_IndexPair index_pair = offsets.GetFirstLastIndexPair(index);
 
-    uint len = index_pair.second - index_pair.first + 1;
+    unsigned len = index_pair.second - index_pair.first + 1;
 
     memcpy(pom_data, &(data[index_pair.first]), len);
 

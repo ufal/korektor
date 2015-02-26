@@ -124,7 +124,7 @@ capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &
 {
   if (MyUtils::IsUpperCase(ustr[0]))
   {
-    for (uint i = 1; i < ustr.length(); i++)
+    for (unsigned i = 1; i < ustr.length(); i++)
     {
       if (MyUtils::IsUpperCase(ustr[i]) == false)
       {
@@ -132,7 +132,7 @@ capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &
           return weird;
         else
         {
-          for (uint j = 2; j < ustr.length(); j++)
+          for (unsigned j = 2; j < ustr.length(); j++)
           {
             if (MyUtils::IsUpperCase(ustr[j]))
               return weird;
@@ -147,7 +147,7 @@ capitalization_type MyUtils::Get_u16string_capitalization_type(const u16string &
   }
   else
   {
-    for (uint i = 1; i < ustr.length(); i++)
+    for (unsigned i = 1; i < ustr.length(); i++)
     {
       if (MyUtils::IsUpperCase(ustr[i]))
         return weird;

@@ -128,7 +128,7 @@ Similar_Words_Map SimWordsFinder::Find(const TokenP &token)
 {
   Similar_Words_Map swm;
 
-  uint i = 0;
+  unsigned i = 0;
   while (swm.empty() && i < search_configs.size())
   {
     SearchConfig sc = search_configs[i];

@@ -162,7 +162,7 @@ void ZipLM::SaveInBinaryForm(string out_file)
 /// @param lm_order LM order
 /// @param not_in_lm_cost @todo variable for ?
 /// @return Language model object of type @ref ZipLM
-ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, uint lm_order, double not_in_lm_cost)
+ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, unsigned lm_order, double not_in_lm_cost)
 {
   cerr << "Creating from text file..." << endl;
   ifstream ifs;
@@ -174,7 +174,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
 
   int last_unigram_id = -1;
   int unigram_id;
-  uint factorIndex = morphology->GetFactorMap()[_factor_name];
+  unsigned factorIndex = morphology->GetFactorMap()[_factor_name];
 
   cerr << "factorIndex = " << factorIndex << endl;
 
@@ -201,7 +201,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
 
   set<NGram, NGram_compare> ngrams;
 
-  uint ngram_order = 0;
+  unsigned ngram_order = 0;
   vector<string> toks;
 
   while (MyUtils::SafeReadline(ifs, s))
@@ -228,7 +228,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
       uint32_t *ids = new uint32_t[ngram_order];
 
       bool all_known = true;
-      for (uint i = 0; i < ngram_order; i++)
+      for (unsigned i = 0; i < ngram_order; i++)
       {
         int _id = morphology->GetFactorID(factorIndex, toks[i + 1]);
         if (_id == -1)
@@ -237,7 +237,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
         {
           //!!! Order of storing IDs is changed to the original way (like in the master thesis submission) - i.e. reversed order (next word, history new, history old...)
           //It allows more convenient look-up
-          ids[ngram_order - i - 1] = (uint)_id;
+          ids[ngram_order - i - 1] = (unsigned)_id;
         }
 
         if (ngram_order == 1 && all_known == true && _id > (int)max_id)
@@ -263,7 +263,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
 
   cerr << "adding aux nodex..." << endl;
 
-  uint num_added_ngrams = 0;
+  unsigned num_added_ngrams = 0;
 
   for (auto it = ngrams.begin(); it!= ngrams.end(); it++)
   {
@@ -311,7 +311,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
   aux_unigram.prob = not_in_lm_cost;
   aux_unigram.backoff = 0.0;
 
-  for (uint i = 0; i < max_id; i++)
+  for (unsigned i = 0; i < max_id; i++)
   {
     aux_unigram.word_ids[0] = i;
 
@@ -328,7 +328,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     if (counter % 10000 == 0) cerr << counter << endl;
     NGram ngram = *it;
     FATAL_CONDITION(ngram.order > 0, "");
-    uint array_index = ngram.order - 1;
+    unsigned array_index = ngram.order - 1;
     if (ngram.order < lm_order)
     {
       offsets[array_index].push_back(ids[array_index + 1].size());
@@ -359,7 +359,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
 
 
   cerr << "testing..." << endl;
-  uint test_counter = 0;
+  unsigned test_counter = 0;
   for (auto it = ngrams.begin(); it != ngrams.end(); it++)
   {
     if (test_counter % 50000 == 0) cerr << "testing: " << test_counter << endl;

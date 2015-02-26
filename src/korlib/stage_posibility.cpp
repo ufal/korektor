@@ -30,9 +30,9 @@ StagePosibilityNew::StagePosibilityNew(const FactorList &_factorList, bool _orig
 
   uniq_id = 0;
 
-  uint num_factors = _conf->NumFactors();
+  unsigned num_factors = _conf->NumFactors();
 
-  for (uint j = 0; j < num_factors; j++)
+  for (unsigned j = 0; j < num_factors; j++)
   {
     if (_conf->IsFactorEnabled(j))
     {

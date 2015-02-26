@@ -58,7 +58,7 @@ class MyBitArray {
   ///
   /// @param index Index value
   /// @param num_bits Number of bits required to store the value
-  inline uint32_t GetValueAt(uint32_t index, uint num_bits) const
+  inline uint32_t GetValueAt(uint32_t index, unsigned num_bits) const
   {
     uint32_t byte_pointer = index >> 3;
     uint32_t bit_offset = index % 8;
@@ -158,7 +158,7 @@ class MyBitArray {
 
     output_mask.push_back(0);
     uint32_t curr_mask = 0;
-    for (uint i = 1; i <= 32; i++)
+    for (unsigned i = 1; i <= 32; i++)
     {
       curr_mask = curr_mask << 1;
       curr_mask++;
@@ -194,7 +194,7 @@ class MyBitArray {
   /// @brief Constructor initialization from vector of pairs
   ///
   /// @param values Vector of pairs of integers
-  MyBitArray(const vector<pair<uint32_t, uint> > &values)
+  MyBitArray(const vector<pair<uint32_t, unsigned> > &values)
   {
     uint32_t bits_needed = 0;
     for (uint32_t i = 0; i < values.size(); i++)
@@ -206,7 +206,7 @@ class MyBitArray {
 
     output_mask.push_back(0);
     uint32_t curr_mask = 0;
-    for (uint i = 1; i <= 32; i++)
+    for (unsigned i = 1; i <= 32; i++)
     {
       curr_mask = curr_mask << 1;
       curr_mask++;
@@ -225,7 +225,7 @@ class MyBitArray {
     unsigned char* ukaz;
     for (uint32_t i = 0; i < values.size(); i++)
     {
-      int bites_left = values[i].second;
+      unsigned bites_left = values[i].second;
       byte_pointer = bit_position >> 3;
       bit_pointer = bit_position % 8;
 
@@ -257,21 +257,21 @@ class MyBitArray {
 
   }
 
-  static void TestIt(uint num_values, uint max_value)
+  static void TestIt(unsigned num_values, unsigned max_value)
   {
-    vector<pair<uint, uint> > vals;
+    vector<pair<uint32_t, unsigned> > vals;
 
-    for (uint i = 0; i < num_values; i++)
+    for (unsigned i = 0; i < num_values; i++)
     {
-      uint rand_val = MyUtils::randomR(0, max_value + 1);
-      uint num_bits = MyUtils::BitsNeeded(rand_val) + MyUtils::randomR(0, 3);
+      uint32_t rand_val = MyUtils::randomR(0, max_value + 1);
+      unsigned num_bits = MyUtils::BitsNeeded(rand_val) + MyUtils::randomR(0, 3);
 
       vals.push_back(make_pair(rand_val, num_bits));
     }
 
     MyBitArray mba = MyBitArray(vals);
 
-    uint bit_position = 0;
+    unsigned bit_position = 0;
     for (uint32_t i = 0; i < vals.size(); i++)
     {
       uint32_t val = mba.GetValueAt(bit_position, vals[i].second);

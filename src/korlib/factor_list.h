@@ -19,6 +19,6 @@
 struct FactorList {
   enum { MAX_FACTORS = 4 };
 
-  uint factors[MAX_FACTORS];
+  unsigned factors[MAX_FACTORS];
   float emission_costs[MAX_FACTORS];
 };

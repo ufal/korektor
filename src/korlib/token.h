@@ -18,8 +18,8 @@ namespace ufal {
 namespace korektor {
 
 struct Token {
-  uint first;
-  uint length;
+  unsigned first;
+  unsigned length;
   bool initialized;
   bool correction_is_allowed;
   int ID;
@@ -27,9 +27,9 @@ struct Token {
   string str_utf8;
   bool sentence_start;
 
-  Token(uint _first, uint _length, const u16string &_str);
+  Token(unsigned _first, unsigned _length, const u16string &_str);
 
-  void InitLexiconInformation(uint _ID, bool _correction_is_allowed);
+  void InitLexiconInformation(unsigned _ID, bool _correction_is_allowed);
   inline bool isUnknown() { return ID == -1; }
 
   Token(const u16string &u_str);

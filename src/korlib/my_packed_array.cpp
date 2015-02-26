@@ -216,7 +216,7 @@ MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
     uint32_t val = GetValueAt(i);
     if (val != values[i])
     {
-      for (uint j = 0; j < values.size(); j++)
+      for (unsigned j = 0; j < values.size(); j++)
         cerr << "values[" << j << "] = " << values[j] << endl;
       cerr << "val == " << val << ", values[" << i << "] == " << values[i] << endl;
     }

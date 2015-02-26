@@ -28,19 +28,19 @@ double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePosib
 
   factorLists[viterbi_order - 1] = nxt->GetFactorList();
 
-  for (uint i = 0; i < state->history.size(); i++)
+  for (unsigned i = 0; i < state->history.size(); i++)
   {
     StagePosibilityNewP h = static_pointer_cast<StagePosibilityNew, StagePosibility>(state->history[i]);
     factorLists[i] = h->GetFactorList();
   }
 
-  uint num_factors = configuration->NumFactors();
+  unsigned num_factors = configuration->NumFactors();
 
   for (int i = 0; i < (int)num_factors; i++)
   {
     if (configuration->FactorIsEnabled(i) == false) continue;
 
-    for (uint j = 0; j < viterbi_order; j++)
+    for (unsigned j = 0; j < viterbi_order; j++)
     {
       //changing the word id ordering:
       //ngram_search_key.word_ids[j] = morpho_nodes[j]->factorID;
@@ -57,7 +57,7 @@ double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePosib
     if (configuration->diagnostics)
     {
       cout << "factor " << i << ", LM cost: (";
-      for (uint j = 0; j < ngram_search_key.order; j++)
+      for (unsigned j = 0; j < ngram_search_key.order; j++)
       {
         if (j > 1 && j < ngram_search_key.order) cout << " ";
         else if (j == 1) cout << " | ";
@@ -88,16 +88,16 @@ double DecoderMultiFactor::ComputeTransitionCostSPSequence(vector<StagePosibilit
     factorLists[i] = h->GetFactorList();
   }
 
-  uint num_factors = configuration->NumFactors();
+  unsigned num_factors = configuration->NumFactors();
 
-  for (uint h = 0; h < num_factors; h++)
+  for (unsigned h = 0; h < num_factors; h++)
   {
     if (configuration->FactorIsEnabled(h) == false)
       continue;
 
     ngram_search_key.order = configuration->GetFactorOrder(h);
 
-    for (uint i = 0; i < order; i++)
+    for (unsigned i = 0; i < order; i++)
     {
       ngram_search_key.word_ids[order - 1 - i] = factorLists[i].factors[h];
     }

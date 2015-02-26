@@ -27,10 +27,10 @@ class SimWordsFinder {
   struct SearchConfig
   {
     casing_treatment casing;
-    uint max_ed_dist;
+    unsigned max_ed_dist;
     float max_cost;
 
-    SearchConfig(casing_treatment _casing, uint _max_ed_dist, float _max_cost):
+    SearchConfig(casing_treatment _casing, unsigned _max_ed_dist, float _max_cost):
       casing(_casing), max_ed_dist(_max_ed_dist), max_cost(_max_cost) {}
   };
 

@@ -88,16 +88,16 @@ class MyPackedArray {
 
     vector<uint32_t> vals;
 
-    for (uint i = 0; i < 10000000; i++)
+    for (unsigned i = 0; i < 10000000; i++)
     {
       vals.push_back(MyUtils::randomR(0, 10000000));
     }
 
     MyPackedArray mpa = MyPackedArray(vals);
 
-    for (uint j = 0; j < 300; j++)
+    for (unsigned j = 0; j < 300; j++)
     {
-      for (uint i = 0; i < 10000000; i++)
+      for (unsigned i = 0; i < 10000000; i++)
       {
         FATAL_CONDITION(vals[i] == mpa.GetValueAt(i), "");
       }

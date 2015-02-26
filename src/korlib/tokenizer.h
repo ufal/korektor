@@ -51,14 +51,14 @@ class Tokenizer {
 
     tokens.reserve(text.length() / 4);
 
-    vector<uint> sentence_ends;
+    vector<unsigned> sentence_ends;
 
-    for (uint i = 0; i < text.length(); i++)
+    for (unsigned i = 0; i < text.length(); i++)
     {
       if (text[i] == '\n' || text[i] == ':' || text[i] == '?' || text[i] == '!') sentence_ends.push_back(i);
       else if (text[i] == '.')
       {
-        uint j = i + 1;
+        unsigned j = i + 1;
         while (j < text.length() - 1 && MyUTF::is_alphanum(text[j]) == false) j++;
 
         if (MyUtils::IsUpperCase(text[j]))
@@ -66,13 +66,13 @@ class Tokenizer {
       }
     }
 
-    uint i = 0;
+    unsigned i = 0;
 
     while (i < text.length())
     {
       if (MyUTF::is_alphanum(text[i]))
       {
-        uint length = 1;
+        unsigned length = 1;
         while (i + length < text.length() && MyUTF::is_alphanum(text[i + length]))
           length++;
 
@@ -110,12 +110,12 @@ class Tokenizer {
       }
     }
 
-    uint next_sentence_end_index = 0;
+    unsigned next_sentence_end_index = 0;
 
     vector<vector<TokenP> > ret;
     ret.push_back(vector<TokenP>());
 
-    for (uint i = 0; i < tokens.size(); i++)
+    for (unsigned i = 0; i < tokens.size(); i++)
     {
       while (next_sentence_end_index < sentence_ends.size() && tokens[i]->first > sentence_ends[next_sentence_end_index])
       {

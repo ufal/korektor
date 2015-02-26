@@ -19,10 +19,6 @@
 #include "korlib/token.h"
 #include "korlib/tokenizer.h"
 
-#ifndef uint
-#define uint uint32_t
-#endif
-
 using namespace ufal::korektor;
 
 // floating point number:  [-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?

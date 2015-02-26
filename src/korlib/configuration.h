@@ -48,19 +48,19 @@ struct string_bool_hasher : std::unary_function<pair<string, bool>, size_t>
 /// @class Configuration configuration.h "configuration.h"
 class Configuration
 {
-  map<string, uint> factor_map;
+  map<string, unsigned> factor_map;
   vector<string> factor_names;
   vector<bool> enabled_factors;
   vector<float> factor_weights;
-  vector<uint> factor_orders;
+  vector<unsigned> factor_orders;
   vector<LMWrapperP> factor_LMS;
-  uint last_enabled_factor_index;
+  unsigned last_enabled_factor_index;
 
   string ConvertPathSeparators(const string &path);
 
  public:
 
-  uint viterbi_order;
+  unsigned viterbi_order;
   LexiconP lexicon;
   MorphologyP morphology;
   TokenizerP tokenizer;
@@ -81,19 +81,19 @@ class Configuration
         && tokenizer && errorModel && simWordsFinder;
   }
 
-  inline LMWrapper* GetFactorLM(uint index) { return factor_LMS[index].get(); }
-  inline float GetFactorWeight(uint index) { return factor_weights[index]; }
-  inline uint GetFactorOrder(uint index) { return factor_orders[index]; }
-  inline bool IsFactorEnabled(uint index) { return enabled_factors[index]; }
-  inline uint NumFactors() { return factor_LMS.size(); }
-  inline uint GetLastEnabledFactorIndex() { return last_enabled_factor_index; }
+  inline LMWrapper* GetFactorLM(unsigned index) { return factor_LMS[index].get(); }
+  inline float GetFactorWeight(unsigned index) { return factor_weights[index]; }
+  inline unsigned GetFactorOrder(unsigned index) { return factor_orders[index]; }
+  inline bool IsFactorEnabled(unsigned index) { return enabled_factors[index]; }
+  inline unsigned NumFactors() { return factor_LMS.size(); }
+  inline unsigned GetLastEnabledFactorIndex() { return last_enabled_factor_index; }
 
-  inline uint ViterbiOrder()
+  inline unsigned ViterbiOrder()
   {
     return viterbi_order;
   }
 
-  inline bool FactorIsEnabled(uint index)
+  inline bool FactorIsEnabled(unsigned index)
   {
     return enabled_factors[index];
   }
@@ -104,7 +104,7 @@ class Configuration
   /// @brief Loads the language model
   void LoadLM(LMWrapperP lm);
 
-  void EnableFactor(const string &fac_name, float weight, uint order);
+  void EnableFactor(const string &fac_name, float weight, unsigned order);
 
 };
 

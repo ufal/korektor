@@ -37,7 +37,7 @@ SP_DEF(Morphology);
 //, it also stores ngram probability 'prob' and back-off weight 'bow'
 struct LM_tuple {
   //uint32_t word_id;
-  uint nlevel_offset;
+  unsigned nlevel_offset;
   int nlevel_entries;
 
   float prob;
@@ -83,11 +83,11 @@ class ZipLM {
 
  public:
 
-  bool getFirstLevelTuple(uint word_id, LM_tuple &ret);
+  bool getFirstLevelTuple(unsigned word_id, LM_tuple &ret);
 
   //searching for a child node, given the LM tree level, word_id of the child node. 'offset' and 'num_entries' specify the extent of searching
   //within the array storing the nodes for the given tree level.
-  bool GetTuple(uint level, uint word_id, uint offset, uint num_entries, LM_tuple &lm_tuple);
+  bool GetTuple(unsigned level, unsigned word_id, unsigned offset, unsigned num_entries, LM_tuple &lm_tuple);
 
 
   string GetFactorName() { return factor_name; }
@@ -109,7 +109,7 @@ class ZipLM {
   void SaveInBinaryForm(string out_file);
 
   //creates the language model instance from the ARPA format language model stored in 'text_file'
-  static ZipLMP createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, uint lm_order, double not_in_lm_cost);
+  static ZipLMP createFromTextFile(string text_file, MorphologyP &morphology, string _factor_name, unsigned lm_order, double not_in_lm_cost);
 
   uint32_t MaxUnigramID();
 

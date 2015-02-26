@@ -129,7 +129,7 @@ int main(int argc, char** argv)
       u16string key = MyUtils::utf8_to_utf16(toks[0]);
       uint32_t count = MyUtils::my_atoi(toks[1]);
 
-      for (uint i = 0; i < key.length(); i++)
+      for (unsigned i = 0; i < key.length(); i++)
         if (key[i] == char16_t('+'))
           key[i] = char16_t(' ');
 

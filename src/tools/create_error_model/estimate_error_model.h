@@ -15,7 +15,7 @@
 namespace ufal {
 namespace korektor {
 
-const uint MINIMAL_ERROR_COUNT = 4;
+const unsigned MINIMAL_ERROR_COUNT = 4;
 const float error_count_normalization = 100;
 
 class EstimateErrorModel
@@ -87,8 +87,8 @@ class EstimateErrorModel
     else
     {
       FATAL_CONDITION(node->error_count == 0, "");
-      uint context_count = 0;
-      uint error_count = 0;
+      unsigned context_count = 0;
+      unsigned error_count = 0;
 
       for (auto it = node->children.begin(); it != node->children.end(); it++)
       {

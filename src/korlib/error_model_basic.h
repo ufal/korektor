@@ -72,7 +72,7 @@ class ErrorModelBasic : public ErrorModel
   ErrorModelOutput deletion_default; ///< Default deletion cost/edit distance
   ErrorModelOutput swap_default; ///< Default swap cost/edit distance
   ErrorModelOutput case_mismatch_cost; ///< Default case mismatch cost/edit distance
-  uint min_operation_edit_distance; ///< @todo variable for ?
+  uint32_t min_operation_edit_distance; ///< @todo variable for ?
 
  public:
 
@@ -85,7 +85,7 @@ class ErrorModelBasic : public ErrorModel
   /// @param _deletion_default Default deletion cost/distance
   /// @param _swap_default Default swap cost/distance
   /// @param entries Error corpus. Vector of pair of strings and costs/distances
-  ErrorModelBasic(uint _min_operation_edit_distance, ErrorModelOutput _case_mismatch_cost, ErrorModelOutput _substitution_default, ErrorModelOutput _insertion_default,
+  ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorModelOutput _case_mismatch_cost, ErrorModelOutput _substitution_default, ErrorModelOutput _insertion_default,
                   ErrorModelOutput _deletion_default, ErrorModelOutput _swap_default,
                   const vector<pair<u16string, ErrorModelOutput>> &entries):
     substitution_default(_substitution_default),
@@ -188,7 +188,7 @@ class ErrorModelBasic : public ErrorModel
     ofs.write((char*)&(case_mismatch_cost.edit_dist), sizeof(uint32_t));
     ofs.write((char*)&min_operation_edit_distance, sizeof(uint32_t));
 
-    uint num_subs = substitution_map.size();
+    unsigned num_subs = substitution_map.size();
     ofs.write((char*)&num_subs, sizeof(uint32_t));
 
     for (auto it = substitution_map.begin(); it != substitution_map.end(); it++)
@@ -199,7 +199,7 @@ class ErrorModelBasic : public ErrorModel
       ofs.write((char*)&(it->second.edit_dist), sizeof(uint32_t));
     }
 
-    uint num_inserts = insertion_map.size();
+    unsigned num_inserts = insertion_map.size();
     ofs.write((char*)&num_inserts, sizeof(uint32_t));
 
     for (auto it = insertion_map.begin(); it != insertion_map.end(); it++)
@@ -211,7 +211,7 @@ class ErrorModelBasic : public ErrorModel
       ofs.write((char*)&(it->second.edit_dist), sizeof(uint32_t));
     }
 
-    uint num_dels = deletion_map.size();
+    unsigned num_dels = deletion_map.size();
     ofs.write((char*)&num_dels, sizeof(uint32_t));
 
     for (auto it = deletion_map.begin(); it != deletion_map.end(); it++)
@@ -222,7 +222,7 @@ class ErrorModelBasic : public ErrorModel
       ofs.write((char*)&(it->second.edit_dist), sizeof(uint32_t));
     }
 
-    uint num_swaps = swap_map.size();
+    unsigned num_swaps = swap_map.size();
     ofs.write((char*)&num_swaps, sizeof(uint32_t));
 
     for (auto it = swap_map.begin(); it != swap_map.end(); it++)
@@ -248,7 +248,7 @@ class ErrorModelBasic : public ErrorModel
     vector<string> toks;
     string s;
 
-    uint min_edit_dist = 100000;
+    unsigned min_edit_dist = 100000;
 
     MyUtils::SafeReadline(ifs, s);
     MyUtils::Split(toks, s, "\t");
@@ -360,10 +360,10 @@ class ErrorModelBasic : public ErrorModel
     float cost;
     uint32_t ed_dist;
 
-    uint num_subs;
+    uint32_t num_subs;
     ifs.read((char*)&num_subs, sizeof(uint32_t));
 
-    for (uint i = 0; i < num_subs; i++)
+    for (unsigned i = 0; i < num_subs; i++)
     {
       ifs.read((char*)&ch1, sizeof(char16_t));
       ifs.read((char*)&ch2, sizeof(char16_t));
@@ -375,10 +375,10 @@ class ErrorModelBasic : public ErrorModel
       //cerr << "subs: " << ed_dist << " - " << cost << endl;
     }
 
-    uint num_inserts;
+    uint32_t num_inserts;
     ifs.read((char*)&num_inserts, sizeof(uint32_t));
 
-    for (uint i = 0; i < num_inserts; i++)
+    for (unsigned i = 0; i < num_inserts; i++)
     {
       ifs.read((char*)&ch1, sizeof(char16_t));
       ifs.read((char*)&ch2, sizeof(char16_t));
@@ -389,10 +389,10 @@ class ErrorModelBasic : public ErrorModel
       insertion_map[make_tuple(ch1, ch2, ch3)] = ErrorModelOutput(ed_dist, cost);
     }
 
-    uint num_dels;
+    uint32_t num_dels;
     ifs.read((char*)&num_dels, sizeof(uint32_t));
 
-    for (uint i = 0; i < num_dels; i++)
+    for (unsigned i = 0; i < num_dels; i++)
     {
       ifs.read((char*)&ch1, sizeof(char16_t));
       ifs.read((char*)&ch2, sizeof(char16_t));
@@ -402,10 +402,10 @@ class ErrorModelBasic : public ErrorModel
       deletion_map[make_pair(ch1, ch2)] = ErrorModelOutput(ed_dist, cost);
     }
 
-    uint num_swaps;
+    uint32_t num_swaps;
     ifs.read((char*)&num_swaps, sizeof(uint32_t));
 
-    for (uint i = 0; i < num_swaps; i++)
+    for (unsigned i = 0; i < num_swaps; i++)
     {
       ifs.read((char*)&ch1, sizeof(char16_t));
       ifs.read((char*)&ch2, sizeof(char16_t));

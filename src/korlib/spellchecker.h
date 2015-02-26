@@ -54,7 +54,7 @@ class Spellchecker {
   void FindMisspelledWord(const string &text, uint32_t &range_from, uint32_t &range_length);
 
   /// @brief this was relevant for the spell-server front-end
-  vector<TextCheckingResultP> GetCheckingResultsFirstSentence(const string &text, uint &range_from, uint &range_length);
+  vector<TextCheckingResultP> GetCheckingResultsFirstSentence(const string &text, unsigned &range_from, unsigned &range_length);
 
   /// @brief returns autocorrected text
   string CheckText(const string &sentence);

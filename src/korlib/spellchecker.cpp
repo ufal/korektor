@@ -210,7 +210,7 @@ void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, 
   range_length = 0;
 }
 
-vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const string &text, uint &range_from, uint &range_length)
+vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const string &text, unsigned &range_from, unsigned &range_length)
 {
   u16string u_text = MyUtils::utf8_to_utf16(text);
   vector<TextCheckingResultP> results;
@@ -313,7 +313,7 @@ string Spellchecker::CheckText(const string &text)
   {
     vector<StagePosibilityP> stage_pos = decoder->DecodeTokenizedSentence(*it);
 
-    for (uint i = 0; i < (*it).size(); i++)
+    for (unsigned i = 0; i < (*it).size(); i++)
     {
       if (stage_pos[i + decoder->GetViterbiOrder() - 1]->IsOriginal() == false)
       {

@@ -18,12 +18,12 @@ typedef shared_ptr<hierarchy_node> hierarchy_nodeP;
 class hierarchy_node {
  private:
 #if 0
-  static u16string generateRandomString(uint min_length, uint range)
+  static u16string generateRandomString(unsigned min_length, unsigned range)
   {
     u16string ret;
-    uint length = MyUtils::randomR(min_length, range);
+    unsigned length = MyUtils::randomR(min_length, range);
 
-    for (uint i = 0; i < length; i++)
+    for (unsigned i = 0; i < length; i++)
       ret += central_chars[MyUtils::randomR(0, central_chars.length())];
 
     return ret;
@@ -37,13 +37,13 @@ class hierarchy_node {
   u16string signature;
   hierarchy_nodeP parent;
   vector<hierarchy_nodeP> children;
-  uint num_governed_leaves;
-  uint error_count;
+  unsigned num_governed_leaves;
+  unsigned error_count;
 
   float error_prob;
-  uint edit_distance;
+  unsigned edit_distance;
 
-  uint context_count;
+  unsigned context_count;
   bool is_output_node;
 
 #if 0
@@ -139,9 +139,9 @@ class hierarchy_node {
     }
     else
     {
-      vector<uint> offsets;
+      vector<unsigned> offsets;
 
-      uint counter = 0;
+      unsigned counter = 0;
       for (auto it = children.begin(); it != children.end(); it++)
       {
         offsets.push_back(counter);
@@ -150,7 +150,7 @@ class hierarchy_node {
 
       int r_num = MyUtils::randomR(0, counter);
 
-      uint i = 0;
+      unsigned i = 0;
       while (i + 1 < offsets.size() && offsets[i + 1] < r_num) i++;
 
       children[i]->generate_spelling_error(misspelled, correct);
@@ -197,12 +197,12 @@ class hierarchy_node {
 
     hierarchy_map[_signature] = ret;
 
-    for (uint i = 0; i < _signature.length(); i++)
+    for (unsigned i = 0; i < _signature.length(); i++)
     {
       if (_signature[i] == char16_t('.'))
       {
         u16string sig_copy = _signature;
-        for (uint j = 0; j < context_chars.length(); j++)
+        for (unsigned j = 0; j < context_chars.length(); j++)
         {
           sig_copy[i] = context_chars[j];
 
@@ -217,9 +217,9 @@ class hierarchy_node {
     return ret;
   }
 
-  static void print_hierarchy_rec(hierarchy_nodeP &node, uint level, ostream &os)
+  static void print_hierarchy_rec(hierarchy_nodeP &node, unsigned level, ostream &os)
   {
-    for (uint i = 0; i < level; i++)
+    for (unsigned i = 0; i < level; i++)
       os << "\t";
 
     string s = MyUtils::utf16_to_utf8(node->signature);
@@ -229,10 +229,10 @@ class hierarchy_node {
       print_hierarchy_rec(*it, level + 1, os);
   }
 
-  static pair<hierarchy_nodeP, uint> read_hierarchy(string s, hierarchy_nodeP node, uint level)
+  static pair<hierarchy_nodeP, unsigned> read_hierarchy(string s, hierarchy_nodeP node, unsigned level)
   {
     //cerr << s << endl;
-    uint new_level = 0;
+    unsigned new_level = 0;
     while (s[new_level] == '\t') new_level++;
 
     while (level >= new_level)
@@ -269,7 +269,7 @@ class hierarchy_node {
 
       hierarchy_node::root = hierarchy_nodeP(new hierarchy_node(MyUtils::utf8_to_utf16("root")));
       hierarchy_map.insert(make_pair(root->signature, root));
-      pair<hierarchy_nodeP, uint> node_level_pair = make_pair(root, 0);
+      pair<hierarchy_nodeP, unsigned> node_level_pair = make_pair(root, 0);
 
       while (MyUtils::SafeReadline(is, s))
       {
@@ -278,7 +278,7 @@ class hierarchy_node {
     }
   }
 
-  static void output_result_rec(hierarchy_nodeP &node, uint level, uint prop_level, float inherited_prob, u16string prop_signature, vector<pair<u16string, ErrorModelOutput>> &out_vec)
+  static void output_result_rec(hierarchy_nodeP &node, unsigned level, unsigned prop_level, float inherited_prob, u16string prop_signature, vector<pair<u16string, ErrorModelOutput>> &out_vec)
   {
 //    if (level == 1)
 //    {

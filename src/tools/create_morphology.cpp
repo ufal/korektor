@@ -27,20 +27,20 @@
 
 using namespace ufal::korektor;
 
-uint node_id_counter;
+unsigned node_id_counter;
 
 class morpho_node;
 SP_DEF(morpho_node);
 
 class morpho_node {
  public:
-  uint factor_id;
-  uint node_id;
-  uint num_children;
-  //map<uint, morpho_nodeP > children;
-  map<uint, morpho_nodeP> children;
+  unsigned factor_id;
+  unsigned node_id;
+  unsigned num_children;
+  //map<unsigned, morpho_nodeP > children;
+  map<unsigned, morpho_nodeP> children;
 
-  morpho_node(uint _factor_id): factor_id(_factor_id), num_children(0)
+  morpho_node(unsigned _factor_id): factor_id(_factor_id), num_children(0)
   {
     node_id = node_id_counter;
     node_id_counter++;
@@ -48,22 +48,22 @@ class morpho_node {
 };
 
 
-const uint MINIMAL_COUNT_FOR_ADDING_NEW_WORD = 200;
+const unsigned MINIMAL_COUNT_FOR_ADDING_NEW_WORD = 200;
 
 struct Emissions {
 
-  //map<pair<uint, pair<uint, uint> >, uint> jointCounts;
+  //map<pair<unsigned, pair<unsigned, unsigned> >, unsigned> jointCounts;
   //map<> counts;
 
-  map<tuple<uint, uint, uint>, uint> jointCounts;
-  map<pair<uint, uint>, uint> counts;
+  map<tuple<unsigned, unsigned, unsigned>, unsigned> jointCounts;
+  map<pair<unsigned, unsigned>, unsigned> counts;
 
   ValueMappingP value_mapping;
 
  public:
-  void AddCount(uint form_id, uint factor_index, uint factor_id, uint count = 1)
+  void AddCount(unsigned form_id, unsigned factor_index, unsigned factor_id, unsigned count = 1)
   {
-    tuple<uint, uint, uint> key = make_tuple(factor_index, factor_id, form_id);
+    tuple<unsigned, unsigned, unsigned> key = make_tuple(factor_index, factor_id, form_id);
 
     if (jointCounts.find(key) == jointCounts.end())
     {
@@ -74,7 +74,7 @@ struct Emissions {
       jointCounts[key] += count;
     }
 
-    pair<uint, uint> key2 = make_pair(factor_index, factor_id);
+    pair<unsigned, unsigned> key2 = make_pair(factor_index, factor_id);
 
     if (counts.find(key2) == counts.end())
     {
@@ -87,15 +87,15 @@ struct Emissions {
 
   }
 
-  double GetEmissionCost(uint form_id, int factor_index, uint factor_id)
+  double GetEmissionCost(unsigned form_id, int factor_index, unsigned factor_id)
   {
-    tuple<uint, uint, uint> key_joint = make_tuple(factor_index, factor_id, form_id);
-    pair<uint, uint> key = make_pair(factor_index, factor_id);
+    tuple<unsigned, unsigned, unsigned> key_joint = make_tuple(factor_index, factor_id, form_id);
+    pair<unsigned, unsigned> key = make_pair(factor_index, factor_id);
 
     return (-log((double)jointCounts[key_joint] / (double)counts[key])) / log(10.0);
   }
 
-  pair<uint, uint> GetEmissionCostMapped(uint form_id, int factor_index, uint factor_id)
+  pair<unsigned, unsigned> GetEmissionCostMapped(unsigned form_id, int factor_index, unsigned factor_id)
   {
     return make_pair(value_mapping->GetCenterID(GetEmissionCost(form_id, factor_index, factor_id)), value_mapping->BitsPerValue());
   }
@@ -103,9 +103,9 @@ struct Emissions {
   void init_value_mapping()
   {
     vector<double> costs;
-    for (map<tuple<uint, uint, uint>, uint>::iterator it = jointCounts.begin(); it != jointCounts.end(); it++)
+    for (map<tuple<unsigned, unsigned, unsigned>, unsigned>::iterator it = jointCounts.begin(); it != jointCounts.end(); it++)
     {
-      tuple<uint, uint, uint> key = it->first;
+      tuple<unsigned, unsigned, unsigned> key = it->first;
       costs.push_back(GetEmissionCost(get<2>(key), get<0>(key), get<1>(key)));
     }
 
@@ -116,21 +116,21 @@ struct Emissions {
 
 class GroupFactors {
  private:
-  vector<uint> factor_ids;
+  vector<unsigned> factor_ids;
  public:
 
-  GroupFactors(vector<uint> &_factor_ids)
+  GroupFactors(vector<unsigned> &_factor_ids)
   {
     factor_ids = _factor_ids;
     std::sort(factor_ids.begin(), factor_ids.end());
   }
 
-  uint NumFactors()
+  unsigned NumFactors()
   {
     return factor_ids.size();
   }
 
-  uint GetFactorAt(uint index)
+  unsigned GetFactorAt(unsigned index)
   {
     return factor_ids[index];
   }
@@ -174,15 +174,15 @@ struct GroupFactorsP_ihash: std::unary_function<GroupFactorsP, std::size_t>
   }
 };
 
-typedef unordered_map<GroupFactorsP, uint, GroupFactorsP_ihash, GroupFactorsP_iequal_to> map_GroupFactorsP;
+typedef unordered_map<GroupFactorsP, unsigned, GroupFactorsP_ihash, GroupFactorsP_iequal_to> map_GroupFactorsP;
 
 struct Dependency {
-  uint governing_factor;
-  uint governed_factor;
+  unsigned governing_factor;
+  unsigned governed_factor;
 
-  map<uint, uint> dependency_map;
+  map<unsigned, unsigned> dependency_map;
 
-  Dependency(uint _governing_factor, uint _governed_factor, map<uint, uint> &_dependency_map):
+  Dependency(unsigned _governing_factor, unsigned _governed_factor, map<unsigned, unsigned> &_dependency_map):
     governing_factor(_governing_factor), governed_factor(_governed_factor), dependency_map(_dependency_map) {}
 };
 
@@ -190,8 +190,8 @@ struct CM_variables {
   vector<string> factors; //name of the factors;
   morpho_nodeP root; //root of the morphology tree;
   vector<vector<morpho_nodeP> > levels; //level sets of the morphology tree;
-  vector<uint> bits_per_value; //number of bits needed to store a factorID for the particular factor
-  vector<uint> bits_per_children; //number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
+  vector<unsigned> bits_per_value; //number of bits needed to store a factorID for the particular factor
+  vector<unsigned> bits_per_children; //number of bits needed to store a number of children for a node at the particular level or a groupID if the level is grouped
   vector<bool> is_factor_grouped; //true if the factors at the given levels are grouped;
   vector<bool> is_factor_dependant;
   vector<vector<string> > factor_string_lists;
@@ -199,14 +199,14 @@ struct CM_variables {
   vector<map<string, uint32_t> > factor_dictionaries;
   vector<Dependency> dependencies; //list of all factor dependencies
   map<uint32_t, vector<GroupFactorsP> > groupings;
-  vector<pair<uint, uint> > bit_array_data;
-  map<uint, uint> node_group_map;
-  uint num_factors;
-  map<pair<uint, uint>, bool> is_dependence;
-  map<pair<uint, uint>, map<uint, uint> > dep_struct;
+  vector<pair<unsigned, unsigned> > bit_array_data;
+  map<unsigned, unsigned> node_group_map;
+  unsigned num_factors;
+  map<pair<unsigned, unsigned>, bool> is_dependence;
+  map<pair<unsigned, unsigned>, map<unsigned, unsigned> > dep_struct;
   Emissions emissions;
 
-  void init(uint _num_factors)
+  void init(unsigned _num_factors)
   {
     FATAL_CONDITION(_num_factors <= FactorList::MAX_FACTORS, "Too many factors!");
 
@@ -232,7 +232,7 @@ struct CM_variables {
       for (uint32_t j = i + 1; j < num_factors; j++)
       {
         is_dependence[make_pair(i, j)] = true;
-        dep_struct[make_pair(i,j)] = map<uint, uint>();
+        dep_struct[make_pair(i,j)] = map<unsigned, unsigned>();
       }
 
     is_factor_grouped[0] = false;
@@ -249,14 +249,14 @@ void resolve_dependencies_traverse_nodes(vector<morpho_nodeP> &chain)
 {
   morpho_nodeP top = chain[chain.size() - 1];
 
-  uint top_level = chain.size() - 1;
+  unsigned top_level = chain.size() - 1;
 
-  for (uint i = 0; i < top_level; i++)
+  for (unsigned i = 0; i < top_level; i++)
   {
     if (cm.is_dependence[make_pair(i, top_level)])
     {
-      uint factorID = chain[i]->factor_id;
-      pair<uint, uint> key1 = make_pair(i, top_level);
+      unsigned factorID = chain[i]->factor_id;
+      pair<unsigned, unsigned> key1 = make_pair(i, top_level);
 
       if (cm.dep_struct[key1].find(factorID) == cm.dep_struct[key1].end())
       {
@@ -284,11 +284,11 @@ void makeGrouping()
 {
   for (uint32_t i = 0; i < cm.num_factors - 1; i++)
   {
-    uint nongrouped_bits_needed = cm.levels[i].size() * cm.bits_per_children[i] + cm.levels[i + 1].size() * cm.bits_per_value[i + 1];
+    unsigned nongrouped_bits_needed = cm.levels[i].size() * cm.bits_per_children[i] + cm.levels[i + 1].size() * cm.bits_per_value[i + 1];
 
     map_GroupFactorsP group_map;
     vector<GroupFactorsP> group_vector;
-    uint num_group_elements = 0;
+    unsigned num_group_elements = 0;
 
     cerr << "make grouping: level = " << i << endl;
 
@@ -298,7 +298,7 @@ void makeGrouping()
 
       morpho_nodeP node = cm.levels[i][j];
 
-      vector<uint32_t> gr_factors_vec;
+      vector<unsigned> gr_factors_vec;
 
       for (auto it = node->children.begin(); it != node->children.end(); it++)
       {
@@ -315,7 +315,7 @@ void makeGrouping()
 
         if (group_vector.size() % 10 == 0)
         {
-          uint grouped_bits_needed = cm.levels[i].size() * MyUtils::BitsNeeded(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
+          unsigned grouped_bits_needed = cm.levels[i].size() * MyUtils::BitsNeeded(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
 
           if (grouped_bits_needed * 2 > nongrouped_bits_needed)
           {
@@ -335,7 +335,7 @@ void makeGrouping()
       cm.groupings[i + 1] = group_vector;
       cm.bits_per_children[i] = MyUtils::BitsNeeded(group_vector.size() - 1);
       cm.is_factor_dependant[i + 1] = false;
-      for (uint j = 0; j < i + 1; j++)
+      for (unsigned j = 0; j < i + 1; j++)
         cm.is_dependence[make_pair(j, i + 1)] = false;
     }
   }
@@ -355,13 +355,13 @@ void resolve_dependencies()
     resolve_dependencies_traverse_nodes(chain);
   }
 
-  for (uint i = 1; i < cm.levels.size(); i++)
+  for (unsigned i = 1; i < cm.levels.size(); i++)
   {
     bool dependant = false;
-    uint best_governing_factor = 0; // To keep compiler happy
-    uint best_governing_factor_vocab_size = 0; // To keep compiler happy
+    unsigned best_governing_factor = 0; // To keep compiler happy
+    unsigned best_governing_factor_vocab_size = 0; // To keep compiler happy
 
-    for (uint j = 0; j < i; j++)
+    for (unsigned j = 0; j < i; j++)
     {
       if (cm.is_dependence[make_pair(j, i)])
       {
@@ -385,11 +385,11 @@ void resolve_dependencies()
 }
 
 
-void save_node(morpho_nodeP node, vector<pair<uint32_t, uint> > &values, uint _level, uint formID, bool save_factor_id, uint32_t &bits_used)
+void save_node(morpho_nodeP node, vector<pair<uint32_t, unsigned> > &values, unsigned _level, unsigned formID, bool save_factor_id, uint32_t &bits_used)
 {
   if (_level > 0)
   {
-    pair<uint, uint> cost_pair = cm.emissions.GetEmissionCostMapped(formID, _level, node->factor_id);
+    pair<unsigned, unsigned> cost_pair = cm.emissions.GetEmissionCostMapped(formID, _level, node->factor_id);
     values.push_back(cost_pair);
     bits_used += cost_pair.second;
   }
@@ -426,7 +426,7 @@ void save_node(morpho_nodeP node, vector<pair<uint32_t, uint> > &values, uint _l
 
 }
 
-void construct_levels(morpho_nodeP node, uint act_level)
+void construct_levels(morpho_nodeP node, unsigned act_level)
 {
   cm.levels[act_level].push_back(node);
 
@@ -437,16 +437,16 @@ void construct_levels(morpho_nodeP node, uint act_level)
   }
 }
 
-bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add_zero_level_node, bool add_counts_for_nodes_just_being_visited, uint count = 1)
+bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add_zero_level_node, bool add_counts_for_nodes_just_being_visited, unsigned count = 1)
 {
   vector<string> parts;
   MyUtils::Split(parts, factor_string, "|");
 
   morpho_nodeP node = cm.root;
 
-  uint form_id;
+  unsigned form_id;
 
-  for (uint i = 0; i < parts.size(); i++)
+  for (unsigned i = 0; i < parts.size(); i++)
   {
     if (cm.factor_dictionaries[i].find(parts[i]) == cm.factor_dictionaries[i].end())
     {
@@ -462,7 +462,7 @@ bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add
       }
     }
 
-    uint factorID = cm.factor_dictionaries[i][parts[i]];
+    unsigned factorID = cm.factor_dictionaries[i][parts[i]];
 
     if (i == 0) form_id = factorID;
 
@@ -490,7 +490,7 @@ bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add
 string createSpecialMorphologyEntry(const string &spec)
 {
   stringstream strs;
-  for (uint i = 0; i < cm.num_factors; i++)
+  for (unsigned i = 0; i < cm.num_factors; i++)
   {
     if (i > 0)
       strs << "|";
@@ -534,7 +534,7 @@ int main(int argc, char** argv)
 
   cm.init(parts.size());
 
-  for (uint i = 0; i < parts.size(); i++)
+  for (unsigned i = 0; i < parts.size(); i++)
   {
     cm.factors.push_back(parts[i]);
   }
@@ -555,7 +555,7 @@ int main(int argc, char** argv)
   }
 
   vector<string> orig_lines;
-  uint counter = 0;
+  unsigned counter = 0;
   while (MyUtils::SafeReadline(ifs, s))
   {
     counter++;
@@ -579,7 +579,7 @@ int main(int argc, char** argv)
 
   counter = 0;
   string factors;
-  uint count;
+  unsigned count;
 
   while (MyUtils::SafeReadline(ifs, s))
   {
@@ -613,12 +613,12 @@ int main(int argc, char** argv)
 
 
 
-  for (uint i = 0; i < cm.levels.size() - 1; i++)
+  for (unsigned i = 0; i < cm.levels.size() - 1; i++)
   {
     cerr << "estimating max children on level " << i << endl;
-    uint max_children = 0;
+    unsigned max_children = 0;
 
-    for (uint j = 0; j < cm.levels[i].size(); j++)
+    for (unsigned j = 0; j < cm.levels[i].size(); j++)
     {
       if (j % 1000 == 0) cerr << j << endl;
       morpho_nodeP node = cm.levels[i][j];
@@ -630,12 +630,12 @@ int main(int argc, char** argv)
     cm.bits_per_children[i] = MyUtils::BitsNeeded(max_children);
   }
 
-  for (uint i = 0; i < cm.levels.size(); i++)
+  for (unsigned i = 0; i < cm.levels.size(); i++)
   {
     cerr << "estimating max value on level " << i << endl;
-    uint max_value = 0;
+    unsigned max_value = 0;
 
-    for (uint j = 0; j < cm.levels[i].size(); j++)
+    for (unsigned j = 0; j < cm.levels[i].size(); j++)
     {
       morpho_nodeP node = cm.levels[i][j];
 
@@ -673,25 +673,25 @@ int main(int argc, char** argv)
   uint32_t dep_size = cm.dependencies.size();
   ofs.write((char*)&dep_size, sizeof(uint32_t));
 
-  for (uint i = 0; i < dep_size; i++)
+  for (unsigned i = 0; i < dep_size; i++)
   {
     uint32_t governing = cm.dependencies[i].governing_factor;
     uint32_t governed = cm.dependencies[i].governed_factor;
     ofs.write((char*)&governing, sizeof(uint32_t));
     ofs.write((char*)&governed, sizeof(uint32_t));
 
-    map<uint, uint> dep_map = cm.dependencies[i].dependency_map;
+    map<unsigned, unsigned> dep_map = cm.dependencies[i].dependency_map;
     vector<uint32_t> dep_vector;
 
-    for (uint j = 0; j < cm.factor_string_lists[governing].size(); j++)
+    for (unsigned j = 0; j < cm.factor_string_lists[governing].size(); j++)
       dep_vector.push_back(std::numeric_limits<uint32_t>::max());
 
-    for (map<uint, uint>::iterator it = dep_map.begin(); it != dep_map.end(); it++)
+    for (map<unsigned, unsigned>::iterator it = dep_map.begin(); it != dep_map.end(); it++)
     {
       dep_vector[it->first] = it->second;
     }
 
-    for (uint i = 0; i < dep_vector.size(); i++)
+    for (unsigned i = 0; i < dep_vector.size(); i++)
     {
       FATAL_CONDITION(dep_vector[i] != std::numeric_limits<uint32_t>::max(), "");
     }
@@ -700,8 +700,8 @@ int main(int argc, char** argv)
     mpa.WriteToStream(ofs);
   }
 
-  uint num_grouped = 0;
-  for (uint i = 0; i < cm.num_factors; i++)
+  unsigned num_grouped = 0;
+  for (unsigned i = 0; i < cm.num_factors; i++)
   {
     if (cm.is_factor_grouped[i])
       num_grouped++;
@@ -711,7 +711,7 @@ int main(int argc, char** argv)
 
   for (map<uint32_t, vector<GroupFactorsP> >::iterator it = cm.groupings.begin(); it != cm.groupings.end(); it++)
   {
-    uint factor_index = it->first;
+    unsigned factor_index = it->first;
     ofs.write((char*)&factor_index, sizeof(uint32_t));
 
     vector<uint32_t> group_values;
@@ -719,10 +719,10 @@ int main(int argc, char** argv)
 
     vector<GroupFactorsP> vec_gf = it->second;
 
-    for (uint i = 0; i < vec_gf.size(); i++)
+    for (unsigned i = 0; i < vec_gf.size(); i++)
     {
       group_pointers.push_back(group_values.size());
-      for (uint j = 0; j < vec_gf[i]->NumFactors(); j++)
+      for (unsigned j = 0; j < vec_gf[i]->NumFactors(); j++)
       {
         group_values.push_back(vec_gf[i]->GetFactorAt(j));
       }
@@ -735,12 +735,12 @@ int main(int argc, char** argv)
     mpa_ble.WriteToStream(ofs);
   }
 
-  for (uint i = 0; i < cm.bits_per_value.size(); i++)
+  for (unsigned i = 0; i < cm.bits_per_value.size(); i++)
   {
     ofs.write((char*)&(cm.bits_per_value[i]), sizeof(uint32_t));
   }
 
-  for (uint i = 0; i < cm.bits_per_children.size(); i++)
+  for (unsigned i = 0; i < cm.bits_per_children.size(); i++)
   {
     ofs.write((char*)&(cm.bits_per_children[i]), sizeof(uint32_t));
   }
@@ -748,16 +748,16 @@ int main(int argc, char** argv)
   cm.emissions.init_value_mapping();
   cm.emissions.value_mapping->writeToStream(ofs);
 
-  vector<pair<uint32_t, uint> > values;
+  vector<pair<uint32_t, unsigned> > values;
 
-  uint first_level_num_nodes = cm.levels[0].size();
+  unsigned first_level_num_nodes = cm.levels[0].size();
   //ofs.write((char*)&first_level_num_nodes, sizeof(uint32_t));
 
   cerr << "first level num nodes = " << first_level_num_nodes << endl;
 
   uint32_t bits_used = 0;
   vector<uint32_t> form_offsets;
-  for (uint i = 0; i < first_level_num_nodes; i++)
+  for (unsigned i = 0; i < first_level_num_nodes; i++)
   {
     form_offsets.push_back(bits_used);
     save_node(cm.levels[0][i], values, 0, cm.levels[0][i]->factor_id, true, bits_used);
@@ -780,7 +780,7 @@ int main(int argc, char** argv)
 
   ofs.write((char*)&(cm.num_factors), sizeof(uint32_t));
 
-  for (uint i = 0; i < cm.num_factors; i++)
+  for (unsigned i = 0; i < cm.num_factors; i++)
   {
     MyStaticStringArray mssa = MyStaticStringArray(cm.factor_string_lists[i]);
     mssa.WriteToStream(ofs);
@@ -847,7 +847,7 @@ int main(int argc, char** argv)
 //  cerr << "orig_lines: " << orig_lines.size() << endl;
 //  //FATAL_CONDITION(test_lines.size() == orig_lines.size(), "");
 //
-//  for (uint i = 0; i < test_lines.size(); i++)
+//  for (unsigned i = 0; i < test_lines.size(); i++)
 //  {
 //    cout << i << endl;
 //    //if (test_lines[i] != orig_lines[i])

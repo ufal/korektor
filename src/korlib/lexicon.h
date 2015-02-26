@@ -32,14 +32,14 @@ SP_DEF(lexicon_node);
 ///
 class lexicon_node {
  public:
-  uint node_id; ///< Node ID
+  unsigned node_id; ///< Node ID
   map<char16_t, lexicon_nodeP> edges; ///< Nodes leaving the edge
 
-  static uint num_nodes; ///< Total nodes in the lexicon
-  static map<uint, lexicon_nodeP> nodes_map; ///< (id, node) map
+  static unsigned num_nodes; ///< Total nodes in the lexicon
+  static map<unsigned, lexicon_nodeP> nodes_map; ///< (id, node) map
 
  private:
-  lexicon_node(uint _node_id): node_id(_node_id) {}
+  lexicon_node(unsigned _node_id): node_id(_node_id) {}
 
  public:
 
@@ -47,7 +47,7 @@ class lexicon_node {
   ///
   /// @param _node_id Node ID
   /// @return Pointer to created lexicon node
-  static lexicon_nodeP create_node(uint _node_id)
+  static lexicon_nodeP create_node(unsigned _node_id)
   {
     lexicon_nodeP ret = lexicon_nodeP(new lexicon_node(_node_id));
     num_nodes++;
@@ -80,7 +80,7 @@ class Lexicon {
 
   int SingleArc_nextstate(uint32_t stateID, char16_t character) const;
 
-  static void create_lexicon_rec(lexicon_nodeP &node, uint &next_inner_node_id, const u16string &curr_word, uint char_index, map<u16string, uint> &words_map);
+  static void create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, map<u16string, unsigned> &words_map);
 
  public:
 
@@ -119,7 +119,7 @@ class Lexicon {
 
  private:
 
-  void print_words_rec(uint node_id, u16string &prefix, map<uint, u16string> &words, uint &index, uint32_t max_index);
+  void print_words_rec(unsigned node_id, u16string &prefix, map<unsigned, u16string> &words, unsigned &index, uint32_t max_index);
 
   void AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, double cost, u16string &word, uint32_t word_include_letter_start_index, u16string &prefix) const;
 

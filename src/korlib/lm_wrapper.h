@@ -52,8 +52,8 @@ class LMWrapper {
   void PrintStats();
   uint32_t MaxUnigramID();
 
-  bool getFirstLevelTuple(uint word_id, LM_tuple &ret) { return LM->getFirstLevelTuple(word_id, ret); }
-  bool GetTuple(uint level, uint word_id, uint offset, uint num_entries, LM_tuple &lm_tuple) { return LM->GetTuple(level, word_id, offset, num_entries, lm_tuple); }
+  bool getFirstLevelTuple(unsigned word_id, LM_tuple &ret) { return LM->getFirstLevelTuple(word_id, ret); }
+  bool GetTuple(unsigned level, unsigned word_id, unsigned offset, unsigned num_entries, LM_tuple &lm_tuple) { return LM->GetTuple(level, word_id, offset, num_entries, lm_tuple); }
 
 };
 

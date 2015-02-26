@@ -19,8 +19,8 @@
 namespace ufal {
 namespace korektor {
 
-uint lexicon_node::num_nodes = 0;
-map<uint, lexicon_nodeP> lexicon_node::nodes_map = map<uint, lexicon_nodeP>();
+unsigned lexicon_node::num_nodes = 0;
+map<unsigned, lexicon_nodeP> lexicon_node::nodes_map = map<unsigned, lexicon_nodeP>();
 
 /// @brief Initialize lexicon from another lexicon
 ///
@@ -80,7 +80,7 @@ uint32_t Lexicon::NumStates() const { return states_arcpointer.GetSize(); }
 int Lexicon::ContainsSuffix(uint32_t stateID, const u16string &word, uint32_t start_char_index) const
 {
   int sID = (int)stateID;
-  for (uint32_t i = start_char_index; i < (uint)word.length(); i++)
+  for (uint32_t i = start_char_index; i < (unsigned)word.length(); i++)
   {
 
     sID = SingleArc_nextstate((uint32_t)sID, word[i]);
@@ -176,12 +176,12 @@ Lexicon::Lexicon(istream &ifs)
   arcs_char = new char16_t[num_arcs];
   ifs.read((char*)arcs_char, num_arcs * sizeof(char16_t));
 
-  uint num_noncorrectable;
+  uint32_t num_noncorrectable;
   ifs.read((char*)&num_noncorrectable, sizeof(uint32_t));
 
-  for (uint i = 0; i < num_noncorrectable; i++)
+  for (unsigned i = 0; i < num_noncorrectable; i++)
   {
-    uint wordID;
+    uint32_t wordID;
     ifs.read((char*)&wordID, sizeof(uint32_t));
     noncorrectable_word_ids.insert(wordID);
   }
@@ -203,7 +203,7 @@ int Lexicon::GetWordID(const u16string &word_iso) const //return value -1 for ou
 /// @param curr_word Word to be added in the lexicon
 /// @param char_index Current position within the word
 /// @param words_map (word, ID) map
-void Lexicon::create_lexicon_rec(lexicon_nodeP &node, uint &next_inner_node_id, const u16string &curr_word, uint char_index, map<u16string, uint> &words_map)
+void Lexicon::create_lexicon_rec(lexicon_nodeP &node, unsigned &next_inner_node_id, const u16string &curr_word, unsigned char_index, map<u16string, unsigned> &words_map)
 {
   char16_t ch = curr_word[char_index];
   map<char16_t, lexicon_nodeP>::iterator it1 = node->edges.find(ch);
@@ -216,7 +216,7 @@ void Lexicon::create_lexicon_rec(lexicon_nodeP &node, uint &next_inner_node_id, 
       node->edges[ch] = lexicon_node::create_node(next_inner_node_id);
       next_inner_node_id++;
 
-      if (char_index + 1 < (uint)curr_word.length())
+      if (char_index + 1 < (unsigned)curr_word.length())
         create_lexicon_rec(node->edges[ch], next_inner_node_id, curr_word, char_index + 1, words_map);
     }
     else
@@ -224,13 +224,13 @@ void Lexicon::create_lexicon_rec(lexicon_nodeP &node, uint &next_inner_node_id, 
       //prefix is a dictionary entry - outer node id is assigned
       node->edges[ch] = lexicon_node::create_node(it2->second);
 
-      if (char_index + 1 < (uint)curr_word.length())
+      if (char_index + 1 < (unsigned)curr_word.length())
         create_lexicon_rec(node->edges[ch], next_inner_node_id, curr_word, char_index + 1, words_map);
     }
   }
   else
   {
-    if (char_index + 1 < (uint)curr_word.length())
+    if (char_index + 1 < (unsigned)curr_word.length())
       create_lexicon_rec(it1->second, next_inner_node_id, curr_word, char_index + 1, words_map);
   }
 }
@@ -244,26 +244,26 @@ Lexicon::Lexicon(const vector<u16string> &words)
   lexicon_node::nodes_map.clear();
 
   num_words = words.size();
-  uint next_inner_node_id = num_words;
+  unsigned next_inner_node_id = num_words;
 
   lexicon_nodeP root = lexicon_node::create_node(next_inner_node_id);
   next_inner_node_id++;
 
-  map<u16string, uint> words_map;
-  for (uint i = 0; i < words.size(); i++)
+  map<u16string, unsigned> words_map;
+  for (unsigned i = 0; i < words.size(); i++)
     words_map[words[i]] = i;
 
-  for (uint i = 0; i < num_words; i++)
+  for (unsigned i = 0; i < num_words; i++)
   {
     create_lexicon_rec(root, next_inner_node_id, words[i], 0, words_map);
   }
 
-  uint curr_offset = 0;
+  unsigned curr_offset = 0;
   vector<char16_t> edges_char;
-  vector<uint> edges_endpoint;
-  vector<uint> offsets;
+  vector<uint32_t> edges_endpoint;
+  vector<uint32_t> offsets;
 
-  for (uint i = 0; i < lexicon_node::num_nodes; i++)
+  for (unsigned i = 0; i < lexicon_node::num_nodes; i++)
   {
     lexicon_nodeP node = lexicon_node::nodes_map[i];
 
@@ -321,7 +321,7 @@ void Lexicon::WriteToStream(ostream &ofs) const
 
   ofs.write((char*)arcs_char, num_arcs * sizeof(char16_t));
 
-  uint num_noncorrectable = noncorrectable_word_ids.size();
+  unsigned num_noncorrectable = noncorrectable_word_ids.size();
   ofs.write((char*)&num_noncorrectable, sizeof(uint32_t));
 
   for (auto it = noncorrectable_word_ids.begin(); it != noncorrectable_word_ids.end(); it++)
@@ -334,7 +334,7 @@ void Lexicon::ArcsConsistencyCheck()
 {
   unordered_set<uint32_t> arcs_next_used;
   cerr << "num_arcs = " << num_arcs << endl;
-  for (uint i = 0; i < num_arcs; i++)
+  for (unsigned i = 0; i < num_arcs; i++)
   {
     if (i % 1000 == 0) cerr << i << endl;
     uint32_t arc_next = arcs_nextstate[i];
@@ -344,7 +344,7 @@ void Lexicon::ArcsConsistencyCheck()
 
 }
 
-void Lexicon::print_words_rec(uint node_id, u16string &prefix, map<uint, u16string> &words, uint &index, uint32_t max_index)
+void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, map<unsigned, u16string> &words, unsigned &index, uint32_t max_index)
 {
   if (index >= max_index)
     return;
@@ -360,7 +360,7 @@ void Lexicon::print_words_rec(uint node_id, u16string &prefix, map<uint, u16stri
 
   CompIA_First_Last_IndexPair ipair = states_arcpointer.GetFirstLastIndexPair(node_id);
 
-  for (uint i = ipair.first; i <= ipair.second; i++)
+  for (unsigned i = ipair.first; i <= ipair.second; i++)
   {
     //prefix.push_back((*arcs)[i].character);
     prefix += arcs_char[i];
@@ -375,8 +375,8 @@ void Lexicon::print_words_rec(uint node_id, u16string &prefix, map<uint, u16stri
 
 void Lexicon::PrintWords(ostream &os, uint32_t max_index)
 {
-  uint index = 0;
-  map<uint, u16string> words;
+  unsigned index = 0;
+  map<unsigned, u16string> words;
   u16string prefix = MyUtils::utf8_to_utf16("");
   print_words_rec(root_id, prefix, words, index, max_index);
 
@@ -393,7 +393,7 @@ void Lexicon::AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, doub
   if (it == ret.end())
   {
     u16string complete_word = prefix;
-    for (uint32_t i = word_include_letter_start_index; i <(uint) word.length(); i++)
+    for (uint32_t i = word_include_letter_start_index; i <(unsigned) word.length(); i++)
       complete_word += word[i];
 
     ret[word_id] = pair<u16stringP, double>(u16stringP(new u16string(complete_word)), cost);
@@ -419,9 +419,9 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
   //cerr << "prefix = " << MyUtils::utf16_to_utf8(prefix) << endl;
 
-  for (uint32_t i = startIndex; i <= (uint)word.length(); i++)
+  for (uint32_t i = startIndex; i <= (unsigned)word.length(); i++)
   {
-    if (i > startIndex && i <= (uint)word.length()) //TODO: Check this
+    if (i > startIndex && i <= (unsigned)word.length()) //TODO: Check this
       prefix += word[i - 1];
 
     if (i == word.length() && StateIsWord(stateID))
@@ -431,10 +431,10 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
     int next_state = -1;
     CompIA_First_Last_IndexPair ipair = states_arcpointer.GetFirstLastIndexPair(stateID);
-    if (i < (uint)word.length())
+    if (i < (unsigned)word.length())
     {
 
-      if ((uint)word.length() > 1)
+      if ((unsigned)word.length() > 1)
       {
 //        if (i == 0)
 //          emo = errModel->DeletionCost(word[i], char16_t(' '));
@@ -471,7 +471,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
         u16string char_debug;
         char_debug.push_back(arcs_char[j]);
         char16_t character = arcs_char[j];
-        uint arc_nextstate = arcs_nextstate[j];
+        unsigned arc_nextstate = arcs_nextstate[j];
 
         if (character != word[i])
         {
@@ -506,7 +506,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
         }
       }
 
-      if (i < (uint)word.length() - 1) //letter swap
+      if (i < (unsigned)word.length() - 1) //letter swap
       {
 
         emo = errModel->SwapCost(word[i], word[i + 1]);
@@ -586,7 +586,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
   }
 
-  while ((uint)prefix.length() > init_prefix_size)
+  while ((unsigned)prefix.length() > init_prefix_size)
     prefix.erase(prefix.length() - 1, 1);
 
   return ret;
@@ -621,7 +621,7 @@ void Lexicon::LoadListOfNoncorrectableWords(const vector<u16string> &noncorrecta
   {
     int wordID = GetWordID(*it);
     assert(wordID != -1);
-    noncorrectable_word_ids.insert((uint)wordID);
+    noncorrectable_word_ids.insert((unsigned)wordID);
   }
 }
 

@@ -22,7 +22,7 @@ namespace korektor {
 class MyUtils {
  public:
 
-  static void HashCombine(size_t &seed, uint value)
+  static void HashCombine(size_t &seed, unsigned value)
   {
     seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
   }
@@ -91,7 +91,7 @@ class MyUtils {
     if (str1.length() != str2.length())
       return false;
 
-    for (uint i = 0; i < str1.length(); i++)
+    for (unsigned i = 0; i < str1.length(); i++)
     {
       if (MyUTF::tolower(str1[i]) != MyUTF::tolower(str1[i]))
         return false;

@@ -49,7 +49,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 
         double total_em_cost = 0.0;
 
-        for (uint i = 0; i < configuration->NumFactors(); i++)
+        for (unsigned i = 0; i < configuration->NumFactors(); i++)
         {
           if (configuration->FactorIsEnabled(i))
           {

@@ -40,7 +40,7 @@ int main(int argc, char** argv)
   ConfigurationP configuration(new Configuration(argv[1]));
   Spellchecker spellchecker = Spellchecker(configuration.get());
 
-  //uint range_from, range_length;
+  //unsigned range_from, range_length;
   //spellchecker.FindMisspelledWord("mrkev brambora pstrah", range_from, range_length);
 
   //vector<TextCheckingResultP> result = spellchecker.GetCheckingResultsFirstSentence("Podlaha je pstrah. To je dobre\nFakt!", range_from, range_length);
@@ -59,12 +59,12 @@ int main(int argc, char** argv)
       exit(1);
     }
 
-    uint fail = 0;
-    uint success = 0;
+    unsigned fail = 0;
+    unsigned success = 0;
 
     string gold_s;
 
-    uint counter = 0;
+    unsigned counter = 0;
 
     while (MyUtils::SafeReadline(cin, s))
     {
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
         exit(1);
       }
 
-      for (uint i = 0; i < out_toks.size(); i++)
+      for (unsigned i = 0; i < out_toks.size(); i++)
       {
         vector<TokenP> &out_t = out_toks[i];
         vector<TokenP> &gold_t = gold_toks[i];
@@ -105,9 +105,9 @@ int main(int argc, char** argv)
         }
 
         bool contains_error = false;
-        for (uint j = 0; j < out_t.size(); j++)
+        for (unsigned j = 0; j < out_t.size(); j++)
         {
-          uint gold_wid = configuration->lexicon->GetWordID(gold_t[j]->str_u16);
+          unsigned gold_wid = configuration->lexicon->GetWordID(gold_t[j]->str_u16);
 
           //specific to current lexicon! (28 special words - punctuation and so - we don't care about these)
           if (gold_wid >= 28)
@@ -126,10 +126,10 @@ int main(int argc, char** argv)
         if (contains_error)
         {
           cout << "GOLD:";
-          for (uint j = 0; j < gold_t.size(); j++)
+          for (unsigned j = 0; j < gold_t.size(); j++)
             cout << " " << gold_t[j]->str_utf8;
           cout << "\nOUT:";
-          for (uint j = 0; j < out_t.size(); j++)
+          for (unsigned j = 0; j < out_t.size(); j++)
             cout << " " << out_t[j]->str_utf8;
           cout << endl << endl;
         }

@@ -38,10 +38,6 @@
 #include <unordered_map>
 #include <memory>
 
-#ifndef uint
-#define uint uint32_t
-#endif
-
 #define FATAL_CONDITION(expr, error_text) if (!(expr)) { std::cerr << "FATAL ERROR: The condition ( " << #expr << " ) failed. " << error_text << std::endl; exit(1); }
 
 #define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P

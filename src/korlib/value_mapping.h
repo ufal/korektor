@@ -17,14 +17,14 @@ namespace korektor {
 class ValueMapping {
  private:
   vector<double> sorted_centers; ///< Sorted larger set mapped from a vector of values
-  uint num_bits_per_value; ///< Bits per value
+  uint32_t num_bits_per_value; ///< Bits per value
 
  public:
 
   /// @brief Get the bits per value
   ///
   /// @return Bits (integer)
-  inline uint BitsPerValue() const
+  inline unsigned BitsPerValue() const
   {
     return num_bits_per_value;
   }
