@@ -100,8 +100,6 @@ class MyBitArray {
     {
       data[i] = val.data[i];
     }
-
-    cerr << "MyBitArray: copy constructor\n";
   }
 
   /// @brief Constructor initialization using assignment operator
@@ -126,8 +124,6 @@ class MyBitArray {
       data = new_data;
 
     }
-
-//    cerr << "MyPackedArray: assignemt operator\n";
     return *this;
   }
 
