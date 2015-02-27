@@ -16,7 +16,7 @@
 #include <iostream>
 
 #include "common.h"
-#include "language_model//zip_lm.h"
+#include "language_model/zip_lm.h"
 #include "morphology/morphology.h"
 #include "utils/utils.h"
 
