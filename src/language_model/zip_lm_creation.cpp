@@ -17,7 +17,8 @@
 #include "persistent_structures/comp_increasing_array.h"
 #include "persistent_structures/mapped_double_array.h"
 #include "persistent_structures/packed_array.h"
-#include "utils/utils.h"
+#include "utils/io.h"
+#include "utils/parse.h"
 #include "zip_lm.h"
 
 namespace ufal {
@@ -91,7 +92,7 @@ ZipLM::ZipLM(string bin_file)
 //  }
   assert(ifs.is_open());
 
-  factor_name = Utils::ReadString(ifs);
+  factor_name = IO::ReadString(ifs);
 
   ifs.read((char*)&lm_order, sizeof(uint32_t));
   ifs.read((char*)&not_in_lm_cost, sizeof(double));
@@ -131,7 +132,7 @@ void ZipLM::SaveInBinaryForm(string out_file)
   ofstream ofs;
   ofs.open(out_file.c_str(), ios::out | ios::binary);
   assert(ofs.is_open());
-  Utils::WriteString(ofs, factor_name);
+  IO::WriteString(ofs, factor_name);
   ofs.write((char*)&lm_order, sizeof(uint32_t));
   ofs.write((char*)&not_in_lm_cost, sizeof(double));
 
@@ -209,7 +210,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
   unsigned ngram_order = 0;
   vector<string> toks;
 
-  while (Utils::SafeReadline(ifs, s))
+  while (IO::ReadLine(ifs, s))
   {
     if (s.empty()) continue;
     else if (s.find("ngram") == 0) continue;
@@ -222,12 +223,12 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     else
     {
       assert(ngram_order > 0);
-      Utils::Split(toks, s, " \t");
+      IO::Split(s, " \t", toks);
       if (toks.size() != ngram_order + 1 && toks.size() != ngram_order + 2)
         runtime_errorf("Corrupted line '%s' in file '%s'!", s.c_str(), text_file.c_str());
 
       double bow = 0;
-      double prob = -Utils::my_atof(toks[0]);
+      double prob = -Parse::Double(toks[0], "ngram probability");
 
       if (prob > 90) prob = not_in_lm_cost;
 
@@ -257,7 +258,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
       }
 
       if (toks.size() == ngram_order + 2)
-        bow = - Utils::my_atof(toks.back());
+        bow = - Parse::Double(toks.back(), "ngram bow");
 
       if (bow > 90) bow = not_in_lm_cost;
 

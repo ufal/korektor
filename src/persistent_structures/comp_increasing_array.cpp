@@ -11,7 +11,7 @@
 
 #include "comp_increasing_array.h"
 #include "increasing_array.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 
 namespace ufal {
 namespace korektor {
@@ -21,7 +21,7 @@ namespace korektor {
 /// @param ofs Output stream
 void CompIncreasingArray::WriteToStream(ostream &ofs) const
 {
-  Utils::WriteString(ofs, "CIA");
+  IO::WriteString(ofs, "CIA");
   uint32_t num_parts = mia_vec.size();
   ofs.write((char*)&num_parts, sizeof(uint32_t));
   ofs.write((char*)&log2_size_of_parts, sizeof(uint32_t));
@@ -39,7 +39,7 @@ void CompIncreasingArray::WriteToStream(ostream &ofs) const
 /// @param Input stream
 CompIncreasingArray::CompIncreasingArray(istream &ifs)
 {
-  if (Utils::ReadString(ifs) != "CIA")
+  if (IO::ReadString(ifs) != "CIA")
     runtime_errorf("Cannot load CompIncreasingArray, file is corrupted!");
 
   uint32_t num_parts;

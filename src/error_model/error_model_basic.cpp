@@ -11,6 +11,8 @@
 #include <iostream>
 
 #include "error_model_basic.h"
+#include "utils/io.h"
+#include "utils/parse.h"
 #include "utils/utf.h"
 
 namespace ufal {
@@ -173,8 +175,8 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
 
   unsigned min_edit_dist = 100000;
 
-  Utils::SafeReadline(ifs, s);
-  Utils::Split(toks, s, "\t");
+  IO::ReadLine(ifs, s);
+  IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
     runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
@@ -182,50 +184,50 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
     runtime_errorf("Expected to see 'case' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
 
-  ErrorModelOutput case_mismatch = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+  ErrorModelOutput case_mismatch = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
   if (min_edit_dist > case_mismatch.edit_dist)
     min_edit_dist = case_mismatch.edit_dist;
 
 
-  Utils::SafeReadline(ifs, s);
-  Utils::Split(toks, s, "\t");
+  IO::ReadLine(ifs, s);
+  IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
     runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
   if (toks[0] != "substitutions")
     runtime_errorf("Expected to see 'substitutions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
-  ErrorModelOutput sub_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+  ErrorModelOutput sub_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
   if (min_edit_dist > sub_default.edit_dist)
     min_edit_dist = sub_default.edit_dist;
 
-  Utils::SafeReadline(ifs, s);
-  Utils::Split(toks, s, "\t");
+  IO::ReadLine(ifs, s);
+  IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
     runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
   if (toks[0] != "insertions")
     runtime_errorf("Expected to see 'insertions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
-  ErrorModelOutput insert_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+  ErrorModelOutput insert_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
   if (min_edit_dist > insert_default.edit_dist)
     min_edit_dist = insert_default.edit_dist;
 
-  Utils::SafeReadline(ifs, s);
-  Utils::Split(toks, s, "\t");
+  IO::ReadLine(ifs, s);
+  IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
     runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
   if (toks[0] != "deletions")
     runtime_errorf("Expected to see 'deletions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
-  ErrorModelOutput del_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+  ErrorModelOutput del_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
-  Utils::SafeReadline(ifs, s);
-  Utils::Split(toks, s, "\t");
+  IO::ReadLine(ifs, s);
+  IO::Split(s, '\t', toks);
 
   if (min_edit_dist > del_default.edit_dist)
     min_edit_dist = del_default.edit_dist;
@@ -235,16 +237,16 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   if (toks[0] != "swaps")
     runtime_errorf("Expected to see 'swaps' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
-  ErrorModelOutput swap_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+  ErrorModelOutput swap_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
   if (min_edit_dist > swap_default.edit_dist)
     min_edit_dist = swap_default.edit_dist;
 
   vector<pair<u16string, ErrorModelOutput>> values;
 
-  while (Utils::SafeReadline(ifs, s))
+  while (IO::ReadLine(ifs, s))
   {
-    Utils::Split(toks, s, "\t");
+    IO::Split(s, '\t', toks);
 
     if (s == "")
       continue;
@@ -252,7 +254,7 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
     if (toks.size() != 3)
       runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
-    ErrorModelOutput emo = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
+    ErrorModelOutput emo = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
     if (min_edit_dist > emo.edit_dist)
       min_edit_dist = emo.edit_dist;

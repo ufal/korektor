@@ -13,8 +13,8 @@
 
 #include "common.h"
 #include "error_model/error_model.h"
+#include "utils/io.h"
 #include "utils/utf.h"
-#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {
@@ -23,20 +23,6 @@ class hierarchy_node;
 typedef shared_ptr<hierarchy_node> hierarchy_nodeP;
 
 class hierarchy_node {
- private:
-#if 0
-  static u16string generateRandomString(unsigned min_length, unsigned range)
-  {
-    u16string ret;
-    unsigned length = Utils::randomR(min_length, range);
-
-    for (unsigned i = 0; i < length; i++)
-      ret += central_chars[Utils::randomR(0, central_chars.length())];
-
-    return ret;
-  }
-#endif
-
  public:
   static unordered_map<u16string, hierarchy_nodeP> hierarchy_map;
   static hierarchy_nodeP root;
@@ -52,118 +38,6 @@ class hierarchy_node {
 
   unsigned context_count;
   bool is_output_node;
-
-#if 0
-  void generate_spelling_error(u16string &misspelled, u16string &correct)
-  {
-    if (children.size() == 0)
-    {
-      //-------------------------------------GENERATE ERROR------------------------------------------
-      if (signature.substr(0, 2) == UTF::UTF8To16("s_"))
-      {
-        //---------------------------------SUBSTITUTION--------------------------------------------
-        u16string prefix = generateRandomString(0, 4);
-        u16string suffix = generateRandomString(0, 4);
-
-        misspelled = prefix;
-        correct = prefix;
-
-        misspelled += signature[2];
-        correct += signature[3];
-        misspelled += suffix;
-        correct += suffix;
-        return;
-      }
-      else if (signature.substr(0, 5) == UTF::UTF8To16("swap_"))
-      {
-        //------------------------------------------SWAP--------------------------------------------
-        u16string prefix = generateRandomString(0, 4);
-        u16string suffix = generateRandomString(0, 4);
-
-        misspelled = prefix;
-        correct = prefix;
-
-        misspelled += signature[6];
-        misspelled += signature[5];
-
-        correct += signature[5];
-        correct += signature[6];
-
-        misspelled += suffix;
-        correct += suffix;
-        return;
-
-      }
-      else if (signature.substr(0, 2) == UTF::UTF8To16("i_"))
-      {
-        //----------------------------------------INSERT--------------------------------------------
-        u16string prefix;
-        u16string suffix;
-
-        if (signature[3] != UChar(' '))
-        {
-          prefix = generateRandomString(0, 3);
-          prefix += signature[3];
-        }
-
-        if (signature[4] != UChar(' '))
-        {
-          suffix += signature[4];
-          suffix += generateRandomString(0, 3);
-        }
-
-        correct = prefix;
-        correct += suffix;
-        misspelled = prefix;
-        misspelled += signature[2];
-        misspelled += suffix;
-        return;
-      }
-      else if (signature.substr(0, 2) == UTF::UTF8To16("d_"))
-      {
-        //-------------------------------------DELETE-----------------------------------------------
-        u16string prefix;
-        u16string suffix = generateRandomString(0, 4);
-
-        if (signature[3] != UChar(' '))
-        {
-          prefix = generateRandomString(0, 3);
-          prefix += signature[3];
-        }
-
-        correct = prefix;
-        correct += signature[2];
-        correct += suffix;
-
-        misspelled = prefix;
-        misspelled += suffix;
-        return;
-      }
-    }
-    else if (children.size() == 1)
-    {
-      children[0]->generate_spelling_error(misspelled, correct);
-    }
-    else
-    {
-      vector<unsigned> offsets;
-
-      unsigned counter = 0;
-      for (auto it = children.begin(); it != children.end(); it++)
-      {
-        offsets.push_back(counter);
-        counter += (*it)->num_governed_leaves;
-      }
-
-      int r_num = Utils::randomR(0, counter);
-
-      unsigned i = 0;
-      while (i + 1 < offsets.size() && offsets[i + 1] < r_num) i++;
-
-      children[i]->generate_spelling_error(misspelled, correct);
-    }
-  }
-#endif
 
  private:
   hierarchy_node(const u16string &_signature): signature(_signature), num_governed_leaves(1), error_count(0), edit_distance(1), is_output_node(false)
@@ -270,7 +144,7 @@ class hierarchy_node {
   static void ReadHierarchy(istream &is)
   {
     string s;
-    if (Utils::SafeReadline(is, s))
+    if (IO::ReadLine(is, s))
     {
       assert(s == "root");
 
@@ -278,7 +152,7 @@ class hierarchy_node {
       hierarchy_map.insert(make_pair(root->signature, root));
       pair<hierarchy_nodeP, unsigned> node_level_pair = make_pair(root, 0);
 
-      while (Utils::SafeReadline(is, s))
+      while (IO::ReadLine(is, s))
       {
         node_level_pair = read_hierarchy(s, node_level_pair.first, node_level_pair.second);
       }

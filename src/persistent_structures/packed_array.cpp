@@ -14,7 +14,7 @@
 #include <iostream>
 
 #include "packed_array.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 
 namespace ufal {
 namespace korektor {
@@ -105,7 +105,7 @@ PackedArray& PackedArray::operator=(const PackedArray& val)
 /// @param ifs Input stream
 PackedArray::PackedArray(istream &ifs)
 {
-  if (Utils::ReadString(ifs) != "MPA")
+  if (IO::ReadString(ifs) != "MPA")
     runtime_errorf("Cannot load PackedArray, file is corrupted!");
 
   ifs.read((char*)&bits_per_value, sizeof(uint32_t));
@@ -124,7 +124,7 @@ PackedArray::PackedArray(istream &ifs)
 /// @param ofs Output stream
 void PackedArray::WriteToStream(ostream &ofs) const
 {
-  Utils::WriteString(ofs, "MPA");
+  IO::WriteString(ofs, "MPA");
   ofs.write((char*)&bits_per_value, sizeof(uint32_t));
   ofs.write((char*)&num_bytes, sizeof(uint32_t));
   ofs.write((char*)&num_values, sizeof(uint32_t));

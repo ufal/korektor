@@ -15,7 +15,7 @@
 
 #include "increasing_array.h"
 #include "packed_array.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 
 namespace ufal {
 namespace korektor {
@@ -24,8 +24,8 @@ namespace korektor {
 ///
 /// @param ifs Input stream
 IncreasingArray::IncreasingArray(istream &ifs):
-  multiplier(Utils::Read_uint32_t(ifs)),
-  value_shift((int32_t)Utils::Read_uint32_t(ifs)),
+  multiplier(IO::ReadUInt32(ifs)),
+  value_shift(IO::ReadInt32(ifs)),
   shifted_offsets(ifs)
 {}
 

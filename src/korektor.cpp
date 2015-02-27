@@ -21,8 +21,8 @@
 #include "spellchecker/configuration.h"
 #include "spellchecker/spellchecker.h"
 #include "token/tokenizer.h"
+#include "utils/io.h"
 #include "utils/utf.h"
-#include "utils/utils.h"
 
 using namespace ufal::korektor;
 
@@ -71,7 +71,7 @@ int main(int argc, char** argv)
 
     unsigned counter = 0;
 
-    while (Utils::SafeReadline(cin, s))
+    while (IO::ReadLine(cin, s))
     {
       counter++;
 
@@ -83,7 +83,7 @@ int main(int argc, char** argv)
         exit(1);
       }
 
-      Utils::SafeReadline(gold_ifs, gold_s);
+      IO::ReadLine(gold_ifs, gold_s);
 
       out = spellchecker.CheckText(s);
 
@@ -146,7 +146,7 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  while (Utils::SafeReadline(cin, s))
+  while (IO::ReadLine(cin, s))
   {
     if (configuration->mode_string == "tag_errors")
     {

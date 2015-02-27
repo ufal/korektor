@@ -14,7 +14,7 @@
 #include "persistent_structures/bit_array.h"
 #include "persistent_structures/packed_array.h"
 #include "spellchecker/configuration.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 
 namespace ufal {
 namespace korektor {
@@ -249,7 +249,7 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
 
 Morphology::Morphology(ifstream &ifs)
 {
-  if (Utils::ReadString(ifs) != "Morphology")
+  if (IO::ReadString(ifs) != "Morphology")
     runtime_errorf("Cannot load morphology, file is corrupted!");
 
   ifs.read((char*)&num_factors, sizeof(uint32_t));
@@ -329,7 +329,7 @@ Morphology::Morphology(ifstream &ifs)
 
 void Morphology::WriteToStream(ostream &ofs)
 {
-  Utils::WriteString(ofs, "Morphology");
+  IO::WriteString(ofs, "Morphology");
   ofs.write((char*)&num_factors, sizeof(uint32_t));
 
   vector<string> factor_names_vec;

@@ -20,6 +20,8 @@
 #include "morphology/morphology.h"
 #include "persistent_structures/bit_array.h"
 #include "spellchecker/configuration.h"
+#include "utils/io.h"
+#include "utils/parse.h"
 #include "utils/utils.h"
 
 #define MAX_GROUP_COUNT 100000
@@ -440,7 +442,7 @@ void construct_levels(morpho_nodeP node, unsigned act_level)
 bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add_zero_level_node, bool add_counts_for_nodes_just_being_visited, unsigned count = 1)
 {
   vector<string> parts;
-  Utils::Split(parts, factor_string, "|");
+  IO::Split(factor_string, '|', parts);
 
   morpho_nodeP node = cm.root;
 
@@ -527,10 +529,10 @@ int main(int argc, char** argv)
   }
 
   string s;
-  Utils::SafeReadline(ifs, s);
+  IO::ReadLine(ifs, s);
   vector<string> parts;
 
-  Utils::Split(parts, s, "|");
+  IO::Split(s, '|', parts);
 
   cm.init(parts.size());
 
@@ -546,7 +548,7 @@ int main(int argc, char** argv)
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<name>"), true, true);
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<unk>"), true, true);
 
-  Utils::SafeReadline(ifs, s);
+  IO::ReadLine(ifs, s);
 
   if (s != "-----")
   {
@@ -556,7 +558,7 @@ int main(int argc, char** argv)
 
   vector<string> orig_lines;
   unsigned counter = 0;
-  while (Utils::SafeReadline(ifs, s))
+  while (IO::ReadLine(ifs, s))
   {
     counter++;
     if (counter % 10000 == 0) { cerr << "morphology_reading: " << counter << endl; }
@@ -581,11 +583,11 @@ int main(int argc, char** argv)
   string factors;
   unsigned count;
 
-  while (Utils::SafeReadline(ifs, s))
+  while (IO::ReadLine(ifs, s))
   {
     counter++;
     if (counter % 10000 == 0) { cerr << "reading_corpora: " << counter << endl; }
-    Utils::Split(parts, s, " ");
+    IO::Split(s, ' ', parts);
     factors = parts[0];
 
     if (parts.size() < 2)
@@ -593,7 +595,7 @@ int main(int argc, char** argv)
       cerr << "Illegal emissions line: " << s << endl;
     }
 
-    count = Utils::my_atoi(parts[1]);
+    count = Parse::Int(parts[1], "morphology count");
 
     //passing 10 x count instead of just count reduces discounting (non-seen form-factor pairs have effectively just count 0.1
     MorphologyProcessWordFactors(factors, false, true, count * 10);
@@ -662,7 +664,7 @@ int main(int argc, char** argv)
     exit(1);
   }
 
-  Utils::WriteString(ofs, "Morphology");
+  IO::WriteString(ofs, "Morphology");
 
   ofs.write((char*)&cm.num_factors, sizeof(uint32_t));
   cerr << "writting num factors: " << cm.num_factors << endl;
@@ -833,7 +835,7 @@ int main(int argc, char** argv)
 //  ifstest.open(test_file.c_str(), ios::in);
 //  assert(ifstest.is_open());
 //
-//  while (Utils::SafeReadline(ifstest, s))
+//  while (IO::ReadLine(ifstest, s))
 //  {
 //    if (s != "")
 //      test_lines.push_back(s);

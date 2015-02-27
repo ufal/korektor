@@ -14,7 +14,7 @@
 #include "spellchecker/configuration.h"
 #include "spellchecker/spellchecker.h"
 #include "token/token.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 #include "utils/utf.h"
 
 using namespace ufal::korektor;
@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
     vector<TokenP> tokens;
     vector<string> replaced;
     unsigned para_length = 0;
-    while ((not_eof = Utils::SafeReadline(cin, line)) && !line.empty()) {
+    while ((not_eof = IO::ReadLine(cin, line)) && !line.empty()) {
       string::size_type tab = line.find('\t');
       if (tab == string::npos) {
         replaced.emplace_back();

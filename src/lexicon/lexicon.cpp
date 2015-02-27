@@ -17,8 +17,8 @@
 
 #include "error_model/error_model.h"
 #include "lexicon.h"
+#include "utils/io.h"
 #include "utils/utf.h"
-#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {
@@ -194,7 +194,7 @@ int Lexicon::SingleArc_nextstate(uint32_t stateID, char16_t character) const
 /// @param ifs Input stream
 Lexicon::Lexicon(istream &ifs)
 {
-  if (Utils::ReadString(ifs) != "Lexicon")
+  if (IO::ReadString(ifs) != "Lexicon")
     runtime_errorf("Cannot load lexicon, file is corrupted!");
 
   ifs.read((char*)&num_words, sizeof(uint32_t));
@@ -344,7 +344,7 @@ Lexicon Lexicon::fromUTF8Strings(const vector<string> &words)
 /// @param ofs Output stream
 void Lexicon::WriteToStream(ostream &ofs) const
 {
-  Utils::WriteString(ofs, "Lexicon");
+  IO::WriteString(ofs, "Lexicon");
   ofs.write((char*)&num_words, sizeof(uint32_t));
   ofs.write((char*)&num_arcs, sizeof(uint32_t));
   ofs.write((char*)&root_id, sizeof(uint32_t));

@@ -10,14 +10,14 @@
 #include <iostream>
 
 #include "bit_array.h"
-#include "utils/utils.h"
+#include "utils/io.h"
 
 namespace ufal {
 namespace korektor {
 
 BitArray::BitArray(istream &ifs)
 {
-  if (Utils::ReadString(ifs) != "MBA")
+  if (IO::ReadString(ifs) != "MBA")
     runtime_errorf("Cannot load BitArray, file is corrupted!");
 
 
@@ -44,7 +44,7 @@ BitArray::BitArray(istream &ifs)
 
 void BitArray::WriteToStream(ostream &ofs) const
 {
-  Utils::WriteString(ofs, "MBA");
+  IO::WriteString(ofs, "MBA");
   ofs.write((char*)&num_bytes, sizeof(uint32_t));
 
   //TODO: output masks!

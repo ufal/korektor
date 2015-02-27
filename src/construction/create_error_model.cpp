@@ -16,9 +16,10 @@
 #include "create_error_model/estimate_error_model.h"
 #include "create_error_model/get_error_signature.h"
 #include "error_model/error_model_basic.h"
-#include "utils/utf8_input_stream.h"
+#include "utils/io.h"
+#include "utils/parse.h"
 #include "utils/utf.h"
-#include "utils/utils.h"
+#include "utils/utf8_input_stream.h"
 
 using namespace ufal::korektor;
 
@@ -87,7 +88,7 @@ int main(int argc, char** argv)
         continue;
 
       vector<string> toks;
-      Utils::Split(toks, error_line, " \t");
+      IO::Split(error_line, " \t", toks);
 
       if (toks.size() != 2)
         runtime_errorf("Not two columns on line '%s' in file '%s'!", error_line.c_str(), argv[3]);
@@ -116,7 +117,7 @@ int main(int argc, char** argv)
 
     while(utf8_context.ReadLineString(s))
     {
-      Utils::Split(toks, s, " ");
+      IO::Split(s, ' ', toks);
 
       if (s.empty()) continue;
 
@@ -124,7 +125,7 @@ int main(int argc, char** argv)
         runtime_errorf("Not two columns on line '%s' in file '%s'!", s.c_str(), argv[4]);
 
       u16string key = UTF::UTF8To16(toks[0]);
-      uint32_t count = Utils::my_atoi(toks[1]);
+      uint32_t count = Parse::Int(toks[1], "context count");
 
       for (unsigned i = 0; i < key.length(); i++)
         if (key[i] == char16_t('+'))

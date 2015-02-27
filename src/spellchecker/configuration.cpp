@@ -19,6 +19,8 @@
 #include "lexicon/sim_words_finder.h"
 #include "morphology/morphology.h"
 #include "token/tokenizer.h"
+#include "utils/io.h"
+#include "utils/parse.h"
 
 namespace ufal {
 namespace korektor {
@@ -95,7 +97,7 @@ Configuration::Configuration(const string &conf_file)
   mode_string = "tag_errors";
   string s;
 
-  while (Utils::SafeReadline(ifs, s))
+  while (IO::ReadLine(ifs, s))
   {
     if (s == "" || s[0] == '#')  //comment
       continue;
@@ -133,7 +135,7 @@ Configuration::Configuration(const string &conf_file)
     {
       vector<string> toks;
 
-      Utils::Split(toks, s, "-");
+      IO::Split(s, '-', toks);
 
       if (toks.size() != 4)
         runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
@@ -143,10 +145,10 @@ Configuration::Configuration(const string &conf_file)
       LoadLM(lm_wrapper);
 
       string order_str = toks[2];
-      unsigned order = Utils::my_atoi(order_str);
+      unsigned order = Parse::Int(order_str, "lm order");
 
       string weight_str = toks[3];
-      float weight = Utils::my_atof(weight_str);
+      float weight = Parse::Double(weight_str, "lm weight");
 
       EnableFactor(lm->GetFactorName(), weight, order);
 
@@ -158,7 +160,7 @@ Configuration::Configuration(const string &conf_file)
     else if (s.substr(0, 6) == "search")
     {
       vector<string> toks;
-      Utils::Split(toks, s, "-");
+      IO::Split(s, '-', toks);
 
       if (toks.size() != 4)
         runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
@@ -177,8 +179,8 @@ Configuration::Configuration(const string &conf_file)
         exit(1);
       }
 
-      unsigned max_edit_distance = Utils::my_atoi(toks[2]);
-      float max_cost = Utils::my_atof(toks[3]);
+      unsigned max_edit_distance = Parse::Int(toks[2], "search max edit distance");
+      float max_cost = Parse::Double(toks[3], "search max cost");
 
       search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));
     }

@@ -19,48 +19,6 @@
 namespace ufal {
 namespace korektor {
 
-void Utils::WriteString(ostream &ofs, const string &s)
-{
-  assert(uint16_t(s.length()) == s.length());
-  uint16_t len = s.length();
-  ofs.write((char*)&len, sizeof(uint16_t));
-  ofs.write(s.data(), sizeof(char) * len);
-}
-
-string Utils::ReadString(istream &ifs)
-{
-  uint16_t len;
-  ifs.read((char*)&len, sizeof(uint16_t));
-  char* chars = new char[len + 1];
-  ifs.read(chars, len);
-  chars[len] = 0;
-  string ret = chars;
-  delete[] chars;
-
-  return ret;
-}
-
-uint32_t Utils::Read_uint32_t(istream &is)
-{
-  uint32_t ret;
-  is.read((char*)&ret, sizeof(uint32_t));
-  return ret;
-}
-
-bool Utils::SafeReadline(istream &istr, string &str)
-{
-  if (!std::getline(istr, str))
-    return false;
-  else
-  {
-    if (str.length() > 0 && str[str.length() - 1] == '\r')
-    {
-      str.erase(str.length() - 1);
-    }
-    return true;
-  }
-}
-
 /// @brief Generates a random number between the given range
 ///
 /// @param min Lower bound
