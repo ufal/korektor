@@ -21,13 +21,13 @@ full: exe lib
 # compilation
 C_FLAGS += $(call include_dir,.)
 
-KORLIB_O = decoder/stage_possibility decoder/decoder_base decoder/viterbi_state decoder/decoder_multi_factor
-KORLIB_O += error_model/error_model_basic error_model/error_model
-KORLIB_O += language_model/zip_lm language_model/lm_wrapper language_model/ngram language_model/zip_lm_creation
-KORLIB_O += lexicon/sim_words_finder lexicon/lexicon morphology/morphology
-KORLIB_O += persistent_structures/bit_array persistent_structures/comp_increasing_array persistent_structures/packed_array persistent_structures/string_array persistent_structures/value_mapping persistent_structures/mapped_double_array persistent_structures/increasing_array
-KORLIB_O += spellchecker/configuration spellchecker/spellchecker spellchecker/text_checking_result spellchecker/capitalization_type spellchecker/constants
-KORLIB_O += tokenizer/token unilib/unicode unilib/utf8 unilib/utf16
+KORLIB_O = decoder/decoder_base decoder/decoder_multi_factor decoder/stage_possibility decoder/viterbi_state
+KORLIB_O += error_model/error_model error_model/error_model_basic
+KORLIB_O += language_model/lm_wrapper language_model/ngram language_model/zip_lm language_model/zip_lm_creation
+KORLIB_O += lexicon/lexicon lexicon/sim_words_finder morphology/morphology
+KORLIB_O += persistent_structures/bit_array persistent_structures/comp_increasing_array persistent_structures/increasing_array persistent_structures/mapped_double_array persistent_structures/packed_array persistent_structures/string_array persistent_structures/value_mapping
+KORLIB_O += spellchecker/configuration spellchecker/constants spellchecker/spellchecker spellchecker/text_checking_result
+KORLIB_O += tokenizer/token unilib/unicode unilib/utf16 unilib/utf8
 KORLIB_O += utils/utf utils/utils
 
 # library
