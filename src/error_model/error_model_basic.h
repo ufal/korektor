@@ -22,7 +22,7 @@
 
 #include "common.h"
 #include "error_model.h"
-#include "utils/utils.h"
+#include "utils/hash.h"
 
 namespace ufal {
 namespace korektor {
@@ -37,8 +37,8 @@ struct char16_pair_hash : std::unary_function<pair<char16_t, char16_t>, size_t>
   size_t operator()(const pair<char16_t, char16_t> &val) const
   {
     size_t seed = 0;
-    Utils::HashCombine(seed, val.first);
-    Utils::HashCombine(seed, val.second);
+    Hash::Combine(seed, val.first);
+    Hash::Combine(seed, val.second);
     return seed;
   }
 };
@@ -50,9 +50,9 @@ struct char16_triple_hash : std::unary_function<tuple<char16_t, char16_t, char16
   {
     size_t seed = 0;
 
-    Utils::HashCombine(seed, get<0>(val));
-    Utils::HashCombine(seed, get<1>(val));
-    Utils::HashCombine(seed, get<2>(val));
+    Hash::Combine(seed, get<0>(val));
+    Hash::Combine(seed, get<1>(val));
+    Hash::Combine(seed, get<2>(val));
 
     return seed;
   }

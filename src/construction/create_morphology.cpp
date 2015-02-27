@@ -20,9 +20,10 @@
 #include "morphology/morphology.h"
 #include "persistent_structures/bit_array.h"
 #include "spellchecker/configuration.h"
+#include "utils/bits.h"
+#include "utils/hash.h"
 #include "utils/io.h"
 #include "utils/parse.h"
-#include "utils/utils.h"
 
 #define MAX_GROUP_COUNT 100000
 
@@ -164,11 +165,11 @@ struct GroupFactorsP_ihash: std::unary_function<GroupFactorsP, std::size_t>
   {
     std::size_t seed = 0;
 
-    Utils::HashCombine(seed, x->NumFactors());
+    Hash::Combine(seed, x->NumFactors());
 
     for (uint32_t i = 0; i < x->NumFactors(); i++)
     {
-      Utils::HashCombine(seed, x->GetFactorAt(i));
+      Hash::Combine(seed, x->GetFactorAt(i));
     }
 
     return seed;
@@ -317,7 +318,7 @@ void makeGrouping()
 
         if (group_vector.size() % 10 == 0)
         {
-          unsigned grouped_bits_needed = cm.levels[i].size() * Utils::BitsNeeded(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
+          unsigned grouped_bits_needed = cm.levels[i].size() * Bits::Needed(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
 
           if (grouped_bits_needed * 2 > nongrouped_bits_needed)
           {
@@ -335,7 +336,7 @@ void makeGrouping()
     if (cm.is_factor_grouped[i + 1] == true)
     {
       cm.groupings[i + 1] = group_vector;
-      cm.bits_per_children[i] = Utils::BitsNeeded(group_vector.size() - 1);
+      cm.bits_per_children[i] = Bits::Needed(group_vector.size() - 1);
       cm.is_factor_dependant[i + 1] = false;
       for (unsigned j = 0; j < i + 1; j++)
         cm.is_dependence[make_pair(j, i + 1)] = false;
@@ -629,7 +630,7 @@ int main(int argc, char** argv)
         max_children = node->num_children - 1;
     }
 
-    cm.bits_per_children[i] = Utils::BitsNeeded(max_children);
+    cm.bits_per_children[i] = Bits::Needed(max_children);
   }
 
   for (unsigned i = 0; i < cm.levels.size(); i++)
@@ -645,7 +646,7 @@ int main(int argc, char** argv)
         max_value = node->factor_id;
     }
 
-    cm.bits_per_value[i] = Utils::BitsNeeded(max_value);
+    cm.bits_per_value[i] = Bits::Needed(max_value);
   }
 
   cerr << "grouping..." << endl;

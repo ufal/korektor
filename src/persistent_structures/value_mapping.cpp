@@ -20,7 +20,6 @@
 #include <random>
 
 #include "value_mapping.h"
-#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {

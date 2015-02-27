@@ -13,7 +13,6 @@
 #include "persistent_structures/comp_increasing_array.h"
 #include "persistent_structures/mapped_double_array.h"
 #include "persistent_structures/packed_array.h"
-#include "utils/utils.h"
 #include "zip_lm.h"
 
 namespace ufal {

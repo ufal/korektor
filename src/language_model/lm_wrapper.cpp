@@ -10,7 +10,6 @@
 #include <iostream>
 
 #include "lm_wrapper.h"
-#include "utils/utils.h"
 #include "zip_lm.h"
 
 namespace ufal {

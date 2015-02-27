@@ -10,7 +10,7 @@
 #include <sstream>
 
 #include "stage_possibility.h"
-#include "utils/utils.h"
+#include "utils/hash.h"
 #include "viterbi_state.h"
 
 namespace ufal {
@@ -25,11 +25,11 @@ size_t ViterbiState::UniqueIdentifier()
 {
   size_t seed = 0;
 
-  Utils::HashCombine(seed, history.size());
+  Hash::Combine(seed, history.size());
 
   for (uint32_t i = 0; i < history.size(); i++)
   {
-    Utils::HashCombine(seed, history[i]->UniqueIdentifier());
+    Hash::Combine(seed, history[i]->UniqueIdentifier());
   }
 
   return seed;

@@ -7,17 +7,30 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file utils.cpp
-/// @brief Utility functions
+#pragma once
 
-#include <cmath>
-#include <ctime>
-#include <iostream>
-
-#include "utils.h"
+#include "common.h"
 
 namespace ufal {
 namespace korektor {
+
+class Bits {
+ public:
+  /// @brief minimal number of bits needed for representing the given unsigned int value
+  /// @param value Integer input
+  /// @return Required bits in integer
+  static uint32_t Needed(uint32_t value)
+  {
+    uint32_t ret = 0;
+    uint32_t pom = 1;
+    while (pom <= value)
+    {
+      ret++;
+      pom = pom << 1;
+    }
+    return ret;
+  }
+};
 
 } // namespace korektor
 } // namespace ufal

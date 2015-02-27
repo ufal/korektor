@@ -10,8 +10,8 @@
 #include "spellchecker/configuration.h"
 #include "spellchecker/constants.h"
 #include "stage_possibility.h"
+#include "utils/hash.h"
 #include "utils/utf.h"
-#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {
@@ -43,7 +43,7 @@ StagePossibilityNew::StagePossibilityNew(const FactorList &_factorList, bool _or
     {
       if (j > 0)
         emission_prob += _conf->GetFactorWeight(j) * factorList.emission_costs[j];
-      Utils::HashCombine(uniq_id, factorList.factors[j]);
+      Hash::Combine(uniq_id, factorList.factors[j]);
     }
   }
 
