@@ -207,7 +207,8 @@ struct CM_variables {
 
   void init(unsigned _num_factors)
   {
-    FATAL_CONDITION(_num_factors <= FactorList::MAX_FACTORS, "Too many factors!");
+    if (_num_factors > FactorList::MAX_FACTORS)
+      runtime_errorf("Too many morphological factors: '%u'. The limit is '%u'!", _num_factors, unsigned(FactorList::MAX_FACTORS));
 
     num_factors = _num_factors;
 
@@ -692,7 +693,7 @@ int main(int argc, char** argv)
 
     for (unsigned i = 0; i < dep_vector.size(); i++)
     {
-      FATAL_CONDITION(dep_vector[i] != std::numeric_limits<uint32_t>::max(), "");
+      assert(dep_vector[i] != std::numeric_limits<uint32_t>::max());
     }
 
     PackedArray mpa = PackedArray(dep_vector);
@@ -796,7 +797,8 @@ int main(int argc, char** argv)
   assert(testout.is_open());
 
   ifs.open(output_file.c_str(), ios::in | ios::binary);
-  FATAL_CONDITION(ifs.is_open(), "");
+  if (!ifs.is_open())
+    runtime_errorf("Cannot open file '%s'!", output_file.c_str());
   MorphologyP morphology = MorphologyP(new Morphology(ifs));
   morphology->initMorphoWordLists(output_vocab_file);
 
@@ -844,14 +846,12 @@ int main(int argc, char** argv)
 //  cerr << "checking consistency..." << endl;
 //  cerr << "test_lines: " << test_lines.size() << endl;
 //  cerr << "orig_lines: " << orig_lines.size() << endl;
-//  //FATAL_CONDITION(test_lines.size() == orig_lines.size(), "");
 //
 //  for (unsigned i = 0; i < test_lines.size(); i++)
 //  {
 //    cout << i << endl;
 //    //if (test_lines[i] != orig_lines[i])
 //    cout << test_lines[i] << " --- " << orig_lines[i] << endl;
-//    FATAL_CONDITION(test_lines[i] == orig_lines[i], "");
 //  }
 
   cerr << "OK!\n";

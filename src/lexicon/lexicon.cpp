@@ -194,9 +194,8 @@ int Lexicon::SingleArc_nextstate(uint32_t stateID, char16_t character) const
 /// @param ifs Input stream
 Lexicon::Lexicon(istream &ifs)
 {
-  string checkIT = Utils::ReadString(ifs);
-
-  FATAL_CONDITION(checkIT == "Lexicon", "checkIT = " << checkIT);
+  if (Utils::ReadString(ifs) != "Lexicon")
+    runtime_errorf("Cannot load lexicon, file is corrupted!");
 
   ifs.read((char*)&num_words, sizeof(uint32_t));
   ifs.read((char*)&num_arcs, sizeof(uint32_t));
@@ -373,7 +372,7 @@ void Lexicon::ArcsConsistencyCheck()
   {
     if (i % 1000 == 0) cerr << i << endl;
     uint32_t arc_next = arcs_nextstate[i];
-    FATAL_CONDITION(arcs_next_used.find(arc_next) == arcs_next_used.end(), "blebleble! i = " << i << ", arc_next = " << arc_next);
+    assert(arcs_next_used.find(arc_next) == arcs_next_used.end());
     arcs_next_used.insert(arc_next);
   }
 

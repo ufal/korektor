@@ -223,7 +223,8 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     {
       assert(ngram_order > 0);
       Utils::Split(toks, s, " \t");
-      FATAL_CONDITION(toks.size() == ngram_order + 1 || toks.size() == ngram_order + 2, "corrupted line: " << s);
+      if (toks.size() != ngram_order + 1 && toks.size() != ngram_order + 2)
+        runtime_errorf("Corrupted line '%s' in file '%s'!", s.c_str(), text_file.c_str());
 
       double bow = 0;
       double prob = -Utils::my_atof(toks[0]);
@@ -283,7 +284,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
 
         while (ngrams.find(aux2) == ngrams.end())
         {
-          FATAL_CONDITION(aux2.order > 0, "");
+          assert(aux2.order > 0);
           aux2.order--;
         }
 
@@ -332,7 +333,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     counter++;
     if (counter % 10000 == 0) cerr << counter << endl;
     NGram ngram = *it;
-    FATAL_CONDITION(ngram.order > 0, "");
+    assert(ngram.order > 0);
     unsigned array_index = ngram.order - 1;
     if (ngram.order < lm_order)
     {
@@ -351,8 +352,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     else
     {
       unigram_id = new_id;
-
-      FATAL_CONDITION(unigram_id == last_unigram_id + 1, unigram_id << " != " << last_unigram_id);
+      assert(unigram_id == last_unigram_id + 1);
       last_unigram_id = unigram_id;
     }
 
@@ -376,9 +376,9 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     NGram val = NGram(key.order);
     ret_lm->GetNGramForNGramKey(key, val);
 
-    FATAL_CONDITION(val.order == key.order, "");
-    FATAL_CONDITION(fabs(val.prob - key.prob) < 0.5, fabs(val.prob - key.prob));
-    FATAL_CONDITION(fabs(val.backoff - key.backoff) < 0.5, fabs(val.prob - key.prob));
+    assert(val.order == key.order);
+    assert(fabs(val.prob - key.prob) < 0.5);
+    assert(fabs(val.backoff - key.backoff) < 0.5);
   }
 
   cerr << "OK!" << endl;

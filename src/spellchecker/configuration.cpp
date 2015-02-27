@@ -79,7 +79,7 @@ Configuration::Configuration(const string &conf_file)
   string configuration_directory = slash_pos == string::npos ? string() : conf_file.substr(0, slash_pos + 1);
 
   ifstream ifs;
-  ifs.open((conf_file).c_str());
+  ifs.open(conf_file.c_str());
 
   if (ifs.is_open() == false)
   {
@@ -135,7 +135,8 @@ Configuration::Configuration(const string &conf_file)
 
       Utils::Split(toks, s, "-");
 
-      FATAL_CONDITION(toks.size() == 4, s);
+      if (toks.size() != 4)
+        runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
 
       ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
       LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm));
@@ -159,7 +160,8 @@ Configuration::Configuration(const string &conf_file)
       vector<string> toks;
       Utils::Split(toks, s, "-");
 
-      FATAL_CONDITION(toks.size() == 4, s);
+      if (toks.size() != 4)
+        runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
 
       SimWordsFinder::casing_treatment ct;
 

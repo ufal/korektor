@@ -51,7 +51,7 @@ IncreasingArray::IncreasingArray(vector<uint32_t> &vec)
 
   for (uint32_t i = 0; i < vec.size() - 1; i++)
   {
-    FATAL_CONDITION(vec[i] <= vec[i + 1], "");
+    assert(vec[i] <= vec[i + 1]);
   }
 
   double ratio = (double)(max_val - min_val) / (double)(vec.size() - 1);
@@ -91,7 +91,7 @@ IncreasingArray::IncreasingArray(vector<uint32_t> &vec)
 
   for (uint32_t i = 0; i < vec.size(); i++)
   {
-    FATAL_CONDITION(vec[i] == GetValueAt(i), "MIA i = " << i << ", vec[i] = " << vec[i] << ", GetVal[i] = " << GetValueAt(i));
+    assert(vec[i] == GetValueAt(i));
   }
 }
 

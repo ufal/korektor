@@ -13,6 +13,7 @@
 #pragma once
 
 #include <cassert>
+#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
 #include <cstdio>
@@ -21,12 +22,29 @@
 #include <string>
 #include <vector>
 
-#define FATAL_CONDITION(expr, error_text) if (!(expr)) { fprintf(stderr, "FATAL ERROR: The condition ( %s ) failed!\n", #expr); fflush(stderr); exit(1); }
-
-#define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
-
 namespace ufal {
 namespace korektor {
+
+// Printf-like logging function.
+inline int eprintf(const char* fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  int res = vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  return res;
+}
+
+// Printf-like exit function.
+inline void runtime_errorf(const char* fmt, ...) {
+  va_list ap;
+  va_start(ap, fmt);
+  vfprintf(stderr, fmt, ap);
+  va_end(ap);
+  fputc('\n', stderr);
+  exit(1);
+}
+
+#define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
 
 using namespace std;
 

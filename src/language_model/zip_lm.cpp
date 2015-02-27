@@ -40,8 +40,6 @@ int ZipLM::search_for_id(uint32_t _order, uint32_t word_id, int start_offset, in
 
   PackedArrayP id_arr = ids[_order];
 
-  //FATAL_CONDITION(end_offset > start_offset, "");
-
   while (end_offset - start_offset > 1)
   {
     index = (start_offset + end_offset) / 2;

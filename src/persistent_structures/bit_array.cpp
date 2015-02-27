@@ -17,9 +17,8 @@ namespace korektor {
 
 BitArray::BitArray(istream &ifs)
 {
-  string check_string = Utils::ReadString(ifs);
-
-  FATAL_CONDITION(check_string == "MBA", check_string);
+  if (Utils::ReadString(ifs) != "MBA")
+    runtime_errorf("Cannot load BitArray, file is corrupted!");
 
 
   output_mask.push_back(0);

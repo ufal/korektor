@@ -21,7 +21,7 @@ namespace korektor {
 
 void Utils::WriteString(ostream &ofs, const string &s)
 {
-  FATAL_CONDITION(uint16_t(s.length()) == s.length(), "");
+  assert(uint16_t(s.length()) == s.length());
   uint16_t len = s.length();
   ofs.write((char*)&len, sizeof(uint16_t));
   ofs.write(s.data(), sizeof(char) * len);

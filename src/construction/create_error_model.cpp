@@ -67,7 +67,8 @@ int main(int argc, char** argv)
 
     ifstream ifs_hierarchy;
     ifs_hierarchy.open(argv[2]);
-    FATAL_CONDITION(ifs_hierarchy.is_open(), "the file " << argv[2] << " is not opened!");
+    if (!ifs_hierarchy.is_open())
+      runtime_errorf("Cannot open file '%s'!", argv[2]);
 
     hierarchy_node::ReadHierarchy(ifs_hierarchy);
 
@@ -88,7 +89,8 @@ int main(int argc, char** argv)
       vector<string> toks;
       Utils::Split(toks, error_line, " \t");
 
-      FATAL_CONDITION(toks.size() == 2, "____" << error_line << "____");
+      if (toks.size() != 2)
+        runtime_errorf("Not two columns on line '%s' in file '%s'!", error_line.c_str(), argv[3]);
 
       u16string signature;
       if (GetErrorSignature(UTF::UTF8To16(toks[0]), UTF::UTF8To16(toks[1]), signature))
@@ -118,7 +120,8 @@ int main(int argc, char** argv)
 
       if (s.empty()) continue;
 
-      FATAL_CONDITION(toks.size() == 2, "--" << s << "--");
+      if (toks.size() != 2)
+        runtime_errorf("Not two columns on line '%s' in file '%s'!", s.c_str(), argv[4]);
 
       u16string key = UTF::UTF8To16(toks[0]);
       uint32_t count = Utils::my_atoi(toks[1]);

@@ -248,9 +248,9 @@ class hierarchy_node {
       level--;
     }
 
-    FATAL_CONDITION(new_level > 0 && new_level < 10, "");
+    assert(new_level > 0 && new_level < 10);
 
-    FATAL_CONDITION(level + 1 == new_level, "");
+    assert(level + 1 == new_level);
 
     u16string signature = UTF::UTF8To16(s.substr(new_level));
 
@@ -272,7 +272,7 @@ class hierarchy_node {
     string s;
     if (Utils::SafeReadline(is, s))
     {
-      FATAL_CONDITION(s == "root", "");
+      assert(s == "root");
 
       hierarchy_node::root = hierarchy_nodeP(new hierarchy_node(UTF::UTF8To16("root")));
       hierarchy_map.insert(make_pair(root->signature, root));

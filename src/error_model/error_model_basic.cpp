@@ -165,7 +165,8 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
 {
   ifstream ifs;
   ifs.open(text_input);
-  FATAL_CONDITION(ifs.is_open(), "");
+  if (!ifs.is_open())
+    runtime_errorf("Cannot open file '%s'!", text_input.c_str());
 
   vector<string> toks;
   string s;
@@ -175,8 +176,10 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   Utils::SafeReadline(ifs, s);
   Utils::Split(toks, s, "\t");
 
-  FATAL_CONDITION(toks[0].substr(toks[0].length() - 4) == "case", "");
-  FATAL_CONDITION(toks.size() == 3, "");
+  if (toks.size() != 3)
+    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+  if (toks[0] != "case")
+    runtime_errorf("Expected to see 'case' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
 
   ErrorModelOutput case_mismatch = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
@@ -188,8 +191,10 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   Utils::SafeReadline(ifs, s);
   Utils::Split(toks, s, "\t");
 
-  FATAL_CONDITION(toks[0] == "substitutions", "");
-  FATAL_CONDITION(toks.size() == 3, "");
+  if (toks.size() != 3)
+    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+  if (toks[0] != "substitutions")
+    runtime_errorf("Expected to see 'substitutions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
   ErrorModelOutput sub_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
@@ -199,8 +204,10 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   Utils::SafeReadline(ifs, s);
   Utils::Split(toks, s, "\t");
 
-  FATAL_CONDITION(toks[0] == "insertions", "");
-  FATAL_CONDITION(toks.size() == 3, "");
+  if (toks.size() != 3)
+    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+  if (toks[0] != "insertions")
+    runtime_errorf("Expected to see 'insertions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
   ErrorModelOutput insert_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
@@ -210,8 +217,10 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   Utils::SafeReadline(ifs, s);
   Utils::Split(toks, s, "\t");
 
-  FATAL_CONDITION(toks[0] == "deletions", "");
-  FATAL_CONDITION(toks.size() == 3, "");
+  if (toks.size() != 3)
+    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+  if (toks[0] != "deletions")
+    runtime_errorf("Expected to see 'deletions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
   ErrorModelOutput del_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
@@ -221,8 +230,10 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   if (min_edit_dist > del_default.edit_dist)
     min_edit_dist = del_default.edit_dist;
 
-  FATAL_CONDITION(toks[0] == "swaps", "");
-  FATAL_CONDITION(toks.size() == 3, "");
+  if (toks.size() != 3)
+    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+  if (toks[0] != "swaps")
+    runtime_errorf("Expected to see 'swaps' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
   ErrorModelOutput swap_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
@@ -238,7 +249,8 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
     if (s == "")
       continue;
 
-    FATAL_CONDITION(toks.size() == 3, s);
+    if (toks.size() != 3)
+      runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
 
     ErrorModelOutput emo = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
@@ -253,7 +265,8 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
 
   ofstream ofs;
   ofs.open(binary_output.c_str(), ios::binary);
-  FATAL_CONDITION(ofs.is_open(), "Can't open " << binary_output);
+  if (!ofs.is_open())
+    runtime_errorf("Cannot open file '%s'!", binary_output.c_str());
 
   emb.WriteToStream(ofs);
   ofs.close();
@@ -340,7 +353,8 @@ ErrorModelBasicP ErrorModelBasic::fromBinaryFile(string binary_file)
 {
   ifstream ifs;
   ifs.open(binary_file.c_str(), ios::binary);
-  FATAL_CONDITION(ifs.is_open(), "");
+  if (!ifs.is_open())
+    runtime_errorf("Cannot open file '%s'!", binary_file.c_str());
 
   ErrorModelBasicP ret = ErrorModelBasicP(new ErrorModelBasic(ifs));
   ifs.close();

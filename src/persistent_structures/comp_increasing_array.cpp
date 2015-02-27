@@ -39,9 +39,8 @@ void CompIncreasingArray::WriteToStream(ostream &ofs) const
 /// @param Input stream
 CompIncreasingArray::CompIncreasingArray(istream &ifs)
 {
-  string check_string = Utils::ReadString(ifs);
-
-  FATAL_CONDITION(check_string == "CIA", check_string);
+  if (Utils::ReadString(ifs) != "CIA")
+    runtime_errorf("Cannot load CompIncreasingArray, file is corrupted!");
 
   uint32_t num_parts;
 
@@ -87,7 +86,7 @@ CompIncreasingArray::CompIncreasingArray(vector<uint32_t> &val, uint32_t _last_v
 
   for (uint32_t i = 0; i < num_values; i++)
   {
-    FATAL_CONDITION(val[i] == GetValueAt(i), "CIA");
+    assert(val[i] == GetValueAt(i));
   }
 
   last_val_last_index = _last_val_last_index;

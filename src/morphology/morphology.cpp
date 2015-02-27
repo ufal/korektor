@@ -68,7 +68,7 @@ SP_DEF(morpho_dependency);
 
 void Morphology::get_morphology_rec(unsigned level, FactorList &flist, vector<FactorList> &ret, unsigned& bit_offset, Configuration *configuration, int next_factor)
 {
-  FATAL_CONDITION(level < FactorList::MAX_FACTORS, "Too many factors encountered!");
+  assert(level < FactorList::MAX_FACTORS); // This makes compiler happy and not emit out-of-bound flist.emmision_cost[level] index warning.
 
   bool current_level_enabled = configuration->FactorIsEnabled(level);
 
@@ -216,7 +216,7 @@ vector<FactorList> Morphology::GetMorphology(unsigned form_id, Configuration* co
 
 void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
 {
-  FATAL_CONDITION(morpho_word_lists.size() > 0, "");
+  assert(morpho_word_lists.size() > 0);
 
   for (unsigned i = 0; i < formOffsets.GetSize(); i++)
   {
@@ -249,13 +249,12 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
 
 Morphology::Morphology(ifstream &ifs)
 {
-  string checkIT = Utils::ReadString(ifs);
-
-  FATAL_CONDITION(checkIT == "Morphology", "");
+  if (Utils::ReadString(ifs) != "Morphology")
+    runtime_errorf("Cannot load morphology, file is corrupted!");
 
   ifs.read((char*)&num_factors, sizeof(uint32_t));
 
-  FATAL_CONDITION(num_factors <= FactorList::MAX_FACTORS, "Too many factors!");
+  assert(num_factors <= FactorList::MAX_FACTORS);
   for (size_t i = 0; i < num_factors; i++)
   {
     dependencies.push_back(morpho_dependencyP());

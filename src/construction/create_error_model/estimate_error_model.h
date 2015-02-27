@@ -90,7 +90,7 @@ class EstimateErrorModel
     }
     else
     {
-      FATAL_CONDITION(node->error_count == 0, "");
+      assert(node->error_count == 0);
       unsigned context_count = 0;
       unsigned error_count = 0;
 

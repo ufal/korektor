@@ -105,9 +105,8 @@ PackedArray& PackedArray::operator=(const PackedArray& val)
 /// @param ifs Input stream
 PackedArray::PackedArray(istream &ifs)
 {
-  string check_string = Utils::ReadString(ifs);
-
-  FATAL_CONDITION(check_string == "MPA", check_string);
+  if (Utils::ReadString(ifs) != "MPA")
+    runtime_errorf("Cannot load PackedArray, file is corrupted!");
 
   ifs.read((char*)&bits_per_value, sizeof(uint32_t));
   ifs.read((char*)&num_bytes, sizeof(uint32_t));
