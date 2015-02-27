@@ -16,15 +16,6 @@
 namespace ufal {
 namespace korektor {
 
-struct identity_hash : std::unary_function<size_t, size_t>
-{
-  size_t operator()(size_t val) const
-  {
-    return val;
-  }
-};
-
-
 class LMWrapper {
  private:
   ZipLMP LM;

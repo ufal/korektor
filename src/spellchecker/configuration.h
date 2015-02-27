@@ -39,16 +39,6 @@ SP_DEF(StagePossibility);
 class SimWordsFinder;
 SP_DEF(SimWordsFinder);
 
-struct string_bool_hasher : std::unary_function<pair<string, bool>, size_t>
-{
-  std::hash<string> hasher;
-  size_t operator()(const pair<string, bool> &val) const
-  {
-    return hasher(val.first);
-  }
-};
-
-
 /// @class Configuration configuration.h "configuration.h"
 class Configuration
 {
