@@ -21,7 +21,7 @@
 #include "morphology/morphology.h"
 #include "spellchecker.h"
 #include "text_checking_result.h"
-#include "tokenizer/tokenizer.h"
+#include "token/tokenizer.h"
 #include "utils/u16string_replacing.h"
 #include "utils/utf.h"
 

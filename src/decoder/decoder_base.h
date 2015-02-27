@@ -12,7 +12,7 @@
 #include <unordered_set>
 
 #include "common.h"
-#include "tokenizer/token.h"
+#include "token/token.h"
 #include "viterbi_state.h"
 
 namespace ufal {

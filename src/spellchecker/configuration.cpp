@@ -18,7 +18,7 @@
 #include "lexicon/lexicon.h"
 #include "lexicon/sim_words_finder.h"
 #include "morphology/morphology.h"
-#include "tokenizer/tokenizer.h"
+#include "token/tokenizer.h"
 
 namespace ufal {
 namespace korektor {

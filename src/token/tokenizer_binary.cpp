@@ -13,7 +13,7 @@
 #include <iostream>
 
 #include "common.h"
-#include "tokenizer/tokenizer.h"
+#include "token/tokenizer.h"
 #include "utils/utf.h"
 
 using namespace ufal::korektor;

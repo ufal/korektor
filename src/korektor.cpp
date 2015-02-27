@@ -20,7 +20,7 @@
 #include "lexicon/lexicon.h"
 #include "spellchecker/configuration.h"
 #include "spellchecker/spellchecker.h"
-#include "tokenizer/tokenizer.h"
+#include "token/tokenizer.h"
 #include "utils/utf.h"
 #include "utils/utils.h"
 

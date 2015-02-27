@@ -11,7 +11,7 @@
 #include "lexicon.h"
 #include "sim_words_finder.h"
 #include "spellchecker/configuration.h"
-#include "tokenizer/token.h"
+#include "token/token.h"
 #include "utils/utf.h"
 
 namespace ufal {

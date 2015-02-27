@@ -13,7 +13,7 @@
 #include "lexicon/lexicon.h"
 #include "spellchecker/configuration.h"
 #include "spellchecker/spellchecker.h"
-#include "tokenizer/token.h"
+#include "token/token.h"
 #include "utils/utils.h"
 #include "utils/utf.h"
 

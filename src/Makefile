@@ -27,7 +27,7 @@ KORLIB_O += language_model/lm_wrapper language_model/ngram language_model/zip_lm
 KORLIB_O += lexicon/lexicon lexicon/sim_words_finder morphology/morphology
 KORLIB_O += persistent_structures/bit_array persistent_structures/comp_increasing_array persistent_structures/increasing_array persistent_structures/mapped_double_array persistent_structures/packed_array persistent_structures/string_array persistent_structures/value_mapping
 KORLIB_O += spellchecker/configuration spellchecker/constants spellchecker/spellchecker spellchecker/text_checking_result
-KORLIB_O += tokenizer/token tokenizer/tokenizer unilib/unicode unilib/utf16 unilib/utf8
+KORLIB_O += token/token token/tokenizer unilib/unicode unilib/utf16 unilib/utf8
 KORLIB_O += utils/utf utils/utils
 
 # library
@@ -40,7 +40,7 @@ $(call exe,korektor_vertical): $(call obj,korektor_vertical $(KORLIB_O))
 $(call exe,create_error_model): $(call obj,construction/create_error_model $(KORLIB_O))
 $(call exe,create_lm_binary): $(call obj,construction/create_lm_binary $(KORLIB_O))
 $(call exe,create_morphology): $(call obj,construction/create_morphology $(KORLIB_O))
-$(call exe,tokenizer): $(call obj,tokenizer/tokenizer_binary tokenizer/tokenizer)
+$(call exe,tokenizer): $(call obj,token/tokenizer_binary $(KORLIB_O))
 $(call exe,$(EXECUTABLES)):
 	$(call link_exe,$@,$^,$(call win_subsystem,console))
 
