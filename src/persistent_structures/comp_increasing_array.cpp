@@ -70,7 +70,7 @@ CompIncreasingArray::CompIncreasingArray(vector<uint32_t> &val, uint32_t _last_v
   bit_mask = (1 << log2_size_of_parts) - 1;
 
   uint32_t first = 0;
-  uint32_t last = min((int)(1 << log2_size_of_parts) - 1, (int)(val.size()) - 1);
+  uint32_t last = (1 << log2_size_of_parts) - 1 < val.size() - 1 ? (1 << log2_size_of_parts) - 1 : val.size() - 1;
 
   while (first < num_values)
   {

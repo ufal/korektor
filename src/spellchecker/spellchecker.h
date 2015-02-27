@@ -26,7 +26,7 @@ SP_DEF(DecoderBase);
 class TextCheckingResult;
 SP_DEF(TextCheckingResult);
 
-class Token;
+struct Token;
 SP_DEF(Token);
 
 //Spellchecker class the main interface of the application. It receives spell-checking request and delivers the corrected text.

@@ -60,7 +60,7 @@ struct NGram_compare: std::less<NGram>
 {
   bool operator()(const NGram &x, const NGram &y)
   {
-    unsigned min_order = min(x.order, y.order);
+    unsigned min_order = x.order < y.order ? x.order : y.order;
 
     for (unsigned i = 0; i < min_order; i++)
     {
