@@ -37,9 +37,9 @@ $(call lib,libkorlib): $(call obj,$(KORLIB_O))
 # executables
 $(call exe,korektor): $(call obj,korektor $(KORLIB_O))
 $(call exe,korektor_vertical): $(call obj,korektor_vertical $(KORLIB_O))
-$(call exe,create_error_model): $(call obj,tools/create_error_model $(KORLIB_O))
-$(call exe,create_lm_binary): $(call obj,tools/create_lm_binary $(KORLIB_O))
-$(call exe,create_morphology): $(call obj,tools/create_morphology $(KORLIB_O))
+$(call exe,create_error_model): $(call obj,construction/create_error_model $(KORLIB_O))
+$(call exe,create_lm_binary): $(call obj,construction/create_lm_binary $(KORLIB_O))
+$(call exe,create_morphology): $(call obj,construction/create_morphology $(KORLIB_O))
 $(call exe,tokenize): $(call obj,tokenizer/tokenize $(KORLIB_O))
 $(call exe,$(EXECUTABLES)):
 	$(call link_exe,$@,$^,$(call win_subsystem,console))
