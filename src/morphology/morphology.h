@@ -58,9 +58,6 @@ class Morphology {
   vector<StringArrayP> morpho_word_lists;
   vector<unordered_map<string, unsigned> > morpho_maps;
 
-
-  unsigned last_enabled_factor;
-
  private:
 
   void get_morphology_rec(unsigned level, FactorList &flist, vector<FactorList> &ret, unsigned& bit_offset, Configuration *configuration, int next_factor = -1);
