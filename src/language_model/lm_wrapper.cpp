@@ -96,7 +96,5 @@ string LMWrapper::FactorName()
   return LM->GetFactorName();
 }
 
-NGram_ihash LMWrapper::ngram_hash_function;
-
 } // namespace korektor
 } // namespace ufal

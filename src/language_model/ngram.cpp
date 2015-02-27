@@ -11,7 +11,6 @@
 /// @class NGram ngram.h "ngram.h"
 
 #include <cstring>
-#include <sstream>
 
 #include "ngram.h"
 
@@ -71,21 +70,6 @@ NGram::~NGram()
 {
   if (word_ids != NULL)
     delete[] word_ids;
-}
-
-/// @brief N-gram to string representation
-///
-/// @return N-gram string representation (string)
-string NGram::ToString()
-{
-  stringstream strs;
-  strs << "order: " << order << endl;
-  strs << "next_word: " << word_ids[0] << endl;
-  strs << "history (youngest -> oldest):";
-  for (uint32_t i = 1; i < order; i++)
-    strs << " " << word_ids[i];
-  strs << endl << "prob = " << prob << ", bow = " << backoff << endl;
-  return strs.str();
 }
 
 } // namespace korektor

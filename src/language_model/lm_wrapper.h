@@ -34,8 +34,6 @@ class LMWrapper {
 
   void GetNGram(NGram &ngram_key, NGram &ngram_val);
 
-  static NGram_ihash ngram_hash_function;
-
  public:
 
   LMWrapper(ZipLMP _LM);

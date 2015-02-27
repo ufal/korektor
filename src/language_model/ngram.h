@@ -13,14 +13,9 @@
 #pragma once
 
 #include "common.h"
-#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {
-
-//class NGram;
-
-//typedef shared_ptr<vector<NGramP> > vectorP_NGramP;
 
 class NGram {
 
@@ -57,49 +52,6 @@ class NGram {
   bool ZeroBackoff() const;
 
   ~NGram();
-
-  string ToString();
-};
-
-
-
-/// @struct NGram_iequal_to ngram.h "ngram.h"
-/// @brief Binary function for checking whether 2 N-grams are equal
-struct NGram_iequal_to
-: std::binary_function<NGram, NGram, bool>
-{
-  bool operator()(const NGram &x, const NGram &y)
-  {
-    if (x.order != y.order)
-      return false;
-
-
-    for (uint32_t i = 0; i < x.order; i++)
-    {
-      if (x.GetWordID_New(i) != y.GetWordID_New(i))
-        return false;
-    }
-
-    return true;
-  }
-};
-
-
-struct NGram_ihash: std::unary_function<NGram, std::size_t>
-{
-  std::size_t operator()(const NGram &x)
-  {
-    std::size_t seed = 0;
-
-    Utils::HashCombine(seed, x.order);
-
-    for (uint32_t i = 0; i < x.order; i++)
-    {
-      Utils::HashCombine(seed, x.GetWordID_New(i));
-    }
-
-    return seed;
-  }
 };
 
 /// @struct NGram_compare ngram.h "ngram.h"
