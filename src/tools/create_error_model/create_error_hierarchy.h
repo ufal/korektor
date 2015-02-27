@@ -14,7 +14,7 @@
 
 #include "common.h"
 #include "error_hierarchy.h"
-#include "korlib/utf8_input_stream.h"
+#include "utils/utf8_input_stream.h"
 
 namespace ufal {
 namespace korektor {

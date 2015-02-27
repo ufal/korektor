@@ -13,8 +13,7 @@
 #include <iostream>
 
 #include "common.h"
-#include "korlib/token.h"
-#include "korlib/tokenizer.h"
+#include "tokenizer/tokenizer.h"
 
 using namespace ufal::korektor;
 

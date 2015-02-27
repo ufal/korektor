@@ -12,8 +12,8 @@
 #include <unordered_map>
 
 #include "common.h"
-#include "korlib/error_model.h"
-#include "korlib/utils.h"
+#include "error_model/error_model.h"
+#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {

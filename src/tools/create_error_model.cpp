@@ -15,9 +15,9 @@
 #include "create_error_model/error_hierarchy.h"
 #include "create_error_model/estimate_error_model.h"
 #include "create_error_model/get_error_signature.h"
-#include "korlib/error_model_basic.h"
-#include "korlib/utf8_input_stream.h"
-#include "korlib/utils.h"
+#include "error_model/error_model_basic.h"
+#include "utils/utf8_input_stream.h"
+#include "utils/utils.h"
 
 using namespace ufal::korektor;
 

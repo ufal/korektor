@@ -16,9 +16,9 @@
 #include <iostream>
 
 #include "common.h"
-#include "korlib/morphology.h"
-#include "korlib/utils.h"
-#include "korlib/zip_lm.h"
+#include "language_model//zip_lm.h"
+#include "morphology/morphology.h"
+#include "utils/utils.h"
 
 using namespace ufal::korektor;
 

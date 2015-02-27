@@ -10,7 +10,7 @@
 #pragma once
 
 #include "common.h"
-#include "korlib/utils.h"
+#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {

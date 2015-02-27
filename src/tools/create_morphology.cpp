@@ -16,11 +16,11 @@
 #include <tuple>
 
 #include "common.h"
-#include "korlib/bit_array.h"
-#include "korlib/configuration.h"
-#include "korlib/lexicon.h"
-#include "korlib/morphology.h"
-#include "korlib/utils.h"
+#include "lexicon/lexicon.h"
+#include "morphology/morphology.h"
+#include "persistent_structures/bit_array.h"
+#include "spellchecker/configuration.h"
+#include "utils/utils.h"
 
 #define MAX_GROUP_COUNT 100000
 

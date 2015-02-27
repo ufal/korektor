@@ -17,11 +17,11 @@
 #include <iostream>
 
 #include "common.h"
-#include "korlib/configuration.h"
-#include "korlib/lexicon.h"
-#include "korlib/spellchecker.h"
-#include "korlib/tokenizer.h"
-#include "korlib/utils.h"
+#include "lexicon/lexicon.h"
+#include "spellchecker/configuration.h"
+#include "spellchecker/spellchecker.h"
+#include "tokenizer/tokenizer.h"
+#include "utils/utils.h"
 
 using namespace ufal::korektor;
 

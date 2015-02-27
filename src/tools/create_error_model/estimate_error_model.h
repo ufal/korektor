@@ -14,7 +14,7 @@
 
 #include "common.h"
 #include "error_hierarchy.h"
-#include "korlib/utils.h"
+#include "utils/utils.h"
 
 namespace ufal {
 namespace korektor {
