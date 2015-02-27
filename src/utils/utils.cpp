@@ -77,17 +77,5 @@ int Utils::randomR(int lowest, int range)
   return ret;
 }
 
-/// @brief Check whether the given string contains letter
-/// @param ustr String
-/// @return boolean
-bool Utils::ContainsLetter(const u16string &ustr)
-{
-  for (auto&& uchar : ustr)
-    if (UTF::is_alpha(uchar))
-      return true;
-
-  return false;
-}
-
 } // namespace korektor
 } // namespace ufal

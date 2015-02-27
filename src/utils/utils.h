@@ -14,7 +14,6 @@
 #pragma once
 
 #include "common.h"
-#include "utf.h"
 
 namespace ufal {
 namespace korektor {
@@ -61,67 +60,6 @@ class Utils {
 
     return ret;
   }
-
-  static bool CaseInsensitiveIsEqual(const u16string &str1, const u16string &str2)
-  {
-    if (str1.length() != str2.length())
-      return false;
-
-    for (unsigned i = 0; i < str1.length(); i++)
-    {
-      if (UTF::tolower(str1[i]) != UTF::tolower(str1[i]))
-        return false;
-    }
-
-    return true;
-  }
-
-  /// @brief UTF-16 to UTF-8 conversion
-  /// @return UTF-8 string
-  static string utf16_to_utf8(const u16string &ustr)
-  {
-    return UTF::utf16_to_utf8(ustr);
-  }
-
-  /// @brief UTF-8 to UTF-16 conversion
-  /// @return UTF-16 string
-  static u16string utf8_to_utf16(const string &str)
-  {
-    return UTF::utf8_to_utf16(str);
-  }
-
-  /// @brief Check whether the character is in uppercase
-  /// @return boolean
-  static bool IsUpperCase(char16_t uchar)
-  {
-    return UTF::tolower(uchar) != uchar;
-  }
-
-  /// @brief Check whether the character is in lowercase
-  /// @return boolean
-  static bool IsLowerCase(char16_t uchar)
-  {
-    return UTF::toupper(uchar) != uchar;
-  }
-
-  /// @brief Change the character to lowercase
-  /// @return Lowercase character
-  static char16_t ToLower(char16_t uchar)
-  {
-    return UTF::tolower(uchar);
-  }
-
-  /// @brief Change the character to uppercase
-  /// @return Uppercase character
-  static char16_t ToUpper(char16_t uchar)
-  {
-    return UTF::toupper(uchar);
-  }
-
-  /// @brief Check whether the given string contains letter
-  /// @param ustr String
-  /// @return boolean
-  static bool ContainsLetter(const u16string &ustr);
 
   /// @brief wrapper around std::getline - eventually removes '\r' from the end - i.e. when a text file created on Windows is being opened on Linux
   static bool SafeReadline(istream &istr, string &str);

@@ -11,6 +11,7 @@
 #include <iostream>
 
 #include "error_model_basic.h"
+#include "utils/utf.h"
 
 namespace ufal {
 namespace korektor {
@@ -34,36 +35,36 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
 
     ErrorModelOutput emo_case_mismatch = ErrorModelOutput(emo.edit_dist + case_mismatch_cost.edit_dist, emo.cost + case_mismatch_cost.cost);
 
-    if (signature.substr(0, 2) == Utils::utf8_to_utf16("s_"))
+    if (signature.substr(0, 2) == UTF::UTF8To16("s_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
 
       substitution_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = Utils::ToUpper(ch1);
-      char16_t ch2_uc = Utils::ToUpper(ch2);
+      char16_t ch1_uc = UTF::ToUpper(ch1);
+      char16_t ch2_uc = UTF::ToUpper(ch2);
 
       substitution_map[make_pair(ch1_uc, ch2_uc)] = emo;
       substitution_map[make_pair(ch1_uc, ch2)] = emo_case_mismatch;
       substitution_map[make_pair(ch1, ch2_uc)] = emo_case_mismatch;
     }
-    else if (signature.substr(0, 5) == Utils::utf8_to_utf16("swap_"))
+    else if (signature.substr(0, 5) == UTF::UTF8To16("swap_"))
     {
       char16_t ch1 = signature[5];
       char16_t ch2 = signature[6];
 
       swap_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = Utils::ToUpper(ch1);
-      char16_t ch2_uc = Utils::ToUpper(ch2);
+      char16_t ch1_uc = UTF::ToUpper(ch1);
+      char16_t ch2_uc = UTF::ToUpper(ch2);
 
       swap_map[make_pair(ch1_uc, ch2_uc)] = emo;
       swap_map[make_pair(ch1_uc, ch2)] = emo;
       swap_map[make_pair(ch1, ch2_uc)] = emo;
 
     }
-    else if (signature.substr(0, 2) == Utils::utf8_to_utf16("i_"))
+    else if (signature.substr(0, 2) == UTF::UTF8To16("i_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
@@ -71,9 +72,9 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
 
       insertion_map[make_tuple(ch1, ch2, ch3)] = emo;
 
-      char16_t ch1_uc = Utils::ToUpper(ch1);
-      char16_t ch2_uc = Utils::ToUpper(ch2);
-      char16_t ch3_uc = Utils::ToUpper(ch3);
+      char16_t ch1_uc = UTF::ToUpper(ch1);
+      char16_t ch2_uc = UTF::ToUpper(ch2);
+      char16_t ch3_uc = UTF::ToUpper(ch3);
 
       insertion_map[make_tuple(ch1_uc, ch2, ch3)] = emo;
       insertion_map[make_tuple(ch1, ch2_uc, ch3)] = emo;
@@ -83,22 +84,20 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
       insertion_map[make_tuple(ch1, ch2_uc, ch3_uc)] = emo;
       insertion_map[make_tuple(ch1_uc, ch2_uc, ch3_uc)] = emo;
     }
-    else if (signature.substr(0, 2) == Utils::utf8_to_utf16("d_"))
+    else if (signature.substr(0, 2) == UTF::UTF8To16("d_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
 
       deletion_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = Utils::ToUpper(ch1);
-      char16_t ch2_uc = Utils::ToUpper(ch2);
+      char16_t ch1_uc = UTF::ToUpper(ch1);
+      char16_t ch2_uc = UTF::ToUpper(ch2);
 
       deletion_map[make_pair(ch1_uc, ch2)] = emo;
       deletion_map[make_pair(ch1, ch2_uc)] = emo;
       deletion_map[make_pair(ch1_uc, ch2_uc)] = emo;
     }
-
-
   }
 }
 
@@ -246,7 +245,7 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
     if (min_edit_dist > emo.edit_dist)
       min_edit_dist = emo.edit_dist;
 
-    values.push_back(make_pair(UTF::utf8_to_utf16(toks[0]), emo));
+    values.push_back(make_pair(UTF::UTF8To16(toks[0]), emo));
   }
 
   cerr << "min_edit_dist = " << min_edit_dist << endl;
@@ -346,6 +345,69 @@ ErrorModelBasicP ErrorModelBasic::fromBinaryFile(string binary_file)
   ErrorModelBasicP ret = ErrorModelBasicP(new ErrorModelBasic(ifs));
   ifs.close();
   return ret;
+}
+
+ErrorModelOutput ErrorModelBasic::SubstitutionCost(char16_t char1, char16_t char2, bool ignore_case)
+{
+  if (ignore_case == false)
+  {
+    auto fit = substitution_map.find(make_pair(char1, char2));
+    if (fit == substitution_map.end())
+    {
+      if (char1 == char2)
+        return ErrorModelOutput(0, 0.0f);
+      else if (UTF::ToLower(char1) == UTF::ToLower(char2))
+        return case_mismatch_cost;
+      else
+        return substitution_default;
+    }
+    else
+      return fit->second;
+  }
+  else
+  {
+    char1 = UTF::ToLower(char1);
+    char2 = UTF::ToLower(char2);
+
+    auto fit = substitution_map.find(make_pair(char1, char2));
+    if (fit == substitution_map.end())
+    {
+      if (char1 == char2)
+        return ErrorModelOutput(0, 0.0f);
+      else
+        return substitution_default;
+    }
+    else
+      return fit->second;
+  }
+}
+
+ErrorModelOutput ErrorModelBasic::InsertionCost(char16_t inserted_char, char16_t previous_char, char16_t next_char)
+{
+  auto fit = insertion_map.find(make_tuple(inserted_char, previous_char, next_char));
+  if (fit == insertion_map.end())
+    return insertion_default;
+  else
+    return fit->second;
+}
+
+ErrorModelOutput ErrorModelBasic::SwapCost(char16_t first_char, char16_t second_char)
+{
+  auto fit = swap_map.find(make_pair(first_char, second_char));
+
+  if (fit == swap_map.end())
+    return swap_default;
+  else
+    return fit->second;
+}
+
+ErrorModelOutput ErrorModelBasic::DeletionCost(char16_t current_char, char16_t previous_char)
+{
+  auto fit = deletion_map.find(make_pair(current_char, previous_char));
+  if (fit == deletion_map.end())
+    return deletion_default;
+  else
+    return fit->second;
 }
 
 } // namespace korektor

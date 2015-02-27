@@ -13,15 +13,13 @@
 #pragma once
 
 #include "common.h"
+#include "token.h"
 
 namespace ufal {
 namespace korektor {
 
 class Lexicon;
 SP_DEF(Lexicon);
-
-class Token;
-SP_DEF(Token);
 
 /// @brief Tokenizer class for sentence tokenization
 class Tokenizer {

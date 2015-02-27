@@ -14,6 +14,7 @@
 
 #include "common.h"
 #include "tokenizer/tokenizer.h"
+#include "utils/utf.h"
 
 using namespace ufal::korektor;
 
@@ -34,7 +35,7 @@ int main()
 
   while (std::getline(cin, s))
   {
-    u16string text = Utils::utf8_to_utf16(s);
+    u16string text = UTF::UTF8To16(s);
 
     vector<vector<TokenP> > tokens = tokenizer.Tokenize(text);
     for (auto it = tokens.begin();  it != tokens.end(); it++)

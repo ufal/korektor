@@ -13,6 +13,7 @@
 
 #include "common.h"
 #include "error_model/error_model.h"
+#include "utils/utf.h"
 #include "utils/utils.h"
 
 namespace ufal {
@@ -58,7 +59,7 @@ class hierarchy_node {
     if (children.size() == 0)
     {
       //-------------------------------------GENERATE ERROR------------------------------------------
-      if (signature.substr(0, 2) == Utils::utf8_to_utf16("s_"))
+      if (signature.substr(0, 2) == UTF::UTF8To16("s_"))
       {
         //---------------------------------SUBSTITUTION--------------------------------------------
         u16string prefix = generateRandomString(0, 4);
@@ -73,7 +74,7 @@ class hierarchy_node {
         correct += suffix;
         return;
       }
-      else if (signature.substr(0, 5) == Utils::utf8_to_utf16("swap_"))
+      else if (signature.substr(0, 5) == UTF::UTF8To16("swap_"))
       {
         //------------------------------------------SWAP--------------------------------------------
         u16string prefix = generateRandomString(0, 4);
@@ -93,7 +94,7 @@ class hierarchy_node {
         return;
 
       }
-      else if (signature.substr(0, 2) == Utils::utf8_to_utf16("i_"))
+      else if (signature.substr(0, 2) == UTF::UTF8To16("i_"))
       {
         //----------------------------------------INSERT--------------------------------------------
         u16string prefix;
@@ -118,7 +119,7 @@ class hierarchy_node {
         misspelled += suffix;
         return;
       }
-      else if (signature.substr(0, 2) == Utils::utf8_to_utf16("d_"))
+      else if (signature.substr(0, 2) == UTF::UTF8To16("d_"))
       {
         //-------------------------------------DELETE-----------------------------------------------
         u16string prefix;
@@ -181,7 +182,7 @@ class hierarchy_node {
 
   static hierarchy_nodeP create_SP(const u16string &_signature, hierarchy_nodeP &_parent, const u16string &context_chars)
   {
-    //cerr << "constructing hierarchy node: " << Utils::utf16_to_utf8(_signature) << endl;
+    //cerr << "constructing hierarchy node: " << UTF::UTF16To8(_signature) << endl;
     hierarchy_nodeP ret = hierarchy_nodeP(new hierarchy_node(_signature));
     ret->parent = _parent;
     if (_parent)
@@ -219,7 +220,7 @@ class hierarchy_node {
 
     }
 
-    //cerr << "construction finished: " << Utils::utf16_to_utf8(_signature) << endl;
+    //cerr << "construction finished: " << UTF::UTF16To8(_signature) << endl;
     return ret;
   }
 
@@ -228,7 +229,7 @@ class hierarchy_node {
     for (unsigned i = 0; i < level; i++)
       os << "\t";
 
-    string s = Utils::utf16_to_utf8(node->signature);
+    string s = UTF::UTF16To8(node->signature);
     os << s << endl;
 
     for (auto it = node->children.begin(); it != node->children.end(); it++)
@@ -251,9 +252,9 @@ class hierarchy_node {
 
     FATAL_CONDITION(level + 1 == new_level, "");
 
-    u16string signature = UTF::utf8_to_utf16(s.substr(new_level));
+    u16string signature = UTF::UTF8To16(s.substr(new_level));
 
-    //cerr << "signature: " << UTF::utf16_to_utf8(signature) << endl;
+    //cerr << "signature: " << UTF::UTF16To8(signature) << endl;
 
     hierarchy_nodeP new_node = hierarchy_nodeP(new hierarchy_node(signature));
 
@@ -273,7 +274,7 @@ class hierarchy_node {
     {
       FATAL_CONDITION(s == "root", "");
 
-      hierarchy_node::root = hierarchy_nodeP(new hierarchy_node(Utils::utf8_to_utf16("root")));
+      hierarchy_node::root = hierarchy_nodeP(new hierarchy_node(UTF::UTF8To16("root")));
       hierarchy_map.insert(make_pair(root->signature, root));
       pair<hierarchy_nodeP, unsigned> node_level_pair = make_pair(root, 0);
 
@@ -291,7 +292,7 @@ class hierarchy_node {
 //      if (node->is_output_node)
 //      {
 //        out_vec.push_back(make_pair(node->signature, ErrorModelOutput(node->edit_distance, node->error_prob)));
-//        //ofs << Utils::utf16_to_utf8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
+//        //ofs << UTF::UTF16To8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
 //      }
 //    }
 
@@ -303,12 +304,12 @@ class hierarchy_node {
       if (node->is_output_node)
       {
         out_vec.push_back(make_pair(node->signature, ErrorModelOutput(node->edit_distance, node->error_prob)));
-        //ofs << Utils::utf16_to_utf8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
+        //ofs << UTF::UTF16To8(node->signature) << "\t" << node->edit_distance << "\t" << node->error_prob << endl;
       }
       else
       {
         out_vec.push_back(make_pair(node->signature, ErrorModelOutput(node->edit_distance, inherited_prob)));
-        //ofs << Utils::utf16_to_utf8(node->signature) << "\t" << node->edit_distance << "\t" << inherited_prob /*<< "(" << Utils::utf16_to_utf8(prop_signature) << ")"*/ << endl;
+        //ofs << UTF::UTF16To8(node->signature) << "\t" << node->edit_distance << "\t" << inherited_prob /*<< "(" << UTF::UTF16To8(prop_signature) << ")"*/ << endl;
       }
 
     }
@@ -317,7 +318,7 @@ class hierarchy_node {
 
     if (node->is_output_node)
     {
-      cerr << "propagating: " << Utils::utf16_to_utf8(node->signature) << endl;
+      cerr << "propagating: " << UTF::UTF16To8(node->signature) << endl;
       propagated_value = node->error_prob;
       prop_signature = node->signature;
       prop_level = level;

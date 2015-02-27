@@ -17,6 +17,7 @@
 #include "create_error_model/get_error_signature.h"
 #include "error_model/error_model_basic.h"
 #include "utils/utf8_input_stream.h"
+#include "utils/utf.h"
 #include "utils/utils.h"
 
 using namespace ufal::korektor;
@@ -90,7 +91,7 @@ int main(int argc, char** argv)
       FATAL_CONDITION(toks.size() == 2, "____" << error_line << "____");
 
       u16string signature;
-      if (GetErrorSignature(Utils::utf8_to_utf16(toks[0]), Utils::utf8_to_utf16(toks[1]), signature))
+      if (GetErrorSignature(UTF::UTF8To16(toks[0]), UTF::UTF8To16(toks[1]), signature))
       {
         if (hierarchy_node::ContainsNode(signature))
         {
@@ -119,7 +120,7 @@ int main(int argc, char** argv)
 
       FATAL_CONDITION(toks.size() == 2, "--" << s << "--");
 
-      u16string key = Utils::utf8_to_utf16(toks[0]);
+      u16string key = UTF::UTF8To16(toks[0]);
       uint32_t count = Utils::my_atoi(toks[1]);
 
       for (unsigned i = 0; i < key.length(); i++)
@@ -128,7 +129,7 @@ int main(int argc, char** argv)
 
       if (context_map.find(key) != context_map.end())
       {
-        cerr << "key already found in the map!!!!!!" << Utils::utf16_to_utf8(key) << "!!!" << endl;
+        cerr << "key already found in the map!!!!!!" << UTF::UTF16To8(key) << "!!!" << endl;
         context_map[key] += count;
       }
       else
@@ -154,29 +155,29 @@ int main(int argc, char** argv)
 
     ofs_errmodel_txt << "case\t0\t2.0" << endl;
 
-    hierarchy_nodeP subs = hierarchy_node::GetNode(Utils::utf8_to_utf16("substitutions"));
+    hierarchy_nodeP subs = hierarchy_node::GetNode(UTF::UTF8To16("substitutions"));
     ErrorModelOutput emo_subs = ErrorModelOutput(1, subs->error_prob);
 
     ofs_errmodel_txt << "substitutions\t" << emo_subs.edit_dist << "\t" << emo_subs.cost << endl;
 
-    hierarchy_nodeP inserts = hierarchy_node::GetNode(Utils::utf8_to_utf16("insertions"));
+    hierarchy_nodeP inserts = hierarchy_node::GetNode(UTF::UTF8To16("insertions"));
     ErrorModelOutput emo_inserts = ErrorModelOutput(1, inserts->error_prob);
 
     ofs_errmodel_txt << "insertions\t" << emo_inserts.edit_dist << "\t" << emo_inserts.cost << endl;
 
-    hierarchy_nodeP deletes = hierarchy_node::GetNode(Utils::utf8_to_utf16("deletions"));
+    hierarchy_nodeP deletes = hierarchy_node::GetNode(UTF::UTF8To16("deletions"));
     ErrorModelOutput emo_deletes = ErrorModelOutput(1, deletes->error_prob);
 
     ofs_errmodel_txt << "deletions\t" << emo_deletes.edit_dist << "\t" << emo_deletes.cost << endl;
 
-    hierarchy_nodeP swaps = hierarchy_node::GetNode(Utils::utf8_to_utf16("swaps"));
+    hierarchy_nodeP swaps = hierarchy_node::GetNode(UTF::UTF8To16("swaps"));
     ErrorModelOutput emo_swaps = ErrorModelOutput(1, swaps->error_prob);
 
     ofs_errmodel_txt << "swaps\t" << emo_swaps.edit_dist << "\t" << emo_swaps.cost << endl;
 
     for (auto it = out_vec.begin(); it != out_vec.end(); it++)
     {
-      ofs_errmodel_txt << Utils::utf16_to_utf8(it->first) << "\t" << it->second.edit_dist << "\t" << it->second.cost << endl;
+      ofs_errmodel_txt << UTF::UTF16To8(it->first) << "\t" << it->second.edit_dist << "\t" << it->second.cost << endl;
     }
 
     ofs_errmodel_txt.close();

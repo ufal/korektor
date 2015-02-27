@@ -19,6 +19,7 @@
 #include "spellchecker/configuration.h"
 #include "spellchecker/constants.h"
 #include "stage_possibility.h"
+#include "utils/utf.h"
 
 namespace ufal {
 namespace korektor {
@@ -120,7 +121,7 @@ StagePossibilityP DecoderMultiFactor::sentence_start_SP()
   vector<FactorList> mnodes = configuration->morphology->GetMorphology(Constants::sentence_start_id, configuration);
   assert(mnodes.size() == 1);
 
-  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, Utils::utf8_to_utf16("<s>"), configuration, 0.0));
+  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, UTF::UTF8To16("<s>"), configuration, 0.0));
 }
 
 StagePossibilityP DecoderMultiFactor::sentence_end_SP()
@@ -128,7 +129,7 @@ StagePossibilityP DecoderMultiFactor::sentence_end_SP()
   vector<FactorList> mnodes = configuration->morphology->GetMorphology(Constants::sentence_end_id, configuration);
   assert(mnodes.size() == 1);
 
-  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, Utils::utf8_to_utf16("</s>"), configuration, 0.0));
+  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, UTF::UTF8To16("</s>"), configuration, 0.0));
 }
 
 

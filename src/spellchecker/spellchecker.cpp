@@ -23,6 +23,7 @@
 #include "text_checking_result.h"
 #include "tokenizer/tokenizer.h"
 #include "utils/u16string_replacing.h"
+#include "utils/utf.h"
 
 namespace ufal {
 namespace korektor {
@@ -126,7 +127,7 @@ struct pair_u16string_double_comparer : public less<pair<u16string, double>>
 
 vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
 {
-  u16string u_word = Utils::utf8_to_utf16(word);
+  u16string u_word = UTF::UTF8To16(word);
 
   TokenP token(new Token(u_word));
   token->correction_is_allowed = true;
@@ -167,7 +168,7 @@ vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
   vector<string> ret;
   for (uint32_t i = 0; i < word_cost_vec.size(); i++)
   {
-    ret.push_back(Utils::utf16_to_utf8(word_cost_vec[i].first));
+    ret.push_back(UTF::UTF16To8(word_cost_vec[i].first));
   }
 
   return ret;
@@ -177,7 +178,7 @@ vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
 
 void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, uint32_t &range_length)
 {
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
 
@@ -213,7 +214,7 @@ void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, 
 
 vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const string &text, unsigned &range_from, unsigned &range_length)
 {
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   vector<TextCheckingResultP> results;
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
@@ -245,7 +246,7 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const 
 
 vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
 {
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   vector<TextCheckingResultP> results;
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
@@ -277,7 +278,7 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
       }
 
       if (suggestions.size() > 0 &&
-          Utils::CaseInsensitiveIsEqual(stage_pos[0]->To_u16string(), curr_token->str_u16) == false)
+          !UTF::EqualIgnoringCase(stage_pos[0]->To_u16string(), curr_token->str_u16))
       {
         string sugg = suggestions[0];
         suggestions.clear();
@@ -305,7 +306,7 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
 ///
 string Spellchecker::CheckText(const string &text)
 {
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
 
   u16stringReplacing usr = u16stringReplacing(u_text);
@@ -327,13 +328,13 @@ string Spellchecker::CheckText(const string &text)
 
   }
 
-  return Utils::utf16_to_utf8(usr.GetResult());
+  return UTF::UTF16To8(usr.GetResult());
 }
 
 string Spellchecker::DecodeEvaluation(const string &text, uint32_t num_sugg_to_output)
 {
   stringstream ret;
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   uint32_t decoder_order = decoder->GetViterbiOrder();
 
   vector<vector<TokenP> > tokens_all = configuration->tokenizer->Tokenize(u_text);
@@ -399,7 +400,7 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
 {
   stringstream ret;
 
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   uint32_t decoder_order = decoder->GetViterbiOrder();
 
   vector<vector<TokenP> > tokens_all = configuration->tokenizer->Tokenize(u_text);
@@ -428,9 +429,9 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
       {
         if (spv[i + decoder_order - 1]->IsUnknown()) //!!! i + decoder_order - 1
         {
-          u16string us = Utils::utf8_to_utf16("<spelling original=\"");
+          u16string us = UTF::UTF8To16("<spelling original=\"");
           us += tokens[i]->str_u16;
-          us += Utils::utf8_to_utf16("\" suggestion=\"\"/>");
+          us += UTF::UTF8To16("\" suggestion=\"\"/>");
           //cerr << "spv->IsUnknown: " << tokens[i].GetWordStringISO() << endl;
           usr.Replace(tokens[i]->first, tokens[i]->length, us);
         }
@@ -440,13 +441,13 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
       {
         u16string us;
         if (tokens[i]->isUnknown())
-          us += Utils::utf8_to_utf16("<spelling original=\"");
+          us += UTF::UTF8To16("<spelling original=\"");
         else
-          us.append(Utils::utf8_to_utf16("<grammar original=\""));
+          us.append(UTF::UTF8To16("<grammar original=\""));
 
         us.append(tokens[i]->str_u16);
 
-        us.append(Utils::utf8_to_utf16("\" suggestions=\""));
+        us.append(UTF::UTF8To16("\" suggestions=\""));
 
         vector<StagePossibilityP> vec_sp = fit->second;
 
@@ -454,11 +455,11 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
 
         for (uint32_t g = 0; g < min(vec_sp.size(), (size_t)num_sugg_to_output); g++)
         {
-          if (g > 0) us.append(Utils::utf8_to_utf16("|"));
+          if (g > 0) us.append(UTF::UTF8To16("|"));
           us.append(vec_sp[g]->To_u16string());
         }
 
-        us.append(Utils::utf8_to_utf16("\"/>"));
+        us.append(UTF::UTF8To16("\"/>"));
 
         usr.Replace(tokens[i]->first, tokens[i]->length, us);
       }
@@ -467,13 +468,13 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
 
   }
 
-  return Utils::utf16_to_utf8(usr.GetResult());
+  return UTF::UTF16To8(usr.GetResult());
 }
 
 void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {
   suggestions.clear();
 
-  u16string u_text = Utils::utf8_to_utf16(text);
+  u16string u_text = UTF::UTF8To16(text);
   vector<vector<TokenP> > sentences = configuration->tokenizer->Tokenize(u_text);
 
   unsigned u_index = 0;
@@ -491,7 +492,7 @@ void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_outpu
       if (tok_index >= sentence.size()) continue;
 
       if (u_index < sentence[tok_index]->first)
-        suggestions.emplace_back(Utils::utf16_to_utf8(u_text.substr(u_index, sentence[tok_index]->first - u_index)), vector<string>());
+        suggestions.emplace_back(UTF::UTF16To8(u_text.substr(u_index, sentence[tok_index]->first - u_index)), vector<string>());
 
       suggestions.emplace_back(sentence[tok_index]->str_utf8, vector<string>());
       for (unsigned i = 0; i < suggestion.second.size() && i < num_sugg_to_output; i++)
@@ -500,7 +501,7 @@ void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_outpu
       u_index = sentence[tok_index]->first + sentence[tok_index]->length;
     }
   }
-  if (u_index < u_text.size()) suggestions.emplace_back(Utils::utf16_to_utf8(u_text.substr(u_index)), vector<string>());
+  if (u_index < u_text.size()) suggestions.emplace_back(UTF::UTF16To8(u_text.substr(u_index)), vector<string>());
 }
 
 void Spellchecker::GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {

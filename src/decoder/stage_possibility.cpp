@@ -10,6 +10,7 @@
 #include "spellchecker/configuration.h"
 #include "spellchecker/constants.h"
 #include "stage_possibility.h"
+#include "utils/utf.h"
 #include "utils/utils.h"
 
 namespace ufal {
@@ -20,7 +21,7 @@ SP_DEF(Configuration);
 
 string StagePossibilityNew::ToString()
 {
-  return Utils::utf16_to_utf8(word);
+  return UTF::UTF16To8(word);
 }
 
 bool StagePossibilityNew::IsUnknown()

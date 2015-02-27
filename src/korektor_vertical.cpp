@@ -15,6 +15,7 @@
 #include "spellchecker/spellchecker.h"
 #include "tokenizer/token.h"
 #include "utils/utils.h"
+#include "utils/utf.h"
 
 using namespace ufal::korektor;
 
@@ -46,7 +47,7 @@ int main(int argc, char* argv[])
         line.erase(0, tab + 1);
       }
 
-      u16string word(Utils::utf8_to_utf16(line));
+      u16string word(UTF::UTF8To16(line));
 
       TokenP token(new Token(para_length, word.size(), word));
 
@@ -54,7 +55,7 @@ int main(int argc, char* argv[])
         int wordID = configuration.lexicon->GetWordID(word);
         token->InitLexiconInformation(wordID, replaced.back().empty() ? configuration.lexicon->CorrectionIsAllowed(wordID) : false);
       }
-      token->correction_is_allowed = token->correction_is_allowed && Utils::ContainsLetter(token->str_u16);
+      token->correction_is_allowed = token->correction_is_allowed && UTF::ContainsLetter(token->str_u16);
       token->sentence_start = tokens.empty();
       tokens.emplace_back(token);
 
@@ -78,7 +79,7 @@ int main(int argc, char* argv[])
         } else {
           cout << replaced[i];
           if (tokens[i]->str_utf8 != replaced[i])
-            cout << '\t' << (configuration.lexicon->GetWordID(Utils::utf8_to_utf16(replaced[i])) == -1 ? 'S' : 'G') << '\t' << tokens[i]->str_utf8;
+            cout << '\t' << (configuration.lexicon->GetWordID(UTF::UTF8To16(replaced[i])) == -1 ? 'S' : 'G') << '\t' << tokens[i]->str_utf8;
         }
 
         cout << endl;

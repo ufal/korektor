@@ -17,6 +17,7 @@
 
 #include "error_model/error_model.h"
 #include "lexicon.h"
+#include "utils/utf.h"
 #include "utils/utils.h"
 
 namespace ufal {
@@ -333,7 +334,7 @@ Lexicon Lexicon::fromUTF8Strings(const vector<string> &words)
 
   for (auto it = words.begin(); it != words.end(); it++)
   {
-    uc_words.push_back(Utils::utf8_to_utf16(*it));
+    uc_words.push_back(UTF::UTF8To16(*it));
   }
 
   return Lexicon(uc_words);
@@ -411,12 +412,12 @@ void Lexicon::PrintWords(ostream &os, uint32_t max_index)
 {
   unsigned index = 0;
   unordered_map<unsigned, u16string> words;
-  u16string prefix = Utils::utf8_to_utf16("");
+  u16string prefix = UTF::UTF8To16("");
   print_words_rec(root_id, prefix, words, index, max_index);
 
   for (auto it = words.begin(); it != words.end(); it++)
   {
-    os << it->first << " - " << Utils::utf16_to_utf8(it->second) << endl;
+    os << it->first << " - " << UTF::UTF16To8(it->second) << endl;
   }
 }
 
@@ -451,7 +452,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
   uint32_t init_prefix_size = prefix.length();
 
-  //cerr << "prefix = " << Utils::utf16_to_utf8(prefix) << endl;
+  //cerr << "prefix = " << UTF::UTF16To8(prefix) << endl;
 
   for (uint32_t i = startIndex; i <= (unsigned)word.length(); i++)
   {
@@ -628,7 +629,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
 Similar_Words_Map Lexicon::GetSimilarWords(u16string word, uint32_t max_ed_dist, double _cost_limit, ErrorModelP errModel, bool _ignore_case)
 {
-  u16string prefix = Utils::utf8_to_utf16("");
+  u16string prefix = UTF::UTF8To16("");
   return GetSimilarWords_impl(word, 0, 0, errModel, root_id, 0, prefix, _cost_limit, _ignore_case, max_ed_dist);
 }
 

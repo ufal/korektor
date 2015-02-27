@@ -59,7 +59,7 @@ class UTF8InputStream
 
       //utf8 text files created on Windows contain this character at a beginning of the file (and you don't want that...)
 
-      us = UTF::utf8_to_utf16(s);
+      us = UTF::UTF8To16(s);
 
       while ((!us.empty()) &&  *us.begin() >= 0xD800)
         us.erase(us.begin());
@@ -74,7 +74,7 @@ class UTF8InputStream
     bool ret = ReadLineUS(us);
 
     if (ret == true)
-      s = UTF::utf16_to_utf8(us);
+      s = UTF::UTF16To8(us);
     return ret;
   }
 };

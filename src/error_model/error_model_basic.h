@@ -120,41 +120,7 @@ class ErrorModelBasic : public ErrorModel
   /// @param char2 A character
   /// @param ignore_case "true" or "false", whether to ignore the case difference
   /// @return An object of type @ref ErrorModelOutput containing the substitution cost and edit distance
-  virtual ErrorModelOutput SubstitutionCost(char16_t char1, char16_t char2, bool ignore_case = false)
-  {
-
-    if (ignore_case == false)
-    {
-      auto fit = substitution_map.find(make_pair(char1, char2));
-      if (fit == substitution_map.end())
-      {
-        if (char1 == char2)
-          return ErrorModelOutput(0, 0.0f);
-        else if (Utils::ToLower(char1) == Utils::ToLower(char2))
-          return case_mismatch_cost;
-        else
-          return substitution_default;
-      }
-      else
-        return fit->second;
-    }
-    else
-    {
-      if (Utils::IsUpperCase(char1)) char1 = Utils::ToLower(char1);
-      if (Utils::IsUpperCase(char2)) char2 = Utils::ToLower(char2);
-
-      auto fit = substitution_map.find(make_pair(char1, char2));
-      if (fit == substitution_map.end())
-      {
-        if (char1 == char2)
-          return ErrorModelOutput(0, 0.0f);
-        else
-          return substitution_default;
-      }
-      else
-        return fit->second;
-    }
-  }
+  virtual ErrorModelOutput SubstitutionCost(char16_t char1, char16_t char2, bool ignore_case = false);
 
   /// @brief Calculate insertion cost
   ///
@@ -162,43 +128,21 @@ class ErrorModelBasic : public ErrorModel
   /// @param previous_char Previous character
   /// @param next_char Next character
   /// @return An object of type @ref ErrorModelOutput containing the insertion cost and edit distance
-  virtual ErrorModelOutput InsertionCost(char16_t inserted_char, char16_t previous_char, char16_t next_char)
-  {
-    auto fit = insertion_map.find(make_tuple(inserted_char, previous_char, next_char));
-    if (fit == insertion_map.end())
-      return insertion_default;
-    else
-      return fit->second;
-  }
+  virtual ErrorModelOutput InsertionCost(char16_t inserted_char, char16_t previous_char, char16_t next_char);
 
   /// @brief Calculate swap cost
   ///
   /// @param first_char A character
   /// @param second_char A character
   /// @return An object of type @ref ErrorModelOutput containing the swap cost and edit distance
-  virtual ErrorModelOutput SwapCost(char16_t first_char, char16_t second_char)
-  {
-    auto fit = swap_map.find(make_pair(first_char, second_char));
-
-    if (fit == swap_map.end())
-      return swap_default;
-    else
-      return fit->second;
-  }
+  virtual ErrorModelOutput SwapCost(char16_t first_char, char16_t second_char);
 
   /// @brief Calculate deletion cost
   ///
   /// @param current_char Current character
   /// @param previous_char Previous character
   /// @return An object of type @ref ErrorModelOutput containing the deletion cost and edit distance
-  virtual ErrorModelOutput DeletionCost(char16_t current_char, char16_t previous_char)
-  {
-    auto fit = deletion_map.find(make_pair(current_char, previous_char));
-    if (fit == deletion_map.end())
-      return deletion_default;
-    else
-      return fit->second;
-  }
+  virtual ErrorModelOutput DeletionCost(char16_t current_char, char16_t previous_char);
 
   /// @todo Function for ?
   virtual uint32_t MinOperationEditDistance() { return min_operation_edit_distance; }
@@ -211,8 +155,6 @@ class ErrorModelBasic : public ErrorModel
   virtual bool StringsAreIdentical(const u16string &s1, const u16string &s2) { return s1 == s2; }
 
   virtual string ToString() { return "ErrorModelBasic"; }
-
-
 };
 
 } // namespace korektor
