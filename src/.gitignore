@@ -6,6 +6,6 @@ korektor
 korektor_server
 korektor_vertical
 libkorlib.a
-tokenize
+tokenizer
 *.exe
 *.swp
