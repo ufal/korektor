@@ -15,11 +15,11 @@ namespace korektor {
 
 capitalization_type GetCapitalizationType(const u16string& ustr)
 {
-  if (MyUtils::IsUpperCase(ustr[0]))
+  if (Utils::IsUpperCase(ustr[0]))
   {
     for (unsigned i = 1; i < ustr.length(); i++)
     {
-      if (MyUtils::IsUpperCase(ustr[i]) == false)
+      if (Utils::IsUpperCase(ustr[i]) == false)
       {
         if (i > 1)
           return WEIRD;
@@ -27,7 +27,7 @@ capitalization_type GetCapitalizationType(const u16string& ustr)
         {
           for (unsigned j = 2; j < ustr.length(); j++)
           {
-            if (MyUtils::IsUpperCase(ustr[j]))
+            if (Utils::IsUpperCase(ustr[j]))
               return WEIRD;
           }
         }
@@ -40,7 +40,7 @@ capitalization_type GetCapitalizationType(const u16string& ustr)
   {
     for (unsigned i = 1; i < ustr.length(); i++)
     {
-      if (MyUtils::IsUpperCase(ustr[i]))
+      if (Utils::IsUpperCase(ustr[i]))
         return WEIRD;
     }
     return ALL_LOWER_CASE;

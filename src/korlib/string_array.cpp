@@ -9,12 +9,12 @@
 
 #include <iostream>
 
-#include "my_static_string_array.h"
+#include "string_array.h"
 
 namespace ufal {
 namespace korektor {
 
-MyStaticStringArray::MyStaticStringArray(istream &ifs)
+StringArray::StringArray(istream &ifs)
 {
   ifs.read((char*)&data_size, sizeof(uint32_t));
 
@@ -23,7 +23,7 @@ MyStaticStringArray::MyStaticStringArray(istream &ifs)
   offsets = CompIncreasingArray(ifs);
 }
 
-MyStaticStringArray::MyStaticStringArray(vector<string> &vals)
+StringArray::StringArray(vector<string> &vals)
 {
   uint32_t bytes_needed = 0;
   vector<uint32_t> offs;
@@ -46,7 +46,7 @@ MyStaticStringArray::MyStaticStringArray(vector<string> &vals)
   data_size = bytes_needed;
 }
 
-void MyStaticStringArray::WriteToStream(ostream &ofs)
+void StringArray::WriteToStream(ostream &ofs)
 {
   ofs.write((char*)&data_size, sizeof(uint32_t));
 

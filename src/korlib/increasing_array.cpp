@@ -7,14 +7,14 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_increasing_array.cpp
+/// @file increasing_array.cpp
 /// @brief Data structure for efficiently storing integer
 ///        arrays whose values are in an increasing order.
 
 #include <iostream>
 
-#include "my_increasing_array.h"
-#include "my_packed_array.h"
+#include "increasing_array.h"
+#include "packed_array.h"
 #include "utils.h"
 
 namespace ufal {
@@ -23,16 +23,16 @@ namespace korektor {
 /// @brief Initialize the constructor from input stream
 ///
 /// @param ifs Input stream
-MyIncreasingArray::MyIncreasingArray(istream &ifs):
-  multiplier(MyUtils::Read_uint32_t(ifs)),
-  value_shift((int32_t)MyUtils::Read_uint32_t(ifs)),
+IncreasingArray::IncreasingArray(istream &ifs):
+  multiplier(Utils::Read_uint32_t(ifs)),
+  value_shift((int32_t)Utils::Read_uint32_t(ifs)),
   shifted_offsets(ifs)
 {}
 
 /// @brief Write the array to the output stream
 ///
 /// @param ofs Output stream
-void MyIncreasingArray::WriteToStream(ostream &ofs) const
+void IncreasingArray::WriteToStream(ostream &ofs) const
 {
 
   ofs.write((char*)&multiplier, sizeof(uint32_t));
@@ -44,7 +44,7 @@ void MyIncreasingArray::WriteToStream(ostream &ofs) const
 /// @brief Initializing the construction of increasing array from vector
 ///
 /// @param vec Vector of integer values
-MyIncreasingArray::MyIncreasingArray(vector<uint32_t> &vec)
+IncreasingArray::IncreasingArray(vector<uint32_t> &vec)
 {
   uint32_t max_val = vec.back();
   uint32_t min_val = vec[0];
@@ -83,11 +83,11 @@ MyIncreasingArray::MyIncreasingArray(vector<uint32_t> &vec)
     sh_offsets.push_back(sh_offset);
   }
 
-  shifted_offsets = MyPackedArray(sh_offsets);
+  shifted_offsets = PackedArray(sh_offsets);
   value_shift = min_val + min_offset;
 
-  //cerr << "MyIncreasingArray created: bitsPerValue = " << shifted_offsets->GetBitsPerValue() << endl;
-  //cerr << "MyPackedArray would need " << BitsNeeded(max_val - min_val) << " bits\n----\n";
+  //cerr << "IncreasingArray created: bitsPerValue = " << shifted_offsets->GetBitsPerValue() << endl;
+  //cerr << "PackedArray would need " << BitsNeeded(max_val - min_val) << " bits\n----\n";
 
   for (uint32_t i = 0; i < vec.size(); i++)
   {

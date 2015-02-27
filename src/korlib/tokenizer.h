@@ -59,9 +59,9 @@ class Tokenizer {
       else if (text[i] == '.')
       {
         unsigned j = i + 1;
-        while (j < text.length() - 1 && MyUTF::is_alphanum(text[j]) == false) j++;
+        while (j < text.length() - 1 && UTF::is_alphanum(text[j]) == false) j++;
 
-        if (MyUtils::IsUpperCase(text[j]))
+        if (Utils::IsUpperCase(text[j]))
           sentence_ends.push_back(i);
       }
     }
@@ -70,10 +70,10 @@ class Tokenizer {
 
     while (i < text.length())
     {
-      if (MyUTF::is_alphanum(text[i]))
+      if (UTF::is_alphanum(text[i]))
       {
         unsigned length = 1;
-        while (i + length < text.length() && MyUTF::is_alphanum(text[i + length]))
+        while (i + length < text.length() && UTF::is_alphanum(text[i + length]))
           length++;
 
         TokenP token = TokenP(new Token(i, length, text.substr(i, length)));
@@ -83,13 +83,13 @@ class Tokenizer {
           int wordID = lexicon->GetWordID(token->str_u16);
           token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
         }
-        token->correction_is_allowed = token->correction_is_allowed && MyUtils::ContainsLetter(token->str_u16);
+        token->correction_is_allowed = token->correction_is_allowed && Utils::ContainsLetter(token->str_u16);
 
         tokens.push_back(token);
 
         i += length;
       }
-      else if (MyUTF::is_punct(text[i]))
+      else if (UTF::is_punct(text[i]))
       {
         TokenP token = TokenP(new Token(i, 1, text.substr(i, 1)));
 
@@ -98,7 +98,7 @@ class Tokenizer {
           int wordID = lexicon->GetWordID(token->str_u16);
           token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
         }
-        token->correction_is_allowed = token->correction_is_allowed && MyUtils::ContainsLetter(token->str_u16);
+        token->correction_is_allowed = token->correction_is_allowed && Utils::ContainsLetter(token->str_u16);
 
         tokens.push_back(token);
 

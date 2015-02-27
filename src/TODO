@@ -3,6 +3,3 @@
 
 - split utf methods to myutf
 - split random methods from myutils
-- rename the my_ files and My classes
-- rename StaticStringArray to StringArray
-- rename Posibi to Possibi

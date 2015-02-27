@@ -18,11 +18,11 @@
 namespace ufal {
 namespace korektor {
 
-class MyPackedArray;
-SP_DEF(MyPackedArray);
+class PackedArray;
+SP_DEF(PackedArray);
 
-class MyMappedDoubleArray;
-SP_DEF(MyMappedDoubleArray);
+class MappedDoubleArray;
+SP_DEF(MappedDoubleArray);
 
 class CompIncreasingArray;
 SP_DEF(CompIncreasingArray);
@@ -58,9 +58,9 @@ class ZipLM {
   static const uint32_t bits_per_higher_order_bow;
 
 
-  vector<MyMappedDoubleArrayP> probs;
-  vector<MyMappedDoubleArrayP> bows;
-  vector<MyPackedArrayP> ids;
+  vector<MappedDoubleArrayP> probs;
+  vector<MappedDoubleArrayP> bows;
+  vector<PackedArrayP> ids;
 
   vector<CompIncreasingArrayP> offsets;
 

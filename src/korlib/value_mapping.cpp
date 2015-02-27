@@ -201,7 +201,7 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
       }
       else
       {
-        centers[i] = MyUtils::RandomNumber(min_pos, max);
+        centers[i] = Utils::RandomNumber(min_pos, max);
       }
     }
 

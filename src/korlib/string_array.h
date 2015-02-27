@@ -7,8 +7,8 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_static_string_array.h
-/// @class MyStaticStringArray my_static_string_array.h "my_static_string_array.h"
+/// @file string_array.h
+/// @class StringArray string_array.h "string_array.h"
 /// @brief Class for storing array of strings as data
 
 #pragma once
@@ -21,7 +21,7 @@
 namespace ufal {
 namespace korektor {
 
-class MyStaticStringArray {
+class StringArray {
   char* data; ///< Pointer to string data
   uint32_t data_size; ///< Size of the data
   CompIncreasingArray offsets;
@@ -50,12 +50,12 @@ class MyStaticStringArray {
   /// @brief Initialize the array from input stream
   ///
   /// @param ifs Input stream
-  MyStaticStringArray(istream &ifs);
+  StringArray(istream &ifs);
 
   /// @brief Initialize the array from a vector of strings
   ///
   /// @param vals Vector of strings
-  MyStaticStringArray(vector<string> &vals);
+  StringArray(vector<string> &vals);
 
   /// @brief Write the array to output stream
   ///
@@ -63,15 +63,15 @@ class MyStaticStringArray {
   void WriteToStream(ostream &ofs);
 
   /// @brief Destructor
-  ~MyStaticStringArray()
+  ~StringArray()
   {
     delete[] data;
   }
 
   /// @brief Initialize the array from another static string array
   ///
-  /// @param val MyStaticStringArray
-  MyStaticStringArray(const MyStaticStringArray &val)
+  /// @param val StringArray
+  StringArray(const StringArray &val)
   {
     offsets = val.offsets;
     data_size = val.data_size;
@@ -82,9 +82,9 @@ class MyStaticStringArray {
 
   /// @brief Copy the static array through assignment operator (copy constructor)
   ///
-  /// @param val MyStaticStringArray
-  /// @return MyStaticStringArray
-  MyStaticStringArray& operator=(const MyStaticStringArray &val)
+  /// @param val StringArray
+  /// @return StringArray
+  StringArray& operator=(const StringArray &val)
   {
     if (this != &val)
     {
@@ -100,7 +100,7 @@ class MyStaticStringArray {
   }
 };
 
-SP_DEF(MyStaticStringArray);
+SP_DEF(StringArray);
 
 } // namespace korektor
 } // namespace ufal

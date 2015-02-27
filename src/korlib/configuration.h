@@ -33,8 +33,8 @@ SP_DEF(Tokenizer);
 class ErrorModel;
 SP_DEF(ErrorModel);
 
-class StagePosibility;
-SP_DEF(StagePosibility);
+class StagePossibility;
+SP_DEF(StagePossibility);
 
 class SimWordsFinder;
 SP_DEF(SimWordsFinder);

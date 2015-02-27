@@ -70,7 +70,7 @@ int main(int argc, char** argv)
 
     unsigned counter = 0;
 
-    while (MyUtils::SafeReadline(cin, s))
+    while (Utils::SafeReadline(cin, s))
     {
       counter++;
 
@@ -82,12 +82,12 @@ int main(int argc, char** argv)
         exit(1);
       }
 
-      MyUtils::SafeReadline(gold_ifs, gold_s);
+      Utils::SafeReadline(gold_ifs, gold_s);
 
       out = spellchecker.CheckText(s);
 
-      vector<vector<TokenP>> out_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(out));
-      vector<vector<TokenP>> gold_toks = configuration->tokenizer->Tokenize(MyUtils::utf8_to_utf16(gold_s));
+      vector<vector<TokenP>> out_toks = configuration->tokenizer->Tokenize(Utils::utf8_to_utf16(out));
+      vector<vector<TokenP>> gold_toks = configuration->tokenizer->Tokenize(Utils::utf8_to_utf16(gold_s));
 
       if (out_toks.size() != gold_toks.size())
       {
@@ -145,7 +145,7 @@ int main(int argc, char** argv)
     return 0;
   }
 
-  while (MyUtils::SafeReadline(cin, s))
+  while (Utils::SafeReadline(cin, s))
   {
     if (configuration->mode_string == "tag_errors")
     {

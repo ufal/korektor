@@ -30,7 +30,7 @@ int main(int argc, char** argv)
   string morphology_bin_file = argv[2];
   string morphology_words_file = argv[3];
   string factor_name = argv[4];
-  unsigned order = MyUtils::my_atoi(argv[5]);
+  unsigned order = Utils::my_atoi(argv[5]);
   string out_file = argv[6];
   double not_in_lm_cost = 15.0;
 

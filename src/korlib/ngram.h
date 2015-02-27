@@ -91,11 +91,11 @@ struct NGram_ihash: std::unary_function<NGram, std::size_t>
   {
     std::size_t seed = 0;
 
-    MyUtils::HashCombine(seed, x.order);
+    Utils::HashCombine(seed, x.order);
 
     for (uint32_t i = 0; i < x.order; i++)
     {
-      MyUtils::HashCombine(seed, x.GetWordID_New(i));
+      Utils::HashCombine(seed, x.GetWordID_New(i));
     }
 
     return seed;

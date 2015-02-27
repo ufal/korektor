@@ -34,36 +34,36 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
 
     ErrorModelOutput emo_case_mismatch = ErrorModelOutput(emo.edit_dist + case_mismatch_cost.edit_dist, emo.cost + case_mismatch_cost.cost);
 
-    if (signature.substr(0, 2) == MyUtils::utf8_to_utf16("s_"))
+    if (signature.substr(0, 2) == Utils::utf8_to_utf16("s_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
 
       substitution_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = MyUtils::ToUpper(ch1);
-      char16_t ch2_uc = MyUtils::ToUpper(ch2);
+      char16_t ch1_uc = Utils::ToUpper(ch1);
+      char16_t ch2_uc = Utils::ToUpper(ch2);
 
       substitution_map[make_pair(ch1_uc, ch2_uc)] = emo;
       substitution_map[make_pair(ch1_uc, ch2)] = emo_case_mismatch;
       substitution_map[make_pair(ch1, ch2_uc)] = emo_case_mismatch;
     }
-    else if (signature.substr(0, 5) == MyUtils::utf8_to_utf16("swap_"))
+    else if (signature.substr(0, 5) == Utils::utf8_to_utf16("swap_"))
     {
       char16_t ch1 = signature[5];
       char16_t ch2 = signature[6];
 
       swap_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = MyUtils::ToUpper(ch1);
-      char16_t ch2_uc = MyUtils::ToUpper(ch2);
+      char16_t ch1_uc = Utils::ToUpper(ch1);
+      char16_t ch2_uc = Utils::ToUpper(ch2);
 
       swap_map[make_pair(ch1_uc, ch2_uc)] = emo;
       swap_map[make_pair(ch1_uc, ch2)] = emo;
       swap_map[make_pair(ch1, ch2_uc)] = emo;
 
     }
-    else if (signature.substr(0, 2) == MyUtils::utf8_to_utf16("i_"))
+    else if (signature.substr(0, 2) == Utils::utf8_to_utf16("i_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
@@ -71,9 +71,9 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
 
       insertion_map[make_tuple(ch1, ch2, ch3)] = emo;
 
-      char16_t ch1_uc = MyUtils::ToUpper(ch1);
-      char16_t ch2_uc = MyUtils::ToUpper(ch2);
-      char16_t ch3_uc = MyUtils::ToUpper(ch3);
+      char16_t ch1_uc = Utils::ToUpper(ch1);
+      char16_t ch2_uc = Utils::ToUpper(ch2);
+      char16_t ch3_uc = Utils::ToUpper(ch3);
 
       insertion_map[make_tuple(ch1_uc, ch2, ch3)] = emo;
       insertion_map[make_tuple(ch1, ch2_uc, ch3)] = emo;
@@ -83,15 +83,15 @@ ErrorModelBasic::ErrorModelBasic(unsigned _min_operation_edit_distance, ErrorMod
       insertion_map[make_tuple(ch1, ch2_uc, ch3_uc)] = emo;
       insertion_map[make_tuple(ch1_uc, ch2_uc, ch3_uc)] = emo;
     }
-    else if (signature.substr(0, 2) == MyUtils::utf8_to_utf16("d_"))
+    else if (signature.substr(0, 2) == Utils::utf8_to_utf16("d_"))
     {
       char16_t ch1 = signature[2];
       char16_t ch2 = signature[3];
 
       deletion_map[make_pair(ch1, ch2)] = emo;
 
-      char16_t ch1_uc = MyUtils::ToUpper(ch1);
-      char16_t ch2_uc = MyUtils::ToUpper(ch2);
+      char16_t ch1_uc = Utils::ToUpper(ch1);
+      char16_t ch2_uc = Utils::ToUpper(ch2);
 
       deletion_map[make_pair(ch1_uc, ch2)] = emo;
       deletion_map[make_pair(ch1, ch2_uc)] = emo;
@@ -173,51 +173,51 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
 
   unsigned min_edit_dist = 100000;
 
-  MyUtils::SafeReadline(ifs, s);
-  MyUtils::Split(toks, s, "\t");
+  Utils::SafeReadline(ifs, s);
+  Utils::Split(toks, s, "\t");
 
   FATAL_CONDITION(toks[0].substr(toks[0].length() - 4) == "case", "");
   FATAL_CONDITION(toks.size() == 3, "");
 
 
-  ErrorModelOutput case_mismatch = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+  ErrorModelOutput case_mismatch = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
   if (min_edit_dist > case_mismatch.edit_dist)
     min_edit_dist = case_mismatch.edit_dist;
 
 
-  MyUtils::SafeReadline(ifs, s);
-  MyUtils::Split(toks, s, "\t");
+  Utils::SafeReadline(ifs, s);
+  Utils::Split(toks, s, "\t");
 
   FATAL_CONDITION(toks[0] == "substitutions", "");
   FATAL_CONDITION(toks.size() == 3, "");
 
-  ErrorModelOutput sub_default = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+  ErrorModelOutput sub_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
   if (min_edit_dist > sub_default.edit_dist)
     min_edit_dist = sub_default.edit_dist;
 
-  MyUtils::SafeReadline(ifs, s);
-  MyUtils::Split(toks, s, "\t");
+  Utils::SafeReadline(ifs, s);
+  Utils::Split(toks, s, "\t");
 
   FATAL_CONDITION(toks[0] == "insertions", "");
   FATAL_CONDITION(toks.size() == 3, "");
 
-  ErrorModelOutput insert_default = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+  ErrorModelOutput insert_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
   if (min_edit_dist > insert_default.edit_dist)
     min_edit_dist = insert_default.edit_dist;
 
-  MyUtils::SafeReadline(ifs, s);
-  MyUtils::Split(toks, s, "\t");
+  Utils::SafeReadline(ifs, s);
+  Utils::Split(toks, s, "\t");
 
   FATAL_CONDITION(toks[0] == "deletions", "");
   FATAL_CONDITION(toks.size() == 3, "");
 
-  ErrorModelOutput del_default = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+  ErrorModelOutput del_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
-  MyUtils::SafeReadline(ifs, s);
-  MyUtils::Split(toks, s, "\t");
+  Utils::SafeReadline(ifs, s);
+  Utils::Split(toks, s, "\t");
 
   if (min_edit_dist > del_default.edit_dist)
     min_edit_dist = del_default.edit_dist;
@@ -225,28 +225,28 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   FATAL_CONDITION(toks[0] == "swaps", "");
   FATAL_CONDITION(toks.size() == 3, "");
 
-  ErrorModelOutput swap_default = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+  ErrorModelOutput swap_default = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
   if (min_edit_dist > swap_default.edit_dist)
     min_edit_dist = swap_default.edit_dist;
 
   vector<pair<u16string, ErrorModelOutput>> values;
 
-  while (MyUtils::SafeReadline(ifs, s))
+  while (Utils::SafeReadline(ifs, s))
   {
-    MyUtils::Split(toks, s, "\t");
+    Utils::Split(toks, s, "\t");
 
     if (s == "")
       continue;
 
     FATAL_CONDITION(toks.size() == 3, s);
 
-    ErrorModelOutput emo = ErrorModelOutput(MyUtils::my_atoi(toks[1]), MyUtils::my_atof(toks[2]));
+    ErrorModelOutput emo = ErrorModelOutput(Utils::my_atoi(toks[1]), Utils::my_atof(toks[2]));
 
     if (min_edit_dist > emo.edit_dist)
       min_edit_dist = emo.edit_dist;
 
-    values.push_back(make_pair(MyUTF::utf8_to_utf16(toks[0]), emo));
+    values.push_back(make_pair(UTF::utf8_to_utf16(toks[0]), emo));
   }
 
   cerr << "min_edit_dist = " << min_edit_dist << endl;

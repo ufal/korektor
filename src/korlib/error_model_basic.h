@@ -37,8 +37,8 @@ struct char16_pair_hash : std::unary_function<pair<char16_t, char16_t>, size_t>
   size_t operator()(const pair<char16_t, char16_t> &val) const
   {
     size_t seed = 0;
-    MyUtils::HashCombine(seed, val.first);
-    MyUtils::HashCombine(seed, val.second);
+    Utils::HashCombine(seed, val.first);
+    Utils::HashCombine(seed, val.second);
     return seed;
   }
 };
@@ -50,9 +50,9 @@ struct char16_triple_hash : std::unary_function<tuple<char16_t, char16_t, char16
   {
     size_t seed = 0;
 
-    MyUtils::HashCombine(seed, get<0>(val));
-    MyUtils::HashCombine(seed, get<1>(val));
-    MyUtils::HashCombine(seed, get<2>(val));
+    Utils::HashCombine(seed, get<0>(val));
+    Utils::HashCombine(seed, get<1>(val));
+    Utils::HashCombine(seed, get<2>(val));
 
     return seed;
   }
@@ -130,7 +130,7 @@ class ErrorModelBasic : public ErrorModel
       {
         if (char1 == char2)
           return ErrorModelOutput(0, 0.0f);
-        else if (MyUtils::ToLower(char1) == MyUtils::ToLower(char2))
+        else if (Utils::ToLower(char1) == Utils::ToLower(char2))
           return case_mismatch_cost;
         else
           return substitution_default;
@@ -140,8 +140,8 @@ class ErrorModelBasic : public ErrorModel
     }
     else
     {
-      if (MyUtils::IsUpperCase(char1)) char1 = MyUtils::ToLower(char1);
-      if (MyUtils::IsUpperCase(char2)) char2 = MyUtils::ToLower(char2);
+      if (Utils::IsUpperCase(char1)) char1 = Utils::ToLower(char1);
+      if (Utils::IsUpperCase(char2)) char2 = Utils::ToLower(char2);
 
       auto fit = substitution_map.find(make_pair(char1, char2));
       if (fit == substitution_map.end())

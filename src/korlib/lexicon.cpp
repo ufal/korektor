@@ -193,7 +193,7 @@ int Lexicon::SingleArc_nextstate(uint32_t stateID, char16_t character) const
 /// @param ifs Input stream
 Lexicon::Lexicon(istream &ifs)
 {
-  string checkIT = MyUtils::ReadString(ifs);
+  string checkIT = Utils::ReadString(ifs);
 
   FATAL_CONDITION(checkIT == "Lexicon", "checkIT = " << checkIT);
 
@@ -333,7 +333,7 @@ Lexicon Lexicon::fromUTF8Strings(const vector<string> &words)
 
   for (auto it = words.begin(); it != words.end(); it++)
   {
-    uc_words.push_back(MyUtils::utf8_to_utf16(*it));
+    uc_words.push_back(Utils::utf8_to_utf16(*it));
   }
 
   return Lexicon(uc_words);
@@ -344,7 +344,7 @@ Lexicon Lexicon::fromUTF8Strings(const vector<string> &words)
 /// @param ofs Output stream
 void Lexicon::WriteToStream(ostream &ofs) const
 {
-  MyUtils::WriteString(ofs, "Lexicon");
+  Utils::WriteString(ofs, "Lexicon");
   ofs.write((char*)&num_words, sizeof(uint32_t));
   ofs.write((char*)&num_arcs, sizeof(uint32_t));
   ofs.write((char*)&root_id, sizeof(uint32_t));
@@ -411,12 +411,12 @@ void Lexicon::PrintWords(ostream &os, uint32_t max_index)
 {
   unsigned index = 0;
   unordered_map<unsigned, u16string> words;
-  u16string prefix = MyUtils::utf8_to_utf16("");
+  u16string prefix = Utils::utf8_to_utf16("");
   print_words_rec(root_id, prefix, words, index, max_index);
 
   for (auto it = words.begin(); it != words.end(); it++)
   {
-    os << it->first << " - " << MyUtils::utf16_to_utf8(it->second) << endl;
+    os << it->first << " - " << Utils::utf16_to_utf8(it->second) << endl;
   }
 }
 
@@ -451,7 +451,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
   uint32_t init_prefix_size = prefix.length();
 
-  //cerr << "prefix = " << MyUtils::utf16_to_utf8(prefix) << endl;
+  //cerr << "prefix = " << Utils::utf16_to_utf8(prefix) << endl;
 
   for (uint32_t i = startIndex; i <= (unsigned)word.length(); i++)
   {
@@ -628,7 +628,7 @@ Similar_Words_Map Lexicon::GetSimilarWords_impl(u16string &word, uint32_t edit_d
 
 Similar_Words_Map Lexicon::GetSimilarWords(u16string word, uint32_t max_ed_dist, double _cost_limit, ErrorModelP errModel, bool _ignore_case)
 {
-  u16string prefix = MyUtils::utf8_to_utf16("");
+  u16string prefix = Utils::utf8_to_utf16("");
   return GetSimilarWords_impl(word, 0, 0, errModel, root_id, 0, prefix, _cost_limit, _ignore_case, max_ed_dist);
 }
 

@@ -14,7 +14,7 @@
 #include "constants.h"
 #include "decoder_base.h"
 #include "morphology.h"
-#include "stage_posibility.h"
+#include "stage_possibility.h"
 
 namespace ufal {
 namespace korektor {
@@ -27,9 +27,9 @@ SP_DEF(Trellis_stage);
 
 void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 {
-  stage_posibilities = StagePosibilitiesType(new vector<vector<StagePosibilityP> >());
+  stage_posibilities = StagePossibilitiesType(new vector<vector<StagePossibilityP> >());
 
-  vector<StagePosibilityP> start_sp;
+  vector<StagePossibilityP> start_sp;
   start_sp.push_back(sentence_start_SP());
 
   for (uint32_t i = 0; i < viterbi_order - 1; i++)
@@ -37,7 +37,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
     stage_posibilities->push_back(start_sp);
   }
 
-  vector<vector<StagePosibilityP> > inner_sp = init_inner_stage_posibilities(tokens);
+  vector<vector<StagePossibilityP> > inner_sp = init_inner_stage_posibilities(tokens);
 
 
   string st_pos_string;
@@ -49,7 +49,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
     {
       for (auto it2 = it->begin(); it2 != it->end(); it2++)
       {
-        StagePosibilityNewP st_pos = std::dynamic_pointer_cast<StagePosibilityNew>(*it2);
+        StagePossibilityNewP st_pos = std::dynamic_pointer_cast<StagePossibilityNew>(*it2);
 
         FactorList flist = st_pos->GetFactorList();
 
@@ -76,7 +76,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 
   stage_posibilities->insert(stage_posibilities->end(), inner_sp.begin(), inner_sp.end());
 
-  vector<StagePosibilityP> end_sp;
+  vector<StagePossibilityP> end_sp;
   end_sp.push_back(sentence_end_SP());
 
   stage_posibilities->push_back(end_sp);
@@ -89,12 +89,12 @@ uint32_t DecoderBase::GetViterbiOrder()
   return viterbi_order;
 }
 
-vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<TokenP> &tokens)
+vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<TokenP> &tokens)
 {
 
   //cerr << "decoded init...\n";
 
-  vector<StagePosibilityP> ret_vec;
+  vector<StagePossibilityP> ret_vec;
 
   if (tokens.size() == 0)
   {
@@ -110,7 +110,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
 
   last_trellis_stage.reserve(1000);
 
-  vector<StagePosibilityP> start_state_history;
+  vector<StagePossibilityP> start_state_history;
 
   for (uint32_t i = 0; i < viterbi_order - 1; i++)
     start_state_history.push_back(sentence_start_SP());
@@ -123,7 +123,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
 
   for (uint32_t i = viterbi_order - 1; i < stage_posibilities->size(); i++)
   {
-    vector<StagePosibilityP> &current_stage_posibilities = stage_posibilities->operator [](i);
+    vector<StagePossibilityP> &current_stage_posibilities = stage_posibilities->operator [](i);
     new_trellis_stage.clear();
 
     //cerr << "stage = " << i << ", possibilities = " << current_stage_posibilities.size() << endl;
@@ -141,7 +141,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
       for (uint32_t k = 0; k < current_stage_posibilities.size(); k++)
       {
 
-        StagePosibilityP stage_pos = current_stage_posibilities[k];
+        StagePossibilityP stage_pos = current_stage_posibilities[k];
 
         double cost = viterbi_stateP->distance;
         double emmision_cost = stage_pos->EmmisionProbability();
@@ -152,7 +152,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
 
         assert(cost < 100000000);
 
-        if (cost > best + MyConstants::prunning_constant)
+        if (cost > best + Constants::prunning_constant)
           continue;
 
         double transition_cost = ComputeTransitionCost(viterbi_stateP, stage_pos);
@@ -170,7 +170,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
 
         cost += transition_cost;
 
-        if (cost > best + MyConstants::prunning_constant)
+        if (cost > best + Constants::prunning_constant)
           continue;
 
         if (cost < best)
@@ -212,7 +212,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
     for (Trellis_stage_set::iterator it = new_trellis_stage.begin(); it != new_trellis_stage.end(); it++)
     {
       ViterbiStateP state = *it;
-      if (state->distance < best + MyConstants::prunning_constant)
+      if (state->distance < best + Constants::prunning_constant)
       {
         last_trellis_stage.push_back(state);
       }
@@ -246,7 +246,7 @@ vector<StagePosibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Token
   return ret_vec;
 }
 
-void DecoderBase::DecodeTokenizedSentence_ReturnStagePosibilities(const vector<TokenP> &tokens, vector<StagePosibilityP> &decoded_sequence, StagePosibilitiesType &_stage_posibilities)
+void DecoderBase::DecodeTokenizedSentence_ReturnStagePossibilities(const vector<TokenP> &tokens, vector<StagePossibilityP> &decoded_sequence, StagePossibilitiesType &_stage_posibilities)
 {
   decoded_sequence = DecodeTokenizedSentence(tokens);
   _stage_posibilities = stage_posibilities;

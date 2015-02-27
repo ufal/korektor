@@ -13,23 +13,23 @@
 #include <iostream>
 
 #include "common.h"
-#include "my_utf.h"
+#include "utf.h"
 
 namespace ufal {
 namespace korektor {
 
-class MyUTF8InputStream
+class UTF8InputStream
 {
   ifstream ifs;
   bool closed;
 
 
-  MyUTF8InputStream(const MyUTF8InputStream&) {}
-  MyUTF8InputStream() {}
+  UTF8InputStream(const UTF8InputStream&) {}
+  UTF8InputStream() {}
 
  public:
 
-  MyUTF8InputStream(const string filename): ifs(filename.c_str()), closed(false)
+  UTF8InputStream(const string filename): ifs(filename.c_str()), closed(false)
   {
     if (ifs.is_open() == false)
     {
@@ -59,7 +59,7 @@ class MyUTF8InputStream
 
       //utf8 text files created on Windows contain this character at a beginning of the file (and you don't want that...)
 
-      us = MyUTF::utf8_to_utf16(s);
+      us = UTF::utf8_to_utf16(s);
 
       while ((!us.empty()) &&  *us.begin() >= 0xD800)
         us.erase(us.begin());
@@ -74,7 +74,7 @@ class MyUTF8InputStream
     bool ret = ReadLineUS(us);
 
     if (ret == true)
-      s = MyUTF::utf16_to_utf8(us);
+      s = UTF::utf16_to_utf8(us);
     return ret;
   }
 };

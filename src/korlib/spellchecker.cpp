@@ -28,7 +28,7 @@
 namespace ufal {
 namespace korektor {
 
-unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities) {
+unordered_map<uint32_t, vector<StagePossibilityP> > Spellchecker::MakeSuggestionList(vector<StagePossibilityP> &decoded_pos, StagePossibilitiesType stage_posibilities) {
 
 
   //cerr << "Make suggestion started..." << endl;
@@ -37,7 +37,7 @@ unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionL
   assert(stage_posibilities->size() == decoded_pos.size());
 
 
-  unordered_map<uint32_t, vector<StagePosibilityP> > suggestions;
+  unordered_map<uint32_t, vector<StagePossibilityP> > suggestions;
 
 
   for (uint32_t i = viterbi_order - 1; i < decoded_pos.size() - 1; i++)
@@ -48,7 +48,7 @@ unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionL
     {
       if (decoded_pos[i]->IsUnknown())
       {
-        suggestions[i] = vector<StagePosibilityP>();
+        suggestions[i] = vector<StagePossibilityP>();
       }
 
       continue;
@@ -57,18 +57,18 @@ unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionL
 
     //assert (i < stage_posibilities->size());
     //assert (stage_posibilities != NULL);
-    vector<StagePosibilityP> st_pos = stage_posibilities->operator [](i);
+    vector<StagePossibilityP> st_pos = stage_posibilities->operator [](i);
 
-    vector<pair<StagePosibilityP, double> > cost_vector;
+    vector<pair<StagePossibilityP, double> > cost_vector;
 
-    suggestions[i] = vector<StagePosibilityP>();
+    suggestions[i] = vector<StagePossibilityP>();
 
-    StagePosibilityP decoded_pos_at_i_backup = decoded_pos[i];
+    StagePossibilityP decoded_pos_at_i_backup = decoded_pos[i];
 
     for (uint32_t j = 0; j < st_pos.size(); j++)
     {
       //cerr << "j = " << j << endl;
-      StagePosibilityP sp = st_pos[j];
+      StagePossibilityP sp = st_pos[j];
       double cost = sp->EmmisionProbability();
 
       decoded_pos[i] = sp;
@@ -81,15 +81,15 @@ unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionL
         cost += decoder->ComputeTransitionCostSPSequence(decoded_pos, i - viterbi_order + 1 + k, i + k);
       }
 
-      cost_vector.push_back(pair<StagePosibilityP, double>(sp, cost));
+      cost_vector.push_back(pair<StagePossibilityP, double>(sp, cost));
 
     }
 
     decoded_pos[i] = decoded_pos_at_i_backup;
 
-    std::sort(cost_vector.begin(), cost_vector.end(), Pair_StagePosibilityP_double_comparer());
-    vector<pair<StagePosibilityP, double> > new_cost_vector;
-    set<StagePosibilityP, StagePosibility_Form_comparer> word_ids_in_list;
+    std::sort(cost_vector.begin(), cost_vector.end(), Pair_StagePossibilityP_double_comparer());
+    vector<pair<StagePossibilityP, double> > new_cost_vector;
+    set<StagePossibilityP, StagePossibility_Form_comparer> word_ids_in_list;
 
     for (uint32_t j = 0; j < cost_vector.size(); j++)
     {
@@ -104,7 +104,7 @@ unordered_map<uint32_t, vector<StagePosibilityP> > Spellchecker::MakeSuggestionL
     }
 
 
-    for (vector<pair<StagePosibilityP, double> >::iterator it = new_cost_vector.begin(); it != new_cost_vector.end(); it++)
+    for (vector<pair<StagePossibilityP, double> >::iterator it = new_cost_vector.begin(); it != new_cost_vector.end(); it++)
     {
       suggestions[i].push_back(it->first);
     }
@@ -127,7 +127,7 @@ struct pair_u16string_double_comparer : public less<pair<u16string, double>>
 
 vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
 {
-  u16string u_word = MyUtils::utf8_to_utf16(word);
+  u16string u_word = Utils::utf8_to_utf16(word);
 
   TokenP token(new Token(u_word));
   token->correction_is_allowed = true;
@@ -168,7 +168,7 @@ vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
   vector<string> ret;
   for (uint32_t i = 0; i < word_cost_vec.size(); i++)
   {
-    ret.push_back(MyUtils::utf16_to_utf8(word_cost_vec[i].first));
+    ret.push_back(Utils::utf16_to_utf8(word_cost_vec[i].first));
   }
 
   return ret;
@@ -178,7 +178,7 @@ vector<string> Spellchecker::GetContextFreeSuggestions(const string &word)
 
 void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, uint32_t &range_length)
 {
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
 
@@ -214,7 +214,7 @@ void Spellchecker::FindMisspelledWord(const string &text, uint32_t &range_from, 
 
 vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const string &text, unsigned &range_from, unsigned &range_length)
 {
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   vector<TextCheckingResultP> results;
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
@@ -246,7 +246,7 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResultsFirstSentence(const 
 
 vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
 {
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   vector<TextCheckingResultP> results;
 
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
@@ -254,10 +254,10 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
 
   for (auto it = tokens.begin(); it != tokens.end(); it++)
   {
-    vector<StagePosibilityP> spv;
-    StagePosibilitiesType stage_posibs;
-    decoder->DecodeTokenizedSentence_ReturnStagePosibilities(*it, spv, stage_posibs);
-    unordered_map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+    vector<StagePossibilityP> spv;
+    StagePossibilitiesType stage_posibs;
+    decoder->DecodeTokenizedSentence_ReturnStagePossibilities(*it, spv, stage_posibs);
+    unordered_map<uint32_t, vector<StagePossibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
 
     uint32_t decoder_order = decoder->GetViterbiOrder();
 
@@ -265,7 +265,7 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
     {
       //assert(it2->first >= decoder_order - 1);
       uint32_t tok_index = it2->first - (decoder_order - 1);
-      vector<StagePosibilityP> &stage_pos = it2->second;
+      vector<StagePossibilityP> &stage_pos = it2->second;
 
 
       assert(it2->first >= decoder_order - 1);
@@ -278,15 +278,15 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
       }
 
       if (suggestions.size() > 0 &&
-          MyUtils::CaseInsensitiveIsEqual(stage_pos[0]->To_u16string(), curr_token->str_u16) == false)
+          Utils::CaseInsensitiveIsEqual(stage_pos[0]->To_u16string(), curr_token->str_u16) == false)
       {
         string sugg = suggestions[0];
         suggestions.clear();
         suggestions.push_back(sugg);
         results.push_back(TextCheckingResultP(new GrammarCheckingResult(curr_token->first, curr_token->length, suggestions, "Error in capitalization? Did you mean " + suggestions[0] + "?", curr_token->str_utf8)));
       }
-      else if (curr_token->ID == (int)MyConstants::name_id ||
-               curr_token->ID == (int)MyConstants::unknown_word_id || curr_token->ID < 0)
+      else if (curr_token->ID == (int)Constants::name_id ||
+               curr_token->ID == (int)Constants::unknown_word_id || curr_token->ID < 0)
       {
         results.push_back(TextCheckingResultP(new SpellingCheckingResult(curr_token->first, curr_token->length, suggestions, curr_token->str_utf8)));
       }
@@ -306,14 +306,14 @@ vector<TextCheckingResultP> Spellchecker::GetCheckingResults(const string &text)
 ///
 string Spellchecker::CheckText(const string &text)
 {
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   vector<vector<TokenP> > tokens = configuration->tokenizer->Tokenize(u_text);
 
   u16stringReplacing usr = u16stringReplacing(u_text);
 
   for (auto it = tokens.begin(); it != tokens.end(); it++)
   {
-    vector<StagePosibilityP> stage_pos = decoder->DecodeTokenizedSentence(*it);
+    vector<StagePossibilityP> stage_pos = decoder->DecodeTokenizedSentence(*it);
 
     for (unsigned i = 0; i < (*it).size(); i++)
     {
@@ -321,33 +321,33 @@ string Spellchecker::CheckText(const string &text)
       {
 
         TokenP token = (*it)[i];
-        StagePosibilityP st_pos = stage_pos[i + decoder->GetViterbiOrder() - 1];
+        StagePossibilityP st_pos = stage_pos[i + decoder->GetViterbiOrder() - 1];
         usr.Replace(token->first, token->length, st_pos->To_u16string());
       }
     }
 
   }
 
-  return MyUtils::utf16_to_utf8(usr.GetResult());
+  return Utils::utf16_to_utf8(usr.GetResult());
 }
 
 string Spellchecker::DecodeEvaluation(const string &text, uint32_t num_sugg_to_output)
 {
   stringstream ret;
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   uint32_t decoder_order = decoder->GetViterbiOrder();
 
   vector<vector<TokenP> > tokens_all = configuration->tokenizer->Tokenize(u_text);
 
-  vector<StagePosibilityP> spv;
-  StagePosibilitiesType stage_posibs;
+  vector<StagePossibilityP> spv;
+  StagePossibilitiesType stage_posibs;
 
   for (auto it = tokens_all.begin(); it != tokens_all.end(); it++)
   {
     vector<TokenP> &tokens = *it;
-    decoder->DecodeTokenizedSentence_ReturnStagePosibilities(tokens, spv, stage_posibs);
+    decoder->DecodeTokenizedSentence_ReturnStagePossibilities(tokens, spv, stage_posibs);
 
-    unordered_map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+    unordered_map<uint32_t, vector<StagePossibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
 
 
     for (uint32_t i = 0; i < tokens.size(); i++)
@@ -375,7 +375,7 @@ string Spellchecker::DecodeEvaluation(const string &text, uint32_t num_sugg_to_o
         else
           ret << "(grammar[";
 
-        vector<StagePosibilityP> vec_sp = fit->second;
+        vector<StagePossibilityP> vec_sp = fit->second;
 
         //assert(vec_sp.size() > 0);
 
@@ -400,13 +400,13 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
 {
   stringstream ret;
 
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   uint32_t decoder_order = decoder->GetViterbiOrder();
 
   vector<vector<TokenP> > tokens_all = configuration->tokenizer->Tokenize(u_text);
 
-  vector<StagePosibilityP> spv;
-  StagePosibilitiesType stage_posibs;
+  vector<StagePossibilityP> spv;
+  StagePossibilitiesType stage_posibs;
 
   u16stringReplacing usr = u16stringReplacing(u_text);
 
@@ -416,9 +416,9 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
     if (tokens.empty())
       continue;
 
-    decoder->DecodeTokenizedSentence_ReturnStagePosibilities(tokens, spv, stage_posibs);
+    decoder->DecodeTokenizedSentence_ReturnStagePossibilities(tokens, spv, stage_posibs);
 
-    unordered_map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+    unordered_map<uint32_t, vector<StagePossibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
 
 
     for (uint32_t i = 0; i < tokens.size(); i++)
@@ -429,9 +429,9 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
       {
         if (spv[i + decoder_order - 1]->IsUnknown()) //!!! i + decoder_order - 1
         {
-          u16string us = MyUtils::utf8_to_utf16("<spelling original=\"");
+          u16string us = Utils::utf8_to_utf16("<spelling original=\"");
           us += tokens[i]->str_u16;
-          us += MyUtils::utf8_to_utf16("\" suggestion=\"\"/>");
+          us += Utils::utf8_to_utf16("\" suggestion=\"\"/>");
           //cerr << "spv->IsUnknown: " << tokens[i].GetWordStringISO() << endl;
           usr.Replace(tokens[i]->first, tokens[i]->length, us);
         }
@@ -441,25 +441,25 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
       {
         u16string us;
         if (tokens[i]->isUnknown())
-          us += MyUtils::utf8_to_utf16("<spelling original=\"");
+          us += Utils::utf8_to_utf16("<spelling original=\"");
         else
-          us.append(MyUtils::utf8_to_utf16("<grammar original=\""));
+          us.append(Utils::utf8_to_utf16("<grammar original=\""));
 
         us.append(tokens[i]->str_u16);
 
-        us.append(MyUtils::utf8_to_utf16("\" suggestions=\""));
+        us.append(Utils::utf8_to_utf16("\" suggestions=\""));
 
-        vector<StagePosibilityP> vec_sp = fit->second;
+        vector<StagePossibilityP> vec_sp = fit->second;
 
         //assert(vec_sp.size() > 0);
 
         for (uint32_t g = 0; g < min(vec_sp.size(), (size_t)num_sugg_to_output); g++)
         {
-          if (g > 0) us.append(MyUtils::utf8_to_utf16("|"));
+          if (g > 0) us.append(Utils::utf8_to_utf16("|"));
           us.append(vec_sp[g]->To_u16string());
         }
 
-        us.append(MyUtils::utf8_to_utf16("\"/>"));
+        us.append(Utils::utf8_to_utf16("\"/>"));
 
         usr.Replace(tokens[i]->first, tokens[i]->length, us);
       }
@@ -468,23 +468,23 @@ string Spellchecker::command_line_mode(const string &text, uint32_t num_sugg_to_
 
   }
 
-  return MyUtils::utf16_to_utf8(usr.GetResult());
+  return Utils::utf16_to_utf8(usr.GetResult());
 }
 
 void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {
   suggestions.clear();
 
-  u16string u_text = MyUtils::utf8_to_utf16(text);
+  u16string u_text = Utils::utf8_to_utf16(text);
   vector<vector<TokenP> > sentences = configuration->tokenizer->Tokenize(u_text);
 
   unsigned u_index = 0;
   for (auto&& sentence : sentences) {
     if (sentence.empty()) continue;
 
-    vector<StagePosibilityP> spv;
-    StagePosibilitiesType stage_posibs;
-    decoder->DecodeTokenizedSentence_ReturnStagePosibilities(sentence, spv, stage_posibs);
-    unordered_map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+    vector<StagePossibilityP> spv;
+    StagePossibilitiesType stage_posibs;
+    decoder->DecodeTokenizedSentence_ReturnStagePossibilities(sentence, spv, stage_posibs);
+    unordered_map<uint32_t, vector<StagePossibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
 
     uint32_t decoder_order = decoder->GetViterbiOrder();
     for (auto&& suggestion : sugg) {
@@ -492,7 +492,7 @@ void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_outpu
       if (tok_index >= sentence.size()) continue;
 
       if (u_index < sentence[tok_index]->first)
-        suggestions.emplace_back(MyUtils::utf16_to_utf8(u_text.substr(u_index, sentence[tok_index]->first - u_index)), vector<string>());
+        suggestions.emplace_back(Utils::utf16_to_utf8(u_text.substr(u_index, sentence[tok_index]->first - u_index)), vector<string>());
 
       suggestions.emplace_back(sentence[tok_index]->str_utf8, vector<string>());
       for (unsigned i = 0; i < suggestion.second.size() && i < num_sugg_to_output; i++)
@@ -501,16 +501,16 @@ void Spellchecker::GetSuggestions(const string &text, uint32_t num_sugg_to_outpu
       u_index = sentence[tok_index]->first + sentence[tok_index]->length;
     }
   }
-  if (u_index < u_text.size()) suggestions.emplace_back(MyUtils::utf16_to_utf8(u_text.substr(u_index)), vector<string>());
+  if (u_index < u_text.size()) suggestions.emplace_back(Utils::utf16_to_utf8(u_text.substr(u_index)), vector<string>());
 }
 
 void Spellchecker::GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_t num_sugg_to_output, vector<pair<string, vector<string>>>& suggestions) {
   suggestions.clear();
 
-  vector<StagePosibilityP> spv;
-  StagePosibilitiesType stage_posibs;
-  decoder->DecodeTokenizedSentence_ReturnStagePosibilities(tokens, spv, stage_posibs);
-  unordered_map<uint32_t, vector<StagePosibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
+  vector<StagePossibilityP> spv;
+  StagePossibilitiesType stage_posibs;
+  decoder->DecodeTokenizedSentence_ReturnStagePossibilities(tokens, spv, stage_posibs);
+  unordered_map<uint32_t, vector<StagePossibilityP> > sugg = MakeSuggestionList(spv, stage_posibs);
 
   for (unsigned i = 0; i < tokens.size(); i++) {
     auto sugg_it = sugg.find(i + decoder->GetViterbiOrder() - 1);

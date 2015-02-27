@@ -19,7 +19,7 @@
 namespace ufal {
 namespace korektor {
 
-void MyUtils::WriteString(ostream &ofs, const string &s)
+void Utils::WriteString(ostream &ofs, const string &s)
 {
   FATAL_CONDITION(uint16_t(s.length()) == s.length(), "");
   uint16_t len = s.length();
@@ -27,7 +27,7 @@ void MyUtils::WriteString(ostream &ofs, const string &s)
   ofs.write(s.data(), sizeof(char) * len);
 }
 
-string MyUtils::ReadString(istream &ifs)
+string Utils::ReadString(istream &ifs)
 {
   uint16_t len;
   ifs.read((char*)&len, sizeof(uint16_t));
@@ -40,14 +40,14 @@ string MyUtils::ReadString(istream &ifs)
   return ret;
 }
 
-uint32_t MyUtils::Read_uint32_t(istream &is)
+uint32_t Utils::Read_uint32_t(istream &is)
 {
   uint32_t ret;
   is.read((char*)&ret, sizeof(uint32_t));
   return ret;
 }
 
-bool MyUtils::SafeReadline(istream &istr, string &str)
+bool Utils::SafeReadline(istream &istr, string &str)
 {
   if (!std::getline(istr, str))
     return false;
@@ -66,25 +66,25 @@ bool MyUtils::SafeReadline(istream &istr, string &str)
 /// @param min Lower bound
 /// @param max Upper bound
 /// @return Random number
-double MyUtils::RandomNumber(double min, double max)
+double Utils::RandomNumber(double min, double max)
 {
   return ((double)rand() / RAND_MAX) * (max - min) + min;
 }
 
-int MyUtils::randomR(int lowest, int range)
+int Utils::randomR(int lowest, int range)
 {
   uint32_t ret = lowest+uint32_t(range*(rand()/(RAND_MAX + (float)1.0)));
   return ret;
 }
 
-double MyUtils::minus_log_10_rand01()
+double Utils::minus_log_10_rand01()
 {
   double rand_num = -log10(rand() / (float)RAND_MAX);
   return rand_num;
 }
 
 
-void MyUtils::cerr_vector_string(const vector<string> &vec)
+void Utils::cerr_vector_string(const vector<string> &vec)
 {
   for (uint32_t i = 0; i < vec.size(); i++)
   {
@@ -96,7 +96,7 @@ void MyUtils::cerr_vector_string(const vector<string> &vec)
 
 /// @brief Returns time string
 /// @return Time string
-string MyUtils::GetTimeString()
+string Utils::GetTimeString()
 {
   string ret;
 
@@ -114,7 +114,7 @@ string MyUtils::GetTimeString()
 /// @brief String to Boolean conversion
 /// @param str The values are "true" or "false"
 /// @return Returns 0 or 1 based on the given input string
-bool MyUtils::StrToBool(string str)
+bool Utils::StrToBool(string str)
 {
   if (str == "true")
     return true;
@@ -130,7 +130,7 @@ bool MyUtils::StrToBool(string str)
 /// @brief String to double conversion
 /// @param str input string
 /// @return Value in double
-double MyUtils::StrToDouble(string str)
+double Utils::StrToDouble(string str)
 {
   return my_atof(str);
 }
@@ -138,7 +138,7 @@ double MyUtils::StrToDouble(string str)
 /// @brief String to integer conversion
 /// @param str input string
 /// @return Intger value
-uint32_t MyUtils::StrToInt(string str)
+uint32_t Utils::StrToInt(string str)
 {
   return my_atoi(str);
 }
@@ -146,7 +146,7 @@ uint32_t MyUtils::StrToInt(string str)
 /// @brief Boolean to String conversion
 /// @param value boolean
 /// @return Returns "true" or "false" based on the input value
-string MyUtils::BoolToString(bool value)
+string Utils::BoolToString(bool value)
 {
   if (value)
     return "true";
@@ -156,10 +156,10 @@ string MyUtils::BoolToString(bool value)
 /// @brief Check whether the given string contains letter
 /// @param ustr String
 /// @return boolean
-bool MyUtils::ContainsLetter(const u16string &ustr)
+bool Utils::ContainsLetter(const u16string &ustr)
 {
   for (auto&& uchar : ustr)
-    if (MyUTF::is_alpha(uchar))
+    if (UTF::is_alpha(uchar))
       return true;
 
   return false;

@@ -7,13 +7,13 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_packed_array.cpp
+/// @file packed_array.cpp
 /// @brief Implementation of memory efficient array
 
 #include <cstring>
 #include <iostream>
 
-#include "my_packed_array.h"
+#include "packed_array.h"
 #include "utils.h"
 
 namespace ufal {
@@ -22,7 +22,7 @@ namespace korektor {
 /// @brief Get the number of items in the packed array
 ///
 /// @return Number of items
-uint32_t MyPackedArray::GetSize() const
+uint32_t PackedArray::GetSize() const
 {
   return num_values;
 }
@@ -30,7 +30,7 @@ uint32_t MyPackedArray::GetSize() const
 /// @brief Get the number of bytes required to store the packed array
 ///
 /// @return Number of bytes
-uint32_t MyPackedArray::GetNumberOfBytes() const
+uint32_t PackedArray::GetNumberOfBytes() const
 {
   return num_bytes;
 }
@@ -38,7 +38,7 @@ uint32_t MyPackedArray::GetNumberOfBytes() const
 /// @brief Get bits per value
 ///
 /// @return Bits per value (integer)
-uint32_t MyPackedArray::GetBitsPerValue() const
+uint32_t PackedArray::GetBitsPerValue() const
 {
   return bits_per_value;
 }
@@ -46,11 +46,11 @@ uint32_t MyPackedArray::GetBitsPerValue() const
 /// @brief Get output mask
 ///
 /// @return Output mask (integer)
-uint32_t MyPackedArray::GetOutputMask() const {
+uint32_t PackedArray::GetOutputMask() const {
   return output_mask;
 }
 
-MyPackedArray::~MyPackedArray()
+PackedArray::~PackedArray()
 {
   if (data != NULL)
     delete[] data;
@@ -59,7 +59,7 @@ MyPackedArray::~MyPackedArray()
 /// @brief Initialize the array using another array
 ///
 /// @param val Packed array
-MyPackedArray::MyPackedArray(const MyPackedArray& val)
+PackedArray::PackedArray(const PackedArray& val)
 {
   bits_per_value = val.bits_per_value;
   num_bytes = val.num_bytes;
@@ -70,14 +70,14 @@ MyPackedArray::MyPackedArray(const MyPackedArray& val)
 
   memcpy(data, val.data, val.num_bytes * sizeof(unsigned char));
 
-  //cerr << "MyPackedArray: copy constructor\n";
+  //cerr << "PackedArray: copy constructor\n";
 }
 
 /// @brief Copy the array using assignment operator
 ///
 /// @param val Packed array
 /// @return Reference to the copied array
-MyPackedArray& MyPackedArray::operator=(const MyPackedArray& val)
+PackedArray& PackedArray::operator=(const PackedArray& val)
 {
   if (this != &val)
   {
@@ -96,16 +96,16 @@ MyPackedArray& MyPackedArray::operator=(const MyPackedArray& val)
 
   }
 
-  //cerr << "MyPackedArray: assignemt operator\n";
+  //cerr << "PackedArray: assignemt operator\n";
   return *this;
 }
 
 /// @brief Initialize the array using binary stream
 ///
 /// @param ifs Input stream
-MyPackedArray::MyPackedArray(istream &ifs)
+PackedArray::PackedArray(istream &ifs)
 {
-  string check_string = MyUtils::ReadString(ifs);
+  string check_string = Utils::ReadString(ifs);
 
   FATAL_CONDITION(check_string == "MPA", check_string);
 
@@ -123,9 +123,9 @@ MyPackedArray::MyPackedArray(istream &ifs)
 /// @brief Write the array to output stream
 ///
 /// @param ofs Output stream
-void MyPackedArray::WriteToStream(ostream &ofs) const
+void PackedArray::WriteToStream(ostream &ofs) const
 {
-  MyUtils::WriteString(ofs, "MPA");
+  Utils::WriteString(ofs, "MPA");
   ofs.write((char*)&bits_per_value, sizeof(uint32_t));
   ofs.write((char*)&num_bytes, sizeof(uint32_t));
   ofs.write((char*)&num_values, sizeof(uint32_t));
@@ -138,7 +138,7 @@ void MyPackedArray::WriteToStream(ostream &ofs) const
 /// @brief Initialize the array from a vector of values
 ///
 /// @param values Vector of values
-MyPackedArray::MyPackedArray(const vector<uint32_t> &values)
+PackedArray::PackedArray(const vector<uint32_t> &values)
 {
   uint32_t max = 0;
   for (uint32_t i = 0; i < values.size(); i++)

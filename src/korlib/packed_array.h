@@ -7,8 +7,8 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_packed_array.h
-/// @class MyPackedArray my_packed_array.h "my_packed_array.h"
+/// @file packed_array.h
+/// @class PackedArray packed_array.h "packed_array.h"
 /// @brief Data structure for the implementation of memory efficient array
 
 #pragma once
@@ -18,7 +18,7 @@
 namespace ufal {
 namespace korektor {
 
-class MyPackedArray {
+class PackedArray {
  private:
   uint32_t bits_per_value; ///< bits per value
   uint32_t num_values; ///< number of items in the array
@@ -55,21 +55,21 @@ class MyPackedArray {
   }
 
 
-  ~MyPackedArray();
+  ~PackedArray();
 
-  MyPackedArray() { data = NULL; }
+  PackedArray() { data = NULL; }
 
   /// @brief Initialize the array using another array
-  MyPackedArray(const MyPackedArray& val);
+  PackedArray(const PackedArray& val);
 
   /// @brief Copy the array using assignment operator
-  MyPackedArray& operator=(const MyPackedArray& val);
+  PackedArray& operator=(const PackedArray& val);
 
   /// @brief Initialize the array using binary stream
-  MyPackedArray(istream &ifs);
+  PackedArray(istream &ifs);
 
   /// @brief Initialize the array from file
-  MyPackedArray(const string filename);
+  PackedArray(const string filename);
 
   /// @brief Write the array to output stream
   void WriteToStream(ostream &ofs) const;
@@ -78,7 +78,7 @@ class MyPackedArray {
   void SaveToFile(const string filename) const;
 
   /// @brief Initialize the array from a vector of values
-  MyPackedArray(const vector<uint32_t> &values);
+  PackedArray(const vector<uint32_t> &values);
 };
 
 } // namespace korektor

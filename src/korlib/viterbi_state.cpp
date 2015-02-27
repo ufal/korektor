@@ -9,14 +9,14 @@
 
 #include <sstream>
 
-#include "stage_posibility.h"
+#include "stage_possibility.h"
 #include "utils.h"
 #include "viterbi_state.h"
 
 namespace ufal {
 namespace korektor {
 
-StagePosibilityP ViterbiState::GetYoungestHistory()
+StagePossibilityP ViterbiState::GetYoungestHistory()
 {
   return history[history.size() - 1];
 }
@@ -25,11 +25,11 @@ size_t ViterbiState::UniqueIdentifier()
 {
   size_t seed = 0;
 
-  MyUtils::HashCombine(seed, history.size());
+  Utils::HashCombine(seed, history.size());
 
   for (uint32_t i = 0; i < history.size(); i++)
   {
-    MyUtils::HashCombine(seed, history[i]->UniqueIdentifier());
+    Utils::HashCombine(seed, history[i]->UniqueIdentifier());
   }
 
   return seed;
@@ -41,11 +41,11 @@ bool ViterbiState::Equals(ViterbiState &state)
   return this->UniqueIdentifier() == state.UniqueIdentifier();
 }
 
-ViterbiState::ViterbiState(vector<StagePosibilityP> _history):
+ViterbiState::ViterbiState(vector<StagePossibilityP> _history):
   history(_history), distance(0), ancestor(ViterbiStateP())
 {}
 
-ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePosibilityP next_sp, double _distance):distance(_distance), ancestor(prev_state)
+ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance):distance(_distance), ancestor(prev_state)
 {
   history.reserve(prev_state->history.size());
 

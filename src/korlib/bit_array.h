@@ -7,13 +7,13 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_bit_array.h
-/// @class MyBitArray
+/// @file bit_array.h
+/// @class BitArray
 /// @brief Class for storing array efficiently
 ///
 /// This class implements a data structure for storing array of integer values in a memory efficient manner.
 /// Not every value would require a fixed width memory space, thus the class uses only the necessary
-/// amount of space required to store the value. The implementation is similar to \ref MyPackedArray , but consumes less than or equal
+/// amount of space required to store the value. The implementation is similar to \ref PackedArray , but consumes less than or equal
 /// memory space.
 
 #pragma once
@@ -23,7 +23,7 @@
 namespace ufal {
 namespace korektor {
 
-class MyBitArray {
+class BitArray {
  private:
   uint32_t num_bytes; ///< Number of bytes required to store the values
   unsigned char* data; ///< Pointer to the actual data
@@ -79,16 +79,16 @@ class MyBitArray {
   }
 
   /// @brief Destructor that frees the memory of data
-  ~MyBitArray()
+  ~BitArray()
   {
     if (data != NULL)
       delete[] data;
   }
 
-  /// @brief Constructor initialization from another \see MyBitArray object
+  /// @brief Constructor initialization from another \see BitArray object
   ///
   /// @param val Object of type
-  MyBitArray(const MyBitArray& val)
+  BitArray(const BitArray& val)
   {
     num_bytes = val.num_bytes;
     output_mask = val.output_mask;
@@ -104,7 +104,7 @@ class MyBitArray {
   /// @brief Constructor initialization using assignment operator
   ///
   /// @param val Object of type
-  MyBitArray& operator=(const MyBitArray& val)
+  BitArray& operator=(const BitArray& val)
   {
     if (this != &val)
     {
@@ -127,12 +127,12 @@ class MyBitArray {
   }
 
   /// @brief Default constructor
-  MyBitArray(): num_bytes(0), data(NULL) {}
+  BitArray(): num_bytes(0), data(NULL) {}
 
   /// @brief Constructor initialization from input stream/file
   ///
   /// @param ifs Input stream
-  MyBitArray(istream &ifs);
+  BitArray(istream &ifs);
 
   /// @brief Write the output to output stream
   ///
@@ -142,10 +142,10 @@ class MyBitArray {
   /// @brief Constructor initialization from vector of pairs
   ///
   /// @param values Vector of pairs of integers
-  MyBitArray(const vector<pair<uint32_t, unsigned> > &values);
+  BitArray(const vector<pair<uint32_t, unsigned> > &values);
 };
 
-SP_DEF(MyBitArray);
+SP_DEF(BitArray);
 
 } // namespace korektor
 } // namespace ufal

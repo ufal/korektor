@@ -10,17 +10,16 @@
 #pragma once
 
 #include "common.h"
-
-#include "my_packed_array.h"
+#include "packed_array.h"
 #include "value_mapping.h"
 
 namespace ufal {
 namespace korektor {
 
-class MyMappedDoubleArray {
+class MappedDoubleArray {
  private:
   ValueMapping value_mapping;
-  MyPackedArray mpa;
+  PackedArray mpa;
 
  public:
   inline uint32_t GetSize() const
@@ -35,12 +34,12 @@ class MyMappedDoubleArray {
 
   void WriteToStream(ostream &ofs) const;
 
-  MyMappedDoubleArray(vector<double> &values, uint32_t bits_per_value);
+  MappedDoubleArray(vector<double> &values, uint32_t bits_per_value);
 
-  MyMappedDoubleArray(istream &ifs);
+  MappedDoubleArray(istream &ifs);
 };
 
-SP_DEF(MyMappedDoubleArray);
+SP_DEF(MappedDoubleArray);
 
 } // namespace korektor
 } // namespace ufal

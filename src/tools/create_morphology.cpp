@@ -16,10 +16,10 @@
 #include <tuple>
 
 #include "common.h"
+#include "korlib/bit_array.h"
 #include "korlib/configuration.h"
 #include "korlib/lexicon.h"
 #include "korlib/morphology.h"
-#include "korlib/my_bit_array.h"
 #include "korlib/utils.h"
 
 #define MAX_GROUP_COUNT 100000
@@ -162,11 +162,11 @@ struct GroupFactorsP_ihash: std::unary_function<GroupFactorsP, std::size_t>
   {
     std::size_t seed = 0;
 
-    MyUtils::HashCombine(seed, x->NumFactors());
+    Utils::HashCombine(seed, x->NumFactors());
 
     for (uint32_t i = 0; i < x->NumFactors(); i++)
     {
-      MyUtils::HashCombine(seed, x->GetFactorAt(i));
+      Utils::HashCombine(seed, x->GetFactorAt(i));
     }
 
     return seed;
@@ -314,7 +314,7 @@ void makeGrouping()
 
         if (group_vector.size() % 10 == 0)
         {
-          unsigned grouped_bits_needed = cm.levels[i].size() * MyUtils::BitsNeeded(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
+          unsigned grouped_bits_needed = cm.levels[i].size() * Utils::BitsNeeded(group_vector.size() - 1) + num_group_elements * cm.bits_per_value[i + 1] + group_vector.size() * 16;
 
           if (grouped_bits_needed * 2 > nongrouped_bits_needed)
           {
@@ -332,7 +332,7 @@ void makeGrouping()
     if (cm.is_factor_grouped[i + 1] == true)
     {
       cm.groupings[i + 1] = group_vector;
-      cm.bits_per_children[i] = MyUtils::BitsNeeded(group_vector.size() - 1);
+      cm.bits_per_children[i] = Utils::BitsNeeded(group_vector.size() - 1);
       cm.is_factor_dependant[i + 1] = false;
       for (unsigned j = 0; j < i + 1; j++)
         cm.is_dependence[make_pair(j, i + 1)] = false;
@@ -439,7 +439,7 @@ void construct_levels(morpho_nodeP node, unsigned act_level)
 bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add_zero_level_node, bool add_counts_for_nodes_just_being_visited, unsigned count = 1)
 {
   vector<string> parts;
-  MyUtils::Split(parts, factor_string, "|");
+  Utils::Split(parts, factor_string, "|");
 
   morpho_nodeP node = cm.root;
 
@@ -526,10 +526,10 @@ int main(int argc, char** argv)
   }
 
   string s;
-  MyUtils::SafeReadline(ifs, s);
+  Utils::SafeReadline(ifs, s);
   vector<string> parts;
 
-  MyUtils::Split(parts, s, "|");
+  Utils::Split(parts, s, "|");
 
   cm.init(parts.size());
 
@@ -545,7 +545,7 @@ int main(int argc, char** argv)
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<name>"), true, true);
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<unk>"), true, true);
 
-  MyUtils::SafeReadline(ifs, s);
+  Utils::SafeReadline(ifs, s);
 
   if (s != "-----")
   {
@@ -555,7 +555,7 @@ int main(int argc, char** argv)
 
   vector<string> orig_lines;
   unsigned counter = 0;
-  while (MyUtils::SafeReadline(ifs, s))
+  while (Utils::SafeReadline(ifs, s))
   {
     counter++;
     if (counter % 10000 == 0) { cerr << "morphology_reading: " << counter << endl; }
@@ -580,11 +580,11 @@ int main(int argc, char** argv)
   string factors;
   unsigned count;
 
-  while (MyUtils::SafeReadline(ifs, s))
+  while (Utils::SafeReadline(ifs, s))
   {
     counter++;
     if (counter % 10000 == 0) { cerr << "reading_corpora: " << counter << endl; }
-    MyUtils::Split(parts, s, " ");
+    Utils::Split(parts, s, " ");
     factors = parts[0];
 
     if (parts.size() < 2)
@@ -592,7 +592,7 @@ int main(int argc, char** argv)
       cerr << "Illegal emissions line: " << s << endl;
     }
 
-    count = MyUtils::my_atoi(parts[1]);
+    count = Utils::my_atoi(parts[1]);
 
     //passing 10 x count instead of just count reduces discounting (non-seen form-factor pairs have effectively just count 0.1
     MorphologyProcessWordFactors(factors, false, true, count * 10);
@@ -626,7 +626,7 @@ int main(int argc, char** argv)
         max_children = node->num_children - 1;
     }
 
-    cm.bits_per_children[i] = MyUtils::BitsNeeded(max_children);
+    cm.bits_per_children[i] = Utils::BitsNeeded(max_children);
   }
 
   for (unsigned i = 0; i < cm.levels.size(); i++)
@@ -642,7 +642,7 @@ int main(int argc, char** argv)
         max_value = node->factor_id;
     }
 
-    cm.bits_per_value[i] = MyUtils::BitsNeeded(max_value);
+    cm.bits_per_value[i] = Utils::BitsNeeded(max_value);
   }
 
   cerr << "grouping..." << endl;
@@ -661,12 +661,12 @@ int main(int argc, char** argv)
     exit(1);
   }
 
-  MyUtils::WriteString(ofs, "Morphology");
+  Utils::WriteString(ofs, "Morphology");
 
   ofs.write((char*)&cm.num_factors, sizeof(uint32_t));
   cerr << "writting num factors: " << cm.num_factors << endl;
 
-  MyStaticStringArray mssa = MyStaticStringArray(cm.factors);
+  StringArray mssa = StringArray(cm.factors);
   mssa.WriteToStream(ofs);
 
   uint32_t dep_size = cm.dependencies.size();
@@ -695,7 +695,7 @@ int main(int argc, char** argv)
       FATAL_CONDITION(dep_vector[i] != std::numeric_limits<uint32_t>::max(), "");
     }
 
-    MyPackedArray mpa = MyPackedArray(dep_vector);
+    PackedArray mpa = PackedArray(dep_vector);
     mpa.WriteToStream(ofs);
   }
 
@@ -728,7 +728,7 @@ int main(int argc, char** argv)
     }
 
     CompIncreasingArray cia_ble = CompIncreasingArray(group_pointers, group_values.size() - 1);
-    MyPackedArray mpa_ble = MyPackedArray(group_values);
+    PackedArray mpa_ble = PackedArray(group_values);
 
     cia_ble.WriteToStream(ofs);
     mpa_ble.WriteToStream(ofs);
@@ -765,7 +765,7 @@ int main(int argc, char** argv)
   CompIncreasingArray mia_offsets = CompIncreasingArray(form_offsets, bits_used - 1);
   mia_offsets.WriteToStream(ofs);
 
-  MyBitArray mba_values = MyBitArray(values);
+  BitArray mba_values = BitArray(values);
   mba_values.WriteToStream(ofs);
 
   Lexicon lexicon = Lexicon::fromUTF8Strings(cm.factor_string_lists[0]);
@@ -781,7 +781,7 @@ int main(int argc, char** argv)
 
   for (unsigned i = 0; i < cm.num_factors; i++)
   {
-    MyStaticStringArray mssa = MyStaticStringArray(cm.factor_string_lists[i]);
+    StringArray mssa = StringArray(cm.factor_string_lists[i]);
     mssa.WriteToStream(ofs);
   }
 
@@ -811,7 +811,7 @@ int main(int argc, char** argv)
 
   for (auto it = cm.factors.begin(); it != cm.factors.end(); it++)
   {
-    if (MyUtils::randomR(0, 2) == 0)
+    if (Utils::randomR(0, 2) == 0)
       configuration->EnableFactor(*it, 0.5, 3);
   }
 
@@ -831,7 +831,7 @@ int main(int argc, char** argv)
 //  ifstest.open(test_file.c_str(), ios::in);
 //  assert(ifstest.is_open());
 //
-//  while (MyUtils::SafeReadline(ifstest, s))
+//  while (Utils::SafeReadline(ifstest, s))
 //  {
 //    if (s != "")
 //      test_lines.push_back(s);

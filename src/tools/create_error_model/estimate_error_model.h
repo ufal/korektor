@@ -33,7 +33,7 @@ class EstimateErrorModel
     {
       u16string context;
 
-      if (node->signature.substr(0, 5) == MyUtils::utf8_to_utf16("swap_"))
+      if (node->signature.substr(0, 5) == Utils::utf8_to_utf16("swap_"))
       {
         context += node->signature[6];
         context += node->signature[5];
@@ -56,14 +56,14 @@ class EstimateErrorModel
       }
       else
       {
-        cerr << "invalid signature: " << MyUtils::utf16_to_utf8(node->signature) << endl;
+        cerr << "invalid signature: " << Utils::utf16_to_utf8(node->signature) << endl;
         return false;
       }
 
       if (context_map.find(context) == context_map.end())
       {
         //if (node->error_count > 0)
-        //  cerr << "context not found: " << MyUtils::utf16_to_utf8(context) << endl;
+        //  cerr << "context not found: " << Utils::utf16_to_utf8(context) << endl;
         node->context_count = node->error_count;
         return false;
       }
@@ -80,7 +80,7 @@ class EstimateErrorModel
         node->error_prob = - log10((node->error_count * error_count_normalization) / context_map[context]);
         //out_nodes.push_back(node);
         node->is_output_node = true;
-        cerr << "output leaf: " << MyUtils::utf16_to_utf8(node->signature) << endl;
+        cerr << "output leaf: " << Utils::utf16_to_utf8(node->signature) << endl;
         return true;
       }
       else
@@ -110,7 +110,7 @@ class EstimateErrorModel
       {
         node->error_prob = -log10((error_count * error_count_normalization) / context_count);
 
-        cerr << "node: " << MyUtils::utf16_to_utf8(node->signature) << ", context_count = " << node->context_count << ", error_count = " << node->error_count << endl;
+        cerr << "node: " << Utils::utf16_to_utf8(node->signature) << ", context_count = " << node->context_count << ", error_count = " << node->error_count << endl;
         node->is_output_node = true;
         return true;
       }

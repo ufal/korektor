@@ -10,10 +10,10 @@
 #include <fstream>
 #include <iostream>
 
+#include "bit_array.h"
 #include "configuration.h"
 #include "morphology.h"
-#include "my_bit_array.h"
-#include "my_packed_array.h"
+#include "packed_array.h"
 #include "utils.h"
 
 namespace ufal {
@@ -25,7 +25,7 @@ namespace korektor {
 //for some factors, it is more efficient to collect descriptors of all groups and specify just a group ID per word rather than the list of factor values
 //morpho_grpuping struct contains definition of such grouped factor - i.e. which group contains which factors
 struct morpho_grouping {
-  MyPackedArray group_values;
+  PackedArray group_values;
   CompIncreasingArray group_offsets;
 
   inline void getGroupMembers(unsigned groupID, vector<unsigned> &group_members)
@@ -37,7 +37,7 @@ struct morpho_grouping {
       group_members.push_back(group_values.GetValueAt(i));
   }
 
-  morpho_grouping(const MyPackedArray &_group_values, const CompIncreasingArray &_group_offsets):
+  morpho_grouping(const PackedArray &_group_values, const CompIncreasingArray &_group_offsets):
     group_values(_group_values), group_offsets(_group_offsets) {}
 };
 
@@ -49,7 +49,7 @@ SP_DEF(morpho_grouping);
 //in such cases - morpho_dependency represents the mapping between governing factor values and the governed factor values
 struct morpho_dependency {
   unsigned governing_factor;
-  MyPackedArray dependency_mapping;
+  PackedArray dependency_mapping;
 
   inline unsigned GetValue(unsigned governing_factor_id)
   {
@@ -61,7 +61,7 @@ struct morpho_dependency {
     return governing_factor;
   }
 
-  morpho_dependency(unsigned _governing_factor, const MyPackedArray &dep_mapping): governing_factor(_governing_factor), dependency_mapping(dep_mapping) {}
+  morpho_dependency(unsigned _governing_factor, const PackedArray &dep_mapping): governing_factor(_governing_factor), dependency_mapping(dep_mapping) {}
 };
 
 SP_DEF(morpho_dependency);
@@ -191,7 +191,7 @@ void Morphology::initMorphoWordLists(string filename)
 
   for (unsigned i = 0; i < num_factors; i++)
   {
-    morpho_word_lists.push_back(MyStaticStringArrayP(new MyStaticStringArray(ifs)));
+    morpho_word_lists.push_back(StringArrayP(new StringArray(ifs)));
     cerr << "initializating word lists: " << i << " : " << morpho_word_lists[i]->GetSize() << " entries" << endl;
   }
 }
@@ -249,7 +249,7 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
 
 Morphology::Morphology(ifstream &ifs)
 {
-  string checkIT = MyUtils::ReadString(ifs);
+  string checkIT = Utils::ReadString(ifs);
 
   FATAL_CONDITION(checkIT == "Morphology", "");
 
@@ -262,7 +262,7 @@ Morphology::Morphology(ifstream &ifs)
     groupings.push_back(morpho_groupingP());
   }
 
-  MyStaticStringArray factor_mssa = MyStaticStringArray(ifs);
+  StringArray factor_mssa = StringArray(ifs);
 
   for (unsigned i = 0; i < factor_mssa.GetSize(); i++)
   {
@@ -284,9 +284,9 @@ Morphology::Morphology(ifstream &ifs)
 
     assert(governing < governed);
 
-    //MyPackedArrayP dep_array = MyPackedArrayP(new MyPackedArray(ifs));
+    //PackedArrayP dep_array = PackedArrayP(new PackedArray(ifs));
 
-    dependencies[governed] = morpho_dependencyP(new morpho_dependency(governing, MyPackedArray(ifs)));
+    dependencies[governed] = morpho_dependencyP(new morpho_dependency(governing, PackedArray(ifs)));
   }
 
   uint32_t num_grouped;
@@ -300,7 +300,7 @@ Morphology::Morphology(ifstream &ifs)
     ifs.read((char*)&factor_index, sizeof(uint32_t));
 
     CompIncreasingArray group_offsets = CompIncreasingArray(ifs);
-    MyPackedArray group_values = MyPackedArray(ifs);
+    PackedArray group_values = PackedArray(ifs);
 
     groupings[factor_index] = morpho_groupingP(new morpho_grouping(group_values, group_offsets));
   }
@@ -325,12 +325,12 @@ Morphology::Morphology(ifstream &ifs)
   value_mapping = ValueMapping(ifs);
 
   formOffsets = CompIncreasingArray(ifs);
-  morphoData = MyBitArray(ifs);
+  morphoData = BitArray(ifs);
 }
 
 void Morphology::WriteToStream(ostream &ofs)
 {
-  MyUtils::WriteString(ofs, "Morphology");
+  Utils::WriteString(ofs, "Morphology");
   ofs.write((char*)&num_factors, sizeof(uint32_t));
 
   vector<string> factor_names_vec;
@@ -341,7 +341,7 @@ void Morphology::WriteToStream(ostream &ofs)
     factor_names_vec[it->second] = it->first;
   }
 
-  MyStaticStringArray mssa = MyStaticStringArray(factor_names_vec);
+  StringArray mssa = StringArray(factor_names_vec);
   mssa.WriteToStream(ofs);
 
   unsigned num_dependencies = 0;

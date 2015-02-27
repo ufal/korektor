@@ -18,10 +18,10 @@ namespace korektor {
 bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signature)
 {
   for (unsigned i = 0; i < misspelled.length(); i++)
-    misspelled[i] = MyUtils::ToLower(misspelled[i]);
+    misspelled[i] = Utils::ToLower(misspelled[i]);
 
   for (unsigned i = 0; i < correct.length(); i++)
-    correct[i] = MyUtils::ToLower(correct[i]);
+    correct[i] = Utils::ToLower(correct[i]);
 
   if (misspelled.length() == correct.length())
   {
@@ -38,7 +38,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
           }
         }
         //-------------------Letter swap-------------------------------
-        signature = MyUtils::utf8_to_utf16("swap_");
+        signature = Utils::utf8_to_utf16("swap_");
         signature += correct[i];
         signature += correct[i + 1];
         return true;
@@ -51,11 +51,11 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
           if (misspelled[j] != correct[j])
           {
             cerr << "!! " << misspelled[j] << " - " << correct[j] << "!! j = " << j << ", length = " << misspelled.length() << endl;
-            cerr << "sub failed!: " << MyUtils::utf16_to_utf8(misspelled) << " -- " << MyUtils::utf16_to_utf8(correct) << endl;
+            cerr << "sub failed!: " << Utils::utf16_to_utf8(misspelled) << " -- " << Utils::utf16_to_utf8(correct) << endl;
             return false;
           }
         }
-        signature = MyUtils::utf8_to_utf16("s_");
+        signature = Utils::utf8_to_utf16("s_");
         signature += misspelled[i];
         signature += correct[i];
         return true;
@@ -78,7 +78,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
           }
         }
 
-        signature = MyUtils::utf8_to_utf16("i_");
+        signature = Utils::utf8_to_utf16("i_");
         signature += misspelled[i];
 
         if (i == 0)
@@ -92,7 +92,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
 
     }
 
-    signature = MyUtils::utf8_to_utf16("i_");
+    signature = Utils::utf8_to_utf16("i_");
     signature += misspelled[misspelled.length() - 1];
     signature += correct[correct.length() - 1];
     signature += char16_t(' ');
@@ -105,7 +105,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
     {
       if (i == correct.length() - 1 && i > 0)
       {
-        signature = MyUtils::utf8_to_utf16("d_");
+        signature = Utils::utf8_to_utf16("d_");
         signature += correct[i];
         signature += correct[i - 1];
         return true;
@@ -119,7 +119,7 @@ bool GetErrorSignature(u16string misspelled, u16string correct, u16string& signa
             return false;
         }
 
-        signature = MyUtils::utf8_to_utf16("d_");
+        signature = Utils::utf8_to_utf16("d_");
         signature += correct[i];
         if (i > 0)
           signature += correct[i - 1];

@@ -7,18 +7,18 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include "my_mapped_double_array.h"
+#include "mapped_double_array.h"
 
 namespace ufal {
 namespace korektor {
 
-void MyMappedDoubleArray::WriteToStream(ostream &ofs) const
+void MappedDoubleArray::WriteToStream(ostream &ofs) const
 {
   value_mapping.writeToStream(ofs);
   mpa.WriteToStream(ofs);
 }
 
-MyMappedDoubleArray::MyMappedDoubleArray(vector<double> &values, uint32_t bits_per_value)
+MappedDoubleArray::MappedDoubleArray(vector<double> &values, uint32_t bits_per_value)
 {
   value_mapping = ValueMapping(values, bits_per_value);
 
@@ -29,10 +29,10 @@ MyMappedDoubleArray::MyMappedDoubleArray(vector<double> &values, uint32_t bits_p
     int_vals.push_back(value_mapping.GetCenterID(values[i]));
   }
 
-  mpa = MyPackedArray(int_vals);
+  mpa = PackedArray(int_vals);
 }
 
-MyMappedDoubleArray::MyMappedDoubleArray(istream &ifs):
+MappedDoubleArray::MappedDoubleArray(istream &ifs):
   value_mapping(ifs), mpa(ifs)
 {}
 

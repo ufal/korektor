@@ -11,8 +11,8 @@
 
 #include "common.h"
 #include "decoder_base.h"
-#include "ngram.h"
 #include "factor_list.h"
+#include "ngram.h"
 
 namespace ufal {
 namespace korektor {
@@ -33,16 +33,16 @@ class DecoderMultiFactor : public DecoderBase
   NGram ngram_val;
   SimWordsFinderP simWordsFinder;
 
-  virtual vector<vector<StagePosibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens);
+  virtual vector<vector<StagePossibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens);
 
-  virtual double ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next);
+  virtual double ComputeTransitionCost(ViterbiStateP state, StagePossibilityP next);
 
-  virtual StagePosibilityP sentence_start_SP();
-  virtual StagePosibilityP sentence_end_SP();
+  virtual StagePossibilityP sentence_start_SP();
+  virtual StagePossibilityP sentence_end_SP();
 
 
  public:
-  virtual double ComputeTransitionCostSPSequence(vector<StagePosibilityP> &sp_vec, uint32_t start_index, uint32_t end_index);
+  virtual double ComputeTransitionCostSPSequence(vector<StagePossibilityP> &sp_vec, uint32_t start_index, uint32_t end_index);
 
   DecoderMultiFactor(Configuration *configuration);
 

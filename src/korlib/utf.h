@@ -14,14 +14,14 @@
 namespace ufal {
 namespace korektor {
 
-class MyPackedArray;
+class PackedArray;
 
-class MyUTF
+class UTF
 {
 
   //static uint16_t* uc_to_lc;
   //static uint16_t* lc_to_uc;
-  //static MyPackedArray char_types;
+  //static PackedArray char_types;
   //static bool initialized;
 
   //static bool is_non_leading_byte(char ch);

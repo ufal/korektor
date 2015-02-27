@@ -10,7 +10,7 @@
 #include <iostream>
 
 #include "comp_increasing_array.h"
-#include "my_increasing_array.h"
+#include "increasing_array.h"
 #include "utils.h"
 
 namespace ufal {
@@ -21,7 +21,7 @@ namespace korektor {
 /// @param ofs Output stream
 void CompIncreasingArray::WriteToStream(ostream &ofs) const
 {
-  MyUtils::WriteString(ofs, "CIA");
+  Utils::WriteString(ofs, "CIA");
   uint32_t num_parts = mia_vec.size();
   ofs.write((char*)&num_parts, sizeof(uint32_t));
   ofs.write((char*)&log2_size_of_parts, sizeof(uint32_t));
@@ -39,7 +39,7 @@ void CompIncreasingArray::WriteToStream(ostream &ofs) const
 /// @param Input stream
 CompIncreasingArray::CompIncreasingArray(istream &ifs)
 {
-  string check_string = MyUtils::ReadString(ifs);
+  string check_string = Utils::ReadString(ifs);
 
   FATAL_CONDITION(check_string == "CIA", check_string);
 
@@ -52,14 +52,14 @@ CompIncreasingArray::CompIncreasingArray(istream &ifs)
 
   for (uint32_t i = 0; i < num_parts; i++)
   {
-    mia_vec.push_back(MyIncreasingArrayP(new MyIncreasingArray(ifs)));
+    mia_vec.push_back(IncreasingArrayP(new IncreasingArray(ifs)));
   }
 
   bit_mask = (1 << log2_size_of_parts) - 1;
 }
 
 /// @brief Divide the large sequence of unsigned integers into small groups and store them
-///        individually in MyIncreasingArray data structure.
+///        individually in IncreasingArray data structure.
 ///
 /// @param val Vector of increasing integer array
 /// @param _last_val_last_index -
@@ -78,7 +78,7 @@ CompIncreasingArray::CompIncreasingArray(vector<uint32_t> &val, uint32_t _last_v
     vector<uint32_t> part;
     for (uint32_t i = first; i <= last; i++)
       part.push_back(val[i]);
-    mia_vec.push_back(MyIncreasingArrayP(new MyIncreasingArray(part)));
+    mia_vec.push_back(IncreasingArrayP(new IncreasingArray(part)));
     first += 1 << log2_size_of_parts;
     last += 1 << log2_size_of_parts;
     if (last >= num_values)

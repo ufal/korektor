@@ -9,15 +9,15 @@
 
 #include <iostream>
 
-#include "my_bit_array.h"
+#include "bit_array.h"
 #include "utils.h"
 
 namespace ufal {
 namespace korektor {
 
-MyBitArray::MyBitArray(istream &ifs)
+BitArray::BitArray(istream &ifs)
 {
-  string check_string = MyUtils::ReadString(ifs);
+  string check_string = Utils::ReadString(ifs);
 
   FATAL_CONDITION(check_string == "MBA", check_string);
 
@@ -43,9 +43,9 @@ MyBitArray::MyBitArray(istream &ifs)
 
 }
 
-void MyBitArray::WriteToStream(ostream &ofs) const
+void BitArray::WriteToStream(ostream &ofs) const
 {
-  MyUtils::WriteString(ofs, "MBA");
+  Utils::WriteString(ofs, "MBA");
   ofs.write((char*)&num_bytes, sizeof(uint32_t));
 
   //TODO: output masks!
@@ -54,7 +54,7 @@ void MyBitArray::WriteToStream(ostream &ofs) const
 
 }
 
-MyBitArray::MyBitArray(const vector<pair<uint32_t, unsigned> > &values)
+BitArray::BitArray(const vector<pair<uint32_t, unsigned> > &values)
 {
   uint32_t bits_needed = 0;
   for (uint32_t i = 0; i < values.size(); i++)
@@ -116,7 +116,7 @@ MyBitArray::MyBitArray(const vector<pair<uint32_t, unsigned> > &values)
 
 }
 
-SP_DEF(MyBitArray);
+SP_DEF(BitArray);
 
 } // namespace korektor
 } // namespace ufal

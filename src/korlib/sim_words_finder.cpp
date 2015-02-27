@@ -31,18 +31,18 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
 
     ret = configuration->lexicon->GetSimilarWords(word_u_str, lookup_max_ed_dist, lookup_max_cost, configuration->errorModel, false);
 
-    if (token->sentence_start && MyUtils::IsUpperCase(word_u_str[0])) //On the beginning of the sentence both lower case and upper case starting letter should be tried!
+    if (token->sentence_start && Utils::IsUpperCase(word_u_str[0])) //On the beginning of the sentence both lower case and upper case starting letter should be tried!
     {
       // Make sure all suggestions are capitalized.
       for (auto&& suggestion : ret) {
         auto& word = suggestion.second.first;
-        if (!word.empty() && MyUtils::IsLowerCase(word[0]))
-          word[0] = MyUtils::ToUpper(word[0]);
+        if (!word.empty() && Utils::IsLowerCase(word[0]))
+          word[0] = Utils::ToUpper(word[0]);
       }
 
       // Try searching for word without first capital letter.
       u16string word_str_lc = word_u_str;
-      word_str_lc[0] = MyUtils::ToLower(word_u_str[0]);
+      word_str_lc[0] = Utils::ToLower(word_u_str[0]);
 
       Similar_Words_Map msw_lc = configuration->lexicon->GetSimilarWords(word_str_lc, lookup_max_ed_dist, lookup_max_cost, configuration->errorModel, false);
 
@@ -50,8 +50,8 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
       {
         //word form of found suggestion should be capitalized!
         auto& ustring = it->second.first;
-        if (MyUtils::IsLowerCase(ustring[0]))
-          ustring[0] = MyUtils::ToUpper(ustring[0]);
+        if (Utils::IsLowerCase(ustring[0]))
+          ustring[0] = Utils::ToUpper(ustring[0]);
 
         Similar_Words_Map::iterator fit = ret.find(it->first);
         if (fit == ret.end())
@@ -90,12 +90,12 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
       {
         switch (ct)
         {
-          case ALL_UPPER_CASE: sim_w_str[j] = MyUtils::ToUpper(sim_w_str[j]); break;
-          case ALL_LOWER_CASE: sim_w_str[j] = MyUtils::ToLower(sim_w_str[j]); break;
+          case ALL_UPPER_CASE: sim_w_str[j] = Utils::ToUpper(sim_w_str[j]); break;
+          case ALL_LOWER_CASE: sim_w_str[j] = Utils::ToLower(sim_w_str[j]); break;
           case FIRST_UPPER_CASE: if ( j == 0)
-                                   sim_w_str[j] = MyUtils::ToUpper(sim_w_str[j]);
+                                   sim_w_str[j] = Utils::ToUpper(sim_w_str[j]);
                                  else
-                                   sim_w_str[j] = MyUtils::ToLower(sim_w_str[j]);
+                                   sim_w_str[j] = Utils::ToLower(sim_w_str[j]);
                                  break;
           case WEIRD: break;
         }
@@ -104,15 +104,15 @@ void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_
     }
 
   }
-  else if (token->sentence_start && MyUtils::IsUpperCase(word_u_str[0]))
+  else if (token->sentence_start && Utils::IsUpperCase(word_u_str[0]))
   {
     for (Similar_Words_Map::iterator it = ret.begin(); it != ret.end(); it++)
     {
       auto& sim_w_str = it->second.first;
 
-      if (MyUtils::IsLowerCase(sim_w_str[0]))
+      if (Utils::IsLowerCase(sim_w_str[0]))
       {
-        sim_w_str[0] = MyUtils::ToUpper(sim_w_str[0]);
+        sim_w_str[0] = Utils::ToUpper(sim_w_str[0]);
       }
 
     }

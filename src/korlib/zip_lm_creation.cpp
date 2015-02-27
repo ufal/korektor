@@ -13,10 +13,10 @@
 #include <set>
 
 #include "comp_increasing_array.h"
+#include "mapped_double_array.h"
 #include "morphology.h"
-#include "my_mapped_double_array.h"
-#include "my_packed_array.h"
 #include "ngram.h"
+#include "packed_array.h"
 #include "utils.h"
 #include "zip_lm.h"
 
@@ -33,7 +33,7 @@ ZipLM::ZipLM(const string &_factor_name, uint32_t _order, double _not_in_lm_cost
   max_unigram_id = _probs[0].size() - 1;
   cerr << "LM order: " << _order << endl;
 
-  ids.push_back(MyPackedArrayP());
+  ids.push_back(PackedArrayP());
 
   for (uint32_t i = 0; i < _order; i++)
   {
@@ -48,7 +48,7 @@ ZipLM::ZipLM(const string &_factor_name, uint32_t _order, double _not_in_lm_cost
 
     cerr << "creating probs order " << i << endl;
 
-    probs.push_back(MyMappedDoubleArrayP(new MyMappedDoubleArray(_probs[i], bits_per_prob)));
+    probs.push_back(MappedDoubleArrayP(new MappedDoubleArray(_probs[i], bits_per_prob)));
   }
 
   for (uint32_t i = 0; i < _order - 1; i++)
@@ -63,13 +63,13 @@ ZipLM::ZipLM(const string &_factor_name, uint32_t _order, double _not_in_lm_cost
       bits_per_bow = bits_per_higher_order_bow;
 
     cerr << "creating bows order " << i << endl;
-    bows.push_back(MyMappedDoubleArrayP(new MyMappedDoubleArray(_bows[i], bits_per_bow)));
+    bows.push_back(MappedDoubleArrayP(new MappedDoubleArray(_bows[i], bits_per_bow)));
   }
 
   for (uint32_t i = 1; i < _order; i++)
   {
     cerr << "creating ids order " << i << endl;
-    ids.push_back(MyPackedArrayP(new MyPackedArray(_ids[i])));
+    ids.push_back(PackedArrayP(new PackedArray(_ids[i])));
   }
 
   for (uint32_t i = 0; i < _order - 1; i++)
@@ -91,28 +91,28 @@ ZipLM::ZipLM(string bin_file)
 //  }
   assert(ifs.is_open());
 
-  factor_name = MyUtils::ReadString(ifs);
+  factor_name = Utils::ReadString(ifs);
 
   ifs.read((char*)&lm_order, sizeof(uint32_t));
   ifs.read((char*)&not_in_lm_cost, sizeof(double));
 
-  ids.push_back(MyPackedArrayP());
+  ids.push_back(PackedArrayP());
 
   for (uint32_t i = 0; i < lm_order; i++)
   {
-    probs.push_back(MyMappedDoubleArrayP(new MyMappedDoubleArray(ifs)));
+    probs.push_back(MappedDoubleArrayP(new MappedDoubleArray(ifs)));
   }
 
   max_unigram_id = probs[0]->GetSize() - 1;
 
   for (uint32_t i = 0; i < lm_order - 1; i++)
   {
-    bows.push_back(MyMappedDoubleArrayP(new MyMappedDoubleArray(ifs)));
+    bows.push_back(MappedDoubleArrayP(new MappedDoubleArray(ifs)));
   }
 
   for (uint32_t i = 1; i < lm_order; i++)
   {
-    ids.push_back(MyPackedArrayP(new MyPackedArray(ifs)));
+    ids.push_back(PackedArrayP(new PackedArray(ifs)));
   }
 
   for (uint32_t i = 0; i < lm_order - 1; i++)
@@ -131,7 +131,7 @@ void ZipLM::SaveInBinaryForm(string out_file)
   ofstream ofs;
   ofs.open(out_file.c_str(), ios::out | ios::binary);
   assert(ofs.is_open());
-  MyUtils::WriteString(ofs, factor_name);
+  Utils::WriteString(ofs, factor_name);
   ofs.write((char*)&lm_order, sizeof(uint32_t));
   ofs.write((char*)&not_in_lm_cost, sizeof(double));
 
@@ -209,7 +209,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
   unsigned ngram_order = 0;
   vector<string> toks;
 
-  while (MyUtils::SafeReadline(ifs, s))
+  while (Utils::SafeReadline(ifs, s))
   {
     if (s.empty()) continue;
     else if (s.find("ngram") == 0) continue;
@@ -222,11 +222,11 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
     else
     {
       assert(ngram_order > 0);
-      MyUtils::Split(toks, s, " \t");
+      Utils::Split(toks, s, " \t");
       FATAL_CONDITION(toks.size() == ngram_order + 1 || toks.size() == ngram_order + 2, "corrupted line: " << s);
 
       double bow = 0;
-      double prob = -MyUtils::my_atof(toks[0]);
+      double prob = -Utils::my_atof(toks[0]);
 
       if (prob > 90) prob = not_in_lm_cost;
 
@@ -256,7 +256,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
       }
 
       if (toks.size() == ngram_order + 2)
-        bow = - MyUtils::my_atof(toks.back());
+        bow = - Utils::my_atof(toks.back());
 
       if (bow > 90) bow = not_in_lm_cost;
 

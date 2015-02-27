@@ -19,10 +19,10 @@
 #include <unordered_map>
 
 #include "common.h"
+#include "bit_array.h"
 #include "comp_increasing_array.h"
 #include "factor_list.h"
-#include "my_bit_array.h"
-#include "my_static_string_array.h"
+#include "string_array.h"
 #include "value_mapping.h"
 
 namespace ufal {
@@ -52,10 +52,10 @@ class Morphology {
 
   CompIncreasingArray formOffsets; ///< Contains offsets into the morphoData bit array denoting where the morphological information for a particular factor starts
 
-  MyBitArray morphoData; ///< Bit array containing the morphological information
+  BitArray morphoData; ///< Bit array containing the morphological information
 
   //morpho_word_lists and morpho_maps suits only debuggind purposes and usually are not loaded at all
-  vector<MyStaticStringArrayP> morpho_word_lists;
+  vector<StringArrayP> morpho_word_lists;
   vector<unordered_map<string, unsigned> > morpho_maps;
 
 

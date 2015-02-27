@@ -12,7 +12,7 @@
 #include <unordered_map>
 
 #include "common.h"
-#include "stage_posibility.h"
+#include "stage_possibility.h"
 
 namespace ufal {
 namespace korektor {
@@ -37,7 +37,7 @@ class Spellchecker {
 
   DecoderBaseP decoder;
 
-  unordered_map<uint32_t, vector<StagePosibilityP> > MakeSuggestionList(vector<StagePosibilityP> &decoded_pos, StagePosibilitiesType stage_posibilities);
+  unordered_map<uint32_t, vector<StagePossibilityP> > MakeSuggestionList(vector<StagePossibilityP> &decoded_pos, StagePossibilitiesType stage_posibilities);
 
  public:
 

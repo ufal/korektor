@@ -7,8 +7,8 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-/// @file my_increasing_array.h
-/// @class MyIncreasingArray my_increasing_array.h "my_increasing_array.h"
+/// @file increasing_array.h
+/// @class IncreasingArray increasing_array.h "increasing_array.h"
 /// @brief Data structure for efficiently storing integer
 ///        arrays whose values are in an increasing order.
 
@@ -16,16 +16,16 @@
 
 #include "common.h"
 
-#include "my_packed_array.h"
+#include "packed_array.h"
 
 namespace ufal {
 namespace korektor {
 
-class MyIncreasingArray {
+class IncreasingArray {
  private:
   uint32_t multiplier; ///< Multiplier for approximating function
   int32_t value_shift; ///< How much deviation from the original values
-  MyPackedArray shifted_offsets; ///< Stored values
+  PackedArray shifted_offsets; ///< Stored values
 
  public:
 
@@ -46,15 +46,15 @@ class MyIncreasingArray {
     return ((i * multiplier) >> 10) + shifted_offsets.GetValueAt(i) + value_shift;
   }
 
-  MyIncreasingArray(istream &ifs);
+  IncreasingArray(istream &ifs);
 
   void WriteToStream(ostream &ofs) const;
 
-  MyIncreasingArray(vector<uint32_t> &vec);
+  IncreasingArray(vector<uint32_t> &vec);
 
 };
 
-SP_DEF(MyIncreasingArray);
+SP_DEF(IncreasingArray);
 
 } // namespace korektor
 } // namespace ufal

@@ -8,18 +8,18 @@
 // modification, are permitted under 3-clause BSD licence.
 
 /// @file utils.h
-/// @class MyUtils MyUtils.h "MyUtils.h"
+/// @class Utils utils.h "utils.h"
 /// @brief Utility functions
 
 #pragma once
 
 #include "common.h"
-#include "my_utf.h"
+#include "utf.h"
 
 namespace ufal {
 namespace korektor {
 
-class MyUtils {
+class Utils {
  public:
 
   static void HashCombine(size_t &seed, unsigned value)
@@ -71,7 +71,7 @@ class MyUtils {
 
     for (unsigned i = 0; i < str1.length(); i++)
     {
-      if (MyUTF::tolower(str1[i]) != MyUTF::tolower(str1[i]))
+      if (UTF::tolower(str1[i]) != UTF::tolower(str1[i]))
         return false;
     }
 
@@ -112,42 +112,42 @@ class MyUtils {
   /// @return UTF-8 string
   static string utf16_to_utf8(const u16string &ustr)
   {
-    return MyUTF::utf16_to_utf8(ustr);
+    return UTF::utf16_to_utf8(ustr);
   }
 
   /// @brief UTF-8 to UTF-16 conversion
   /// @return UTF-16 string
   static u16string utf8_to_utf16(const string &str)
   {
-    return MyUTF::utf8_to_utf16(str);
+    return UTF::utf8_to_utf16(str);
   }
 
   /// @brief Check whether the character is in uppercase
   /// @return boolean
   static bool IsUpperCase(char16_t uchar)
   {
-    return MyUTF::tolower(uchar) != uchar;
+    return UTF::tolower(uchar) != uchar;
   }
 
   /// @brief Check whether the character is in lowercase
   /// @return boolean
   static bool IsLowerCase(char16_t uchar)
   {
-    return MyUTF::toupper(uchar) != uchar;
+    return UTF::toupper(uchar) != uchar;
   }
 
   /// @brief Change the character to lowercase
   /// @return Lowercase character
   static char16_t ToLower(char16_t uchar)
   {
-    return MyUTF::tolower(uchar);
+    return UTF::tolower(uchar);
   }
 
   /// @brief Change the character to uppercase
   /// @return Uppercase character
   static char16_t ToUpper(char16_t uchar)
   {
-    return MyUTF::toupper(uchar);
+    return UTF::toupper(uchar);
   }
 
   /// @brief Check whether the given string contains letter
@@ -231,7 +231,7 @@ struct u16string_hash
     size_t seed = 0;
     for (size_t i = 0; i < val.length(); i++)
     {
-      MyUtils::HashCombine(seed, val[i]);
+      Utils::HashCombine(seed, val[i]);
     }
 
     return seed;

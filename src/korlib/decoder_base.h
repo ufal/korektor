@@ -12,24 +12,24 @@
 #include <unordered_set>
 
 #include "common.h"
-#include "viterbi_state.h"
 #include "token.h"
+#include "viterbi_state.h"
 
 namespace ufal {
 namespace korektor {
 
-class StagePosibility;
-SP_DEF(StagePosibility);
-typedef shared_ptr<vector<vector<StagePosibilityP>>> StagePosibilitiesType;
+class StagePossibility;
+SP_DEF(StagePossibility);
+typedef shared_ptr<vector<vector<StagePossibilityP>>> StagePossibilitiesType;
 
 class TransitionCostComputation;
 SP_DEF(TransitionCostComputation);
 
 class Configuration;
 
-struct Pair_StagePosibilityP_double_comparer : less<pair<uint32_t, double> >
+struct Pair_StagePossibilityP_double_comparer : less<pair<uint32_t, double> >
 {
-  bool operator()(const pair<StagePosibilityP, double> &val1, const pair<StagePosibilityP, double> &val2)
+  bool operator()(const pair<StagePossibilityP, double> &val1, const pair<StagePossibilityP, double> &val2)
   {
     return val1.second < val2.second;
   }
@@ -49,16 +49,16 @@ class DecoderBase
 
  private:
 
-  StagePosibilitiesType stage_posibilities;
+  StagePossibilitiesType stage_posibilities;
 
-  virtual vector<vector<StagePosibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens) = 0;
+  virtual vector<vector<StagePossibilityP> > init_inner_stage_posibilities(const vector<TokenP> &tokens) = 0;
 
   void init_posibilities(const vector<TokenP> &tokens);
 
-  virtual double ComputeTransitionCost(ViterbiStateP state, StagePosibilityP next) = 0;
+  virtual double ComputeTransitionCost(ViterbiStateP state, StagePossibilityP next) = 0;
 
-  virtual StagePosibilityP sentence_start_SP() = 0;
-  virtual StagePosibilityP sentence_end_SP() = 0;
+  virtual StagePossibilityP sentence_start_SP() = 0;
+  virtual StagePossibilityP sentence_end_SP() = 0;
 
  protected:
 
@@ -68,7 +68,7 @@ class DecoderBase
 
  public:
 
-  virtual double ComputeTransitionCostSPSequence(vector<StagePosibilityP> &sp_vec, uint32_t start_index, uint32_t end_index) = 0;
+  virtual double ComputeTransitionCostSPSequence(vector<StagePossibilityP> &sp_vec, uint32_t start_index, uint32_t end_index) = 0;
 
   Configuration* configuration;
 
@@ -76,9 +76,9 @@ class DecoderBase
 
   TransitionCostComputationP GetTransitionCostComputation();
 
-  vector<StagePosibilityP>  DecodeTokenizedSentence(const vector<TokenP> &tokens);
+  vector<StagePossibilityP>  DecodeTokenizedSentence(const vector<TokenP> &tokens);
 
-  void DecodeTokenizedSentence_ReturnStagePosibilities(const vector<TokenP> &tokens, vector<StagePosibilityP> &decoded_sequence, StagePosibilitiesType &_stage_posibilities);
+  void DecodeTokenizedSentence_ReturnStagePossibilities(const vector<TokenP> &tokens, vector<StagePossibilityP> &decoded_sequence, StagePossibilitiesType &_stage_posibilities);
 
   string DecodeSentence(string sentence);
 

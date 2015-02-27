@@ -96,7 +96,7 @@ Configuration::Configuration(const string &conf_file)
   mode_string = "tag_errors";
   string s;
 
-  while (MyUtils::SafeReadline(ifs, s))
+  while (Utils::SafeReadline(ifs, s))
   {
     if (s == "" || s[0] == '#')  //comment
       continue;
@@ -134,7 +134,7 @@ Configuration::Configuration(const string &conf_file)
     {
       vector<string> toks;
 
-      MyUtils::Split(toks, s, "-");
+      Utils::Split(toks, s, "-");
 
       FATAL_CONDITION(toks.size() == 4, s);
 
@@ -143,10 +143,10 @@ Configuration::Configuration(const string &conf_file)
       LoadLM(lm_wrapper);
 
       string order_str = toks[2];
-      unsigned order = MyUtils::my_atoi(order_str);
+      unsigned order = Utils::my_atoi(order_str);
 
       string weight_str = toks[3];
-      float weight = MyUtils::my_atof(weight_str);
+      float weight = Utils::my_atof(weight_str);
 
       EnableFactor(lm->GetFactorName(), weight, order);
 
@@ -158,7 +158,7 @@ Configuration::Configuration(const string &conf_file)
     else if (s.substr(0, 6) == "search")
     {
       vector<string> toks;
-      MyUtils::Split(toks, s, "-");
+      Utils::Split(toks, s, "-");
 
       FATAL_CONDITION(toks.size() == 4, s);
 
@@ -176,8 +176,8 @@ Configuration::Configuration(const string &conf_file)
         exit(1);
       }
 
-      unsigned max_edit_distance = MyUtils::my_atoi(toks[2]);
-      float max_cost = MyUtils::my_atof(toks[3]);
+      unsigned max_edit_distance = Utils::my_atoi(toks[2]);
+      float max_cost = Utils::my_atof(toks[3]);
 
       search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));
     }

@@ -9,7 +9,7 @@
 
 #include "configuration.h"
 #include "constants.h"
-#include "stage_posibility.h"
+#include "stage_possibility.h"
 #include "utils.h"
 
 namespace ufal {
@@ -18,17 +18,17 @@ namespace korektor {
 class Configuration;
 SP_DEF(Configuration);
 
-string StagePosibilityNew::ToString()
+string StagePossibilityNew::ToString()
 {
-  return MyUtils::utf16_to_utf8(word);
+  return Utils::utf16_to_utf8(word);
 }
 
-bool StagePosibilityNew::IsUnknown()
+bool StagePossibilityNew::IsUnknown()
 {
-  return form_id == MyConstants::unknown_word_id || form_id == MyConstants::name_id;
+  return form_id == Constants::unknown_word_id || form_id == Constants::name_id;
 }
 
-StagePosibilityNew::StagePosibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration* _conf, float error_model_cost):
+StagePossibilityNew::StagePossibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration* _conf, float error_model_cost):
   word(_word), original(_original), emission_prob(error_model_cost), factorList(_factorList)
 {
 
@@ -42,7 +42,7 @@ StagePosibilityNew::StagePosibilityNew(const FactorList &_factorList, bool _orig
     {
       if (j > 0)
         emission_prob += _conf->GetFactorWeight(j) * factorList.emission_costs[j];
-      MyUtils::HashCombine(uniq_id, factorList.factors[j]);
+      Utils::HashCombine(uniq_id, factorList.factors[j]);
     }
   }
 

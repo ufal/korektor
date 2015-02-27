@@ -20,7 +20,7 @@ SP_DEF(Configuration);
 
 //TODO: reorganize this class for better cache usage - it's use in the main computation loop, so it shouldn't be that wasteful - the actual literal strings should be
 //moved somewhere else
-class StagePosibility {
+class StagePossibility {
  public:
   virtual float EmmisionProbability() = 0;
   virtual string ToString() = 0;
@@ -31,33 +31,33 @@ class StagePosibility {
   virtual u16string &To_u16string() = 0;
 };
 
-SP_DEF(StagePosibility);
-typedef shared_ptr<vector<vector<StagePosibilityP>>> StagePosibilitiesType;
+SP_DEF(StagePossibility);
+typedef shared_ptr<vector<vector<StagePossibilityP>>> StagePossibilitiesType;
 
 
-struct StagePosibility_Identifying_comparer : less<StagePosibilityP> {
-  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+struct StagePossibility_Identifying_comparer : less<StagePossibilityP> {
+  bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
   {
     return sp1->UniqueIdentifier() < sp2->UniqueIdentifier();
   }
 };
 
-struct StagePosibility_Form_comparer : less<StagePosibilityP> {
-  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+struct StagePossibility_Form_comparer : less<StagePossibilityP> {
+  bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
   {
     return sp1->FormIdentifier() < sp2->FormIdentifier();
   }
 };
 
 
-struct StagePosibility_sort_cost : less<StagePosibilityP> {
-  bool operator()(const StagePosibilityP& sp1, const StagePosibilityP& sp2)
+struct StagePossibility_sort_cost : less<StagePossibilityP> {
+  bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
   {
     return sp1->EmmisionProbability() < sp2->EmmisionProbability();
   }
 };
 
-class StagePosibilityNew : public StagePosibility {
+class StagePossibilityNew : public StagePossibility {
   u16string word;
   bool original;
   float emission_prob;
@@ -75,11 +75,11 @@ class StagePosibilityNew : public StagePosibility {
   inline FactorList GetFactorList() { return factorList; }
   virtual u16string &To_u16string() { return word; }
 
-  StagePosibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration *_conf, float error_model_cost);
+  StagePossibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration *_conf, float error_model_cost);
 
 };
 
-SP_DEF(StagePosibilityNew);
+SP_DEF(StagePossibilityNew);
 
 } // namespace korektor
 } // namespace ufal

@@ -10,9 +10,9 @@
 #include <cstring>
 
 #include "comp_increasing_array.h"
-#include "my_mapped_double_array.h"
-#include "my_packed_array.h"
+#include "mapped_double_array.h"
 #include "ngram.h"
+#include "packed_array.h"
 #include "utils.h"
 #include "zip_lm.h"
 
@@ -38,7 +38,7 @@ int ZipLM::search_for_id(uint32_t _order, uint32_t word_id, int start_offset, in
   uint32_t index;
   uint32_t val;
 
-  MyPackedArrayP id_arr = ids[_order];
+  PackedArrayP id_arr = ids[_order];
 
   //FATAL_CONDITION(end_offset > start_offset, "");
 

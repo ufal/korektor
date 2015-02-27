@@ -10,8 +10,7 @@
 #pragma once
 
 #include "common.h"
-
-#include "my_increasing_array.h"
+#include "increasing_array.h"
 
 namespace ufal {
 namespace korektor {
@@ -24,7 +23,7 @@ class CompIncreasingArray {
   uint32_t bit_mask; ///< Maximum value
   uint32_t num_values; ///< Array size
   uint32_t last_val_last_index; ///< -
-  vector<MyIncreasingArrayP> mia_vec; ///< Each vector element points to the subgroup of the original data
+  vector<IncreasingArrayP> mia_vec; ///< Each vector element points to the subgroup of the original data
 
 
  public:

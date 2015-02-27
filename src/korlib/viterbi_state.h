@@ -14,8 +14,8 @@
 namespace ufal {
 namespace korektor {
 
-class StagePosibility;
-SP_DEF(StagePosibility);
+class StagePossibility;
+SP_DEF(StagePossibility);
 
 class ViterbiState;
 SP_DEF(ViterbiState);
@@ -36,20 +36,20 @@ struct ngram_history_struct
 class ViterbiState
 {
  public:
-  vector<StagePosibilityP> history;
+  vector<StagePossibilityP> history;
 
   double distance;
   ViterbiStateP ancestor;
 
-  StagePosibilityP GetYoungestHistory();
+  StagePossibilityP GetYoungestHistory();
 
   size_t UniqueIdentifier();
 
   bool Equals(ViterbiState &state);
 
-  ViterbiState(vector<StagePosibilityP> _history);
+  ViterbiState(vector<StagePossibilityP> _history);
 
-  ViterbiState(ViterbiStateP prev_state, StagePosibilityP next_sp, double _distance);
+  ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance);
 
   string ToString();
 };

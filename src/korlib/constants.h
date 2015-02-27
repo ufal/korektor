@@ -14,7 +14,7 @@
 namespace ufal {
 namespace korektor {
 
-struct MyConstants {
+struct Constants {
   static const double prunning_constant;
 
   static const uint32_t sentence_start_id;
