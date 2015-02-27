@@ -10,7 +10,6 @@
 #include "error_model/error_model.h"
 #include "lexicon.h"
 #include "sim_words_finder.h"
-#include "spellchecker/capitalization_type.h"
 #include "spellchecker/configuration.h"
 #include "tokenizer/token.h"
 #include "utils/utils.h"
@@ -18,6 +17,45 @@
 namespace ufal {
 namespace korektor {
 
+// Capitalization classification
+enum capitalization_type { ALL_UPPER_CASE, ALL_LOWER_CASE, FIRST_UPPER_CASE, WEIRD };
+
+capitalization_type GetCapitalizationType(const u16string& ustr)
+{
+  if (Utils::IsUpperCase(ustr[0]))
+  {
+    for (unsigned i = 1; i < ustr.length(); i++)
+    {
+      if (Utils::IsUpperCase(ustr[i]) == false)
+      {
+        if (i > 1)
+          return WEIRD;
+        else
+        {
+          for (unsigned j = 2; j < ustr.length(); j++)
+          {
+            if (Utils::IsUpperCase(ustr[j]))
+              return WEIRD;
+          }
+        }
+        return FIRST_UPPER_CASE;
+      }
+    }
+    return ALL_UPPER_CASE;
+  }
+  else
+  {
+    for (unsigned i = 1; i < ustr.length(); i++)
+    {
+      if (Utils::IsUpperCase(ustr[i]))
+        return WEIRD;
+    }
+    return ALL_LOWER_CASE;
+  }
+}
+
+
+// SimWordsFinder methods
 void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret)
 {
   u16string &word_u_str = token->str_u16;
