@@ -46,8 +46,6 @@ class Utils {
   /// @brief random number in a range
   static int randomR(int lowest, int range);
 
-  static double minus_log_10_rand01();
-
   /// @brief minimal number of bits needed for representing the given unsigned int value
   /// @param value Integer input
   /// @return Required bits in integer
@@ -77,36 +75,6 @@ class Utils {
 
     return true;
   }
-
-  //outputting a vector of strings into cerr
-  static void cerr_vector_string(const vector<string> &vec);
-
-  static string GetTimeString();
-
-  /// @brief String to Boolean conversion
-  ///
-  /// @param str The values are "true" or "false"
-  /// @return Returns 0 or 1 based on the given input string
-  static bool StrToBool(string str);
-
-  /// @brief String to double conversion
-  ///
-  /// @param str input string
-  /// @return Value in double
-  static double StrToDouble(string str);
-
-  /// @brief String to integer conversion
-  ///
-  /// @param str input string
-  /// @return Intger value
-  static uint32_t StrToInt(string str);
-
-  /// @brief Boolean to String conversion
-  ///
-  /// @param value boolean
-  /// @return Returns "true" or "false" based on the input value
-  static string BoolToString(bool value);
-
 
   /// @brief UTF-16 to UTF-8 conversion
   /// @return UTF-8 string
@@ -209,32 +177,6 @@ class Utils {
     //  throw std::bad_cast("error in my_atoi: value cannot be converted to int!");
 
     return ret;
-  }
-
-  /// @brief Integer to string conversion
-  /// @param Input integer
-  /// @return string
-  static string my_itoa(int val)
-  {
-    static char buffer[200];
-    sprintf(buffer, "%d", val);
-    return string(buffer);
-  }
-
-};
-
-///hashing function for u16string
-struct u16string_hash
-{
-  size_t operator()(const u16string &val) const
-  {
-    size_t seed = 0;
-    for (size_t i = 0; i < val.length(); i++)
-    {
-      Utils::HashCombine(seed, val[i]);
-    }
-
-    return seed;
   }
 };
 
