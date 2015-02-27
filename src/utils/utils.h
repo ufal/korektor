@@ -26,12 +26,6 @@ class Utils {
     seed ^= value + 0x9e3779b9 + (seed<<6) + (seed>>2);
   }
 
-  /// @brief random number in a range
-  static double RandomNumber(double min, double max);
-
-  /// @brief random number in a range
-  static int randomR(int lowest, int range);
-
   /// @brief minimal number of bits needed for representing the given unsigned int value
   /// @param value Integer input
   /// @return Required bits in integer

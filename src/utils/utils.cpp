@@ -19,21 +19,5 @@
 namespace ufal {
 namespace korektor {
 
-/// @brief Generates a random number between the given range
-///
-/// @param min Lower bound
-/// @param max Upper bound
-/// @return Random number
-double Utils::RandomNumber(double min, double max)
-{
-  return ((double)rand() / RAND_MAX) * (max - min) + min;
-}
-
-int Utils::randomR(int lowest, int range)
-{
-  uint32_t ret = lowest+uint32_t(range*(rand()/(RAND_MAX + (float)1.0)));
-  return ret;
-}
-
 } // namespace korektor
 } // namespace ufal

@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iostream>
+#include <random>
 
 #include "value_mapping.h"
 #include "utils/utils.h"
@@ -126,6 +127,9 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
     if (values[i] > max) max = values[i];
   }
 
+  minstd_rand generator;
+  uniform_real_distribution<double> minpos_max_distribution(min_pos,max);
+
   double pom_incr = (max - min_pos ) / (num_classes + 2);
   double pom = min_pos;
 
@@ -201,7 +205,7 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
       }
       else
       {
-        centers[i] = Utils::RandomNumber(min_pos, max);
+        centers[i] = minpos_max_distribution(generator);
       }
     }
 
