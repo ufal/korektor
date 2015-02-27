@@ -13,19 +13,18 @@
 #pragma once
 
 #include "common.h"
-#include "lexicon/lexicon.h"
-#include "token.h"
-#include "utils/utils.h"
-
 
 namespace ufal {
 namespace korektor {
 
-enum matcher_type { undef, sentence_end, special_class, token };
+class Lexicon;
+SP_DEF(Lexicon);
+
+class Token;
+SP_DEF(Token);
 
 /// @brief Tokenizer class for sentence tokenization
 class Tokenizer {
-
   LexiconP lexicon; ///< lexicon
 
  public:
@@ -45,94 +44,7 @@ class Tokenizer {
   /// @param text The input text
   /// @return The tokens
   /// @todo The tokenization at the moment is English specific. It should be generic.
-  vector<vector<TokenP> > Tokenize(const u16string &text)
-  {
-    vector<TokenP> tokens;
-
-    tokens.reserve(text.length() / 4);
-
-    vector<unsigned> sentence_ends;
-
-    for (unsigned i = 0; i < text.length(); i++)
-    {
-      if (text[i] == '\n' || text[i] == ':' || text[i] == '?' || text[i] == '!') sentence_ends.push_back(i);
-      else if (text[i] == '.')
-      {
-        unsigned j = i + 1;
-        while (j < text.length() - 1 && UTF::is_alphanum(text[j]) == false) j++;
-
-        if (Utils::IsUpperCase(text[j]))
-          sentence_ends.push_back(i);
-      }
-    }
-
-    unsigned i = 0;
-
-    while (i < text.length())
-    {
-      if (UTF::is_alphanum(text[i]))
-      {
-        unsigned length = 1;
-        while (i + length < text.length() && UTF::is_alphanum(text[i + length]))
-          length++;
-
-        TokenP token = TokenP(new Token(i, length, text.substr(i, length)));
-
-        if (lexicon)
-        {
-          int wordID = lexicon->GetWordID(token->str_u16);
-          token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
-        }
-        token->correction_is_allowed = token->correction_is_allowed && Utils::ContainsLetter(token->str_u16);
-
-        tokens.push_back(token);
-
-        i += length;
-      }
-      else if (UTF::is_punct(text[i]))
-      {
-        TokenP token = TokenP(new Token(i, 1, text.substr(i, 1)));
-
-        if (lexicon)
-        {
-          int wordID = lexicon->GetWordID(token->str_u16);
-          token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
-        }
-        token->correction_is_allowed = token->correction_is_allowed && Utils::ContainsLetter(token->str_u16);
-
-        tokens.push_back(token);
-
-        i++;
-      }
-      else
-      {
-        i++;
-      }
-    }
-
-    unsigned next_sentence_end_index = 0;
-
-    vector<vector<TokenP> > ret;
-    ret.push_back(vector<TokenP>());
-
-    for (unsigned i = 0; i < tokens.size(); i++)
-    {
-      while (next_sentence_end_index < sentence_ends.size() && tokens[i]->first > sentence_ends[next_sentence_end_index])
-      {
-        next_sentence_end_index++;
-        ret.push_back(vector<TokenP>());
-      }
-
-      if (ret.back().empty())
-        tokens[i]->sentence_start = true;
-      else
-        tokens[i]->sentence_start = false;
-      ret.back().push_back(tokens[i]);
-    }
-
-    return ret;
-
-  }
+  vector<vector<TokenP> > Tokenize(const u16string &text);
 };
 
 SP_DEF(Tokenizer);
