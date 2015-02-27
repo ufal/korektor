@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include <unordered_map>
+#include <map>
 
 #include "common.h"
 #include "decoder/stage_possibility.h"
@@ -37,7 +37,7 @@ class Spellchecker {
 
   DecoderBaseP decoder;
 
-  unordered_map<uint32_t, vector<StagePossibilityP> > MakeSuggestionList(vector<StagePossibilityP> &decoded_pos, StagePossibilitiesType stage_posibilities);
+  map<uint32_t, vector<StagePossibilityP> > MakeSuggestionList(vector<StagePossibilityP> &decoded_pos, StagePossibilitiesType stage_posibilities);
 
  public:
 
