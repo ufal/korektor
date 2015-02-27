@@ -30,37 +30,30 @@ namespace korektor {
 class ErrorModelBasic;
 SP_DEF(ErrorModelBasic);
 
-/// @struct char16_pair_hash error_model_basic.h "error_model_basic.h"
-/// @brief Generates hash value given 2 strings
-struct char16_pair_hash : std::unary_function<pair<char16_t, char16_t>, size_t>
-{
-  size_t operator()(const pair<char16_t, char16_t> &val) const
-  {
-    size_t seed = 0;
-    Hash::Combine(seed, val.first);
-    Hash::Combine(seed, val.second);
-    return seed;
-  }
-};
-/// @struct char16_triple_hash error_model_basic.h "error_model_basic.h"
-/// @brief Generates hash value given 3 strings
-struct char16_triple_hash : std::unary_function<tuple<char16_t, char16_t, char16_t>, size_t>
-{
-  size_t operator()(const tuple<char16_t, char16_t, char16_t> &val) const
-  {
-    size_t seed = 0;
-
-    Hash::Combine(seed, get<0>(val));
-    Hash::Combine(seed, get<1>(val));
-    Hash::Combine(seed, get<2>(val));
-
-    return seed;
-  }
-};
-
 class ErrorModelBasic : public ErrorModel
 {
  private:
+  struct char16_pair_hash
+  {
+    size_t operator()(const pair<char16_t, char16_t> &a) const
+    {
+      size_t seed = 0;
+      Hash::Combine(seed, a.first);
+      Hash::Combine(seed, a.second);
+      return seed;
+    }
+  };
+  struct char16_triple_hash
+  {
+    size_t operator()(const tuple<char16_t, char16_t, char16_t> &a) const
+    {
+      size_t seed = 0;
+      Hash::Combine(seed, get<0>(a));
+      Hash::Combine(seed, get<1>(a));
+      Hash::Combine(seed, get<2>(a));
+      return seed;
+    }
+  };
 
   unordered_map<pair<char16_t, char16_t>, ErrorModelOutput, char16_pair_hash> substitution_map; ///< Substitution map
   unordered_map<tuple<char16_t, char16_t, char16_t>, ErrorModelOutput, char16_triple_hash> insertion_map; ///< Insertion map
