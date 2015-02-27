@@ -5,87 +5,132 @@ import re
 import sys
 
 
-def eval_spell_checking(testFilename, goldFilename, outputFilename):
-    accuracy = []
 
-    # open files for reading and writing
-    fH = open_files(testFilename, goldFilename, outputFilename)
+def eval_spell_checking(test_filename, gold_filename, output_filename):
+    # open files for reading
+    fH = open_files(test_filename, gold_filename, output_filename)
 
-    testFileLines = fH[0].readlines()
-    goldFileLines = fH[1].readlines()
-    outFileLines = fH[2].readlines()
-    if len(testFileLines) != len(goldFileLines):
+    test_file_lines = fH[0].readlines()
+    gold_file_lines = fH[1].readlines()
+    out_file_lines = fH[2].readlines()
+    if len(test_file_lines) != len(gold_file_lines):
         print "error: file size differ between the test file and gold file"
         sys.exit(1)
-    elif len(outFileLines) != len(goldFileLines):
+    elif len(out_file_lines) != len(gold_file_lines):
         print "error: file size differ between the test file and gold file"
         sys.exit(1)
 
     # some required overall and specific info
-    (goldFileContentMap, totalNumWords) = read_gold_data_into_map(goldFileLines)
+    (gold_file_content_map, total_num_words) = read_gold_data_into_map(gold_file_lines)
 
-    # each entry is a tuple of sentence number and word number
-    errorIndexBetGoldAndTest = []
-    errorIndexBetGoldAndTest = get_error_locations(testFileLines, goldFileLines)
+    # each error entry is a tuple of sentence number and word number
+    error_index_bet_gold_and_test = get_error_locations(test_file_lines, gold_file_lines)
 
-    return accuracy
+    # get suggestions from system output
+    suggestions_map = get_suggestions_map(out_file_lines)
 
-def read_gold_data_into_map(goldFileLines):
+    # calculate the error
+    calculate_error_statistics(gold_file_content_map, error_index_bet_gold_and_test, suggestions_map)
+
+
+def read_gold_data_into_map(gold_file_lines):
     i = 0
-    totalWords = 0
-    goldFileContentMap = {}
-    while i < len(goldFileLines):
-        goldLine = goldFileLines[i]
-        goldLine = re.sub(r'\n$', '', goldLine)
-        goldWords = re.split(r'\s+', goldLine)
+    total_words = 0
+    gold_file_content_map = {}
+    while i < len(gold_file_lines):
+        gold_line = gold_file_lines[i]
+        gold_line = re.sub(r'\n$', '', gold_line)
+        gold_words = re.split(r'\s+', gold_line)
         j = 0
-        while j < len(goldWords):
-            totalWords += len(goldWords)
-            goldFileContentMap[(i,j)] = goldWords[j]
+        while j < len(gold_words):
+            total_words += len(gold_words)
+            gold_file_content_map[(i,j)] = gold_words[j]
             j += 1
         i += 1
-    return (goldFileContentMap, totalWords)
+    return (gold_file_content_map, total_words)
 
-def open_files(testFilename, goldFilename, outputFilename):
-    fHandles = []
+def open_files(test_filename, gold_filename, output_filename):
+    file_handles = []
     try:
-        tfH = codecs.open(testFilename, "r", encoding="utf-8")
-        gfH = codecs.open(goldFilename, "r", encoding="utf-8")
-        ofH = codecs.open(outputFilename, "w", encoding="utf-8")
+        tfh = codecs.open(test_filename, "r", encoding="utf-8")
+        gfh = codecs.open(gold_filename, "r", encoding="utf-8")
+        ofh = codecs.open(output_filename, "r", encoding="utf-8")
     except IOError, v:
         print v
     else:
-        fHandles = [tfH, gfH, ofH]
+        file_handles = [tfh, gfh, ofh]
 
-    return fHandles
+    return file_handles
 
-def get_error_locations(testFileLines, goldFileLines):
-    errorLocations = []
-    errorLocGoldWordMap = {}
-    totalWords = 0
+def get_error_locations(test_file_lines, gold_file_lines):
+    error_locations = []
     i = 0
-    while i < len(testFileLines):
-        testLine = testFileLines[i]
-        goldLine = goldFileLines[i]
-        testLine = re.sub(r'\n$', '', testLine)
-        goldLine = re.sub(r'\n$', '', goldLine)
-        testWords = re.split(r'\s+', testLine)
-        goldWords = re.split(r'\s+', goldLine)
+    while i < len(test_file_lines):
+        test_line = test_file_lines[i]
+        gold_line = gold_file_lines[i]
+        test_line = re.sub(r'\n$', '', test_line)
+        gold_line = re.sub(r'\n$', '', gold_line)
+        test_words = re.split(r'\s+', test_line)
+        gold_words = re.split(r'\s+', gold_line)
 
-        if len(testWords) != len(goldWords):
+        if len(test_words) != len(gold_words):
             print 'error: the number of words in test sentence and gold sentence differ. Error line number - ', i
         j = 0
-        while j < len(testWords):
-            if testWords[j] != goldWords[j]:
-                errorLocations.append((i,j))
+        while j < len(test_words):
+            if test_words[j] != gold_words[j]:
+                error_locations.append((i,j))
             j += 1
-        totalWords += len(testWords)
         i += 1
-    return errorLocations
+    return error_locations
+
+def calculate_error_statistics(gold_file_content_map, true_error_locations, system_suggestions):
+    total_errors = len(true_error_locations)
+    num_relevant_sugg = 0
+    true_tokens_in_N_sugg = [0, 0, 0, 0, 0]
+    for err_loc in system_suggestions.keys():
+        if err_loc in true_error_locations:
+            num_relevant_sugg += 1
+            word_suggestions = system_suggestions[err_loc]
+            i = 0;
+            while (i < 5) and (i < len(system_suggestions[err_loc])):
+                if word_suggestions[i] == gold_file_content_map[err_loc]:
+                    j = i
+                    while j < 5:
+                        true_tokens_in_N_sugg[j] += 1
+                        j += 1
+                i += 1
+
+    correct_percentage = [ (nums_corr / (total_errors * 1.0)) * 100.0 for nums_corr in true_tokens_in_N_sugg]
+    print "Total errors found in the test corpus: ", total_errors
+    print "Number of relevant suggestions from the system: ", num_relevant_sugg
+    print "True tokens found in N suggestions (1-5)  : " , true_tokens_in_N_sugg
+    print "Percentage of correct suggestions in N system suggestions (1-5): ", correct_percentage
 
 
-def close_files(fHandles):
-    for fh in fHandles:
+def get_suggestions_map(out_file_lines):
+    i = 0
+    suggestions_map = {}
+    while i < len(out_file_lines):
+        out_line = out_file_lines[i]
+        out_line = re.sub(r'\n$', '', out_line)
+        out_line = re.sub(r'\<spelling\s+original','<spellingoriginal', out_line)
+        out_line = re.sub(r'\<grammar\s+original','<grammaroriginal', out_line)
+        out_line = re.sub(r'\"\s+suggestions','"suggestions', out_line)
+
+        out_words = re.split(r'\s+', out_line)
+        j = 0
+        while j < len(out_words):
+            suggestion_match = re.search(r'\"suggestions=\"(.+)\"', out_words[j])
+            if suggestion_match:
+                suggestion_line= suggestion_match.group(1)
+                suggestions = re.split(r'\|', suggestion_line)
+                suggestions_map[(i,j)] = suggestions
+            j += 1
+        i += 1
+    return suggestions_map
+
+def close_files(file_handles):
+    for fh in file_handles:
         fh.cose()
 
 if __name__ == '__main__':
@@ -98,5 +143,3 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     eval_spell_checking(args.test_file, args.gold_file, args.system_output)
-
-
