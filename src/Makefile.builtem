@@ -183,7 +183,7 @@ ifneq ($(filter %-gcc,$(PLATFORM)),)
     C_FLAGS += -O3 -g -pg
     LD_FLAGS += -pg
   else ifeq ($(MODE),release)
-    C_FLAGS += -O3 -DNDEBUG -flto
+    C_FLAGS += -O3 -flto
     LD_FLAGS += -s -static-libgcc -static-libstdc++
   endif
 else ifeq ($(PLATFORM),win-vs)
@@ -197,7 +197,7 @@ else ifeq ($(PLATFORM),win-vs)
     C_FLAGS += /O2 /MT
     DYN_C_FLAGS += /LD
   else ifeq ($(MODE),release)
-    C_FLAGS += /O2 /GL /Gw /Gy /MT /D NDEBUG
+    C_FLAGS += /O2 /GL /Gw /Gy /MT
     DYN_C_FLAGS += /LD
     LD_FLAGS += /OPT:REF /OPT:ICF
   else ifeq ($(MODE),debug)
@@ -225,7 +225,7 @@ else ifeq ($(PLATFORM),osx-clang)
   else ifeq ($(MODE),debug)
     C_FLAGS += -O3 -g -DDEBUG
   else ifeq ($(MODE),release)
-    C_FLAGS += -O3 -DNDEBUG -flto
+    C_FLAGS += -O3 -flto
     LD_FLAGS += -Wl,-x
   endif
 endif
@@ -269,9 +269,11 @@ endif
 ifeq ($(PLATFORM),win-vs)
   include_dir = $(1:%=/I %)
   use_library = $(1:%=%.lib)
+  disable_assert = /D NDEBUG
 else
   include_dir = $(1:%=-I%)
   use_library = $(1:%=-l%)
+  disable_assert = -DNDEBUG
 endif
 
 ifneq ($(filter %-gcc,$(PLATFORM)),)
