@@ -14,6 +14,7 @@
 #include <map>
 #include <sstream>
 #include <tuple>
+#include <unordered_map>
 
 #include "common.h"
 #include "lexicon/lexicon.h"
@@ -198,7 +199,7 @@ struct CM_variables {
   vector<bool> is_factor_dependant;
   vector<vector<string> > factor_string_lists;
   vector<uint32_t> factor_next_id;
-  vector<map<string, uint32_t> > factor_dictionaries;
+  vector<unordered_map<string, uint32_t> > factor_dictionaries;
   vector<Dependency> dependencies; //list of all factor dependencies
   map<uint32_t, vector<GroupFactorsP> > groupings;
   vector<pair<unsigned, unsigned> > bit_array_data;
@@ -227,7 +228,7 @@ struct CM_variables {
       is_factor_dependant.push_back(true);
       factor_string_lists.push_back(vector<string>());
       factor_next_id.push_back(0);
-      factor_dictionaries.push_back(map<string, uint32_t>());
+      factor_dictionaries.emplace_back();
     }
 
 
