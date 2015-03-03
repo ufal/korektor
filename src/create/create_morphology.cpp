@@ -546,9 +546,8 @@ int main(int argc, char** argv)
 
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<s>"), true, true);
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("</s>"), true, true);
-  MorphologyProcessWordFactors(createSpecialMorphologyEntry("<number>"), true, true);
-  MorphologyProcessWordFactors(createSpecialMorphologyEntry("<name>"), true, true);
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<unk>"), true, true);
+  MorphologyProcessWordFactors(createSpecialMorphologyEntry("<name>"), true, true);
 
   IO::ReadLine(ifs, s);
 
