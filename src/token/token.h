@@ -37,16 +37,5 @@ struct Token {
 
 SP_DEF(Token);
 
-struct TokenP_compare: std::less<TokenP>
-{
-  bool operator()(TokenP const& x, TokenP const& y) const
-  {
-    if (x->first < y->first)
-      return true;
-    else
-      return false;
-  }
-};
-
 } // namespace korektor
 } // namespace ufal

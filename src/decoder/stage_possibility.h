@@ -35,13 +35,6 @@ SP_DEF(StagePossibility);
 typedef shared_ptr<vector<vector<StagePossibilityP>>> StagePossibilitiesType;
 
 
-struct StagePossibility_Identifying_comparer : less<StagePossibilityP> {
-  bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
-  {
-    return sp1->UniqueIdentifier() < sp2->UniqueIdentifier();
-  }
-};
-
 struct StagePossibility_Form_comparer : less<StagePossibilityP> {
   bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
   {
