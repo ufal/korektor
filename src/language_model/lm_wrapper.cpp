@@ -19,14 +19,6 @@ namespace korektor {
 void LMWrapper::GetNGram(NGram& ngram_key, NGram& ngram_ret)
 {
   LM->GetNGramForNGramKey(ngram_key, ngram_ret);
-
-  uint32_t start_undef = ngram_ret.order + 1;
-  uint32_t end_undef = ngram_key.order;
-
-  for (uint32_t undef_order = start_undef; undef_order <= end_undef; undef_order++)
-    ngram_key.order = undef_order;
-
-  ngram_key.order = end_undef;
 }
 
 LMWrapper::LMWrapper(ZipLMP _LM):
