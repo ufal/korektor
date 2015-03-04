@@ -40,10 +40,9 @@ class ViterbiState
 
   double distance;
   ViterbiStateP ancestor;
+  size_t unique_identifier;
 
   StagePossibilityP GetYoungestHistory();
-
-  size_t UniqueIdentifier();
 
   bool Equals(ViterbiState &state);
 
@@ -52,6 +51,9 @@ class ViterbiState
   ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance);
 
   string ToString();
+
+ private:
+  void ComputeUniqueIdentifier();
 };
 
 
@@ -80,7 +82,7 @@ struct ViterbiStateP_ihash: std::unary_function<ViterbiStateP, std::size_t>
 {
   std::size_t operator()(ViterbiStateP const& x) const
   {
-    return x->UniqueIdentifier();
+    return x->unique_identifier;
   }
 };
 

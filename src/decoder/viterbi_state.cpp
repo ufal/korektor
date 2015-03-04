@@ -21,29 +21,16 @@ StagePossibilityP ViterbiState::GetYoungestHistory()
   return history[history.size() - 1];
 }
 
-size_t ViterbiState::UniqueIdentifier()
-{
-  size_t seed = 0;
-
-  Hash::Combine(seed, history.size());
-
-  for (uint32_t i = 0; i < history.size(); i++)
-  {
-    Hash::Combine(seed, history[i]->UniqueIdentifier());
-  }
-
-  return seed;
-
-}
-
 bool ViterbiState::Equals(ViterbiState &state)
 {
-  return this->UniqueIdentifier() == state.UniqueIdentifier();
+  return this->unique_identifier == state.unique_identifier;
 }
 
 ViterbiState::ViterbiState(vector<StagePossibilityP> _history):
   history(_history), distance(0), ancestor(ViterbiStateP())
-{}
+{
+  ComputeUniqueIdentifier();
+}
 
 ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance):distance(_distance), ancestor(prev_state)
 {
@@ -56,9 +43,7 @@ ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, 
 
   history.push_back(next_sp);
 
-  //distance = _distance;
-
-  //ancestor = prev_state;
+  ComputeUniqueIdentifier();
 }
 
 string ViterbiState::ToString()
@@ -73,6 +58,13 @@ string ViterbiState::ToString()
   }
 
   return strs.str();
+}
+
+void ViterbiState::ComputeUniqueIdentifier() {
+  unique_identifier = 0;
+  Hash::Combine(unique_identifier, history.size());
+  for (auto&& h : history)
+    Hash::Combine(unique_identifier, h->UniqueIdentifier());
 }
 
 } // namespace korektor
