@@ -127,7 +127,12 @@ ValueMapping::ValueMapping(vector<double> values, const uint32_t bits_per_value)
   }
 
   minstd_rand generator;
-  uniform_real_distribution<double> minpos_max_distribution(min_pos,max);
+  // We use float in the following distribution to be sure that only one call
+  // to generator() is enough to generate a number. Otherwise we get
+  // different results for GCC and Visual C++, because if we generate double
+  // numbers, GCC (correctly) uses two calls to generator(), while Visual C++
+  // uses only one, thus generating different sequence.
+  uniform_real_distribution<float> minpos_max_distribution(min_pos,max);
 
   double pom_incr = (max - min_pos ) / (num_classes + 2);
   double pom = min_pos;
