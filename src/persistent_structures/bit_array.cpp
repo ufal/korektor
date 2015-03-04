@@ -84,7 +84,7 @@ BitArray::BitArray(const vector<pair<uint32_t, unsigned> > &values)
   unsigned char* ukaz;
   for (uint32_t i = 0; i < values.size(); i++)
   {
-    unsigned bites_left = values[i].second;
+    int bites_left = values[i].second;
     byte_pointer = bit_position >> 3;
     bit_pointer = bit_position % 8;
 
