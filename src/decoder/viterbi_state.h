@@ -63,7 +63,9 @@ struct ViterbiStateP_compare_distance : std::less<ViterbiStateP>
 {
   bool operator()(const ViterbiStateP& s1, const ViterbiStateP& s2)
   {
-    return s1->distance < s2->distance;
+    if (s1->distance < s2->distance) return true;
+    if (s1->distance > s2->distance) return false;
+    return s1->unique_identifier < s2->unique_identifier;
   }
 };
 

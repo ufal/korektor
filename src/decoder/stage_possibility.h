@@ -46,7 +46,11 @@ struct StagePossibility_Form_comparer : less<StagePossibilityP> {
 struct StagePossibility_sort_cost : less<StagePossibilityP> {
   bool operator()(const StagePossibilityP& sp1, const StagePossibilityP& sp2)
   {
-    return sp1->EmmisionProbability() < sp2->EmmisionProbability();
+    float sp1_emission = sp1->EmmisionProbability();
+    float sp2_emission = sp2->EmmisionProbability();
+    if (sp1_emission < sp2_emission) return true;
+    if (sp1_emission > sp2_emission) return false;
+    return sp1->UniqueIdentifier() < sp2->UniqueIdentifier();
   }
 };
 
