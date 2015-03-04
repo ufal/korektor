@@ -55,8 +55,6 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 
         st_pos_string.clear();
 
-        double total_em_cost = 0.0;
-
         for (unsigned i = 0; i < configuration->NumFactors(); i++)
         {
           if (configuration->FactorIsEnabled(i))
@@ -67,7 +65,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 
         }
 
-        cout << st_pos_string << " - " << total_em_cost << endl;
+        cout << st_pos_string << " - " << st_pos->EmmisionProbability() << endl;
       }
 
       cout << endl;
