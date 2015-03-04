@@ -63,7 +63,7 @@ class Configuration
   string mode_string;
   bool diagnostics;
 
-  Configuration() {}
+  Configuration() : last_enabled_factor_index(0) {}
 
   /// @brief Initialization from configuration file
   /// @param conf_file filename
