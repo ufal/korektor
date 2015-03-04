@@ -815,12 +815,7 @@ int main(int argc, char** argv)
   configuration->LoadMorphologyAndLexicon(lex2, morphology);
 
   for (auto it = cm.factors.begin(); it != cm.factors.end(); it++)
-    configuration->EnableFactor(*it, 0.5, 3);
-
-//  configuration->EnableFactor("lemma", 0.15, 3);
-//  configuration->EnableFactor("form", 0.5, 3);
-//  configuration->EnableFactor("tag", 0.35, 3);
-//  configuration->EnableFactor("short", 0.1, 3);
+    configuration->EnableFactor(*it, 1, 3);
 
   testout << "MORPHOLOGY\n=======================================================================\n";
   morphology->PrintOut(testout, configuration.get());
