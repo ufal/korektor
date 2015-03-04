@@ -91,7 +91,7 @@ class Lexicon {
 
  private:
 
-  void print_words_rec(unsigned node_id, u16string &prefix, unordered_map<unsigned, u16string> &words, unsigned &index, uint32_t max_index);
+  void print_words_rec(unsigned node_id, u16string &prefix, vector<u16string> &words, unsigned &index, uint32_t max_index);
 
   void AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, double cost, u16string &word, uint32_t word_include_letter_start_index, u16string &prefix) const;
 

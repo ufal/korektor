@@ -378,7 +378,7 @@ void Lexicon::ArcsConsistencyCheck()
 
 }
 
-void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, unordered_map<unsigned, u16string> &words, unsigned &index, uint32_t max_index)
+void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, vector<u16string> &words, unsigned &index, uint32_t max_index)
 {
   if (index >= max_index)
     return;
@@ -410,14 +410,13 @@ void Lexicon::print_words_rec(unsigned node_id, u16string &prefix, unordered_map
 void Lexicon::PrintWords(ostream &os, uint32_t max_index)
 {
   unsigned index = 0;
-  unordered_map<unsigned, u16string> words;
+  vector<u16string> words(num_words);
   u16string prefix = UTF::UTF8To16("");
   print_words_rec(root_id, prefix, words, index, max_index);
 
-  for (auto it = words.begin(); it != words.end(); it++)
-  {
-    os << it->first << " - " << UTF::UTF16To8(it->second) << endl;
-  }
+  for (unsigned i = 0; i < num_words; i++)
+    if (!words[i].empty())
+      os << i << " - " << UTF::UTF16To8(words[i]) << endl;
 }
 
 void Lexicon::AddSimilarWordToMap(Similar_Words_Map &ret, uint32_t word_id, double cost, u16string &word, uint32_t word_include_letter_start_index, u16string &prefix) const
