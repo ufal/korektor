@@ -237,6 +237,18 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
           ofs << morpho_word_lists[k]->GetStringAt(flist.factors[k]);
         }
       }
+
+      ofs << ' ';
+      first = true;
+      for (unsigned k = 0; k <= configuration->GetLastEnabledFactorIndex(); k++)
+      {
+        if (configuration->FactorIsEnabled(k))
+        {
+          if (!first) ofs << '|';
+          first = false;
+          ofs << flist.emission_costs[k];
+        }
+      }
       ofs << endl;
     }
 
