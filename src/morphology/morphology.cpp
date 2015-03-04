@@ -226,18 +226,16 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
     for (unsigned j = 0; j < morpho_anal.size(); j++)
     {
       FactorList flist = morpho_anal[j];
-      vector<string> strs;
 
-      for (unsigned k = 0; k < configuration->GetLastEnabledFactorIndex(); k++)
+      bool first = true;
+      for (unsigned k = 0; k <= configuration->GetLastEnabledFactorIndex(); k++)
       {
         if (configuration->FactorIsEnabled(k))
-          strs.push_back(morpho_word_lists[k]->GetStringAt(flist.factors[k]));
-      }
-
-      for (int k = (int)strs.size() - 1; k >= 0; k--)
-      {
-        if ((unsigned)k < strs.size() - 1) ofs << "|";
-        ofs << strs[k];
+        {
+          if (!first) ofs << '|';
+          first = false;
+          ofs << morpho_word_lists[k]->GetStringAt(flist.factors[k]);
+        }
       }
       ofs << endl;
     }
