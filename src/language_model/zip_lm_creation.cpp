@@ -292,12 +292,6 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
         aux.prob = ngrams.find(aux2)->prob;
         aux.backoff = 0;
 
-        cerr << "adding aux node:";
-
-        for (int i = aux.order - 1; i >= 0; i--)
-          cerr << " " << morphology->GetFactorString(factorIndex, aux.word_ids[i]);
-        cerr << " ~ " << aux.prob << endl;
-
         added_ngrams.insert(aux);
         aux.order--;
         num_added_ngrams++;
