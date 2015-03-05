@@ -3,7 +3,7 @@ MODELS=morphology.bin lm_form.bin lm_lemma.bin lm_tag.bin error.bin
 .PHONY: all
 all: test.txt.corrected
 	diff -q $< $<.gold
-	echo All OK
+	@echo All OK
 
 test.txt.corrected: korektor $(MODELS)
 	../../src/korektor model.conf <test.txt >$@
