@@ -14,4 +14,6 @@ before_install:
   - if [ -n "$GCC$DEPGCC" ]; then sudo apt-get update -qq; fi
   - if [ -n "$GCC$DEPGCC" ]; then sudo apt-get install -qq g++-$GCC$DEPGCC; fi
   - if [ -n "$GCC" ]; then export CXX=g++-$GCC; fi
-script: make -C src full
+script:
+  - make -C src full
+  - make -C tests/create_model
