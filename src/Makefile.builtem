@@ -34,8 +34,8 @@ else ifeq ($(PLATFORM),osx)
 endif
 
 # fail for unknown platforms
-ifeq ($(filter linux-gcc win-gcc win-vs osx-clang,$(PLATFORM)),)
-  $(error Unsupported platform $(PLATFORM), only linux[-gcc], win[-gcc], win-vs and osx[-clang] are supported)
+ifeq ($(filter linux-gcc linux-clang win-gcc win-vs osx-clang,$(PLATFORM)),)
+  $(error Unsupported platform $(PLATFORM), only linux[-gcc], linux-clang, win[-gcc], win-vs and osx[-clang] are supported)
 endif
 
 ##################
@@ -86,8 +86,8 @@ ifeq ($(filter normal release debug profile,$(MODE)),)
   $(error Unsupported compilation mode $(MODE), only [normal], release, debug and profile supported)
 endif
 ifeq ($(MODE),profile)
-  ifeq ($(filter %-gcc,$(PLATFORM)),)
-    $(error Profile mode is currently supported only on *-gcc platforms)
+  ifeq ($(PLATFORM),win-vs)
+    $(error Profile mode is currently not supported on win-vs platform)
   endif
 endif
 
@@ -103,7 +103,7 @@ ifndef BITS
 endif
 
 ifdef BITS
-  ifneq ($(filter %-gcc win-vs,$(PLATFORM)),)
+  ifneq ($(filter linux-% win-%,$(PLATFORM)),)
     ifeq ($(filter 32 64,$(BITS)),)
       $(error Unsupported bitness $(BITS), only 32 and 64 supported on $(PLATFORM))
     endif
@@ -159,14 +159,12 @@ all_lib = $(foreach file,$(1:$(call lib,%)=%),$(file).a $(file).lib)
 all_dynlib = $(foreach file,$(1:$(call dynlib,%)=%),$(file).so $(file).dll $(file).pdb $(file).ilk $(file).dll.lib $(file).dll.exp $(file).dylib)
 
 # switches
-ifneq ($(filter %-gcc,$(PLATFORM)),)
+ifneq ($(filter linux-gcc linux-clang win-gcc,$(PLATFORM)),)
   ifneq ($(filter undefined default,$(origin CXX)),)
-    CXX = g++
+    CXX = $(if $(filter %-gcc,$(PLATFORM)),g++,clang++)
   endif
   C_FLAGS += -std=c++11 -W -Wall -mtune=generic -msse -msse2 -mfpmath=sse -fvisibility=hidden -U_FORTIFY_SOURCE
-  ifeq ($(PLATFORM),linux-gcc)
-    DYN_C_FLAGS += -fPIC
-  endif
+  DYN_C_FLAGS += $(if $(filter linux-%,$(PLATFORM)),-fPIC)
   DYN_LD_FLAGS += -shared
 
   ifeq ($(BITS),32)
@@ -180,8 +178,8 @@ ifneq ($(filter %-gcc,$(PLATFORM)),)
   else ifeq ($(MODE),debug)
     C_FLAGS += -g -DDEBUG -D_GLIBCXX_DEBUG
   else ifeq ($(MODE),profile)
-    C_FLAGS += -O3 -g -pg
-    LD_FLAGS += -pg
+    C_FLAGS += -O3 $(if $(filter %-gcc,$(PLATFORM)),-g1 -pg,-gline-tables-only)
+    LD_FLAGS += $(if $(filter %-gcc,$(PLATFORM)),-pg)
   else ifeq ($(MODE),release)
     C_FLAGS += -O3 -flto
     LD_FLAGS += -s -static-libgcc -static-libstdc++
@@ -209,7 +207,7 @@ else ifeq ($(PLATFORM),osx-clang)
   ifneq ($(filter undefined default,$(origin CXX)),)
     CXX = clang++
   endif
-  C_FLAGS += -std=c++11 -W -Wall -mtune=generic -msse2 -mfpmath=sse -I. -fvisibility=hidden -mmacosx-version-min=10.7 -stdlib=libc++
+  C_FLAGS += -std=c++11 -W -Wall -mtune=generic -fvisibility=hidden -mmacosx-version-min=10.7 -stdlib=libc++
   DYN_LD_FLAGS += -dynamiclib
 
   ifeq ($(BITS),32)
@@ -223,7 +221,9 @@ else ifeq ($(PLATFORM),osx-clang)
   ifeq ($(MODE),normal)
     C_FLAGS += -O3
   else ifeq ($(MODE),debug)
-    C_FLAGS += -O3 -g -DDEBUG
+    C_FLAGS += -g -DDEBUG
+  else ifeq ($(MODE),profile)
+    C_FLAGS += -O3 -gline-tables-only
   else ifeq ($(MODE),release)
     C_FLAGS += -O3 -flto
     LD_FLAGS += -Wl,-x
@@ -276,8 +276,11 @@ else
   disable_assert = -DNDEBUG
 endif
 
-ifneq ($(filter %-gcc,$(PLATFORM)),)
+ifneq ($(filter linux-%,$(PLATFORM)),)
   version_script = -Wl,--version-script=$(1)
+endif
+
+ifneq ($(filter %-gcc,$(PLATFORM)),)
   use_linker = -fuse-ld=$(1)
 endif
 
