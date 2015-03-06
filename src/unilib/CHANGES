@@ -1,3 +1,8 @@
+Version 3.0.1 [06 Mar 2015]
+---------------------------
+- Move version::current from header to object file.
+
+
 Version 3.0.0 [26 Feb 2015]
 ---------------------------
 - Start using Semantic Versioning http://semver.org/.
