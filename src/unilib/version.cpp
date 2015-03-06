@@ -14,11 +14,13 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 // Returns current version.
 version version::current() {
   return {3, 0, 1, ""};
 }
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

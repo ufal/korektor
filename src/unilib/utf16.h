@@ -19,6 +19,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 class utf16 {
  public:
@@ -202,5 +203,6 @@ template<class F> void utf16::map(F f, const std::u16string& str, std::u16string
   map(f, str.c_str(), result);
 }
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

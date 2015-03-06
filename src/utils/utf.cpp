@@ -16,6 +16,8 @@
 namespace ufal {
 namespace korektor {
 
+using namespace unilib;
+
 bool UTF::IsPunct(char16_t ch16)
 {
   return unicode::category(ch16) & unicode::P;

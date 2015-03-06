@@ -14,6 +14,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 bool utf8::valid(const char* str) {
   for (const unsigned char*& ptr = (const unsigned char*&) str; *ptr; ptr++)
@@ -74,5 +75,6 @@ void utf8::encode(const std::u32string& str, std::string& encoded) {
 
 const char utf8::REPLACEMENT_CHAR;
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

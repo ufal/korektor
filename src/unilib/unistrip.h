@@ -16,6 +16,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 class unistrip {
  public:
@@ -43,5 +44,6 @@ char32_t unistrip::strip_combining_marks(char32_t chr) {
   return index ? stripped_data[index] : chr;
 }
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

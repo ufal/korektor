@@ -17,6 +17,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 class uninorms {
  public:
@@ -49,5 +50,6 @@ class uninorms {
   static const char32_t decomposition_data[];
 };
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

@@ -14,6 +14,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 bool utf16::valid(const char16_t* str) {
   for (; *str; str++)
@@ -56,5 +57,6 @@ void utf16::encode(const std::u32string& str, std::u16string& encoded) {
 
 const char16_t utf16::REPLACEMENT_CHAR;
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

@@ -16,6 +16,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 struct version {
   unsigned major;
@@ -27,5 +28,6 @@ struct version {
   static version current();
 };
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

@@ -19,6 +19,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 class utf8 {
  public:
@@ -240,5 +241,6 @@ template<class F> void utf8::map(F f, const std::string& str, std::string& resul
   map(f, str.c_str(), result);
 }
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal

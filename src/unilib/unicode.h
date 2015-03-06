@@ -18,6 +18,7 @@
 
 namespace ufal {
 namespace korektor {
+namespace unilib {
 
 class unicode {
   enum : uint8_t {
@@ -96,5 +97,6 @@ char32_t unicode::titlecase(char32_t chr) {
   return chr;
 }
 
+} // namespace unilib
 } // namespace korektor
 } // namespace ufal
