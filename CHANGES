@@ -1,0 +1,15 @@
+Version 1.9.0-devel
+-------------------
+- Move to github.
+- Start using Semantic Versioning http://semver.org/.
+- Use C++ BuilTem http://github.com/ufal/cpp_builtem as build system.
+- Use t2t_docsys http://github.com/ufal/t2t_docsys as documentation system.
+- Use microrestd http://github.com/ufal/microrestd as REST server.
+- Provide new korektor binary with many options and also a REST service.
+- Support Linux (gcc, clang), Windows (tdm-gcc, Visual C++), OS X (clang).
+
+
+Version 0b62338a [02 Feb 13]
+----------------------------
+- Initial public release in LINDAT/CLARIN repository
+  http://hdl.handle.net/11858/00-097C-0000-000D-F67C-5.
