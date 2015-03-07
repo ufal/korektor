@@ -16,7 +16,6 @@
 
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 #include <random>
 
 #include "value_mapping.h"

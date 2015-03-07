@@ -25,7 +25,7 @@ class Parse {
     errno = 0;
     long result = strtol(str.c_str(), &end, 10);
     if (*end || errno == ERANGE || result != int(result))
-      runtime_errorf("Cannot parse %s int value: '%s'!", value_name, str.c_str());
+      runtime_failure("Cannot parse " << value_name << " int value: '" << str << "'!");
 
     return int(result);
   }
@@ -36,7 +36,7 @@ class Parse {
     errno = 0;
     double result = strtod(str.c_str(), &end);
     if (*end || errno == ERANGE)
-      runtime_errorf("Cannot parse %s double value: '%s'!", value_name, str.c_str());
+      runtime_failure("Cannot parse " << value_name << " double value: '" << str << "'!");
 
     return result;
   }

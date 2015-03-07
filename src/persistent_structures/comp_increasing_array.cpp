@@ -7,8 +7,6 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <iostream>
-
 #include "comp_increasing_array.h"
 #include "increasing_array.h"
 #include "utils/io.h"
@@ -40,7 +38,7 @@ void CompIncreasingArray::WriteToStream(ostream &ofs) const
 CompIncreasingArray::CompIncreasingArray(istream &ifs)
 {
   if (IO::ReadString(ifs) != "CIA")
-    runtime_errorf("Cannot load CompIncreasingArray, file is corrupted!");
+    runtime_failure("Cannot load CompIncreasingArray, file is corrupted!");
 
   uint32_t num_parts;
 

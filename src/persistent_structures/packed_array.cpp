@@ -11,7 +11,6 @@
 /// @brief Implementation of memory efficient array
 
 #include <cstring>
-#include <iostream>
 
 #include "packed_array.h"
 #include "utils/io.h"
@@ -106,7 +105,7 @@ PackedArray& PackedArray::operator=(const PackedArray& val)
 PackedArray::PackedArray(istream &ifs)
 {
   if (IO::ReadString(ifs) != "MPA")
-    runtime_errorf("Cannot load PackedArray, file is corrupted!");
+    runtime_failure("Cannot load PackedArray, file is corrupted!");
 
   ifs.read((char*)&bits_per_value, sizeof(uint32_t));
   ifs.read((char*)&num_bytes, sizeof(uint32_t));

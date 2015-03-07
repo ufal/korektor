@@ -7,8 +7,6 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <iostream>
-
 #include "bit_array.h"
 #include "utils/io.h"
 
@@ -18,7 +16,7 @@ namespace korektor {
 BitArray::BitArray(istream &ifs)
 {
   if (IO::ReadString(ifs) != "MBA")
-    runtime_errorf("Cannot load BitArray, file is corrupted!");
+    runtime_failure("Cannot load BitArray, file is corrupted!");
 
 
   output_mask.push_back(0);

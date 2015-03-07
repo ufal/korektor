@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include <fstream>
-#include <iostream>
 
 #include "error_model_basic.h"
 #include "utils/io.h"
@@ -168,7 +167,7 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   ifstream ifs;
   ifs.open(text_input);
   if (!ifs.is_open())
-    runtime_errorf("Cannot open file '%s'!", text_input.c_str());
+    runtime_failure("Cannot open file '" << text_input << "'!");
 
   vector<string> toks;
   string s;
@@ -179,9 +178,9 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
-    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
   if (toks[0] != "case")
-    runtime_errorf("Expected to see 'case' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Expected to see 'case' on line '" << s << "' in file '" << text_input << "'!");
 
 
   ErrorModelOutput case_mismatch = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
@@ -194,9 +193,9 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
-    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
   if (toks[0] != "substitutions")
-    runtime_errorf("Expected to see 'substitutions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Expected to see 'substitutions' on line '" << s << "' in file '" << text_input << "'!");
 
   ErrorModelOutput sub_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
@@ -207,9 +206,9 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
-    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
   if (toks[0] != "insertions")
-    runtime_errorf("Expected to see 'insertions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Expected to see 'insertions' on line '" << s << "' in file '" << text_input << "'!");
 
   ErrorModelOutput insert_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
@@ -220,9 +219,9 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   IO::Split(s, '\t', toks);
 
   if (toks.size() != 3)
-    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
   if (toks[0] != "deletions")
-    runtime_errorf("Expected to see 'deletions' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Expected to see 'deletions' on line '" << s << "' in file '" << text_input << "'!");
 
   ErrorModelOutput del_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
@@ -233,9 +232,9 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
     min_edit_dist = del_default.edit_dist;
 
   if (toks.size() != 3)
-    runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
   if (toks[0] != "swaps")
-    runtime_errorf("Expected to see 'swaps' on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+    runtime_failure("Expected to see 'swaps' on line '" << s << "' in file '" << text_input << "'!");
 
   ErrorModelOutput swap_default = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
@@ -252,7 +251,7 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
       continue;
 
     if (toks.size() != 3)
-      runtime_errorf("Not three columns on line '%s' in file '%s'!", s.c_str(), text_input.c_str());
+      runtime_failure("Not three columns on line '" << s << "' in file '" << text_input << "'!");
 
     ErrorModelOutput emo = ErrorModelOutput(Parse::Int(toks[1], "edit distance"), Parse::Double(toks[2], "error model operation cost"));
 
@@ -268,7 +267,7 @@ void ErrorModelBasic::CreateBinaryFormFromTextForm(const string &text_input, con
   ofstream ofs;
   ofs.open(binary_output.c_str(), ios::binary);
   if (!ofs.is_open())
-    runtime_errorf("Cannot open file '%s'!", binary_output.c_str());
+    runtime_failure("Cannot open file '" << binary_output << "'!");
 
   emb.WriteToStream(ofs);
   ofs.close();
@@ -356,7 +355,7 @@ ErrorModelBasicP ErrorModelBasic::fromBinaryFile(string binary_file)
   ifstream ifs;
   ifs.open(binary_file.c_str(), ios::binary);
   if (!ifs.is_open())
-    runtime_errorf("Cannot open file '%s'!", binary_file.c_str());
+    runtime_failure("Cannot open file '" << binary_file << "'!");
 
   ErrorModelBasicP ret = ErrorModelBasicP(new ErrorModelBasic(ifs));
   ifs.close();

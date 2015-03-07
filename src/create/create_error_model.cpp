@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include <cstring>
-#include <iostream>
 
 #include "common.h"
 #include "create_error_model/create_error_hierarchy.h"
@@ -69,7 +68,7 @@ int main(int argc, char** argv)
     ifstream ifs_hierarchy;
     ifs_hierarchy.open(argv[2]);
     if (!ifs_hierarchy.is_open())
-      runtime_errorf("Cannot open file '%s'!", argv[2]);
+      runtime_failure("Cannot open file '" << argv[2] << "'!");
 
     hierarchy_node::ReadHierarchy(ifs_hierarchy);
 
@@ -91,7 +90,7 @@ int main(int argc, char** argv)
       IO::Split(error_line, " \t", toks);
 
       if (toks.size() != 2)
-        runtime_errorf("Not two columns on line '%s' in file '%s'!", error_line.c_str(), argv[3]);
+        runtime_failure("Not two columns on line '" << error_line << "' in file '" << argv[3] << "'!");
 
       u16string signature;
       if (GetErrorSignature(UTF::UTF8To16(toks[0]), UTF::UTF8To16(toks[1]), signature))
@@ -122,7 +121,7 @@ int main(int argc, char** argv)
       if (s.empty()) continue;
 
       if (toks.size() != 2)
-        runtime_errorf("Not two columns on line '%s' in file '%s'!", s.c_str(), argv[4]);
+        runtime_failure("Not two columns on line '" << s << "' in file '" << argv[4] << "'!");
 
       u16string key = UTF::UTF8To16(toks[0]);
       uint32_t count = Parse::Int(toks[1], "context count");

@@ -9,7 +9,6 @@
 
 #include <algorithm>
 #include <fstream>
-#include <iostream>
 
 #include "configuration.h"
 #include "error_model/error_model_basic.h"
@@ -138,7 +137,7 @@ Configuration::Configuration(const string &conf_file)
       IO::Split(s, '-', toks);
 
       if (toks.size() != 4)
-        runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
+        runtime_failure("Not four hyphen-separated columns on line '" << s << "' in file '" << conf_file << "'!");
 
       ZipLMP lm = ZipLMP(new ZipLM(configuration_directory + ConvertPathSeparators(toks[1])));
       LMWrapperP lm_wrapper = LMWrapperP(new LMWrapper(lm));
@@ -163,7 +162,7 @@ Configuration::Configuration(const string &conf_file)
       IO::Split(s, '-', toks);
 
       if (toks.size() != 4)
-        runtime_errorf("Not four hyphen-separated columns on line '%s' in file '%s'!", s.c_str(), conf_file.c_str());
+        runtime_failure("Not four hyphen-separated columns on line '" << s << "' in file '" << conf_file << "'!");
 
       SimWordsFinder::casing_treatment ct;
 

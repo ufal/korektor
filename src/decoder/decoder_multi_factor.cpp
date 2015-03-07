@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include <algorithm>
-#include <iostream>
 
 #include "decoder_multi_factor.h"
 #include "error_model/error_model.h"

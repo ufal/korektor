@@ -11,8 +11,6 @@
 /// @brief Data structure for efficiently storing integer
 ///        arrays whose values are in an increasing order.
 
-#include <iostream>
-
 #include "increasing_array.h"
 #include "packed_array.h"
 #include "utils/io.h"

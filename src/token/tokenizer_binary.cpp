@@ -10,8 +10,6 @@
 /// @file tokenize.cpp
 /// @brief Simple tokenizer
 
-#include <iostream>
-
 #include "common.h"
 #include "token/tokenizer.h"
 #include "utils/utf.h"

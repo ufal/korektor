@@ -9,7 +9,6 @@
 
 #include <cmath>
 #include <fstream>
-#include <iostream>
 #include <set>
 
 #include "language_model/ngram.h"
@@ -225,7 +224,7 @@ ZipLMP ZipLM::createFromTextFile(string text_file, MorphologyP &morphology, stri
       assert(ngram_order > 0);
       IO::Split(s, " \t", toks);
       if (toks.size() != ngram_order + 1 && toks.size() != ngram_order + 2)
-        runtime_errorf("Corrupted line '%s' in file '%s'!", s.c_str(), text_file.c_str());
+        runtime_failure("Corrupted line '" << s << "' in file '" << text_file << "'!");
 
       double bow = 0;
       double prob = -Parse::Double(toks[0], "ngram probability");

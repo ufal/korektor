@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include <fstream>
-#include <iostream>
 
 #include "morphology.h"
 #include "persistent_structures/bit_array.h"
@@ -260,7 +259,7 @@ void Morphology::PrintOut(ostream &ofs, Configuration* configuration)
 Morphology::Morphology(ifstream &ifs)
 {
   if (IO::ReadString(ifs) != "Morphology")
-    runtime_errorf("Cannot load morphology, file is corrupted!");
+    runtime_failure("Cannot load morphology, file is corrupted!");
 
   ifs.read((char*)&num_factors, sizeof(uint32_t));
 

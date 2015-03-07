@@ -10,8 +10,6 @@
 /// @file utils.cpp
 /// @brief Utility functions
 
-#include <iostream>
-
 #include "io.h"
 
 namespace ufal {

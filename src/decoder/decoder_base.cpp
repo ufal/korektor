@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include <algorithm>
-#include <iostream>
 
 #include "decoder/stage_possibility.h"
 #include "decoder_base.h"

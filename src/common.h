@@ -13,11 +13,9 @@
 #pragma once
 
 #include <cassert>
-#include <cstdarg>
 #include <cstddef>
 #include <cstdint>
-#include <cstdio>
-#include <iosfwd>
+#include <iostream>
 #include <memory>
 #include <string>
 #include <vector>
@@ -25,24 +23,7 @@
 namespace ufal {
 namespace korektor {
 
-// Printf-like logging function.
-inline int eprintf(const char* fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  int res = vfprintf(stderr, fmt, ap);
-  va_end(ap);
-  return res;
-}
-
-// Printf-like exit function.
-inline void runtime_errorf(const char* fmt, ...) {
-  va_list ap;
-  va_start(ap, fmt);
-  vfprintf(stderr, fmt, ap);
-  va_end(ap);
-  fputc('\n', stderr);
-  exit(1);
-}
+#define runtime_failure(message) exit((cerr << message << endl, 1))
 
 #define SP_DEF(cl_name) typedef shared_ptr<cl_name> cl_name##P
 

@@ -7,8 +7,6 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <iostream>
-
 #include "string_array.h"
 
 namespace ufal {

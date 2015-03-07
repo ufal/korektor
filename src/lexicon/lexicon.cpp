@@ -12,7 +12,6 @@
 
 #include <cstring>
 #include <fstream>
-#include <iostream>
 #include <map>
 
 #include "error_model/error_model.h"
@@ -195,7 +194,7 @@ int Lexicon::SingleArc_nextstate(uint32_t stateID, char16_t character) const
 Lexicon::Lexicon(istream &ifs)
 {
   if (IO::ReadString(ifs) != "Lexicon")
-    runtime_errorf("Cannot load lexicon, file is corrupted!");
+    runtime_failure("Cannot load lexicon, file is corrupted!");
 
   ifs.read((char*)&num_words, sizeof(uint32_t));
   ifs.read((char*)&num_arcs, sizeof(uint32_t));
