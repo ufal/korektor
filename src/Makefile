@@ -42,7 +42,7 @@ $(call exe,korektor_vertical): $(call obj,korektor_vertical $(KORLIB_O))
 $(call exe,create_error_model): $(call obj,create/create_error_model $(KORLIB_O))
 $(call exe,create_lm_binary): $(call obj,create/create_lm_binary $(KORLIB_O))
 $(call exe,create_morphology): $(call obj,create/create_morphology $(KORLIB_O))
-$(call exe,tokenizer): $(call obj,token/tokenizer_binary $(KORLIB_O))
+$(call exe,tokenizer): $(call obj,tokenizer $(KORLIB_O))
 $(call exe,$(EXECUTABLES)):
 	$(call link_exe,$@,$^,$(call win_subsystem,console))
 
