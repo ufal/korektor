@@ -172,7 +172,7 @@ vector<vector<StagePossibilityP> > DecoderMultiFactor::init_inner_stage_posibili
         vector<FactorList> mn = configuration->morphology->GetMorphology(Constants::unknown_word_id, configuration);
         assert(mn.size() == 1);
 
-        StagePossibilityP spp = StagePossibilityNewP(new StagePossibilityNew(mn[0], false, u_word, configuration, configuration->errorModel->UnknownWordCost()));
+        StagePossibilityP spp = StagePossibilityNewP(new StagePossibilityNew(mn[0], true, u_word, configuration, configuration->errorModel->UnknownWordCost()));
         vec_stage_pos.push_back(spp);
       }
 
