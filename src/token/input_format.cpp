@@ -18,7 +18,7 @@ namespace korektor {
 
 class UntokenizedInputFormat : public InputFormat {
  public:
-  UntokenizedInputFormat(LexiconP lexicon) {
+  UntokenizedInputFormat(LexiconP lexicon, bool split_on_newline) : split_on_newline(split_on_newline) {
     tokenizer.initLexicon(lexicon);
   }
 
@@ -27,13 +27,13 @@ class UntokenizedInputFormat : public InputFormat {
     while (IO::ReadLine(ifs, line)) {
       block.append(line);
       block.push_back('\n');
-      if (line.empty()) break;
+      if (split_on_newline || line.empty()) break;
     }
     return !block.empty();
   }
 
   virtual void SetBlock(const string& block) override {
-    sentences = tokenizer.Tokenize(UTF::UTF8To16(block));
+    sentences = tokenizer.Tokenize(UTF::UTF8To16(block), split_on_newline);
     sentence = 0;
   }
 
@@ -44,6 +44,8 @@ class UntokenizedInputFormat : public InputFormat {
   }
 
  private:
+  bool split_on_newline;
+
   Tokenizer tokenizer;
   string line;
   vector<vector<TokenP>> sentences;
@@ -51,11 +53,16 @@ class UntokenizedInputFormat : public InputFormat {
 };
 
 unique_ptr<InputFormat> InputFormat::NewUntokenizedInputFormat(LexiconP lexicon) {
-  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon));
+  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, false));
+}
+
+unique_ptr<InputFormat> InputFormat::NewUntokenizedLinesInputFormat(LexiconP lexicon) {
+  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, true));
 }
 
 unique_ptr<InputFormat> InputFormat::NewInputFormat(const string& name, LexiconP lexicon) {
   if (name == "untokenized") return NewUntokenizedInputFormat(lexicon);
+  if (name == "untokenized_lines") return NewUntokenizedLinesInputFormat(lexicon);
   return nullptr;
 }
 
