@@ -28,7 +28,9 @@ class UTF
   static char16_t ToUpper(char16_t ch16);
 
   static string UTF16To8(const u16string &utf16);
+  static void UTF16To8Append(const u16string &utf16, string& text);
   static u16string UTF8To16(const string &utf8);
+  static void UTF8To16Append(const string &utf8, u16string& text);
 
   static bool EqualIgnoringCase(const u16string &str1, const u16string &str2);
   static bool ContainsLetter(const u16string &ustr);

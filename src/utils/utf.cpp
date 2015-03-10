@@ -69,6 +69,14 @@ string UTF::UTF16To8(const u16string &utf16)
   return result;
 }
 
+void UTF::UTF16To8Append(const u16string &utf16, string& text) {
+  text.reserve(text.size() + 2 * utf16.size());
+
+  const char16_t* input = utf16.c_str();
+  for (char32_t chr32; (chr32 = utf16::decode(input)); )
+    utf8::append(text, chr32);
+}
+
 u16string UTF::UTF8To16(const string &utf8)
 {
   u16string result;
@@ -79,6 +87,14 @@ u16string UTF::UTF8To16(const string &utf8)
     utf16::append(result, chr32);
 
   return result;
+}
+
+void UTF::UTF8To16Append(const string &utf8, u16string& text) {
+  text.reserve(text.size() + utf8.size());
+
+  const char* input = utf8.c_str();
+  for (char32_t chr32; (chr32 = utf8::decode(input)); )
+    utf16::append(text, chr32);
 }
 
 bool UTF::EqualIgnoringCase(const u16string &str1, const u16string &str2)
