@@ -3,6 +3,7 @@ create_error_model
 create_lm_binary
 create_morphology
 korektor
+korektor_new
 korektor_server
 korektor_vertical
 libkorlib.a
