@@ -28,7 +28,7 @@ KORLIB_O += lexicon/lexicon lexicon/sim_words_finder morphology/morphology
 KORLIB_O += persistent_structures/bit_array persistent_structures/comp_increasing_array persistent_structures/increasing_array persistent_structures/mapped_double_array persistent_structures/packed_array persistent_structures/string_array persistent_structures/value_mapping
 KORLIB_O += spellchecker/configuration spellchecker/constants spellchecker/spellchecker spellchecker/text_checking_result
 KORLIB_O += token/token token/tokenizer unilib/unicode unilib/utf16 unilib/utf8 unilib/version
-KORLIB_O += utils/io utils/parse utils/utf version/version
+KORLIB_O += utils/io utils/options utils/parse utils/utf version/version
 
 # library
 $(call lib,libkorlib): $(call obj,$(KORLIB_O))
