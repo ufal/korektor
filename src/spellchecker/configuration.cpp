@@ -83,11 +83,7 @@ Configuration::Configuration(const string &conf_file)
   ifs.open(conf_file.c_str());
 
   if (ifs.is_open() == false)
-  {
-    cerr << "Opening configuration file " << conf_file << "failed!" << endl;
-    exit(1);
-    //throw std::bad_exception("Can't open configuration file!");
-  }
+    runtime_failure("Opening configuration file '" << conf_file << "' failed!");
 
   viterbi_order = 1;
 
@@ -107,18 +103,12 @@ Configuration::Configuration(const string &conf_file)
       ifstream ifs;
       ifs.open(morpholex_file.c_str(), ios::binary);
       if (ifs.is_open() == false)
-      {
-        cerr << "Opening morpholex file " << morpholex_file << " failed!" << endl;
-        exit(1);
-        //throw std::bad_exception("Can't open morpholex file!");
-      }
+        runtime_failure("Opening morpholex file '" << morpholex_file << "' failed!");
 
       MorphologyP morphology = MorphologyP(new Morphology(ifs));
       LexiconP lexicon = LexiconP(new Lexicon(ifs));
 
       LoadMorphologyAndLexicon(lexicon, morphology);
-
-      //cerr << "morpholex loaded!" << endl;
 
       ifs.close();
     }
@@ -128,7 +118,6 @@ Configuration::Configuration(const string &conf_file)
 
       ErrorModelBasicP emb = ErrorModelBasic::fromBinaryFile(error_model_file);
       errorModel = emb;
-      //cerr << "error model loaded" << endl;
     }
     else if (s.substr(0, 2) == "lm")
     {
@@ -153,8 +142,6 @@ Configuration::Configuration(const string &conf_file)
 
       if (viterbi_order < order)
         viterbi_order = order;
-
-      //cerr << "language model " << toks[1] << " loaded!" << endl;
     }
     else if (s.substr(0, 6) == "search")
     {
