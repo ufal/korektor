@@ -29,6 +29,7 @@ class OutputFormat {
   static unique_ptr<OutputFormat> NewOutputFormat(const string& name);
   static unique_ptr<OutputFormat> NewHorizontalOutputFormat();
   static unique_ptr<OutputFormat> NewVerticalOutputFormat();
+  static unique_ptr<OutputFormat> NewOriginalOutputFormat();
 };
 
 } // namespace korektor

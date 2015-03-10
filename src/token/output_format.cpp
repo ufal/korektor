@@ -65,9 +65,48 @@ unique_ptr<OutputFormat> OutputFormat::NewVerticalOutputFormat() {
   return unique_ptr<OutputFormat>(new VerticalOutputFormat());
 }
 
+class OriginalOutputFormat : public OutputFormat {
+ public:
+  virtual bool CanHandleAlternatives() const override {
+    return false;
+  }
+
+  virtual void SetBlock(const string& block) override {
+    this->block.clear();
+    UTF::UTF8To16Append(block, this->block);
+    unprinted = 0;
+  }
+
+  virtual void AppendSentence(string& output, const vector<TokenP>& tokens, const vector<SpellcheckerCorrection>& corrections) override {
+    assert(corrections.size() >= tokens.size());
+
+    for (unsigned i = 0; i < tokens.size(); i++) {
+      if (unprinted < tokens[i]->first) UTF::UTF16To8Append(block, unprinted, tokens[i]->first - unprinted, output);
+      UTF::UTF16To8Append(corrections[i].type == SpellcheckerCorrection::NONE ? tokens[i]->str_u16 : corrections[i].correction, output);
+      unprinted = tokens[i]->first + tokens[i]->length;
+    }
+  }
+
+  virtual void FinishBlock(string& output) {
+    if (unprinted < block.size()) {
+      UTF::UTF16To8Append(block, unprinted, block.size() - unprinted, output);
+      unprinted = block.size();
+    }
+  }
+
+ private:
+  u16string block;
+  unsigned unprinted = 0;
+};
+
+unique_ptr<OutputFormat> OutputFormat::NewOriginalOutputFormat() {
+  return unique_ptr<OutputFormat>(new OriginalOutputFormat());
+}
+
 unique_ptr<OutputFormat> OutputFormat::NewOutputFormat(const string& name) {
   if (name == "horizontal") return NewHorizontalOutputFormat();
   if (name == "vertical") return NewVerticalOutputFormat();
+  if (name == "original") return NewOriginalOutputFormat();
   return nullptr;
 }
 
