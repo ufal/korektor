@@ -87,20 +87,21 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
   unsigned next_sentence_end_index = 0;
 
   vector<vector<TokenP> > ret;
-  ret.push_back(vector<TokenP>());
+  bool sentence_start = true;
 
   for (unsigned i = 0; i < tokens.size(); i++)
   {
     while (next_sentence_end_index < sentence_ends.size() && tokens[i]->first > sentence_ends[next_sentence_end_index])
     {
       next_sentence_end_index++;
-      ret.push_back(vector<TokenP>());
+      sentence_start = true;
     }
 
-    if (ret.back().empty())
-      tokens[i]->sentence_start = true;
-    else
-      tokens[i]->sentence_start = false;
+    tokens[i]->sentence_start = sentence_start;
+    if (sentence_start) {
+      ret.emplace_back();
+      sentence_start = false;
+    }
     ret.back().push_back(tokens[i]);
   }
 
