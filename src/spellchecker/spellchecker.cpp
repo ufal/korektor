@@ -11,12 +11,14 @@
 /// @brief Main spellchecker source code
 
 #include <algorithm>
+#include <queue>
 #include <set>
 #include <sstream>
 
 #include "configuration.h"
 #include "constants.h"
 #include "decoder/decoder_multi_factor.h"
+#include "decoder/stage_possibility.h"
 #include "lexicon/sim_words_finder.h"
 #include "morphology/morphology.h"
 #include "spellchecker.h"
@@ -522,6 +524,118 @@ void Spellchecker::GetTokenizedSuggestions(const vector<TokenP>& tokens, uint32_
   }
 }
 
+void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned alternatives) {
+  // Run Viterbi
+  vector<StagePossibilityP> decoded_corrections;
+  StagePossibilitiesType decoded_alternatives;
+  decoder->DecodeTokenizedSentence_ReturnStagePossibilities(tokens, decoded_corrections, decoded_alternatives);
+
+  // Data structures for alternatives selection
+  struct AlternativeWithCost {
+    double cost;
+    StagePossibility* alternative; // Not const as no StagePossibility methods are marked const
+
+    bool operator<(const AlternativeWithCost& other) const { return cost < other.cost; }
+    AlternativeWithCost(double cost, StagePossibility* alternative) : cost(cost), alternative(alternative) {}
+  };
+  unordered_map<uint32_t, AlternativeWithCost> alternatives_cost;
+  priority_queue<AlternativeWithCost> alternatives_heap;
+
+  // Clean corrections
+  corrections.clear();
+  corrections.reserve(tokens.size());
+
+  // Fill corrections
+  unsigned viterbi_order = decoder->GetViterbiOrder();
+  for (unsigned i = 0; i < tokens.size(); i++) {
+    auto correction = decoded_corrections[i + viterbi_order - 1];
+    if (correction->IsOriginal()) {
+      corrections.emplace_back(SpellcheckerCorrection::NONE);
+    } else {
+      corrections.emplace_back(tokens[i]->isUnknown() ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::GRAMMAR);
+      corrections.back().correction = correction->To_u16string();
+//      cerr << "Correction " << correction->ToString() << "(" << correction->FormIdentifier() << ")" << endl;
+
+      // Add alternatives if requested
+      if (alternatives) {
+        alternatives_cost.reserve(8 + 2 * decoded_alternatives->size());
+
+        // Measure costs of alternative forms
+        for (auto&& alternative : decoded_alternatives->at(i + viterbi_order - 1)) {
+          if (alternative->FormIdentifier() == correction->FormIdentifier()) continue;
+          auto same_alternative = alternatives_cost.find(alternative->FormIdentifier());
+          bool have_current_best = same_alternative != alternatives_cost.end() || alternatives_cost.size() == alternatives;
+          double current_best = same_alternative != alternatives_cost.end() ? same_alternative->second.cost :
+              !alternatives_heap.empty() ? alternatives_heap.top().cost : 0;
+
+          // Measure emmision probability
+          double cost = alternative->EmmisionProbability();
+//          cerr << "Alternative " << alternative->ToString() << "(" << alternative->FormIdentifier() << ") with cost " << cost << endl;
+          if (have_current_best && cost > current_best) continue;
+
+          // Measure transition costs of the alternative
+          decoded_corrections[i + viterbi_order - 1] = alternative;
+          for (unsigned k = 0; k < viterbi_order && i + k < tokens.size() + 1/*</s>*/; k++) {
+            cost += decoder->ComputeTransitionCostSPSequence(decoded_corrections, i + k, i + viterbi_order - 1 + k);
+//            cerr << "Alternative " << alternative->ToString() << " recost to " << cost << endl;
+            if (have_current_best && cost > current_best) break;
+          }
+
+          // Keep alternative if good enough
+          if (same_alternative != alternatives_cost.end()) {
+            if (cost < current_best) {
+              // Lower the cost in alternative_costs
+              same_alternative->second.cost = cost;
+              same_alternative->second.alternative = alternative.get();
+              alternatives_heap.push(same_alternative->second);
+              // Normalize heap, i.e. remove dead top elements
+              if (alternatives_heap.top().alternative->FormIdentifier() == alternative->FormIdentifier()) {
+                alternatives_heap.pop();
+                while (alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier()) < alternatives_heap.top())
+                  alternatives_heap.pop();
+              }
+            }
+          } else {
+            if (alternatives_cost.size() < alternatives || cost < current_best) {
+              if (alternatives_cost.size() >= alternatives) {
+                alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
+                alternatives_heap.pop();
+                // Normalize heap, i.e. remove dead top elements
+                while (alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier()) < alternatives_heap.top())
+                  alternatives_heap.pop();
+              }
+              alternatives_cost.emplace(alternative->FormIdentifier(), AlternativeWithCost(cost, alternative.get()));
+              alternatives_heap.emplace(cost, alternative.get());
+            }
+          }
+        }
+        decoded_corrections[i + viterbi_order - 1] = correction;
+
+        // Store best alternatives
+        corrections.back().alternatives.resize(alternatives_cost.size());
+        for (unsigned i = alternatives_cost.size(); i > 0; i--) {
+//          cerr << "Alternative with cost " << alternatives_heap.top().cost << ", " << alternatives_heap.top().alternative << endl;
+          if (alternatives_heap.top().alternative->IsOriginal())
+            corrections.back().alternatives.resize(i - 1);
+          else
+            corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->To_u16string();
+          alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
+          alternatives_heap.pop();
+          if (i > 1)
+            // Normalize heap, i.e. remove dead top elements
+            while (!alternatives_heap.empty() && alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier())< alternatives_heap.top())
+              alternatives_heap.pop();
+        }
+        assert(alternatives_heap.empty());
+      }
+    }
+  }
+}
+
+void Spellchecker::SpellcheckToken(const TokenP& /*token*/, SpellcheckerCorrection& correction, unsigned /*alternatives*/) {
+  // TODO
+  correction.type = SpellcheckerCorrection::NONE;
+}
 
 Spellchecker::Spellchecker(Configuration* _configuration):
   configuration(_configuration), decoder(new DecoderMultiFactor(_configuration))

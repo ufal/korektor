@@ -29,6 +29,16 @@ SP_DEF(TextCheckingResult);
 struct Token;
 SP_DEF(Token);
 
+struct SpellcheckerCorrection {
+  enum type_t { NONE, GRAMMAR, SPELLING };
+
+  type_t type;
+  u16string correction;
+  vector<u16string> alternatives;
+
+  SpellcheckerCorrection(type_t type = NONE) : type(type) {}
+};
+
 //Spellchecker class the main interface of the application. It receives spell-checking request and delivers the corrected text.
 //The responsibility of Spellchecker is to prepare input for the decoder (i.e. tokenize the sentence), call decoder and process the decoder output in the desired way.
 class Spellchecker {
@@ -68,6 +78,8 @@ class Spellchecker {
 
   Spellchecker(Configuration* _configuration);
 
+  void Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned alternatives = 0);
+  void SpellcheckToken(const TokenP& token, SpellcheckerCorrection& correction, unsigned alternatives = 0);
 };
 
 } // namespace korektor
