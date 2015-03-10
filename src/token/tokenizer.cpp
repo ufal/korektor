@@ -15,7 +15,7 @@
 namespace ufal {
 namespace korektor {
 
-vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text)
+vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_on_newline)
 {
   vector<TokenP> tokens;
 
@@ -25,7 +25,11 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text)
 
   for (unsigned i = 0; i < text.length(); i++)
   {
-    if (text[i] == '\n' || text[i] == ':' || text[i] == '?' || text[i] == '!') sentence_ends.push_back(i);
+    if ((text[i] == '\n' && (segment_on_newline || (i && text[i-1] == '\n'))) ||
+        text[i] == ':' || text[i] == '?' || text[i] == '!')
+    {
+      sentence_ends.push_back(i);
+    }
     else if (text[i] == '.')
     {
       unsigned j = i + 1;
