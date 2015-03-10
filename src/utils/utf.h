@@ -29,6 +29,7 @@ class UTF
 
   static string UTF16To8(const u16string &utf16);
   static void UTF16To8Append(const u16string &utf16, string& text);
+  static void UTF16To8Append(const u16string &utf16, size_t index, size_t length, string& text);
   static u16string UTF8To16(const string &utf8);
   static void UTF8To16Append(const string &utf8, u16string& text);
 

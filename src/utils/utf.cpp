@@ -77,6 +77,16 @@ void UTF::UTF16To8Append(const u16string &utf16, string& text) {
     utf8::append(text, chr32);
 }
 
+void UTF::UTF16To8Append(const u16string &utf16, size_t index, size_t length, string& text) {
+  if (index >= utf16.size()) return;
+
+  text.reserve(text.size() + 2 * length);
+
+  const char16_t* input = utf16.c_str() + index;
+  for (char32_t chr32; (chr32 = utf16::decode(input)) && length; length--)
+    utf8::append(text, chr32);
+}
+
 u16string UTF::UTF8To16(const string &utf8)
 {
   u16string result;
