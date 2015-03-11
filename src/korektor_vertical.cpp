@@ -53,7 +53,6 @@ int main(int argc, char* argv[])
         int wordID = configuration.lexicon->GetWordID(word);
         token->InitLexiconInformation(wordID, replaced.back().empty() ? configuration.lexicon->CorrectionIsAllowed(wordID) : false);
       }
-      token->correction_is_allowed = token->correction_is_allowed && UTF::ContainsLetter(token->str_u16);
       token->sentence_start = tokens.empty();
       tokens.emplace_back(token);
 

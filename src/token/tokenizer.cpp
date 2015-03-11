@@ -57,7 +57,6 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
         int wordID = lexicon->GetWordID(token->str_u16);
         token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
       }
-      token->correction_is_allowed = token->correction_is_allowed && UTF::ContainsLetter(token->str_u16);
 
       tokens.push_back(token);
 
@@ -72,7 +71,6 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
         int wordID = lexicon->GetWordID(token->str_u16);
         token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
       }
-      token->correction_is_allowed = token->correction_is_allowed && UTF::ContainsLetter(token->str_u16);
 
       tokens.push_back(token);
 

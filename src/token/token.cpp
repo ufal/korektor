@@ -24,7 +24,7 @@ void Token::InitLexiconInformation(unsigned _ID, bool _correction_is_allowed)
 {
   initialized = true;
   ID = _ID;
-  correction_is_allowed = _correction_is_allowed;
+  correction_is_allowed = UTF::ContainsLetter(str_u16) && _correction_is_allowed;
 }
 
 } // namespace korektor
