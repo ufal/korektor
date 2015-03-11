@@ -92,9 +92,10 @@ class VerticalInputFormat : public InputFormat {
       auto start = index;
       while (index < text.size() && text[index] != '\n') index++;
 
-      // Stop on empty line
+      // Stop on empty line if we have non-empty sentence
       if (index == start) {
         index++; // Skip over newline
+        if (tokens.empty()) continue;
         break;
       }
 
