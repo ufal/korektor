@@ -25,18 +25,21 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
 
   for (unsigned i = 0; i < text.length(); i++)
   {
-    if ((text[i] == '\n' && (segment_on_newline || (i && text[i-1] == '\n'))) ||
-        text[i] == ':' || text[i] == '?' || text[i] == '!')
+    if (text[i] == '\n' && (segment_on_newline || (i && text[i-1] == '\n')))
     {
       sentence_ends.push_back(i);
     }
-    else if (text[i] == '.')
+    else if (text[i] == '.' || text[i] == ':' || text[i] == '?' || text[i] == '!' || text[i] == u'\u2026'/*triple dot*/)
     {
-      unsigned j = i + 1;
-      while (j < text.length() - 1 && UTF::IsAlphaNum(text[j]) == false) j++;
+      unsigned closing_punct = i;
+      while (closing_punct + 1 < text.size() && UTF::IsPunctClosing(text[closing_punct+1]))
+        closing_punct++;
 
-      if (UTF::IsUpper(text[j]))
-        sentence_ends.push_back(i);
+      unsigned first_letter = closing_punct;
+      while (first_letter + 1 < text.size() && (UTF::IsSpace(text[first_letter+1]) || UTF::IsPunctOpening(text[first_letter+1])))
+        first_letter++;
+      if (first_letter + 1 >= text.size() || UTF::IsUpper(text[first_letter+1]))
+          sentence_ends.push_back(closing_punct);
     }
   }
 
