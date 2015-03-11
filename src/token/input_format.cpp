@@ -18,7 +18,8 @@ namespace korektor {
 
 class UntokenizedInputFormat : public InputFormat {
  public:
-  UntokenizedInputFormat(LexiconP lexicon, bool split_on_newline) : split_on_newline(split_on_newline) {
+  UntokenizedInputFormat(LexiconP lexicon, bool segment_on_newline, bool segment_on_punctuation)
+      : segment_on_newline(segment_on_newline), segment_on_punctuation(segment_on_punctuation) {
     tokenizer.initLexicon(lexicon);
   }
 
@@ -27,13 +28,13 @@ class UntokenizedInputFormat : public InputFormat {
     while (IO::ReadLine(ifs, line)) {
       block.append(line);
       block.push_back('\n');
-      if (split_on_newline || line.empty()) break;
+      if (segment_on_newline || line.empty()) break;
     }
     return !block.empty();
   }
 
   virtual void SetBlock(const string& block) override {
-    sentences = tokenizer.Tokenize(UTF::UTF8To16(block), split_on_newline);
+    sentences = tokenizer.Tokenize(UTF::UTF8To16(block), segment_on_newline, segment_on_punctuation);
     sentence = 0;
   }
 
@@ -44,7 +45,7 @@ class UntokenizedInputFormat : public InputFormat {
   }
 
  private:
-  bool split_on_newline;
+  bool segment_on_newline, segment_on_punctuation;
 
   Tokenizer tokenizer;
   string line;
@@ -53,16 +54,21 @@ class UntokenizedInputFormat : public InputFormat {
 };
 
 unique_ptr<InputFormat> InputFormat::NewUntokenizedInputFormat(LexiconP lexicon) {
-  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, false));
+  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, false, true));
 }
 
 unique_ptr<InputFormat> InputFormat::NewUntokenizedLinesInputFormat(LexiconP lexicon) {
-  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, true));
+  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, true, true));
+}
+
+unique_ptr<InputFormat> InputFormat::NewSegmentedInputFormat(LexiconP lexicon) {
+  return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, true, false));
 }
 
 unique_ptr<InputFormat> InputFormat::NewInputFormat(const string& name, LexiconP lexicon) {
   if (name == "untokenized") return NewUntokenizedInputFormat(lexicon);
   if (name == "untokenized_lines") return NewUntokenizedLinesInputFormat(lexicon);
+  if (name == "segmented") return NewSegmentedInputFormat(lexicon);
   return nullptr;
 }
 
