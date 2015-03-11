@@ -122,11 +122,67 @@ unique_ptr<InputFormat> InputFormat::NewVerticalInputFormat(LexiconP lexicon) {
   return unique_ptr<InputFormat>(new VerticalInputFormat(lexicon));
 }
 
+class HorizontalInputFormat : public InputFormat {
+ public:
+  HorizontalInputFormat(LexiconP lexicon) : lexicon(lexicon) {}
+
+  virtual bool ReadBlock(istream& ifs, string& block) override {
+    if (!IO::ReadLine(ifs, block)) return false;
+    block.push_back('\n');
+    return true;
+  }
+
+  virtual void SetBlock(const string& block) override {
+    index = 0;
+    text.clear();
+    UTF::UTF8To16Append(block, text);
+  }
+
+  virtual bool NextSentence(vector<TokenP>& tokens) override {
+    tokens.clear();
+    while (index < text.size()) {
+      // Stop on a newline unless the sentence is empty
+      if (text[index] == '\n') {
+        index++; // Skip over newline
+        if (tokens.empty()) continue;
+        break;
+      }
+
+      // Ignore spaces
+      if (UTF::IsSpace(text[index])) {
+        index++; // Skip over space
+        continue;
+      }
+
+      // Append new token
+      auto start = index;
+      while (index < text.size() && !UTF::IsSpace(text[index])) index++;
+      tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
+      if (lexicon) {
+        int id = lexicon->GetWordID(tokens.back()->str_u16);
+        tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
+      }
+    }
+
+    return !tokens.empty();
+  }
+
+ private:
+  LexiconP lexicon;
+  u16string text;
+  size_t index = 0;
+};
+
+unique_ptr<InputFormat> InputFormat::NewHorizontalInputFormat(LexiconP lexicon) {
+  return unique_ptr<InputFormat>(new HorizontalInputFormat(lexicon));
+}
+
 unique_ptr<InputFormat> InputFormat::NewInputFormat(const string& name, LexiconP lexicon) {
   if (name == "untokenized") return NewUntokenizedInputFormat(lexicon);
   if (name == "untokenized_lines") return NewUntokenizedLinesInputFormat(lexicon);
   if (name == "segmented") return NewSegmentedInputFormat(lexicon);
   if (name == "vertical") return NewVerticalInputFormat(lexicon);
+  if (name == "horizontal") return NewHorizontalInputFormat(lexicon);
   return nullptr;
 }
 
