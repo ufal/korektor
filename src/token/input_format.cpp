@@ -65,10 +65,67 @@ unique_ptr<InputFormat> InputFormat::NewSegmentedInputFormat(LexiconP lexicon) {
   return unique_ptr<InputFormat>(new UntokenizedInputFormat(lexicon, true, false));
 }
 
+class VerticalInputFormat : public InputFormat {
+ public:
+  VerticalInputFormat(LexiconP lexicon) : lexicon(lexicon) {}
+
+  virtual bool ReadBlock(istream& ifs, string& block) override {
+    block.clear();
+    while (IO::ReadLine(ifs, line)) {
+      block.append(line);
+      block.push_back('\n');
+      if (line.empty()) break;
+    }
+    return !block.empty();
+  }
+
+  virtual void SetBlock(const string& block) override {
+    index = 0;
+    text.clear();
+    UTF::UTF8To16Append(block, text);
+  }
+
+  virtual bool NextSentence(vector<TokenP>& tokens) override {
+    tokens.clear();
+    while (index < text.size()) {
+      // Find next newline
+      auto start = index;
+      while (index < text.size() && text[index] != '\n') index++;
+
+      // Stop on empty line
+      if (index == start) {
+        index++; // Skip over newline
+        break;
+      }
+
+      // Append new token
+      tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
+      if (lexicon) {
+        int id = lexicon->GetWordID(tokens.back()->str_u16);
+        tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
+      }
+      index++; // Skip over newline
+    }
+
+    return !tokens.empty();
+  }
+
+ private:
+  LexiconP lexicon;
+  string line;
+  u16string text;
+  size_t index = 0;
+};
+
+unique_ptr<InputFormat> InputFormat::NewVerticalInputFormat(LexiconP lexicon) {
+  return unique_ptr<InputFormat>(new VerticalInputFormat(lexicon));
+}
+
 unique_ptr<InputFormat> InputFormat::NewInputFormat(const string& name, LexiconP lexicon) {
   if (name == "untokenized") return NewUntokenizedInputFormat(lexicon);
   if (name == "untokenized_lines") return NewUntokenizedLinesInputFormat(lexicon);
   if (name == "segmented") return NewSegmentedInputFormat(lexicon);
+  if (name == "vertical") return NewVerticalInputFormat(lexicon);
   return nullptr;
 }
 

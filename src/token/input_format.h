@@ -31,6 +31,7 @@ class InputFormat {
   static unique_ptr<InputFormat> NewUntokenizedInputFormat(LexiconP lexicon);
   static unique_ptr<InputFormat> NewUntokenizedLinesInputFormat(LexiconP lexicon);
   static unique_ptr<InputFormat> NewSegmentedInputFormat(LexiconP lexicon);
+  static unique_ptr<InputFormat> NewVerticalInputFormat(LexiconP lexicon);
 };
 
 } // namespace korektor
