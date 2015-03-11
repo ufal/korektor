@@ -30,6 +30,7 @@ class OutputFormat {
   static unique_ptr<OutputFormat> NewHorizontalOutputFormat();
   static unique_ptr<OutputFormat> NewVerticalOutputFormat();
   static unique_ptr<OutputFormat> NewOriginalOutputFormat();
+  static unique_ptr<OutputFormat> NewXmlOutputFormat();
 };
 
 } // namespace korektor

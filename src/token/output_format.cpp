@@ -103,10 +103,75 @@ unique_ptr<OutputFormat> OutputFormat::NewOriginalOutputFormat() {
   return unique_ptr<OutputFormat>(new OriginalOutputFormat());
 }
 
+class XmlOutputFormat : public OutputFormat {
+ public:
+  virtual bool CanHandleAlternatives() const override {
+    return true;
+  }
+
+  virtual void SetBlock(const string& block) override {
+    this->block.clear();
+    UTF::UTF8To16Append(block, this->block);
+    unprinted = 0;
+  }
+
+  virtual void AppendSentence(string& output, const vector<TokenP>& tokens, const vector<SpellcheckerCorrection>& corrections) override {
+    assert(corrections.size() >= tokens.size());
+
+    for (unsigned i = 0; i < tokens.size(); i++) {
+      if (unprinted < tokens[i]->first) UTF::UTF16To8Append(block, unprinted, tokens[i]->first - unprinted, output);
+      if (corrections[i].type != SpellcheckerCorrection::NONE) {
+        output.append(corrections[i].type == SpellcheckerCorrection::SPELLING ? "<spelling suggestions=\"" : "<grammar suggestions=\"");
+        UTF16To8AppendXmlEncoded(corrections[i].correction, output);
+        for (auto&& alternative : corrections[i].alternatives) {
+          output.push_back(' ');
+          UTF16To8AppendXmlEncoded(alternative, output);
+        }
+        output.append("\">");
+      }
+      UTF16To8AppendXmlEncoded(tokens[i]->str_u16, output);
+      if (corrections[i].type != SpellcheckerCorrection::NONE)
+        output.append(corrections[i].type == SpellcheckerCorrection::SPELLING ? "</spelling>" : "</grammar>");
+      unprinted = tokens[i]->first + tokens[i]->length;
+    }
+  }
+
+  virtual void FinishBlock(string& output) {
+    if (unprinted < block.size()) {
+      UTF::UTF16To8Append(block, unprinted, block.size() - unprinted, output);
+      unprinted = block.size();
+    }
+  }
+
+ private:
+  void UTF16To8AppendXmlEncoded(const u16string& data, string& output) {
+    encoded.clear();
+    for (auto&& chr : data)
+      switch(chr) {
+        case '<': encoded.append(u"&lt;"); break;
+        case '>': encoded.append(u"&gt;"); break;
+        case '&': encoded.append(u"&amp;"); break;
+        case '"': encoded.append(u"&quot;"); break;
+        default: encoded.push_back(chr);
+      }
+
+    UTF::UTF16To8Append(encoded, output);
+  }
+
+  u16string block;
+  u16string encoded;
+  unsigned unprinted = 0;
+};
+
+unique_ptr<OutputFormat> OutputFormat::NewXmlOutputFormat() {
+  return unique_ptr<OutputFormat>(new XmlOutputFormat());
+}
+
 unique_ptr<OutputFormat> OutputFormat::NewOutputFormat(const string& name) {
   if (name == "horizontal") return NewHorizontalOutputFormat();
   if (name == "vertical") return NewVerticalOutputFormat();
   if (name == "original") return NewOriginalOutputFormat();
+  if (name == "xml") return NewXmlOutputFormat();
   return nullptr;
 }
 
