@@ -20,6 +20,9 @@ class UTF
   static bool IsAlpha(char16_t ch16);
   static bool IsAlphaNum(char16_t ch16);
   static bool IsPunct(char16_t ch16);
+  static bool IsPunctOpening(char16_t ch16);
+  static bool IsPunctClosing(char16_t ch16);
+  static bool IsSpace(char16_t ch16);
 
   static bool IsUpper(char16_t ch16);
   static bool IsLower(char16_t ch16);

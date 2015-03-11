@@ -18,11 +18,6 @@ namespace korektor {
 
 using namespace unilib;
 
-bool UTF::IsPunct(char16_t ch16)
-{
-  return unicode::category(ch16) & unicode::P;
-}
-
 bool UTF::IsAlpha(char16_t ch16)
 {
   return unicode::category(ch16) & unicode::L;
@@ -31,6 +26,26 @@ bool UTF::IsAlpha(char16_t ch16)
 bool UTF::IsAlphaNum(char16_t ch16)
 {
   return unicode::category(ch16) & (unicode::L | unicode::Nd);
+}
+
+bool UTF::IsPunct(char16_t ch16)
+{
+  return unicode::category(ch16) & unicode::P;
+}
+
+bool UTF::IsPunctOpening(char16_t ch16)
+{
+  return ch16 == '"' || ch16 == '\'' || ch16 == '`' || (unicode::category(ch16) & (unicode::Ps | unicode::Pi));
+}
+
+bool UTF::IsPunctClosing(char16_t ch16)
+{
+  return ch16 == '"' || ch16 == '\'' || ch16 == ';' || (unicode::category(ch16) & (unicode::Pe | unicode::Pf));
+}
+
+bool UTF::IsSpace(char16_t ch16)
+{
+  return ch16 == '\t' || ch16 == '\r' || ch16 == '\n' || unicode::category(ch16) & unicode::Zs;
 }
 
 bool UTF::IsUpper(char16_t ch16)
