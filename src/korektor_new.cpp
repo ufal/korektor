@@ -42,7 +42,7 @@ int main(int argc, char* argv[]) {
     runtime_failure(version::version_and_copyright());
 
   // Init options
-  unsigned max_corrections = 0;
+  unsigned max_corrections = 1;
   if (options.count("corrections")) {
     max_corrections = Parse::Int(options["corrections"], "maximum number of corrections");
     if (max_corrections <= 0)
@@ -54,15 +54,6 @@ int main(int argc, char* argv[]) {
   // Load spellchecker
   ConfigurationP configuration(new Configuration(argv[1]));
   Spellchecker spellchecker = Spellchecker(configuration.get());
-
-  if (!max_corrections) {
-    if (configuration->mode_string == "autocorrect")
-      max_corrections = 1;
-    else if (configuration->mode_string == "tag_errors")
-      max_corrections = 5;
-    else
-      runtime_failure("Unknown mode '" << configuration->mode_string << "' in the configuration file '" << argv[1] << "'!");
-  }
 
   // Init input format
   string input_format_name = options.count("input") ? options["input"] : "untokenized";
