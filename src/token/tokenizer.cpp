@@ -65,7 +65,7 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
 
       i += length;
     }
-    else if (UTF::IsPunct(text[i]))
+    else if (!UTF::IsSpace(text[i]))
     {
       TokenP token = TokenP(new Token(i, 1, text.substr(i, 1)));
 
