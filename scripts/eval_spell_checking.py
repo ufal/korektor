@@ -18,5 +18,6 @@ if __name__ == '__main__':
 
     korektor_evaluation = spelleval.SpellEval(args.test_file, args.gold_file, args.system_output, 5)
     korektor_evaluation.evaluate()
+    korektor_evaluation.print_results()
 
 

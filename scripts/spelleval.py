@@ -42,8 +42,7 @@ Error correction
 
 class SpellEval:
     def __init__(self, test_filename, gold_filename, output_filename, nbest):
-
-        # top-n accuracy (precision, recall etc)
+        # for top-n accuracy (precision, recall etc)
         self.nbest = nbest
 
         # results : spelling error detection
@@ -81,6 +80,8 @@ class SpellEval:
             print "error: file size differ between the test file and gold file"
             sys.exit(1)
 
+        self.close_files(fH)
+
         # some required overall and specific info
         (self.gold_content, self.corpus_size) = self.read_file_into_map(gold_file_lines)
 
@@ -90,9 +91,6 @@ class SpellEval:
         # get suggestions from system output
         self.system_suggestions = self.get_suggestions_map(out_file_lines)
 
-        self.close_files(fH)
-
-        #self.evaluate(self.corpus_size, self.test_data_errors, self.system_suggestions)
 
     def read_file_into_map(self, file_lines):
         i = 0
@@ -146,93 +144,70 @@ class SpellEval:
             i += 1
         return error_data
 
-    def evaluate(self):
-        # detection
-        tp_d, fp_d, tn_d, fn_d = 0, 0, 0, 0
+    def get_error_detection_results(self):
+        return self.precision_d, self.recall_d
 
-        # correction
-        n_best = 5
-        tp_c = [0] * n_best
-        fp_c = [0] * n_best
-        tn_c = [0] * n_best
-        fn_c = [0] * n_best
-        precision_c = [0] * n_best
-        recall_c = [0] * n_best
+    def get_error_correction_results(self):
+        return self.precision_c, self.recall_c
+
+    def evaluate(self):
 
         total_errors = len(self.test_data_errors)
 
         # fill/update true/false positives for correction/detection
         for err_loc in self.system_suggestions.keys():
             if err_loc in self.test_data_errors.keys():
-                tp_d += 1
+                self.tp_d += 1
                 word_suggestions = self.system_suggestions[err_loc]
                 error_found = False
                 i = 0;
                 while i < len(self.system_suggestions[err_loc]):
                     if word_suggestions[i] == self.test_data_errors[err_loc][1]:
                         error_found = True
-                        tp_c[i] += 1
+                        self.tp_c[i] += 1
                         j = i+1
                         while j < len(self.system_suggestions[err_loc]):
-                            tp_c[j] += 1
+                            self.tp_c[j] += 1
                             j += 1
                         break
                     else:
-                        fp_c[i] += 1
+                        self.fp_c[i] += 1
                     i += 1
-                if len(self.system_suggestions[err_loc]) < n_best:
+                if len(self.system_suggestions[err_loc]) < self.nbest:
                         k = len(self.system_suggestions[err_loc])
-                        while k < n_best:
+                        while k < self.nbest:
                             if error_found:
-                                tp_c[k] += 1
+                                self.tp_c[k] += 1
                             else:
-                                fp_c[k] += 1
+                                self.fp_c[k] += 1
                             k += 1
             else:
-                fp_d += 1
+                self.fp_d += 1
                 m = 0
-                while m < n_best:
-                    fp_c[m] += 1
+                while m < self.nbest:
+                    self.fp_c[m] += 1
                     m += 1
 
         # fill/update true/false negatives for correction/detection
-        tn_d = self.corpus_size - len(self.system_suggestions.keys())
+        self.tn_d = self.corpus_size - len(self.system_suggestions.keys())
         for test_err_loc in self.test_data_errors.keys():
             if not test_err_loc in self.system_suggestions.keys():
-                tn_d -= 1
-                fn_d += 1
-        for i in range(n_best):
-            fn_c[i] = fn_d
+                self.tn_d -= 1
+                self.fn_d += 1
+        for i in range(self.nbest):
+            self.fn_c[i] = self.fn_d
 
-        for i in range(n_best):
-            tn_c[i] = tn_d
+        for i in range(self.nbest):
+            self.tn_c[i] = self.tn_d
 
         # precision/recall for error detection
-        precision_d = (1.0 * tp_d) / (tp_d + fp_d)
-        recall_d = (1.0 * tp_d) / (tp_d + fn_d)
+        self.precision_d = (1.0 * self.tp_d) / (self.tp_d + self.fp_d)
+        self.recall_d = (1.0 * self.tp_d) / (self.tp_d + self.fn_d)
 
         # calculate precision/recall for spelling correction
-        for i in range(len(tp_c)):
-            precision_c[i] = (1.0 * tp_c[i]) / (tp_c[i] + fp_c[i])
-            recall_c[i] = (1.0 * tp_c[i]) / (tp_c[i] + fn_c[i])
-
-        print "-------------------------"
-        print "RESULTS"
-        print "-------------------------"
-        print "Total words in the test data: ", self.corpus_size
-        print "Total errors in the test data: ", total_errors
-        print "TP: ", tp_d
-        print "FP: ", fp_d
-        print "TN: ", tn_d
-        print "FN: ", fn_d
-        print "Precision: ",  precision_d
-        print "Recall: ", recall_d
-        print "TP: ", tp_c
-        print "FP: ", fp_c
-        print "TN: ", tn_c
-        print "FN: ", fn_c
-        print "Precision: ",  precision_c
-        print "Recall: ", recall_c
+        for i in range(len(self.tp_c)):
+            self.precision_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fp_c[i])
+            self.recall_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fn_c[i])
 
     def get_suggestions_map(self, out_file_lines):
         i = 0
@@ -259,9 +234,30 @@ class SpellEval:
     """
     Prints errors in the test data with gold information
     """
-    def print_errors(self, test_data_errors):
-        for err_loc in test_data_errors:
-            print err_loc, " => ", "original: ", test_data_errors[err_loc][0], ", gold: ", test_data_errors[err_loc][1]
+    def print_errors(self):
+        for err_loc in self.test_data_errors:
+            print err_loc, " => ", "original: ", self.test_data_errors[err_loc][0], ", gold: ", self.test_data_errors[err_loc][1]
+
+    def print_results(self):
+        print ''.rjust(20), "***************"
+        print ''.rjust(20), "Error detection"
+        print ''.rjust(20), "***************"
+        print 'Precision'.ljust(10), ':', '{:5.2f}'.format(self.precision_d * 100.0)
+        print 'Recall'.ljust(10), ':', '{:5.2f}'.format(self.recall_d * 100.0)
+        print ""
+
+        print ''.rjust(20), "***************"
+        print ''.rjust(20), "Error correction"
+        print ''.rjust(20), "***************"
+        print ""
+
+        print "top-n".ljust(6), 'Precision'.rjust(10), 'Recall'.rjust(10)
+        print "-----".ljust(6), '---------'.rjust(10), '------'.rjust(10)
+        i = 0
+        while i < len(self.precision_c):
+            top = 'top-' + str(i+1)
+            print top.ljust(6), ''.rjust(4), '{:5.2f}'.format(self.precision_c[i]*100.0), ''.rjust(4), '{:5.2f}'.format(self.recall_c[i]*100.0)
+            i += 1
 
     def close_files(self, file_handles):
         for fh in file_handles:
