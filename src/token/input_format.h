@@ -30,6 +30,9 @@ class InputFormat {
   static unique_ptr<InputFormat> NewInputFormat(const string& name, LexiconP lexicon);
   static unique_ptr<InputFormat> NewUntokenizedInputFormat(LexiconP lexicon);
   static unique_ptr<InputFormat> NewUntokenizedLinesInputFormat(LexiconP lexicon);
+  static unique_ptr<InputFormat> NewSegmentedInputFormat(LexiconP lexicon);
+  static unique_ptr<InputFormat> NewVerticalInputFormat(LexiconP lexicon);
+  static unique_ptr<InputFormat> NewHorizontalInputFormat(LexiconP lexicon);
 };
 
 } // namespace korektor

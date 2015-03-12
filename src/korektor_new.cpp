@@ -24,11 +24,11 @@ int main(int argc, char* argv[]) {
 
   Options::Map options;
   if (!Options::Parse({{"input",Options::Value{"untokenized", "untokenized_lines", "segmented", "vertical", "horizontal"}},
-                      {"output",Options::Value{"original", "xml", "vertical", "horizontal"}},
-                      {"corrections",Options::Value::any},
-                      {"context_free", Options::Value::none},
-                      {"version", Options::Value::none},
-                      {"help", Options::Value::none}}, argc, argv, options) ||
+                       {"output",Options::Value{"original", "xml", "vertical", "horizontal"}},
+                       {"corrections",Options::Value::any},
+                       {"context_free", Options::Value::none},
+                       {"version", Options::Value::none},
+                       {"help", Options::Value::none}}, argc, argv, options) ||
       options.count("help") ||
       (argc < 2 && !options.count("version")))
     runtime_failure("Usage: " << argv[0] << " [options] model_configuration\n"

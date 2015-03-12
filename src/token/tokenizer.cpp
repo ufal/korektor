@@ -15,7 +15,7 @@
 namespace ufal {
 namespace korektor {
 
-vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_on_newline)
+vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_on_newline, bool segment_on_punctuation)
 {
   vector<TokenP> tokens;
 
@@ -29,7 +29,7 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
     {
       sentence_ends.push_back(i);
     }
-    else if (text[i] == '.' || text[i] == ':' || text[i] == '?' || text[i] == '!' || text[i] == u'\u2026'/*triple dot*/)
+    else if (segment_on_punctuation && (text[i] == '.' || text[i] == ':' || text[i] == '?' || text[i] == '!' || text[i] == u'\u2026'/*triple dot*/))
     {
       unsigned closing_punct = i;
       while (closing_punct + 1 < text.size() && UTF::IsPunctClosing(text[closing_punct+1]))

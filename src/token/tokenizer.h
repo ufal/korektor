@@ -42,7 +42,7 @@ class Tokenizer {
   /// @param text The input text
   /// @return The tokens
   /// @todo The tokenization at the moment is English specific. It should be generic.
-  vector<vector<TokenP> > Tokenize(const u16string &text, bool segment_on_newline = true);
+  vector<vector<TokenP> > Tokenize(const u16string &text, bool segment_on_newline = true, bool segment_on_punctuation = true);
 };
 
 SP_DEF(Tokenizer);
