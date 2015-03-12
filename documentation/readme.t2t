@@ -1,0 +1,9 @@
+Korektor
+========
+
+%!include: manual_about.t2t
+
+Korektor website http://ufal.mff.cuni.cz/korektor contains download links of
+both the released packages and spellchecker models, and hosts documentation.
+
+Korektor repository http://github.com/ufal/korektor is hosted on GitHub.
