@@ -231,13 +231,6 @@ class SpellEval:
             i += 1
         return suggestions_map
 
-    """
-    Prints errors in the test data with gold information
-    """
-    def print_errors(self):
-        for err_loc in self.test_data_errors:
-            print err_loc, " => ", "original: ", self.test_data_errors[err_loc][0], ", gold: ", self.test_data_errors[err_loc][1]
-
     def print_results(self):
         print ''.rjust(20), "***************"
         print ''.rjust(20), "Error detection"
@@ -258,6 +251,17 @@ class SpellEval:
             top = 'top-' + str(i+1)
             print top.ljust(6), ''.rjust(4), '{:5.2f}'.format(self.precision_c[i]*100.0), ''.rjust(4), '{:5.2f}'.format(self.recall_c[i]*100.0)
             i += 1
+
+    def print_summary(self):
+        print ''.rjust(20), "***************"
+        print ''.rjust(20), "Data summary"
+        print ''.rjust(20), "***************"
+        print 'Corpus size'.ljust(20), ':', self.corpus_size
+        print 'Errors in test data'.ljust(20), ':', len(self.test_data_errors)
+        # print 'Error details [format: "(sentence num, word position) => original word, gold word"]'
+        # for err_loc in self.test_data_errors:
+        #     print str(err_loc).rjust(20), " => ", self.test_data_errors[err_loc][0].rjust(20), ", ",  self.test_data_errors[err_loc][1].ljust(20)
+
 
     def close_files(self, file_handles):
         for fh in file_handles:
