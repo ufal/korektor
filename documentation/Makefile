@@ -3,11 +3,12 @@ include t2t_docsys/Makefile.include
 
 .PHONY: all doc web install
 all: doc
-doc: manual.txt manual.html readme.txt readme_md.md
+doc: manual.txt manual.html manual_install.txt readme.txt readme_md.md
 web:
 install: doc
 	$(call cp,manual.txt,../MANUAL)
 	$(call cp,manual.html,../MANUAL.html)
+	$(call cp,manual_install.txt,../INSTALL)
 	$(call cp,readme.txt,../README)
 	$(call cp,readme_md.md,../README.md)
 

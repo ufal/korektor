@@ -1,0 +1,55 @@
+Korektor Installation
+=====================
+
+%!encoding: utf-8
+
+Korektor releases are available on [GitHub http://github.com/ufal/korektor], either as
+a pre-compiled binary package, or source code only. The binary package contains Linux,
+Windows and OS X binaries.
+
+To use Korektor, a language model is needed.
+[Here is a list of available language models http://ufal.mff.cuni.cz/korektor#spellchecker_models].
+
+If you want to compile Korektor manually, sources are available on on
+[GitHub http://github.com/ufal/korektor], both in the
+[pre-compiled binary package releases http://github.com/ufal/korektor/releases]
+and in the repository itself.
+
+
+== Requirements ==[requirements]
+
+- ``G++ 4.7`` or newer, ``clang 3.2`` or newer, ``Visual C++ 2013`` or newer
+- ``make``: on Windows, you can use [``mingw32-make`` http://sourceforge.net/projects/mingw/files/MinGW/Extension/make/make-3.82-mingw32/]
+
+
+== Compilation ==[compilation]
+
+To compile Korektor, run ``make`` in the ``src`` directory.
+
+Make targets and options:
+- ``exe``: compile the binaries (default)
+- ``lib``: compile the static library
+- ``BITS=32`` or ``BITS=64``: compile for specified 32-bit or 64-bit architecture instead of the default one
+- ``mode=RELEASE``: create release build which statically links the C++ runtime and uses LTO
+- ``mode=DEBUG``: create debug build
+- ``mode=PROFILE``: create profile build
+
+
+=== Platforms ===
+
+Platform can be selected using one of the following options:
+- ``PLATFORM=linux``, ``PLATFORM=linux-gcc``: gcc compiler on Linux operating system, default on Linux
+- ``PLATFORM=linux-clang``: clang compiler on Linux, must be selected manually
+- ``PLATFORM=osx``, ``PLATFORM=osx-clang``: clang compiler on OS X, default on OS X; ``BITS=32+64`` enables multiarch build
+- ``PLATFORM=win``, ``PLATFORM=win-gcc``: gcc compiler on Windows (TDM-GCC is well tested), default on Windows
+- ``PLATFORM=win-vs``: Visual C++ 2013 compiler on Windows, must be selected manually; note that the
+  ``cl.exe`` compiler must be already present in ``PATH`` and corresponding ``BITS=32`` or ``BITS=64``
+  must be specified
+
+
+Either POSIX shell or Windows CMD can be used as shell, it is detected automatically.
+
+=== Further Details ===
+
+Korektor uses [C++ BuilTem system http://github.com/ufal/cpp_builtem],
+please refer to its manual if interested in all supported options.

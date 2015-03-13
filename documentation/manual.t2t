@@ -53,6 +53,12 @@ referencing [Korektor website http://ufal.mff.cuni.cz/korektor] and
 [Richter et al. 2012 #publications].
 
 
+= Installation =[instalation]
+
+%web% [Korektor Installation on separate page. korektor/install]
+%manual% %!include: manual_install.t2t
+
+
 = Contact =[contact]
 
 Current Authors:
