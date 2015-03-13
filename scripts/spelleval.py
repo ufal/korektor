@@ -235,8 +235,8 @@ class SpellEval:
         print ''.rjust(20), "***************"
         print ''.rjust(20), "Error detection"
         print ''.rjust(20), "***************"
-        print 'Precision'.ljust(10), ':', '{:5.2f}'.format(self.precision_d * 100.0)
-        print 'Recall'.ljust(10), ':', '{:5.2f}'.format(self.recall_d * 100.0)
+        print 'Precision'.ljust(10), ':', '{:5.1f}'.format(self.precision_d * 100.0)
+        print 'Recall'.ljust(10), ':', '{:5.1f}'.format(self.recall_d * 100.0)
         print ""
 
         print ''.rjust(20), "***************"
@@ -249,7 +249,7 @@ class SpellEval:
         i = 0
         while i < len(self.precision_c):
             top = 'top-' + str(i+1)
-            print top.ljust(6), ''.rjust(4), '{:5.2f}'.format(self.precision_c[i]*100.0), ''.rjust(4), '{:5.2f}'.format(self.recall_c[i]*100.0)
+            print top.ljust(6), ''.rjust(4), '{:5.1f}'.format(self.precision_c[i]*100.0), ''.rjust(4), '{:5.1f}'.format(self.recall_c[i]*100.0)
             i += 1
 
     def print_summary(self):
