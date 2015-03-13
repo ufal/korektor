@@ -52,6 +52,7 @@ class SpellEval:
         self.fp_d = 0
         self.tn_d = 0
         self.fn_d = 0
+        self.f1_d = 0.0
 
         # results: spelling error correction
         self.precision_c = [0.0] * self.nbest
@@ -60,6 +61,7 @@ class SpellEval:
         self.fp_c = [0] * self.nbest
         self.tn_c = [0] * self.nbest
         self.fn_c = [0] * self.nbest
+        self.f1_c = [0.0] * self.nbest
 
         self.corpus_size = 0
         self.gold_content = {}
@@ -200,14 +202,16 @@ class SpellEval:
         for i in range(self.nbest):
             self.tn_c[i] = self.tn_d
 
-        # precision/recall for error detection
+        # precision/recall, f-measure for error detection
         self.precision_d = (1.0 * self.tp_d) / (self.tp_d + self.fp_d)
         self.recall_d = (1.0 * self.tp_d) / (self.tp_d + self.fn_d)
+        self.f1_d = 2 * (self.precision_d * self.recall_d) / (self.precision_d + self.recall_d)
 
-        # calculate precision/recall for spelling correction
+        # calculate precision/recall, f-measure for spelling correction
         for i in range(len(self.tp_c)):
             self.precision_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fp_c[i])
             self.recall_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fn_c[i])
+            self.f1_c[i] = 2 * (self.precision_c[i] * self.recall_c[i]) / (self.precision_c[i] + self.recall_c[i])
 
     def get_suggestions_map(self, out_file_lines):
         i = 0
@@ -237,6 +241,7 @@ class SpellEval:
         print ''.rjust(20), "***************"
         print 'Precision'.ljust(10), ':', '{:5.1f}'.format(self.precision_d * 100.0)
         print 'Recall'.ljust(10), ':', '{:5.1f}'.format(self.recall_d * 100.0)
+        print 'F1-score'.ljust(10), ':', '{:5.1f}'.format(self.f1_d * 100.0)
         print ""
 
         print ''.rjust(20), "***************"
@@ -244,12 +249,14 @@ class SpellEval:
         print ''.rjust(20), "***************"
         print ""
 
-        print "top-n".ljust(6), 'Precision'.rjust(10), 'Recall'.rjust(10)
-        print "-----".ljust(6), '---------'.rjust(10), '------'.rjust(10)
+        print "top-n".ljust(6), 'Precision'.rjust(10), 'Recall'.rjust(10), 'F1-score'.rjust(10)
+        print "-----".ljust(6), '---------'.rjust(10), '------'.rjust(10), '--------'.rjust(10)
         i = 0
         while i < len(self.precision_c):
             top = 'top-' + str(i+1)
-            print top.ljust(6), ''.rjust(4), '{:5.1f}'.format(self.precision_c[i]*100.0), ''.rjust(4), '{:5.1f}'.format(self.recall_c[i]*100.0)
+            print top.ljust(6), ''.rjust(4), '{:5.1f}'.format(self.precision_c[i]*100.0), \
+                ''.rjust(4), '{:5.1f}'.format(self.recall_c[i]*100.0), \
+                ''.rjust(4), '{:5.1f}'.format(self.f1_c[i] * 100.0)
             i += 1
 
     def print_summary(self):
@@ -260,7 +267,8 @@ class SpellEval:
         print 'Errors in test data'.ljust(20), ':', len(self.test_data_errors)
         # print 'Error details [format: "(sentence num, word position) => original word, gold word"]'
         # for err_loc in self.test_data_errors:
-        #     print str(err_loc).rjust(20), " => ", self.test_data_errors[err_loc][0].rjust(20), ", ",  self.test_data_errors[err_loc][1].ljust(20)
+        #     print str(err_loc).rjust(20), " => ", self.test_data_errors[err_loc][0].rjust(20),
+        # ", ",  self.test_data_errors[err_loc][1].ljust(20)
 
 
     def close_files(self, file_handles):
