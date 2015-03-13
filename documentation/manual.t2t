@@ -59,6 +59,18 @@ referencing [Korektor website http://ufal.mff.cuni.cz/korektor] and
 %manual% %!include: manual_install.t2t
 
 
+= User's Manual =[users_manual]
+
+%web% [Korektor User's Manual on separate page. korektor/users-manual]
+%manual% %!include: manual_user.t2t
+
+
+= Model Creation =[model_creation]
+
+%web% [Korektor Model Creation on separate page. korektor/model-creation]
+%manual% %!include: manual_model_creation.t2t
+
+
 = Contact =[contact]
 
 Current Authors:
