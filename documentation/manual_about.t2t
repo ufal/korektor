@@ -8,7 +8,7 @@ and is versioned using [Semantic Versioning http://semver.org/].
 Korektor started with Michal Richter's diploma thesis
 [Advanced Czech Spellchecker https://redmine.ms.mff.cuni.cz/documents/1],
 but it is being developed further. There are two versions: a
-//unix command line utility// (tested on Linux, Windows and OS X) and
+//command line utility// (tested on Linux, Windows and OS X) and
 a //REST service// with [publicly available API https://lindat.mff.cuni.cz/services/korektor/api-reference.php]
 and [HTML front end https://lindat.mff.cuni.cz/services/korektor/].
 
