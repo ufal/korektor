@@ -42,7 +42,7 @@ The original Michal Richter's version can be downloaded
 
 == License ==[license]
 
-MorphoDiTa is an open-source project and is freely available for non-commercial
+Korektor is an open-source project and is freely available for non-commercial
 purposes. The library is distributed under [2-Clause BSD license http://opensource.org/licenses/BSD-2-Clause]
 and the associated models and data under [CC BY-NC-SA http://creativecommons.org/licenses/by-nc-sa/3.0/],
 although for some models the original data used to create the model may impose
@@ -88,7 +88,7 @@ Original Author:
 [Korektor LINDAT/CLARIN entry http://hdl.handle.net/11234/1-1469].
 
 
-= Acknowledgements =[morphodita_acknowledgements]
+= Acknowledgements =[korektor_acknowledgements]
 
 This work has been using language resources developed and/or stored and/or distributed by the LINDAT/CLARIN project of the Ministry of Education of the Czech Republic (project //LM2010013//).
 
@@ -120,5 +120,5 @@ This work has been using language resources developed and/or stored and/or distr
 
 == Permanent Identifier ==[permanent_identifier]
 
-If you prefer to reference MorphoDiTa by a permanent identifier (PID),
+If you prefer to reference Korektor by a permanent identifier (PID),
 you can use ``http://hdl.handle.net/11234/1-1469``.
