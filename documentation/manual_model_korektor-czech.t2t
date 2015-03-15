@@ -1,0 +1,56 @@
+Czech Korektor Models
+=====================
+
+== Czech Korektor Models ==[korektor-czech]
+
+Czech models are distributed under the
+[CC BY-NC-SA http://creativecommons.org/licenses/by-nc-sa/3.0/] licence.
+The Czech morphology used by the model is based on
+[MorfFlex CZ http://hdl.handle.net/11858/00-097C-0000-0015-A780-9]
+Czech models work in Korektor version 2 or later.
+
+Czech models are versioned according to the release date in format
+``YYMMDD``, where ``YY``, ``MM`` and ``DD`` are two-digit representation of
+year, month and day, respectively. The latest version is 130202.
+
+=== Download ===[korektor-czech_download]
+
+The latest version 130202 of the Czech Korektor models can be downloaded
+from [LINDAT/CLARIN repository http://hdl.handle.net/11234/1-1460].
+
+=== Acknowledgements ===[korektor-czech_acknowledgements]
+
+This work has been using language resources developed and/or stored and/or
+distributed by the LINDAT/CLARIN project of the Ministry of Education of the
+Czech Republic (project //LM2010013//).
+
+The latest Czech models were created by Michal Richter as part of his
+Master thesis and are described in (Richter et al. 2012).
+
+The MorfFlex CZ dictionary was created by Jan Hajič and Jaroslava Hlaváčová.
+
+
+==== Publications ====[korektor-czech_publications]
+
+- (Richter et al. 2012) Richter Michal, Straňák Pavel and Rosen Alexandr. //Korektor – A System for Contextual Spell-checking and Diacritics Completion// In Proceedings of the 24th International Conference on Computational Linguistics (Coling 2012), pages 1-12, Mumbai, India, 2012.
+
+
+=== Czech Model Variants ===[korektor-czech_variants]
+
+The Czech model contains the following variants:
+
+: ``korektok-czech-130202/diacritics_h2mor.conf``
+  Spellchecker model which only _adds_ diacritical marks.
+  Note that the diacritical marks are not removed by the model, so you have to
+  strip them manually if you want to ignore them.
+
+: ``korektok-czech-130202/spellchecking_h2mor.conf``
+  Spellchecker model which considers corrections with edit distance at most
+  once. You should use this model for generic spellchecking.
+
+: ``korektok-czech-130202/spellchecking_h2mor_2edits.conf``
+  Spellchecker model which considers corrections with edit distance at most
+  two. This model can be useful if the required corrections are not found
+  by the ``spellchecking_h2mor.conf`` model, but it may be considerably slower.
+
+
