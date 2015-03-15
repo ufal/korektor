@@ -101,6 +101,7 @@ class VerticalInputFormat : public InputFormat {
 
       // Append new token
       tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
+      tokens.back()->sentence_start = tokens.size() == 1;
       if (lexicon) {
         int id = lexicon->GetWordID(tokens.back()->str_u16);
         tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
@@ -158,6 +159,7 @@ class HorizontalInputFormat : public InputFormat {
       auto start = index;
       while (index < text.size() && !UTF::IsSpace(text[index])) index++;
       tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
+      tokens.back()->sentence_start = tokens.size() == 1;
       if (lexicon) {
         int id = lexicon->GetWordID(tokens.back()->str_u16);
         tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
