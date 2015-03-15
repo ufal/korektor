@@ -615,10 +615,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
         corrections.back().alternatives.resize(alternatives_cost.size());
         for (unsigned i = alternatives_cost.size(); i > 0; i--) {
 //          cerr << "Alternative with cost " << alternatives_heap.top().cost << ", " << alternatives_heap.top().alternative << endl;
-          if (alternatives_heap.top().alternative->IsOriginal())
-            corrections.back().alternatives.resize(i - 1);
-          else
-            corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->To_u16string();
+          corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->To_u16string();
           alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
           alternatives_heap.pop();
           if (i > 1)
