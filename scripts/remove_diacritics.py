@@ -16,7 +16,6 @@ cat file.txt | python remove_diacritics.py
 diacritics = ur'[\u0301\u030a\u030c]'
 
 for line in sys.stdin:
-    print line
     line_uni = unicode(line, "utf-8")
     normalized_line = unicodedata.normalize('NFD', line_uni)
     no_diacritics_line = re.sub(diacritics, '', normalized_line)
