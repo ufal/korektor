@@ -35,10 +35,12 @@ if __name__ == '__main__':
     parser.add_argument("gold_file", help="Gold file in UTF-8")
     parser.add_argument("system_output", help="System output (Korektor)")
     parser.add_argument("n_best", help="Evaluate top-n suggestions", type=int)
+    parser.add_argument("dataset_name", help="Name of the dataset")
 
     args = parser.parse_args()
 
-    korektor_evaluation = spelleval.SpellEval(args.test_file, args.gold_file, args.system_output, args.n_best)
+    korektor_evaluation = spelleval.SpellEval(args.test_file, args.gold_file,
+                                              args.system_output, args.n_best, args.dataset_name)
     korektor_evaluation.print_summary()
     print ""
     korektor_evaluation.evaluate()

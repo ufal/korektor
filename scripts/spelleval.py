@@ -41,9 +41,12 @@ Error correction
 """
 
 class SpellEval:
-    def __init__(self, test_filename, gold_filename, output_filename, nbest):
+    def __init__(self, test_filename, gold_filename, output_filename, nbest, dataset_name):
         # for top-n accuracy (precision, recall etc)
         self.nbest = nbest
+
+        # name of the dataset
+        self.dataset_name = dataset_name
 
         # results : spelling error detection
         self.precision_d = 0.0
@@ -263,6 +266,7 @@ class SpellEval:
         print ''.rjust(20), "***************"
         print ''.rjust(20), "Data summary"
         print ''.rjust(20), "***************"
+        print 'Dataset name'.ljust(20), ':', self.dataset_name
         print 'Corpus size'.ljust(20), ':', self.corpus_size
         print 'Errors in test data'.ljust(20), ':', len(self.test_data_errors)
         # print 'Error details [format: "(sentence num, word position) => original word, gold word"]'
