@@ -6,7 +6,7 @@ all: test.txt.corrected
 	@echo All OK
 
 test.txt.corrected: korektor $(MODELS)
-	../../src/korektor model.conf <test.txt >$@
+	../../src/korektor --input=untokenized_lines model.conf <test.txt >$@
 
 .PHONY: korektor
 korektor:
