@@ -106,7 +106,7 @@ This work has been using language resources developed and/or stored and/or distr
 ```
 @InProceedings{richter12,
   booktitle    = {Proceedings of the 24th International Conference on Computational Linguistics (Coling 2012)},
-  title        = {Korektor – A System for Contextual Spell-checking and Diacritics Completion},
+  title        = {Korektor--A System for Contextual Spell-checking and Diacritics Completion},
   editor       = {Martin Kay and Christian Boitet},
   author       = {Michal Richter and Pavel Stra{\v{n}}{\'{a}}k and Alexandr Rosen},
   year         = {2012},
