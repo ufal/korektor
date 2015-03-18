@@ -1,3 +1,185 @@
 Korektor Model Creation
 =======================
 
+In order to create a new spellchecker model for Korektor, several models
+must be created and a configuration file describing these models must be
+provided.
+
+Korektor uses flexible morphology system which associates several
+//morphological factors// to every word, with the word itself being considered
+as a first one. Usually the factors are ``form``, ``lemma`` and ``tag``, but
+arbitrary factors may be used. Note that currently there is a hard limit of
+four factors for efficiency (you can change ``FactorList::MAX_FACTORS`` if you
+want more).
+
+For each morphological factor a language model is needed.
+
+The last required model is an error model describing costs of various spelling
+errors.
+
+== Creating a Morphology Model ==[model_create_morphology]
+
+To create a morphology model, a morphology lexicon input file must be provided
+and processed by the ``create_morphology`` binary.
+
+=== Morphology Lexicon Input Format ===[model_create_morphology_format]
+
+The morphology lexicon is an UTF-8 encoded file in the following format:
+- the first line contains names of the factors delimited by ``|``
+- following lines contain two space separated columns, the first column is a word
+  factor strings delimited by ``|`` (there must be the same number of tokens as
+  on the first line) and the second column is a count number of this morphology
+  entry.
+-
+
+Example:
+
+```
+form|lemma|tag
+dog|dog|NN 68
+likes|like|VB 220
+...
+```
+
+=== Running create_morphology ===[model_create_morphology_run]
+
+The ``create_morphology`` should be run as follows:
+``` create_morphology in_morphology_lexicon out_bin_morphology out_bin_vocabulary out_test_file
+
+
+== Creating a Language Model for Each Morphological Factor ==[model_create_lm]
+
+The language model for each morphological factor should be created by an
+external tool such as SRILM or KenLM and stored in ARPA format.
+
+To create a binary representation of such model in ARPA format, the
+``create_lm_binary`` tool should be used as follows:
+``` create_lm_binary in_arpa_model in_bin_morphology in_bin_vocabulary factor_name lm_order out_bin_lm
+
+
+== Creating an Error Model ==[model_create_error]
+
+To create an error model, a textual error model description must be provided
+and processed by the ``create_error_model`` binary.
+
+=== Error Model Input Format ===[model_create_error_format]
+
+The textual error model description is in UTF-8 format and contains one error
+model item (edit operation) per line. Each item contain three ``tab`` separated
+columns ``signature``, ``edit distance`` and ``cost``:
+- ``signature``: Describes the edit operation in the following format:
+  - ``s_ab``: substitution of letter ``a`` for letter ``b``
+  - ``i_abc``: insertion of letter ``a`` between letters ``b`` and ``c``
+  - ``d_ab``: deletion of letter ``a`` following after letter ``b``
+  - ``swap_ab``: swap of letters ``ab`` to ``ba``
+  - ``case``: change of letter casing (lowercase to uppercase and vice verse)
+  - ``substitutions``: default substitution operation used when no ``s_..`` rule apply
+  - ``insertions``: default insertion operation used when no ``i_...`` rule apply
+  - ``deletions``: default deletion operation used when no ``d_..`` rule apply
+  - ``swaps``: default swap operation used when no ``swap_..`` rule apply
+
+- ``edit distance``: Integral edit distance of this operation. This distance
+  is used during the similar words lookup which is limited by maximum edit
+  distance. The sensible default is 1, but it can be useful to use 0 for
+  example when removing/adding diacritical mark only.
+
+- ``cost``: The logarithm of the probability of the edit operation.
+
+
+The first five lines must contain operations ``case``, ``substitutions``,
+``insertions``, ``deletions`` and ``swaps``, in this order.
+
+Example (with textually marked ``tab`` characters):
+
+```
+case<------tab------->0<---tab--->2.6
+substitutions<--tab-->1<---tab--->3.8
+insertions<---tab---->1<---tab--->4.4
+deletions<----tab---->1<---tab--->3.5
+swaps<------tab------>1<---tab--->4.1
+s_qw<-------tab------>1<---tab--->3.7
+s_ui<-------tab------>1<---tab--->2.3
+s_yi<-------tab------>1<---tab--->2.1
+s_aá<-------tab------>0<---tab--->1.7
+i_iuo<------tab------>1<---tab--->4.8
+...
+```
+
+=== Running create_error_model ===[model_create_error_run]
+
+The ``create_error_model`` binary should be run as follows:
+``` create_morphology --binarize in_txt_error_model out_bin_error_model
+
+
+== Configuration File ==[model_create_conf]
+
+The configuration specifies morphology model, language models and error model
+to use. In addition, it specifies similar word searching strategy and it can
+enable a diagnostics mode.
+
+When a file is specified in the configuration file, its name is
+considered to be relative to the directory containing the configuration file.
+
+The configuration file is line oriented and each line should adhere to one of
+the following formats:
+- an empty line or a line starting with ``#`` is ignored
+- ``morpholex=bin_morphology_file``: use the specified morphology model
+- ``lm-bin_lm_file-model_order-model_weight``: use the specified language
+  model. The corresponding factor is stored in the language model itself.
+  Model weight is a floating point multiplicative factor used when all factor
+  language model probabilities are summed together.
+- ``errormodel=bin_error_model_file``: use the specified error model file
+- ``search-casing_treatment-max_edit_distance-max_cost``: defines method for finding
+  possible corrections. Multiple methods can be specified in the configuration
+  file. The methods are tried in the order of their appearance in the
+  configuration file until one produces nonempty set of possible corrections.
+  Each search method has the following options:
+  - ``casing_treatment``: there are three possible method names:
+    - ``case_sensitive``: the casing of the original word is honored when
+      looking up possible suggestions in the morphology model
+    - ``ignore_case``: the casing of the original word is ignored when
+      looking up possible suggestions in the morphology model, and the casing
+      defined in the morphology model is used instead of the original one
+    - ``ignore_case_keep_orig``: the casing of the original word is ignored
+      when looking up possible suggestions in the morphology model, but the
+      generated suggestions have the same casing as the original word
+  - ``max_edit_distance``: the maximum edit distance of possible corrections
+  - ``max_cost``: the maximum cost of possible corrections
+- ``diagnostics=bin_vocabulary_file``: use diagnostics mode which dumps a lot of
+  information during spellchecking. A vocabulary file created during
+  [morphology model creation #model_create_morphology] is needed to print out
+  the morphological factors.
+
+
+The lines can be in arbitrary order, only the relative ordering of ``search-``
+lines is utilized when finding possible corrections.
+
+As an example consider the configuration file ``spellchecking_h2mor.txt`` of
+``korektor-czech-130202`` model:
+
+```
+# Binary file containing morphology and lexicon.
+morpholex=data/morphology_h2mor_freq2.bin
+
+# Error model binary.
+errormodel=data/error_model_train0.bin
+
+# Language models in the following format:
+# lm-[filename]-[order]-[weight]
+lm-data/form_lm_h2mor.bin-3-0.40
+lm-data/lemma_lm_h2mor.bin-3-0.1
+lm-data/tag_lm_h2mor.bin-3-0.50
+
+# Search options, each item specify a distinct search rounds.
+# Searches are triggered in the order specified in this file,
+# whenever one of the search rounds find at least one possibility,
+# the consecutive search rounds are not triggered.
+# The format is the following:
+# search-[casing_treatment]-[max_edit_distance]-[max_cost]
+search-case_sensitive-1-6
+search-ignore_case_keep_orig-1-6
+search-ignore_case_keep_orig-2-9
+
+# The diagnostics mode can be activated by uncommenting the following line.
+#diagnostics=data/morphology_h2mor_freq2_vocab.bin
+```
