@@ -30,7 +30,7 @@ int main(int argc, char* argv[]) {
                     "         --version\n"
                     "         --help");
   if (options.count("version"))
-    runtime_failure(version::version_and_copyright());
+    return cout << version::version_and_copyright() << endl, 0;
 
   // Init input format
   string input_format_name = options.count("input") ? options["input"] : "untokenized";
