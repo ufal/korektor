@@ -23,7 +23,9 @@
 #include "utils/bits.h"
 #include "utils/hash.h"
 #include "utils/io.h"
+#include "utils/options.h"
 #include "utils/parse.h"
+#include "version/version.h"
 
 #define MAX_GROUP_COUNT 100000
 
@@ -505,15 +507,22 @@ string createSpecialMorphologyEntry(const string &spec)
 
 int main(int argc, char** argv)
 {
+  iostream::sync_with_stdio(false);
+
+  Options::Map options;
+  if (!Options::Parse({{"version", Options::Value::none},
+                      {"help", Options::Value::none}}, argc, argv, options) ||
+      options.count("help") ||
+      (argc != 5 && !options.count("version")))
+    runtime_failure("Usage: " << argv[0] << " morphology_lexicon out_morphology out_vocabulary out_test\n"
+                    "Options: --version\n"
+                    "         --help");
+  if (options.count("version"))
+    return cout << version::version_and_copyright() << endl, 0;
+
   node_id_counter = 0;
 
   ifstream ifs;
-
-  if (argc != 6)
-  {
-    cerr << "morphology directory expected!";
-    exit(1);
-  }
 
   string morpho_file = argv[1];
   string emissions_file = argv[2];

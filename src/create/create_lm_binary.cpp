@@ -17,13 +17,26 @@
 #include "common.h"
 #include "language_model/zip_lm.h"
 #include "morphology/morphology.h"
+#include "utils/options.h"
 #include "utils/parse.h"
+#include "version/version.h"
 
 using namespace ufal::korektor;
 
 int main(int argc, char** argv)
 {
-  if (argc != 7) { cerr << "Expected 6 arguments!" << endl; return -1; }
+  iostream::sync_with_stdio(false);
+
+  Options::Map options;
+  if (!Options::Parse({{"version", Options::Value::none},
+                      {"help", Options::Value::none}}, argc, argv, options) ||
+      options.count("help") ||
+      (argc != 7 && !options.count("version")))
+    runtime_failure("Usage: " << argv[0] << " ARPA_lm morphology vocabulary factor_name model_order out_lm\n"
+                    "Options: --version\n"
+                    "         --help");
+  if (options.count("version"))
+    return cout << version::version_and_copyright() << endl, 0;
 
   string lm_text_file = argv[1];
   string morphology_bin_file = argv[2];
@@ -43,5 +56,5 @@ int main(int argc, char** argv)
   lm->SaveInBinaryForm(out_file);
 
   cerr << "saved!" << endl;
-  exit(0);
+  return 0;
 }

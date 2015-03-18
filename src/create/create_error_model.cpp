@@ -16,59 +16,50 @@
 #include "create_error_model/get_error_signature.h"
 #include "error_model/error_model_basic.h"
 #include "utils/io.h"
+#include "utils/options.h"
 #include "utils/parse.h"
 #include "utils/utf.h"
 #include "utils/utf8_input_stream.h"
+#include "version/version.h"
 
 using namespace ufal::korektor;
 
 std::unordered_map<u16string, hierarchy_nodeP> hierarchy_node::hierarchy_map;
 hierarchy_nodeP hierarchy_node::root;
 
-void print_help()
-{
-  cerr << "Two possible argument setups:" << endl;
-  cerr << "-- error model training" << endl;
-  cerr << "     -train in:error_hierarchy in:spelling_errors in:word_list_with_frequencies out:error_model_txt" << endl;
-  cerr << "-- error model binarization" << endl;
-  cerr << "     -binarize in:error_model_txt out:error_model_binary" << endl;
-}
-
 int main(int argc, char** argv)
 {
+  iostream::sync_with_stdio(false);
 
-  if (argc < 2)
+  Options::Map options;
+  if (!Options::Parse({{"train", Options::Value::none},
+                      {"binarize", Options::Value::none},
+                      {"version", Options::Value::none},
+                      {"help", Options::Value::none}}, argc, argv, options) ||
+      options.count("help") ||
+      (options.count("binarize") && options.count("train")) ||
+      (!options.count("version") && !options.count("binarize") && !options.count("train")) ||
+      (!options.count("version") && options.count("binarize") && argc != 3) ||
+      (!options.count("version") && options.count("train") && argc != 5))
+    runtime_failure("Usage: " << argv[0] << " -binarize text_error_model out_binary_error_model\n"
+                    "    or " << argv[0] << " -train error_hierarchy spelling_errors word_list out_text_error_model\n"
+                    "Options: --version\n"
+                    "         --help");
+  if (options.count("version"))
+    return cout << version::version_and_copyright() << endl, 0;
+
+  if (options.count("binarize"))
   {
-    print_help();
-    exit(1);
+    ErrorModelBasic::CreateBinaryFormFromTextForm(argv[1], argv[2]);
   }
-
-  cerr << argv[1] << endl;
-
-  if (strcmp(argv[1], "-binarize") == 0)
+  else /*if (options.count("train"))*/
   {
-    if (argc < 4)
-    {
-      print_help();
-      exit(1);
-    }
-
-    ErrorModelBasic::CreateBinaryFormFromTextForm(argv[2], argv[3]);
-  }
-  else if (strcmp(argv[1], "-train") == 0)
-  {
-
-    if (argc < 6)
-    {
-      print_help();
-    }
-
     cerr << "reading error hierarchy..." << endl;
 
     ifstream ifs_hierarchy;
-    ifs_hierarchy.open(argv[2]);
+    ifs_hierarchy.open(argv[1]);
     if (!ifs_hierarchy.is_open())
-      runtime_failure("Cannot open file '" << argv[2] << "'!");
+      runtime_failure("Cannot open file '" << argv[1] << "'!");
 
     hierarchy_node::ReadHierarchy(ifs_hierarchy);
 
@@ -79,7 +70,7 @@ int main(int argc, char** argv)
     //hierarchy_node::print_hierarchy_rec(hierarchy_node::root, 0, cerr);
 
     string error_line;
-    UTF8InputStream utf8_errors(argv[3]);
+    UTF8InputStream utf8_errors(argv[2]);
 
     while (utf8_errors.ReadLineString(error_line))
     {
@@ -90,7 +81,7 @@ int main(int argc, char** argv)
       IO::Split(error_line, " \t", toks);
 
       if (toks.size() != 2)
-        runtime_failure("Not two columns on line '" << error_line << "' in file '" << argv[3] << "'!");
+        runtime_failure("Not two columns on line '" << error_line << "' in file '" << argv[2] << "'!");
 
       u16string signature;
       if (GetErrorSignature(UTF::UTF8To16(toks[0]), UTF::UTF8To16(toks[1]), signature))
@@ -107,7 +98,7 @@ int main(int argc, char** argv)
       }
     }
 
-    UTF8InputStream utf8_context(argv[4]);
+    UTF8InputStream utf8_context(argv[3]);
 
     string s;
     vector<string> toks;
@@ -121,7 +112,7 @@ int main(int argc, char** argv)
       if (s.empty()) continue;
 
       if (toks.size() != 2)
-        runtime_failure("Not two columns on line '" << s << "' in file '" << argv[4] << "'!");
+        runtime_failure("Not two columns on line '" << s << "' in file '" << argv[3] << "'!");
 
       u16string key = UTF::UTF8To16(toks[0]);
       uint32_t count = Parse::Int(toks[1], "context count");
@@ -145,10 +136,10 @@ int main(int argc, char** argv)
     eem.Estimate();
 
     ofstream ofs_errmodel_txt;
-    ofs_errmodel_txt.open(argv[5]);
+    ofs_errmodel_txt.open(argv[4]);
     if (!ofs_errmodel_txt.is_open())
     {
-      cerr << "Can't create " << argv[5] << endl;
+      cerr << "Can't create " << argv[4] << endl;
       return -10;
     }
 
@@ -186,14 +177,7 @@ int main(int argc, char** argv)
     ofs_errmodel_txt.close();
 
   }
-  else
-  {
-    print_help();
-    exit(1);
-  }
-
 
   cerr << "OK!";
-  exit(0);
   return 0;
 }
