@@ -12,8 +12,8 @@ test.txt.corrected: korektor $(MODELS)
 korektor:
 	$(MAKE) -C ../../src
 
-morphology.bin: korektor morphology.txt morphology_counts.txt
-	../../src/create_morphology morphology.txt morphology_counts.txt $@ $@.vocab $@.test
+morphology.bin: korektor morphology.txt
+	../../src/create_morphology morphology.txt $@ $@.vocab $@.test
 
 lm_%.bin: korektor lm_%.lm morphology.bin
 	../../src/create_lm_binary lm_$*.lm morphology.bin morphology.bin.vocab $* 3 $@

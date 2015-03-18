@@ -34,9 +34,8 @@ perl -e '
   }
 ' <pride_prejudice_tokenized_train_tagged.txt >pride_prejudice_tokenized_train_tagged_unk.txt
 
-# Generate morphology
-grep -v '^$' <pride_prejudice_tokenized_train_tagged_unk.txt | sort -u | sed '1iform|lemma|tag' | sed '2i-----' >../morphology.txt
-grep -v '^$' <pride_prejudice_tokenized_train_tagged_unk.txt | sort | uniq -c | awk '{print $2" "$1}' >../morphology_counts.txt
+# Generate morphology lexicon
+grep -v '^$' <pride_prejudice_tokenized_train_tagged_unk.txt | sort | uniq -c | awk '{print $2" "$1}' | sed '1iform|lemma|tag' >../morphology.txt
 
 # Generate LMs
 generate_lm() {

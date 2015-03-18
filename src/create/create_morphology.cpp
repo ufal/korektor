@@ -525,18 +525,14 @@ int main(int argc, char** argv)
   ifstream ifs;
 
   string morpho_file = argv[1];
-  string emissions_file = argv[2];
-  string output_file = argv[3];
-  string output_vocab_file = argv[4];
-  string test_file = argv[5];
+  string output_file = argv[2];
+  string output_vocab_file = argv[3];
+  string test_file = argv[4];
 
 
   ifs.open(morpho_file.c_str(), ios::in);
   if (!ifs.is_open())
-  {
-    cerr << "Can't open morphology file!";
-    exit(1);
-  }
+    runtime_failure("Cannot open morphology lexicon '" << morpho_file << "'!");
 
   string s;
   IO::ReadLine(ifs, s);
@@ -557,63 +553,23 @@ int main(int argc, char** argv)
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<unk>"), true, true);
   MorphologyProcessWordFactors(createSpecialMorphologyEntry("<name>"), true, true);
 
-  IO::ReadLine(ifs, s);
-
-  if (s != "-----")
-  {
-    cerr << "the second line of the morphology file should be: -----" << endl;
-    return -1;
-  }
-
-  vector<string> orig_lines;
-  unsigned counter = 0;
+  vector<string> tokens;
   while (IO::ReadLine(ifs, s))
   {
-    counter++;
-    if (counter % 10000 == 0) { cerr << "morphology_reading: " << counter << endl; }
-    //if (s != "")
-    //  orig_lines.push_back(s);
-    MorphologyProcessWordFactors(s, true, false);
+    IO::Split(s, " \t", tokens);
+    if (tokens.empty() || tokens.size() > 2)
+      runtime_failure("Cannot parse line '" << s << "' of file '" << morpho_file << "', one or two columns expected!");
+
+    MorphologyProcessWordFactors(tokens[0], true, false);
+
+    if (tokens.size() == 2)
+      //passing 10 x count instead of just count reduces discounting (non-seen form-factor pairs have effectively just count 0.1
+      MorphologyProcessWordFactors(tokens[0], false, true, 10 * Parse::Int(tokens[1], "morphology emmision count"));
   }
 
   cerr << "morphology input file processed\n";
 
   ifs.close();
-
-  ifs.open(emissions_file.c_str(), ios::in);
-
-  if (ifs.is_open() == false)
-  {
-    cerr << "Can't open " << emissions_file << std::endl;
-    return -1;
-  }
-
-  counter = 0;
-  string factors;
-  unsigned count;
-
-  while (IO::ReadLine(ifs, s))
-  {
-    counter++;
-    if (counter % 10000 == 0) { cerr << "reading_corpora: " << counter << endl; }
-    IO::Split(s, ' ', parts);
-    factors = parts[0];
-
-    if (parts.size() < 2)
-    {
-      cerr << "Illegal emissions line: " << s << endl;
-    }
-
-    count = Parse::Int(parts[1], "morphology count");
-
-    //passing 10 x count instead of just count reduces discounting (non-seen form-factor pairs have effectively just count 0.1
-    MorphologyProcessWordFactors(factors, false, true, count * 10);
-
-  }
-
-  ifs.close();
-
-  cerr << "corpus data readed\n";
 
   for (auto it = cm.root->children.begin(); it != cm.root->children.end(); it++)
   {
@@ -668,10 +624,7 @@ int main(int argc, char** argv)
 
   ofs.open(output_file.c_str(), ios::out | ios::binary);
   if (!ofs.is_open())
-  {
-    cerr << "can't create morphology.bin output file!\n";
-    exit(1);
-  }
+    runtime_failure("Cannot create output file '" << output_file << "'!");
 
   IO::WriteString(ofs, "Morphology");
 
@@ -830,34 +783,6 @@ int main(int argc, char** argv)
 
   testout.close();
 
-//  ifstream ifstest;
-//  vector<string> test_lines;
-//
-//  ifstest.open(test_file.c_str(), ios::in);
-//  assert(ifstest.is_open());
-//
-//  while (IO::ReadLine(ifstest, s))
-//  {
-//    if (s != "")
-//      test_lines.push_back(s);
-//  }
-//
-//  cerr << "finishing test, sorting..." << endl;
-//  std::sort(test_lines.begin(), test_lines.end());
-//  std::sort(orig_lines.begin(), orig_lines.end());
-//
-//  cerr << "checking consistency..." << endl;
-//  cerr << "test_lines: " << test_lines.size() << endl;
-//  cerr << "orig_lines: " << orig_lines.size() << endl;
-//
-//  for (unsigned i = 0; i < test_lines.size(); i++)
-//  {
-//    cout << i << endl;
-//    //if (test_lines[i] != orig_lines[i])
-//    cout << test_lines[i] << " --- " << orig_lines[i] << endl;
-//  }
-
   cerr << "OK!\n";
-  exit(0);
   return 0;
 }
