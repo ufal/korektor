@@ -9,7 +9,7 @@
 
 include Makefile.builtem
 
-EXECUTABLES = korektor korektor_new korektor_vertical create_error_model create_lm_binary create_morphology tokenizer
+EXECUTABLES = korektor create_error_model create_lm_binary create_morphology tokenizer
 LIBRARIES = libkorlib
 
 .PHONY: all exe lib full
@@ -37,8 +37,6 @@ $(call lib,libkorlib): $(call obj,$(KORLIB_O))
 
 # executables
 $(call exe,korektor): $(call obj,korektor $(KORLIB_O))
-$(call exe,korektor_new): $(call obj,korektor_new $(KORLIB_O))
-$(call exe,korektor_vertical): $(call obj,korektor_vertical $(KORLIB_O))
 $(call exe,create_error_model): $(call obj,create/create_error_model $(KORLIB_O))
 $(call exe,create_lm_binary): $(call obj,create/create_lm_binary $(KORLIB_O))
 $(call exe,create_morphology): $(call obj,create/create_morphology $(KORLIB_O))
