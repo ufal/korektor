@@ -55,6 +55,6 @@ int main(int argc, char** argv)
   ZipLMP lm = ZipLM::createFromTextFile(lm_text_file, morphology, factor_name, order, not_in_lm_cost);
   lm->SaveInBinaryForm(out_file);
 
-  cerr << "saved!" << endl;
+  cerr << "Language model successfully created." << endl;
   return 0;
 }

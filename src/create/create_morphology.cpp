@@ -783,6 +783,6 @@ int main(int argc, char** argv)
 
   testout.close();
 
-  cerr << "OK!\n";
+  cerr << "Morphology model successfully created." << endl;
   return 0;
 }

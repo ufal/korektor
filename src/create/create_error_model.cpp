@@ -178,6 +178,6 @@ int main(int argc, char** argv)
 
   }
 
-  cerr << "OK!";
+  cerr << "Error model successfully created." << endl;
   return 0;
 }
