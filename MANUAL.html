@@ -1,0 +1,969 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta name="generator" content="http://txt2tags.org">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Korektor</title>
+</head>
+<body>
+
+<div class="header" id="header">
+<h1>Korektor</h1>
+<h2>Version 1.9.0-devel</h2>
+</div>
+
+<div class="toc">
+
+  <ol>
+  <li><a href="#toc1">Introduction</a>
+  </li>
+  <li><a href="#online">Online</a>
+    <ul>
+    <li><a href="#online_demo">2.1. Online Demo</a>
+    </li>
+    <li><a href="#web_service">2.2. Web Service</a>
+    </li>
+    </ul>
+  </li>
+  <li><a href="#release">Release</a>
+    <ul>
+    <li><a href="#download">3.1. Download</a>
+      <ul>
+      <li><a href="#spellchecker_models">3.1.1. Spellchecker Models</a>
+      </li>
+      <li><a href="#original_michal_richters_version">3.1.2. Original Michal Richter's version</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#license">3.2. License</a>
+    </li>
+    </ul>
+  </li>
+  <li><a href="#instalation">Installation</a>
+    <ul>
+    <li><a href="#requirements">4.1. Requirements</a>
+    </li>
+    <li><a href="#compilation">4.2. Compilation</a>
+      <ul>
+      <li><a href="#toc13">4.2.1. Platforms</a>
+      </li>
+      <li><a href="#toc14">4.2.2. Further Details</a>
+      </li>
+      </ul>
+    </li>
+    </ul>
+  </li>
+  <li><a href="#users_manual">User's Manual</a>
+    <ul>
+    <li><a href="#korektor-czech">5.1. Czech Korektor Models</a>
+      <ul>
+      <li><a href="#korektor-czech_download">5.1.1. Download</a>
+      </li>
+      <li><a href="#korektor-czech_acknowledgements">5.1.2. Acknowledgements</a>
+      </li>
+      <li><a href="#korektor-czech_variants">5.1.3. Czech Model Variants</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#run_korektor">5.2. Running the Korektor</a>
+      <ul>
+      <li><a href="#korektor_input_formats">5.2.1. Input Formats</a>
+      </li>
+      <li><a href="#korektor_corrections">5.2.2. Number of Corrections</a>
+      </li>
+      <li><a href="#korektor_output_formats">5.2.3. Output Formats</a>
+      </li>
+      <li><a href="#korektor_context_free">5.2.4. Context Free Corrections</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#run_tokenizer">5.3. Running the tokenizer</a>
+      <ul>
+      <li><a href="#tokenizer_input_formats">5.3.1. Input Formats</a>
+      </li>
+      <li><a href="#tokenizer_output_formats">5.3.2. Output Formats</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#run_korektor_server">5.4. Running the REST Server</a>
+    </li>
+    </ul>
+  </li>
+  <li><a href="#model_creation">Model Creation</a>
+    <ul>
+    <li><a href="#model_create_morphology">6.1. Creating a Morphology Model</a>
+      <ul>
+      <li><a href="#model_create_morphology_format">6.1.1. Morphology Lexicon Input Format</a>
+      </li>
+      <li><a href="#model_create_morphology_run">6.1.2. Running create_morphology</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#model_create_lm">6.2. Creating a Language Model for Each Morphological Factor</a>
+    </li>
+    <li><a href="#model_create_error">6.3. Creating an Error Model</a>
+      <ul>
+      <li><a href="#model_create_error_format">6.3.1. Error Model Input Format</a>
+      </li>
+      <li><a href="#model_create_error_run">6.3.2. Running create_error_model</a>
+      </li>
+      </ul>
+    </li>
+    <li><a href="#model_create_conf">6.4. Configuration File</a>
+    </li>
+    </ul>
+  </li>
+  <li><a href="#contact">Contact</a>
+  </li>
+  <li><a href="#korektor_acknowledgements">Acknowledgements</a>
+    <ul>
+    <li><a href="#publications">8.1. Publications</a>
+    </li>
+    <li><a href="#bibtex_for_referencing">8.2. Bibtex for Referencing</a>
+    </li>
+    <li><a href="#permanent_identifier">8.3. Permanent Identifier</a>
+    </li>
+    </ul>
+  </li>
+  </ol>
+
+</div>
+<div class="body" ID="body">
+
+<a id="toc1" name="toc1"></a>
+<h1>1. Introduction</h1>
+
+<p>
+Korektor is a statistical spellchecker and (occasional) grammar checker
+released under <a href="http://opensource.org/licenses/BSD-2-Clause">2-Clause BSD license</a>
+and versioned using <a href="http://semver.org/">Semantic Versioning</a>.
+</p>
+<p>
+Korektor started with Michal Richter's diploma thesis
+<a href="https://redmine.ms.mff.cuni.cz/documents/1">Advanced Czech Spellchecker</a>,
+but it is being developed further. There are two versions: a
+<i>command line utility</i> (tested on Linux, Windows and OS X) and
+a <i>REST service</i> with <a href="https://lindat.mff.cuni.cz/services/korektor/api-reference.php">publicly available API</a>
+and <a href="https://lindat.mff.cuni.cz/services/korektor/">HTML front end</a>.
+</p>
+<p>
+The original <i>OS X SpellServer</i> providing System Service integrating
+Korektor with native OS X GUI applications is no longer developed, but do not
+hesitate to contact us if you are interested in it.
+</p>
+<p>
+Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty of
+Mathematics and Physics, Charles University in Prague, Czech Republic.
+</p>
+
+<a id="online" name="online"></a>
+<h1>2. Online</h1>
+
+<a id="online_demo" name="online_demo"></a>
+<h2>2.1. Online Demo</h2>
+
+<p>
+<a href="https://lindat.mff.cuni.cz/services/korektor/">Online demo</a> is available as
+one of <a href="https://lindat.mff.cuni.cz/services/">LINDAT/CLARIN services</a>.
+</p>
+
+<a id="web_service" name="web_service"></a>
+<h2>2.2. Web Service</h2>
+
+<p>
+<a href="https://lindat.mff.cuni.cz/services/korektor/api-reference.php">Web service</a> is also
+available as one of <a href="http://lindat.mff.cuni.cz/services/">LINDAT/CLARIN services</a>.
+</p>
+
+<a id="release" name="release"></a>
+<h1>3. Release</h1>
+
+<a id="download" name="download"></a>
+<h2>3.1. Download</h2>
+
+<p>
+Korektor releases are available on <a href="http://github.com/ufal/korektor">GitHub</a>, either as
+a pre-compiled binary package, or source code packages only.
+</p>
+
+<ul>
+<li><a href="http://github.com/ufal/korektor/releases/latest">Latest release</a>
+</li>
+<li><a href="http://github.com/ufal/korektor/releases">All releases</a>, <a href="https://github.com/ufal/korektor/blob/master/CHANGES">Changelog</a>
+</li>
+</ul>
+
+<a id="spellchecker_models" name="spellchecker_models"></a>
+<h3>3.1.1. Spellchecker Models</h3>
+
+<p>
+To use Korektor, a spellchecker model is needed. The language models are available
+from <a href="http://www.lindat.cz">LINDAT/CLARIN</a> infrastructure and described further
+in the
+<a href="#users_manual">Korektor User's Manual</a>.
+Currently the following language models are available:
+</p>
+
+<ul>
+<li>Czech: <a href="http://hdl.handle.net/11234/1-1460">korektor-czech-130202</a> (<a href="http://ufal.mff.cuni.cz/korektor/users-manual#korektor-czech-130202">documentation</a>)
+</li>
+</ul>
+
+<a id="original_michal_richters_version" name="original_michal_richters_version"></a>
+<h3>3.1.2. Original Michal Richter's version</h3>
+
+<p>
+The original Michal Richter's version can be downloaded
+<a href="http://hdl.handle.net/11858/00-097C-0000-000D-F67C-5">here</a>.
+</p>
+
+<a id="license" name="license"></a>
+<h2>3.2. License</h2>
+
+<p>
+Korektor is an open-source project and is freely available for non-commercial
+purposes. The library is distributed under <a href="http://opensource.org/licenses/BSD-2-Clause">2-Clause BSD license</a>
+and the associated models and data under <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA</a>,
+although for some models the original data used to create the model may impose
+additional licensing conditions.
+</p>
+<p>
+If you use this tool for scientific work, please give credit to us by
+referencing <a href="http://ufal.mff.cuni.cz/korektor">Korektor website</a> and
+<a href="#publications">Richter et al. 2012</a>.
+</p>
+
+<a id="instalation" name="instalation"></a>
+<h1>4. Installation</h1>
+
+<p>
+Korektor releases are available on <a href="http://github.com/ufal/korektor">GitHub</a>, either as
+a pre-compiled binary package, or source code only. The binary package contains Linux,
+Windows and OS X binaries.
+</p>
+<p>
+To use Korektor, a language model is needed.
+<a href="http://ufal.mff.cuni.cz/korektor#spellchecker_models">Here is a list of available language models</a>.
+</p>
+<p>
+If you want to compile Korektor manually, sources are available on on
+<a href="http://github.com/ufal/korektor">GitHub</a>, both in the
+<a href="http://github.com/ufal/korektor/releases">pre-compiled binary package releases</a>
+and in the repository itself.
+</p>
+
+<a id="requirements" name="requirements"></a>
+<h2>4.1. Requirements</h2>
+
+<ul>
+<li><code>G++ 4.7</code> or newer, <code>clang 3.2</code> or newer, <code>Visual C++ 2013</code> or newer
+</li>
+<li><code>make</code>: on Windows, you can use <a href="http://sourceforge.net/projects/mingw/files/MinGW/Extension/make/make-3.82-mingw32/"><code>mingw32-make</code></a>
+</li>
+</ul>
+
+<a id="compilation" name="compilation"></a>
+<h2>4.2. Compilation</h2>
+
+<p>
+To compile Korektor, run <code>make</code> in the <code>src</code> directory.
+</p>
+<p style="margin-bottom:0">
+Make targets and options:
+</p>
+<ul style="margin-top:0">
+<li><code>exe</code>: compile the binaries (default)
+</li>
+<li><code>lib</code>: compile the static library
+</li>
+<li><code>BITS=32</code> or <code>BITS=64</code>: compile for specified 32-bit or 64-bit architecture instead of the default one
+</li>
+<li><code>mode=RELEASE</code>: create release build which statically links the C++ runtime and uses LTO
+</li>
+<li><code>mode=DEBUG</code>: create debug build
+</li>
+<li><code>mode=PROFILE</code>: create profile build
+</li>
+</ul>
+
+<a id="toc13" name="toc13"></a>
+<h3>4.2.1. Platforms</h3>
+
+<p style="margin-bottom:0">
+Platform can be selected using one of the following options:
+</p>
+<ul style="margin-top:0">
+<li><code>PLATFORM=linux</code>, <code>PLATFORM=linux-gcc</code>: gcc compiler on Linux operating system, default on Linux
+</li>
+<li><code>PLATFORM=linux-clang</code>: clang compiler on Linux, must be selected manually
+</li>
+<li><code>PLATFORM=osx</code>, <code>PLATFORM=osx-clang</code>: clang compiler on OS X, default on OS X; <code>BITS=32+64</code> enables multiarch build
+</li>
+<li><code>PLATFORM=win</code>, <code>PLATFORM=win-gcc</code>: gcc compiler on Windows (TDM-GCC is well tested), default on Windows
+</li>
+<li><code>PLATFORM=win-vs</code>: Visual C++ 2013 compiler on Windows, must be selected manually; note that the
+  <code>cl.exe</code> compiler must be already present in <code>PATH</code> and corresponding <code>BITS=32</code> or <code>BITS=64</code>
+  must be specified
+</li>
+</ul>
+
+<p>
+Either POSIX shell or Windows CMD can be used as shell, it is detected automatically.
+</p>
+
+<a id="toc14" name="toc14"></a>
+<h3>4.2.2. Further Details</h3>
+
+<p>
+Korektor uses <a href="http://github.com/ufal/cpp_builtem">C++ BuilTem system</a>,
+please refer to its manual if interested in all supported options.
+</p>
+
+<a id="users_manual" name="users_manual"></a>
+<h1>5. User's Manual</h1>
+
+<p>
+Korektor is a statistical spellchecker and (occasional) grammar checker.
+Like any supervised machine learning tool, Korektor needs a trained linguistic model.
+We now describe the available language models, and then the command line tools
+<code>korektor</code> and <code>tokenizer</code>.
+</p>
+
+<a id="korektor-czech" name="korektor-czech"></a>
+<h2>5.1. Czech Korektor Models</h2>
+
+<p>
+Czech models are distributed under the
+<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA</a> licence.
+The Czech morphology used by the model is based on
+<a href="http://hdl.handle.net/11858/00-097C-0000-0015-A780-9">MorfFlex CZ</a>
+Czech models work in Korektor version 2 or later.
+</p>
+<p>
+Czech models are versioned according to the release date in format
+<code>YYMMDD</code>, where <code>YY</code>, <code>MM</code> and <code>DD</code> are two-digit representation of
+year, month and day, respectively. The latest version is 130202.
+</p>
+
+<a id="korektor-czech_download" name="korektor-czech_download"></a>
+<h3>5.1.1. Download</h3>
+
+<p>
+The latest version 130202 of the Czech Korektor models can be downloaded
+from <a href="http://hdl.handle.net/11234/1-1460">LINDAT/CLARIN repository</a>.
+</p>
+
+<a id="korektor-czech_acknowledgements" name="korektor-czech_acknowledgements"></a>
+<h3>5.1.2. Acknowledgements</h3>
+
+<p>
+This work has been using language resources developed and/or stored and/or
+distributed by the LINDAT/CLARIN project of the Ministry of Education of the
+Czech Republic (project <i>LM2010013</i>).
+</p>
+<p>
+The latest Czech models were created by Michal Richter as part of his
+Master thesis and are described in (Richter et al. 2012).
+</p>
+<p>
+The MorfFlex CZ dictionary was created by Jan Hajič and Jaroslava Hlaváčová.
+</p>
+
+<a id="korektor-czech_publications" name="korektor-czech_publications"></a>
+<h4>5.1.2.1. Publications</h4>
+
+<ul>
+<li>(Richter et al. 2012) Richter Michal, Straňák Pavel and Rosen Alexandr. <i>Korektor – A System for Contextual Spell-checking and Diacritics Completion</i> In Proceedings of the 24th International Conference on Computational Linguistics (Coling 2012), pages 1-12, Mumbai, India, 2012.
+</li>
+</ul>
+
+<a id="korektor-czech_variants" name="korektor-czech_variants"></a>
+<h3>5.1.3. Czech Model Variants</h3>
+
+<p>
+The Czech model contains the following variants:
+</p>
+
+<dl>
+<dt><code>korektok-czech-130202/diacritics_h2mor.conf</code></dt><dd>
+  Spellchecker model which only _adds_ diacritical marks.
+  Note that the diacritical marks are not removed by the model, so you have to
+  strip them manually if you want to ignore them.
+<p></p>
+</dd>
+<dt><code>korektok-czech-130202/spellchecking_h2mor.conf</code></dt><dd>
+  Spellchecker model which considers corrections with edit distance at most
+  once. You should use this model for generic spellchecking.
+<p></p>
+</dd>
+<dt><code>korektok-czech-130202/spellchecking_h2mor_2edits.conf</code></dt><dd>
+  Spellchecker model which considers corrections with edit distance at most
+  two. This model can be useful if the required corrections are not found
+  by the <code>spellchecking_h2mor.conf</code> model, but it may be considerably slower.
+</dd>
+</dl>
+
+<a id="run_korektor" name="run_korektor"></a>
+<h2>5.2. Running the Korektor</h2>
+
+<p>
+The <code>korektor</code> binary is used to run the Korektor. The only required argument
+is the model configuration which should be used for correcting. The input is read
+from standard input, it should be in UTF-8 encoding and it can be either
+already tokenized and segmented, segmented only, or it can be a plain text.
+The output is written to standard output and it is in UTF-8 encoding.
+</p>
+<p style="margin-bottom:0">
+The full command syntax of <code>korektor</code> is
+</p>
+<pre style="margin-top:0">
+korektor [options] model_configuration
+Options: --input=untokenized|untokenized_lines|segmented|vertical|horizontal
+         --output=original|xml|vertical|horizontal
+         --corrections=maximum_number_of_corrections
+         --context_free
+         --version
+         --help
+</pre>
+
+<a id="korektor_input_formats" name="korektor_input_formats"></a>
+<h3>5.2.1. Input Formats</h3>
+
+<p style="margin-bottom:0">
+The input format is specified using the <code>--input</code> option. Currently supported
+input formats are:
+</p>
+<ul style="margin-top:0">
+<li><code>untokenized</code> (default): the input is a plain text, which is segmented and
+  tokenized automatically. Note that sentences can span over multiple lines,
+  but an empty lines always terminate a sentence.
+</li>
+<li><code>untokenized_lines</code>: very similar to <code>untokenized</code>, the only difference
+  is that sentences cannot span over multiple lines, so every newline is
+  a sentence terminator.
+</li>
+<li><code>segmented</code>: the input is assumed to be segmented using newlines, but it is
+  tokenized automatically.
+</li>
+<li><code>vertical</code>: the input is tokenized and segmented in vertical format, every
+  line is considered a word, with empty line denoting end of sentence.
+</li>
+<li><code>horizontal</code>: the input is tokenized and segmented in horizontal format,
+  every line is a sentence, with words separated by spaces.
+</li>
+</ul>
+
+<a id="korektor_corrections" name="korektor_corrections"></a>
+<h3>5.2.2. Number of Corrections</h3>
+
+<p>
+The maximum number of corrections that Korektor should return for every word is
+specified using the <code>--corrections</code> option, and defaults to one.
+</p>
+<p>
+Note that some output formats cannot handle multiple corrections, because they
+can only replace the original word by a corrected one.
+</p>
+
+<a id="korektor_output_formats" name="korektor_output_formats"></a>
+<h3>5.2.3. Output Formats</h3>
+
+<p style="margin-bottom:0">
+The output format is specified using the <code>--output</code> option. Currently
+supported output formats are:
+</p>
+<ul style="margin-top:0">
+<li><code>original</code> (default when number of corrections is 1): the original words
+  are replaced by the corrected ones, all other characters including spaces are
+  preserved. Note that this output format cannot handle multiple corrections
+  per word.
+</li>
+<li><code>xml</code> (default when number of corrections is greater than 1): the original
+  input is encoded as XML and the suggested corrections are marked
+  using the following XML elements:
+  <ul>
+  <li>spelling corrections for a word <i>w</i> are marked using the <code>spelling</code>
+    element with the suggested corrections listed in the <code>suggestions</code> attribute
+    ordered by correction probability with the most probable one first
+  </li>
+  <li>grammar corrections are marked as spelling corrections, but the <code>grammar</code>
+    element is used instead of <code>spelling</code>
+  </li>
+  </ul>
+  To illustrate, consider the input
+
+<pre>
+  Hoši jely k babicce.
+</pre>
+
+  The output in <code>xml</code> output format with at most three corrections is
+
+<pre>
+  Hoši &lt;grammar suggestions="jeli jely jel"&gt;jely&lt;/grammar&gt; k &lt;spelling suggestions="babičce babice babince"&gt;babicce&lt;/spelling&gt;.
+</pre>
+
+</li>
+<li><code>vertical</code>: each word is printed on a separate line, with empty line
+  denoting end of sentence. If there are any suggested corrections for a word,
+  they are printed on the same line as the original words using several <code>tab</code>
+  separated columns:
+  <ul>
+  <li>the first column contain the original word
+  </li>
+  <li>the second column contain either letter <code>S</code> or <code>G</code>, where <code>S</code> denotes
+    a spelling correction and <code>G</code> denotes a grammar correction
+  </li>
+  <li>the rest of the columns are the suggested corrections ordered by correction
+    probability with the most probable one first
+  </li>
+  </ul>
+  To illustrate, consider the input
+
+<pre>
+  Hoši jely k babicce.
+</pre>
+
+  The output in <code>vertical</code> output format with at most three corrections with
+  explicitly marked <code>tab</code> characters is
+
+<pre>
+  Hoši
+  jely&lt;---tab----&gt;G&lt;--tab--&gt;jeli&lt;---tab----&gt;jely&lt;--tab---&gt;jel
+  k
+  babicce&lt;--tab--&gt;S&lt;--tab--&gt;babičce&lt;--tab--&gt;babice&lt;--tab--&gt;babince
+  .
+</pre>
+
+</li>
+<li><code>horizontal</code>: the original words are replaced by the corrected ones. Each
+  sentence is printed on separate line and all words are space separated. Note
+  that this output format cannot handle multiple corrections per word.
+</li>
+</ul>
+
+<a id="korektor_context_free" name="korektor_context_free"></a>
+<h3>5.2.4. Context Free Corrections</h3>
+
+<p>
+Context free corrections can be generated by supplying the <code>--context_free</code>
+option. In that case each word is considered separately and sentences boundaries
+are ignored. This mode produces much worse results and should be used only when
+no context is really available.
+</p>
+
+<a id="run_tokenizer" name="run_tokenizer"></a>
+<h2>5.3. Running the tokenizer</h2>
+
+<p>
+The <code>tokenizer</code> binary is used to run the tokenizer. The input is read
+from standard input, it should be in UTF-8 encoding and it can be either
+already tokenized and segmented, segmented only, or it can be a plain text.
+The output is written to standard output and it is in UTF-8 encoding.
+</p>
+<p style="margin-bottom:0">
+The full command syntax of <code>tokenizer</code> is
+</p>
+<pre style="margin-top:0">
+korektor [options] model_configuration
+Options: --input=untokenized|untokenized_lines|segmented|vertical|horizontal
+         --output=vertical|horizontal
+         --version
+         --help
+</pre>
+
+<a id="tokenizer_input_formats" name="tokenizer_input_formats"></a>
+<h3>5.3.1. Input Formats</h3>
+
+<p style="margin-bottom:0">
+The input format is specified using the <code>--input</code> option. Currently supported
+input formats are:
+</p>
+<ul style="margin-top:0">
+<li><code>untokenized</code> (default): the input is a plain text, which is segmented and
+  tokenized automatically. Note that sentences can span over multiple lines,
+  but an empty lines always terminate a sentence.
+</li>
+<li><code>untokenized_lines</code>: very similar to <code>untokenized</code>, the only difference
+  is that sentences cannot span over multiple lines, so every newline is
+  a sentence terminator.
+</li>
+<li><code>segmented</code>: the input is assumed to be segmented using newlines, but it is
+  tokenized automatically.
+</li>
+<li><code>vertical</code>: the input is tokenized and segmented in vertical format, every
+  line is considered a word, with empty line denoting end of sentence.
+</li>
+<li><code>horizontal</code>: the input is tokenized and segmented in horizontal format,
+  every line is a sentence, with words separated by spaces.
+</li>
+</ul>
+
+<a id="tokenizer_output_formats" name="tokenizer_output_formats"></a>
+<h3>5.3.2. Output Formats</h3>
+
+<p style="margin-bottom:0">
+The output format is specified using the <code>--output</code> option. Currently
+supported output formats are:
+</p>
+<ul style="margin-top:0">
+<li><code>vertical</code>: each word is printed on a separate line, with empty line
+  denoting end of sentence.
+</li>
+<li><code>horizontal</code>: each sentence is printed on separate line and all words are
+  space separated.
+</li>
+</ul>
+
+<a id="run_korektor_server" name="run_korektor_server"></a>
+<h2>5.4. Running the REST Server</h2>
+
+<p>
+The REST server can be run using the <code>korektor_server</code> binary.
+It uses <a href="github.com/ufal/microrestd"><code>microrestd</code></a> as a REST server.
+</p>
+<p>
+TODO
+</p>
+
+<a id="model_creation" name="model_creation"></a>
+<h1>6. Model Creation</h1>
+
+<p>
+In order to create a new spellchecker model for Korektor, several models
+must be created and a configuration file describing these models must be
+provided.
+</p>
+<p>
+Korektor uses flexible morphology system which associates several
+<i>morphological factors</i> to every word, with the word itself being considered
+as a first one. Usually the factors are <code>form</code>, <code>lemma</code> and <code>tag</code>, but
+arbitrary factors may be used. Note that currently there is a hard limit of
+four factors for efficiency (you can change <code>FactorList::MAX_FACTORS</code> if you
+want more).
+</p>
+<p>
+For each morphological factor a language model is needed.
+</p>
+<p>
+The last required model is an error model describing costs of various spelling
+errors.
+</p>
+
+<a id="model_create_morphology" name="model_create_morphology"></a>
+<h2>6.1. Creating a Morphology Model</h2>
+
+<p>
+To create a morphology model, a morphology lexicon input file must be provided
+and processed by the <code>create_morphology</code> binary.
+</p>
+
+<a id="model_create_morphology_format" name="model_create_morphology_format"></a>
+<h3>6.1.1. Morphology Lexicon Input Format</h3>
+
+<p style="margin-bottom:0">
+The morphology lexicon is an UTF-8 encoded file in the following format:
+</p>
+<ul style="margin-top:0">
+<li>the first line contains names of the factors delimited by <code>|</code>
+</li>
+<li>following lines contain two space separated columns, the first column is a word
+  factor strings delimited by <code>|</code> (there must be the same number of tokens as
+  on the first line) and the second column is a count number of this morphology
+  entry.
+</li>
+</ul>
+
+<p>
+Example:
+</p>
+
+<pre>
+form|lemma|tag
+dog|dog|NN 68
+likes|like|VB 220
+...
+</pre>
+
+<a id="model_create_morphology_run" name="model_create_morphology_run"></a>
+<h3>6.1.2. Running create_morphology</h3>
+
+<p style="margin-bottom:0">
+The <code>create_morphology</code> should be run as follows:
+</p>
+<pre style="margin-top:0">
+create_morphology in_morphology_lexicon out_bin_morphology out_bin_vocabulary out_test_file
+</pre>
+
+<a id="model_create_lm" name="model_create_lm"></a>
+<h2>6.2. Creating a Language Model for Each Morphological Factor</h2>
+
+<p>
+The language model for each morphological factor should be created by an
+external tool such as SRILM or KenLM and stored in ARPA format.
+</p>
+<p style="margin-bottom:0">
+To create a binary representation of such model in ARPA format, the
+<code>create_lm_binary</code> tool should be used as follows:
+</p>
+<pre style="margin-top:0">
+create_lm_binary in_arpa_model in_bin_morphology in_bin_vocabulary factor_name lm_order out_bin_lm
+</pre>
+
+<a id="model_create_error" name="model_create_error"></a>
+<h2>6.3. Creating an Error Model</h2>
+
+<p>
+To create an error model, a textual error model description must be provided
+and processed by the <code>create_error_model</code> binary.
+</p>
+
+<a id="model_create_error_format" name="model_create_error_format"></a>
+<h3>6.3.1. Error Model Input Format</h3>
+
+<p style="margin-bottom:0">
+The textual error model description is in UTF-8 format and contains one error
+model item (edit operation) per line. Each item contain three <code>tab</code> separated
+columns <code>signature</code>, <code>edit distance</code> and <code>cost</code>:
+</p>
+<ul style="margin-top:0">
+<li><code>signature</code>: Describes the edit operation in the following format:
+  <ul>
+  <li><code>s_ab</code>: substitution of letter <code>a</code> for letter <code>b</code>
+  </li>
+  <li><code>i_abc</code>: insertion of letter <code>a</code> between letters <code>b</code> and <code>c</code>
+  </li>
+  <li><code>d_ab</code>: deletion of letter <code>a</code> following after letter <code>b</code>
+  </li>
+  <li><code>swap_ab</code>: swap of letters <code>ab</code> to <code>ba</code>
+  </li>
+  <li><code>case</code>: change of letter casing (lowercase to uppercase and vice verse)
+  </li>
+  <li><code>substitutions</code>: default substitution operation used when no <code>s_..</code> rule apply
+  </li>
+  <li><code>insertions</code>: default insertion operation used when no <code>i_...</code> rule apply
+  </li>
+  <li><code>deletions</code>: default deletion operation used when no <code>d_..</code> rule apply
+  </li>
+  <li><code>swaps</code>: default swap operation used when no <code>swap_..</code> rule apply
+  <p></p>
+  </li>
+  </ul>
+</li>
+<li><code>edit distance</code>: Integral edit distance of this operation. This distance
+  is used during the similar words lookup which is limited by maximum edit
+  distance. The sensible default is 1, but it can be useful to use 0 for
+  example when removing/adding diacritical mark only.
+<p></p>
+</li>
+<li><code>cost</code>: The logarithm of the probability of the edit operation.
+</li>
+</ul>
+
+<p>
+The first five lines must contain operations <code>case</code>, <code>substitutions</code>,
+<code>insertions</code>, <code>deletions</code> and <code>swaps</code>, in this order.
+</p>
+<p>
+Example (with textually marked <code>tab</code> characters):
+</p>
+
+<pre>
+case&lt;------tab-------&gt;0&lt;---tab---&gt;2.6
+substitutions&lt;--tab--&gt;1&lt;---tab---&gt;3.8
+insertions&lt;---tab----&gt;1&lt;---tab---&gt;4.4
+deletions&lt;----tab----&gt;1&lt;---tab---&gt;3.5
+swaps&lt;------tab------&gt;1&lt;---tab---&gt;4.1
+s_qw&lt;-------tab------&gt;1&lt;---tab---&gt;3.7
+s_ui&lt;-------tab------&gt;1&lt;---tab---&gt;2.3
+s_yi&lt;-------tab------&gt;1&lt;---tab---&gt;2.1
+s_aá&lt;-------tab------&gt;0&lt;---tab---&gt;1.7
+i_iuo&lt;------tab------&gt;1&lt;---tab---&gt;4.8
+...
+</pre>
+
+<a id="model_create_error_run" name="model_create_error_run"></a>
+<h3>6.3.2. Running create_error_model</h3>
+
+<p style="margin-bottom:0">
+The <code>create_error_model</code> binary should be run as follows:
+</p>
+<pre style="margin-top:0">
+create_morphology --binarize in_txt_error_model out_bin_error_model
+</pre>
+
+<a id="model_create_conf" name="model_create_conf"></a>
+<h2>6.4. Configuration File</h2>
+
+<p>
+The configuration specifies morphology model, language models and error model
+to use. In addition, it specifies similar word searching strategy and it can
+enable a diagnostics mode.
+</p>
+<p>
+When a file is specified in the configuration file, its name is
+considered to be relative to the directory containing the configuration file.
+</p>
+<p style="margin-bottom:0">
+The configuration file is line oriented and each line should adhere to one of
+the following formats:
+</p>
+<ul style="margin-top:0">
+<li>an empty line or a line starting with <code>#</code> is ignored
+</li>
+<li><code>morpholex=bin_morphology_file</code>: use the specified morphology model
+</li>
+<li><code>lm-bin_lm_file-model_order-model_weight</code>: use the specified language
+  model. The corresponding factor is stored in the language model itself.
+  Model weight is a floating point multiplicative factor used when all factor
+  language model probabilities are summed together.
+</li>
+<li><code>errormodel=bin_error_model_file</code>: use the specified error model file
+</li>
+<li><code>search-casing_treatment-max_edit_distance-max_cost</code>: defines method for finding
+  possible corrections. Multiple methods can be specified in the configuration
+  file. The methods are tried in the order of their appearance in the
+  configuration file until one produces nonempty set of possible corrections.
+  Each search method has the following options:
+  <ul>
+  <li><code>casing_treatment</code>: there are three possible method names:
+    <ul>
+    <li><code>case_sensitive</code>: the casing of the original word is honored when
+      looking up possible suggestions in the morphology model
+    </li>
+    <li><code>ignore_case</code>: the casing of the original word is ignored when
+      looking up possible suggestions in the morphology model, and the casing
+      defined in the morphology model is used instead of the original one
+    </li>
+    <li><code>ignore_case_keep_orig</code>: the casing of the original word is ignored
+      when looking up possible suggestions in the morphology model, but the
+      generated suggestions have the same casing as the original word
+    </li>
+    </ul>
+  </li>
+  <li><code>max_edit_distance</code>: the maximum edit distance of possible corrections
+  </li>
+  <li><code>max_cost</code>: the maximum cost of possible corrections
+  </li>
+  </ul>
+</li>
+<li><code>diagnostics=bin_vocabulary_file</code>: use diagnostics mode which dumps a lot of
+  information during spellchecking. A vocabulary file created during
+  <a href="#model_create_morphology">morphology model creation</a> is needed to print out
+  the morphological factors.
+</li>
+</ul>
+
+<p>
+The lines can be in arbitrary order, only the relative ordering of <code>search-</code>
+lines is utilized when finding possible corrections.
+</p>
+<p>
+As an example consider the configuration file <code>spellchecking_h2mor.txt</code> of
+<code>korektor-czech-130202</code> model:
+</p>
+
+<pre>
+# Binary file containing morphology and lexicon.
+morpholex=data/morphology_h2mor_freq2.bin
+
+# Error model binary.
+errormodel=data/error_model_train0.bin
+
+# Language models in the following format:
+# lm-[filename]-[order]-[weight]
+lm-data/form_lm_h2mor.bin-3-0.40
+lm-data/lemma_lm_h2mor.bin-3-0.1
+lm-data/tag_lm_h2mor.bin-3-0.50
+
+# Search options, each item specify a distinct search rounds.
+# Searches are triggered in the order specified in this file,
+# whenever one of the search rounds find at least one possibility,
+# the consecutive search rounds are not triggered.
+# The format is the following:
+# search-[casing_treatment]-[max_edit_distance]-[max_cost]
+search-case_sensitive-1-6
+search-ignore_case_keep_orig-1-6
+search-ignore_case_keep_orig-2-9
+
+# The diagnostics mode can be activated by uncommenting the following line.
+#diagnostics=data/morphology_h2mor_freq2_vocab.bin
+</pre>
+
+<a id="contact" name="contact"></a>
+<h1>7. Contact</h1>
+
+<p style="margin-bottom:0">
+Current Authors:
+</p>
+<ul style="margin-top:0">
+<li><a href="http://ufal.mff.cuni.cz/milan-straka">Milan Straka</a>, <a href="mailto:straka@ufal.mff.cuni.cz">straka@ufal.mff.cuni.cz</a>
+</li>
+<li><a href="http://ufal.mff.cuni.cz/pavel-stranak">Pavel Straňák</a>, <a href="mailto:stranak@ufal.mff.cuni.cz">stranak@ufal.mff.cuni.cz</a>
+</li>
+<li><a href="http://ufal.mff.cuni.cz/loganathan-ramasamy">Loganathan Ramasamy</a>, <a href="mailto:ramasamy@ufal.mff.cuni.cz">ramasamy@ufal.mff.cuni.cz</a>
+</li>
+</ul>
+
+<p style="margin-bottom:0">
+Original Author:
+</p>
+<ul style="margin-top:0">
+<li>Michal Richter, <a href="mailto:michalisek@gmail.com">michalisek@gmail.com</a>
+</li>
+</ul>
+
+<p>
+<a href="http://ufal.mff.cuni.cz/korektor">Korektor website</a>.
+</p>
+<p>
+<a href="http://hdl.handle.net/11234/1-1469">Korektor LINDAT/CLARIN entry</a>.
+</p>
+
+<a id="korektor_acknowledgements" name="korektor_acknowledgements"></a>
+<h1>8. Acknowledgements</h1>
+
+<p>
+This work has been using language resources developed and/or stored and/or distributed by the LINDAT/CLARIN project of the Ministry of Education of the Czech Republic (project <i>LM2010013</i>).
+</p>
+<p>
+Acknowledgements for individual language models are listed in <a href="#users_manual">Korektor User's Manual</a>.
+</p>
+
+<a id="publications" name="publications"></a>
+<h2>8.1. Publications</h2>
+
+<ul>
+<li>(Richter et al. 2012) Richter Michal, Straňák Pavel and Rosen Alexandr. <i>Korektor – A System for Contextual Spell-checking and Diacritics Completion</i> In Proceedings of the 24th International Conference on Computational Linguistics (Coling 2012), pages 1-12, Mumbai, India, 2012.
+</li>
+</ul>
+
+<a id="bibtex_for_referencing" name="bibtex_for_referencing"></a>
+<h2>8.2. Bibtex for Referencing</h2>
+
+<pre>
+@InProceedings{richter12,
+  booktitle    = {Proceedings of the 24th International Conference on Computational Linguistics (Coling 2012)},
+  title        = {Korektor--A System for Contextual Spell-checking and Diacritics Completion},
+  editor       = {Martin Kay and Christian Boitet},
+  author       = {Michal Richter and Pavel Stra{\v{n}}{\'{a}}k and Alexandr Rosen},
+  year         = {2012},
+  publisher    = {Coling 2012 Organizing Committee},
+  organization = {{IIT} Bombay},
+  address      = {Mumbai, India},
+  venue        = {{IIT} Bombay, {VMCC}},
+  pages        = {1--12}
+}
+</pre>
+
+<a id="permanent_identifier" name="permanent_identifier"></a>
+<h2>8.3. Permanent Identifier</h2>
+
+<p>
+If you prefer to reference Korektor by a permanent identifier (PID),
+you can use <code>http://hdl.handle.net/11234/1-1469</code>.
+</p>
+</div>
+
+<!-- html code generated by txt2tags 2.6 (http://txt2tags.org) -->
+<!-- cmdline: txt2tags -t html -\-toc -\-enum-title -o manual.html -C t2t_docsys/t2t_docsys_manual.conf manual.t2t -->
+</body></html>

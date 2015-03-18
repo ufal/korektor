@@ -1,17 +1,25 @@
 Korektor
 ========
 
-Korektor is a statistical spell- and (occasional) grammar-checker.
+Korektor is a statistical spellchecker and (occasional) grammar checker released
+under 2-Clause BSD license (http://opensource.org/licenses/BSD-2-Clause) and
+versioned using Semantic Versioning (http://semver.org/).
 
-This spellchecker strarted with Michal Richter's diploma thesis
-Advanced Czech Spellchecker (https://redmine.ms.mff.cuni.cz/documents/1),
-but it is being developed further. There are two versions: a unix command line
-utility (tested on Debian, Ubuntu and OS X) and an OS X SpellServer with
-a System Service, that integrates with native OS X GUI applications.
+Korektor started with Michal Richter's diploma thesis Advanced Czech
+Spellchecker (https://redmine.ms.mff.cuni.cz/documents/1), but it is being
+developed further. There are two versions: a command line utility (tested on
+Linux, Windows and OS X) and a REST service with publicly available API
+(https://lindat.mff.cuni.cz/services/korektor/api-reference.php) and HTML front
+end (https://lindat.mff.cuni.cz/services/korektor/).
 
-Copyright 2014 by Institute of Formal and Applied Linguistics, Faculty of
+The original OS X SpellServer providing System Service integrating Korektor with
+native OS X GUI applications is no longer developed, but do not hesitate to
+contact us if you are interested in it.
+
+Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty of
 Mathematics and Physics, Charles University in Prague, Czech Republic.
 
-Korektor website: http://ufal.mff.cuni.cz/korektor
-Korektor web service: http://lindat.mff.cuni.cz/services/korektor
-Korektor development repository: http://github.com/ufal/korektor
+Korektor website http://ufal.mff.cuni.cz/korektor contains download links of
+both the released packages and spellchecker models, and hosts documentation.
+
+Korektor repository http://github.com/ufal/korektor is hosted on GitHub.
