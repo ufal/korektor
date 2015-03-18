@@ -1,7 +1,7 @@
 Korektor User's Manual
 ======================
 
-Korektor is a statistical spellchecker and occasionally a grammar checker.
+Korektor is a statistical spellchecker and (occasional) grammar checker.
 Like any supervised machine learning tool, Korektor needs a trained linguistic model.
 We now describe the available language models, and then the command line tools
 ``korektor`` and ``tokenizer``.
