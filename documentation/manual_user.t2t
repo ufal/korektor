@@ -151,3 +151,11 @@ supported output formats are:
   denoting end of sentence.
 - ``horizontal``: each sentence is printed on separate line and all words are
   space separated.
+
+
+== Running the REST Server ==[run_korektor_server]
+
+The REST server can be run using the ``korektor_server`` binary.
+It uses [``microrestd`` github.com/ufal/microrestd] as a REST server.
+
+TODO
