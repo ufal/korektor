@@ -30,3 +30,18 @@ real 42.75
 user 42.56
 sys 0.17
 
+Date: Thu Mar 19 11:13:31 CET 2015
+Hostname: turing.ms.mff.cuni.cz
+Current revision: c19d87d4525381db62e759c23402e4c59e8ebd8e
+Benchmarking 30-times the diacritics_h2mor model...
+real 28.09
+user 27.92
+sys 0.13
+Benchmarking 4-times the spellchecking_h2mor model...
+real 37.36
+user 37.14
+sys 0.19
+Benchmarking 1-times the spellchecking_h2mor_2edits model...
+real 43.53
+user 43.32
+sys 0.17
