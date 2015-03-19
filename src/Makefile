@@ -8,8 +8,9 @@
 # modification, are permitted under 3-clause BSD licence.
 
 include Makefile.builtem
+include rest_server/microrestd/Makefile.include
 
-EXECUTABLES = korektor create_error_model create_lm_binary create_morphology tokenizer
+EXECUTABLES = korektor korektor_server create_error_model create_lm_binary create_morphology tokenizer
 LIBRARIES = libkorlib
 
 .PHONY: all exe lib full
@@ -37,6 +38,8 @@ $(call lib,libkorlib): $(call obj,$(KORLIB_O))
 
 # executables
 $(call exe,korektor): $(call obj,korektor $(KORLIB_O))
+$(call exe,korektor_server): LD_FLAGS+=$(call use_library,$(if $(filter win-%,$(PLATFORM)),$(MICRORESTD_LIBRARIES_WIN),$(MICRORESTD_LIBRARIES_POSIX)))
+$(call exe,korektor_server): $(call obj,rest_server/rest_server rest_server/korektor_service $(KORLIB_O) $(addprefix rest_server/microrestd/,$(MICRORESTD_OBJECTS) $(MICRORESTD_PUGIXML_OBJECTS)))
 $(call exe,create_error_model): $(call obj,create/create_error_model $(KORLIB_O))
 $(call exe,create_lm_binary): $(call obj,create/create_lm_binary $(KORLIB_O))
 $(call exe,create_morphology): $(call obj,create/create_morphology $(KORLIB_O))
