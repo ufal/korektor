@@ -23,8 +23,7 @@ struct Token {
   bool initialized;
   bool correction_is_allowed;
   int ID;
-  u16string str_u16;
-  string str_utf8;
+  u16string str;
   bool sentence_start;
 
   Token(unsigned _first, unsigned _length, const u16string &_str);

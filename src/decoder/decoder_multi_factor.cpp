@@ -141,7 +141,7 @@ vector<vector<StagePossibilityP> > DecoderMultiFactor::init_inner_stage_posibili
 
   for (uint32_t i = 0; i < tokens.size(); i++)
   {
-    u16string& u_word = tokens[i]->str_u16;
+    u16string& u_word = tokens[i]->str;
 
     vector<StagePossibilityP> vec_stage_pos;
 

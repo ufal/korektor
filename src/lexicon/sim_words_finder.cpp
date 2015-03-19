@@ -58,7 +58,7 @@ capitalization_type GetCapitalizationType(const u16string& ustr)
 // SimWordsFinder methods
 void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret)
 {
-  u16string &word_u_str = token->str_u16;
+  u16string& word_u_str = token->str;
 
   if (token->correction_is_allowed == false)
   {
@@ -113,7 +113,7 @@ void SimWordsFinder::Find_basic(const TokenP &token, uint32_t lookup_max_ed_dist
 
 void SimWordsFinder::Find_basic_ignore_case(const TokenP &token, bool keep_orig_casing, uint32_t lookup_max_ed_dist, double lookup_max_cost, Similar_Words_Map &ret)
 {
-  u16string &word_u_str = token->str_u16;
+  u16string& word_u_str = token->str;
   ret = configuration->lexicon->GetSimilarWords(word_u_str, lookup_max_ed_dist, lookup_max_cost, configuration->errorModel, true);
 
  capitalization_type ct = GetCapitalizationType(word_u_str);

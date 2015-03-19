@@ -24,7 +24,7 @@ class HorizontalOutputFormat : public OutputFormat {
 
     for (unsigned i = 0; i < tokens.size(); i++) {
       if (i) output += ' ';
-      UTF::UTF16To8Append(corrections[i].type == SpellcheckerCorrection::NONE ? tokens[i]->str_u16 : corrections[i].correction, output);
+      UTF::UTF16To8Append(corrections[i].type == SpellcheckerCorrection::NONE ? tokens[i]->str : corrections[i].correction, output);
     }
     output += '\n';
   }
@@ -44,7 +44,7 @@ class VerticalOutputFormat : public OutputFormat {
     assert(corrections.size() >= tokens.size());
 
     for (unsigned i = 0; i < tokens.size(); i++) {
-      UTF::UTF16To8Append(tokens[i]->str_u16, output);
+      UTF::UTF16To8Append(tokens[i]->str, output);
       if (corrections[i].type != SpellcheckerCorrection::NONE) {
         output += '\t';
         output += corrections[i].type == SpellcheckerCorrection::SPELLING ? 'S' : 'G';
@@ -82,7 +82,7 @@ class OriginalOutputFormat : public OutputFormat {
 
     for (unsigned i = 0; i < tokens.size(); i++) {
       if (unprinted < tokens[i]->first) UTF::UTF16To8Append(block, unprinted, tokens[i]->first - unprinted, output);
-      UTF::UTF16To8Append(corrections[i].type == SpellcheckerCorrection::NONE ? tokens[i]->str_u16 : corrections[i].correction, output);
+      UTF::UTF16To8Append(corrections[i].type == SpellcheckerCorrection::NONE ? tokens[i]->str : corrections[i].correction, output);
       unprinted = tokens[i]->first + tokens[i]->length;
     }
   }
@@ -129,7 +129,7 @@ class XmlOutputFormat : public OutputFormat {
         }
         output.append("\">");
       }
-      UTF16To8AppendXmlEncoded(tokens[i]->str_u16, output);
+      UTF16To8AppendXmlEncoded(tokens[i]->str, output);
       if (corrections[i].type != SpellcheckerCorrection::NONE)
         output.append(corrections[i].type == SpellcheckerCorrection::SPELLING ? "</spelling>" : "</grammar>");
       unprinted = tokens[i]->first + tokens[i]->length;

@@ -57,7 +57,7 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
 
       if (lexicon)
       {
-        int wordID = lexicon->GetWordID(token->str_u16);
+        int wordID = lexicon->GetWordID(token->str);
         token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
       }
 
@@ -71,7 +71,7 @@ vector<vector<TokenP> > Tokenizer::Tokenize(const u16string &text, bool segment_
 
       if (lexicon)
       {
-        int wordID = lexicon->GetWordID(token->str_u16);
+        int wordID = lexicon->GetWordID(token->str);
         token->InitLexiconInformation(wordID, lexicon->CorrectionIsAllowed(wordID));
       }
 

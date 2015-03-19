@@ -103,7 +103,7 @@ class VerticalInputFormat : public InputFormat {
       tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
       tokens.back()->sentence_start = tokens.size() == 1;
       if (lexicon) {
-        int id = lexicon->GetWordID(tokens.back()->str_u16);
+        int id = lexicon->GetWordID(tokens.back()->str);
         tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
       }
       index++; // Skip over newline
@@ -161,7 +161,7 @@ class HorizontalInputFormat : public InputFormat {
       tokens.emplace_back(new Token(start, index - start, text.substr(start, index - start)));
       tokens.back()->sentence_start = tokens.size() == 1;
       if (lexicon) {
-        int id = lexicon->GetWordID(tokens.back()->str_u16);
+        int id = lexicon->GetWordID(tokens.back()->str);
         tokens.back()->InitLexiconInformation(id, lexicon->CorrectionIsAllowed(id));
       }
     }

@@ -176,7 +176,7 @@ void Spellchecker::SpellcheckToken(const TokenP& token, SpellcheckerCorrection& 
     }
 
     // Now we have access to the best correction, fill correct correction.type
-    if (corrections.top().correction != token->str_u16) {
+    if (corrections.top().correction != token->str) {
       correction.correction = corrections.top().correction;
       correction.type = token->isUnknown() ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::GRAMMAR;
     }
