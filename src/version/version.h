@@ -24,7 +24,7 @@ struct version {
   static version current();
 
   // Returns multi-line formated version and copyright string.
-  static string version_and_copyright();
+  static string version_and_copyright(const string& other_libraries = string());
 };
 
 } // namespace korektor

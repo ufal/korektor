@@ -21,7 +21,7 @@ version version::current() {
 }
 
 // Returns multi-line formated version and copyright string.
-string version::version_and_copyright() {
+string version::version_and_copyright(const string& other_libraries) {
   ostringstream info;
 
   auto korektor = version::current();
@@ -29,7 +29,8 @@ string version::version_and_copyright() {
 
   info << "Korektor version " << korektor.major << '.' << korektor.minor << '.' << korektor.patch
        << (korektor.prerelease.empty() ? "" : "-") << korektor.prerelease
-       << " (using UniLib " << unilib.major << '.' << unilib.minor << '.' << unilib.patch << ")\n"
+       << " (using UniLib " << unilib.major << '.' << unilib.minor << '.' << unilib.patch
+       << (other_libraries.empty() ? "" : " and ") << other_libraries << ")\n"
           "Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty of\n"
           "Mathematics and Physics, Charles University in Prague, Czech Republic.";
 
