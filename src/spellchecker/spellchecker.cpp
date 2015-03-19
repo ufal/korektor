@@ -554,7 +554,6 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
     } else {
       corrections.emplace_back(tokens[i]->isUnknown() ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::GRAMMAR);
       corrections.back().correction = correction->To_u16string();
-//      cerr << "Correction " << correction->ToString() << "(" << correction->FormIdentifier() << ")" << endl;
 
       // Add alternatives if requested
       if (alternatives) {
@@ -570,14 +569,12 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
 
           // Measure emmision probability
           double cost = alternative->EmmisionProbability();
-//          cerr << "Alternative " << alternative->ToString() << "(" << alternative->FormIdentifier() << ") with cost " << cost << endl;
           if (have_current_best && cost > current_best) continue;
 
           // Measure transition costs of the alternative
           decoded_corrections[i + viterbi_order - 1] = alternative;
           for (unsigned k = 0; k < viterbi_order && i + k < tokens.size() + 1/*</s>*/; k++) {
             cost += decoder->ComputeTransitionCostSPSequence(decoded_corrections, i + k, i + viterbi_order - 1 + k);
-//            cerr << "Alternative " << alternative->ToString() << " recost to " << cost << endl;
             if (have_current_best && cost > current_best) break;
           }
 
@@ -614,7 +611,6 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
         // Store best alternatives
         corrections.back().alternatives.resize(alternatives_cost.size());
         for (unsigned i = alternatives_cost.size(); i > 0; i--) {
-//          cerr << "Alternative with cost " << alternatives_heap.top().cost << ", " << alternatives_heap.top().alternative << endl;
           corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->To_u16string();
           alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
           alternatives_heap.pop();
