@@ -89,7 +89,6 @@ Configuration::Configuration(const string &conf_file)
 
   vector<SimWordsFinder::SearchConfig> search_configs;
 
-  mode_string = "tag_errors";
   string s;
 
   while (IO::ReadLine(ifs, s))
@@ -172,13 +171,7 @@ Configuration::Configuration(const string &conf_file)
     }
     else if (s.substr(0, 4) == "mode")
     {
-      mode_string = s.substr(5);
-
-      if (mode_string != "autocorrect" && mode_string != "tag_errors")
-      {
-        cerr << s << endl << " - invalid value of output mode" << endl;
-        exit(1);
-      }
+      // Mode is now ignored, but it is accepted so that old configuration files work.
     }
     else if (s.compare(0, 11, "diagnostics") == 0)
     {

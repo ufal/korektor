@@ -60,7 +60,6 @@ class Configuration
   TokenizerP tokenizer;
   ErrorModelP errorModel;
   SimWordsFinderP simWordsFinder;
-  string mode_string;
   bool diagnostics;
 
   Configuration() : last_enabled_factor_index(0) {}
