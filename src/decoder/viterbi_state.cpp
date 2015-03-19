@@ -11,6 +11,7 @@
 
 #include "stage_possibility.h"
 #include "utils/hash.h"
+#include "utils/utf.h"
 #include "viterbi_state.h"
 
 namespace ufal {
@@ -54,7 +55,7 @@ string ViterbiState::ToString()
   for (uint32_t i = 0; i < history.size(); i++)
   {
     if (i > 0) strs << ", ";
-    strs << history[i]->ToString();
+    strs << UTF::UTF16To8(history[i]->word);
   }
 
   return strs.str();
@@ -64,7 +65,7 @@ void ViterbiState::ComputeUniqueIdentifier() {
   unique_identifier = 0;
   Hash::Combine(unique_identifier, history.size());
   for (auto&& h : history)
-    Hash::Combine(unique_identifier, h->UniqueIdentifier());
+    Hash::Combine(unique_identifier, h->unique_id);
 }
 
 } // namespace korektor

@@ -8,7 +8,6 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include "spellchecker/configuration.h"
-#include "spellchecker/constants.h"
 #include "stage_possibility.h"
 #include "utils/hash.h"
 #include "utils/utf.h"
@@ -16,38 +15,21 @@
 namespace ufal {
 namespace korektor {
 
-class Configuration;
-SP_DEF(Configuration);
-
-string StagePossibilityNew::ToString()
+StagePossibility::StagePossibility(const FactorList& factor_list, bool original, const u16string& word, Configuration* conf, float error_model_cost) :
+  word(word), original(original), emission_prob(error_model_cost), factor_list(factor_list)
 {
-  return UTF::UTF16To8(word);
-}
+  form_id = factor_list.factors[0];
 
-bool StagePossibilityNew::IsUnknown()
-{
-  return form_id == Constants::unknown_word_id || form_id == Constants::name_id;
-}
-
-StagePossibilityNew::StagePossibilityNew(const FactorList &_factorList, bool _original, const u16string &_word, Configuration* _conf, float error_model_cost):
-  word(_word), original(_original), emission_prob(error_model_cost), factorList(_factorList)
-{
-
-  uniq_id = 0;
-
-  unsigned num_factors = _conf->NumFactors();
-
-  for (unsigned j = 0; j < num_factors; j++)
+  unique_id = 0;
+  for (unsigned j = 0, num_factors = conf->NumFactors(); j < num_factors; j++)
   {
-    if (_conf->IsFactorEnabled(j))
+    if (conf->IsFactorEnabled(j))
     {
       if (j > 0)
-        emission_prob += _conf->GetFactorWeight(j) * factorList.emission_costs[j];
-      Hash::Combine(uniq_id, factorList.factors[j]);
+        emission_prob += conf->GetFactorWeight(j) * factor_list.emission_costs[j];
+      Hash::Combine(unique_id, factor_list.factors[j]);
     }
   }
-
-  form_id = factorList.factors[0];
 }
 
 } // namespace korektor

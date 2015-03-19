@@ -26,17 +26,13 @@ namespace korektor {
 double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePossibilityP next)
 {
   double ret_cost = 0;
-  StagePossibilityNewP nxt = static_pointer_cast<StagePossibilityNew, StagePossibility>(next);
 
   //TODO: is this n-gram ordering what we want???
 
-  factorLists[viterbi_order - 1] = nxt->GetFactorList();
+  factorLists[viterbi_order - 1] = next->factor_list;
 
   for (unsigned i = 0; i < state->history.size(); i++)
-  {
-    StagePossibilityNewP h = static_pointer_cast<StagePossibilityNew, StagePossibility>(state->history[i]);
-    factorLists[i] = h->GetFactorList();
-  }
+    factorLists[i] = state->history[i]->factor_list;
 
   unsigned num_factors = configuration->NumFactors();
 
@@ -88,8 +84,7 @@ double DecoderMultiFactor::ComputeTransitionCostSPSequence(vector<StagePossibili
   for (int i = 0; i < (int)order; i++)
   {
     //The ordering of ngrams was changed here!!!
-    StagePossibilityNewP h = static_pointer_cast<StagePossibilityNew, StagePossibility>(sp_vec[i + start_index]);
-    factorLists[i] = h->GetFactorList();
+    factorLists[i] = sp_vec[i + start_index]->factor_list;
   }
 
   unsigned num_factors = configuration->NumFactors();
@@ -120,7 +115,7 @@ StagePossibilityP DecoderMultiFactor::sentence_start_SP()
   vector<FactorList> mnodes = configuration->morphology->GetMorphology(Constants::sentence_start_id, configuration);
   assert(mnodes.size() == 1);
 
-  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, UTF::UTF8To16("<s>"), configuration, 0.0));
+  return StagePossibilityP(new StagePossibility(mnodes[0], true, UTF::UTF8To16("<s>"), configuration, 0.0));
 }
 
 StagePossibilityP DecoderMultiFactor::sentence_end_SP()
@@ -128,7 +123,7 @@ StagePossibilityP DecoderMultiFactor::sentence_end_SP()
   vector<FactorList> mnodes = configuration->morphology->GetMorphology(Constants::sentence_end_id, configuration);
   assert(mnodes.size() == 1);
 
-  return StagePossibilityP(new StagePossibilityNew(mnodes[0], true, UTF::UTF8To16("</s>"), configuration, 0.0));
+  return StagePossibilityP(new StagePossibility(mnodes[0], true, UTF::UTF8To16("</s>"), configuration, 0.0));
 }
 
 
@@ -161,7 +156,7 @@ vector<vector<StagePossibilityP> > DecoderMultiFactor::init_inner_stage_posibili
 
         for (auto it2 = f_lists.begin(); it2 != f_lists.end(); it2++)
         {
-          StagePossibilityP spp = StagePossibilityNewP(new StagePossibilityNew(*it2, is_original, sim_word_str, configuration, err_model_cost));
+          StagePossibilityP spp = StagePossibilityP(new StagePossibility(*it2, is_original, sim_word_str, configuration, err_model_cost));
           vec_stage_pos.push_back(spp);
         }
 
@@ -172,7 +167,7 @@ vector<vector<StagePossibilityP> > DecoderMultiFactor::init_inner_stage_posibili
         vector<FactorList> mn = configuration->morphology->GetMorphology(Constants::unknown_word_id, configuration);
         assert(mn.size() == 1);
 
-        StagePossibilityP spp = StagePossibilityNewP(new StagePossibilityNew(mn[0], true, u_word, configuration, configuration->errorModel->UnknownWordCost()));
+        StagePossibilityP spp = StagePossibilityP(new StagePossibility(mn[0], true, u_word, configuration, configuration->errorModel->UnknownWordCost()));
         vec_stage_pos.push_back(spp);
       }
 

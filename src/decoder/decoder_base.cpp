@@ -14,6 +14,7 @@
 #include "morphology/morphology.h"
 #include "spellchecker/configuration.h"
 #include "spellchecker/constants.h"
+#include "utils/utf.h"
 
 namespace ufal {
 namespace korektor {
@@ -44,14 +45,8 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
   {
     cout  << "Stage posibilities:" << endl;
 
-    for (auto it = inner_sp.begin(); it != inner_sp.end(); it++)
-    {
-      for (auto it2 = it->begin(); it2 != it->end(); it2++)
-      {
-        StagePossibilityNewP st_pos = std::dynamic_pointer_cast<StagePossibilityNew>(*it2);
-
-        FactorList flist = st_pos->GetFactorList();
-
+    for (auto&& stage_possibilities : inner_sp) {
+      for (auto&& stage_possibility : stage_possibilities) {
         st_pos_string.clear();
 
         for (unsigned i = 0; i < configuration->NumFactors(); i++)
@@ -59,12 +54,12 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
           if (configuration->FactorIsEnabled(i))
           {
             if (!st_pos_string.empty()) st_pos_string += "|";
-            st_pos_string += configuration->morphology->GetFactorString(i, flist.factors[i]);
+            st_pos_string += configuration->morphology->GetFactorString(i, stage_possibility->factor_list.factors[i]);
           }
 
         }
 
-        cout << st_pos_string << " - " << st_pos->EmmisionProbability() << endl;
+        cout << st_pos_string << " - " << stage_possibility->emission_prob << endl;
       }
 
       cout << endl;
@@ -129,19 +124,10 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
 
     assert(last_trellis_stage.size() > 0);
 
-    for (uint32_t j = 0; j < last_trellis_stage.size(); j++)
-    {
-      ViterbiStateP &viterbi_stateP = last_trellis_stage[j];
-
-
-
-      for (uint32_t k = 0; k < current_stage_posibilities.size(); k++)
-      {
-
-        StagePossibilityP stage_pos = current_stage_posibilities[k];
-
+    for (auto&& viterbi_stateP : last_trellis_stage) {
+      for (auto&& stage_pos : current_stage_posibilities) {
         double cost = viterbi_stateP->distance;
-        double emmision_cost = stage_pos->EmmisionProbability();
+        double emmision_cost = stage_pos->emission_prob;
 
         cost += emmision_cost;
 
@@ -156,7 +142,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
 
         if (configuration->diagnostics)
         {
-          cout << "transition: " << viterbi_stateP->ToString() << " --> " << stage_pos->ToString() << " ~ " << transition_cost << endl << endl;
+          cout << "transition: " << viterbi_stateP->ToString() << " --> " << UTF::UTF16To8(stage_pos->word) << " ~ " << transition_cost << endl << endl;
         }
 
 

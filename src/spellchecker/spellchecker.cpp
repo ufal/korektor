@@ -36,7 +36,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
   // Data structures for alternatives selection
   struct AlternativeWithCost {
     double cost;
-    StagePossibility* alternative; // Not const as no StagePossibility methods are marked const
+    const StagePossibility* alternative;
 
     bool operator<(const AlternativeWithCost& other) const { return cost < other.cost; }
     AlternativeWithCost(double cost, StagePossibility* alternative) : cost(cost), alternative(alternative) {}
@@ -52,11 +52,11 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
   unsigned viterbi_order = decoder->GetViterbiOrder();
   for (unsigned i = 0; i < tokens.size(); i++) {
     auto correction = decoded_corrections[i + viterbi_order - 1];
-    if (correction->IsOriginal()) {
+    if (correction->original) {
       corrections.emplace_back(SpellcheckerCorrection::NONE);
     } else {
       corrections.emplace_back(tokens[i]->isUnknown() ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::GRAMMAR);
-      corrections.back().correction = correction->To_u16string();
+      corrections.back().correction = correction->word;
 
       // Add alternatives if requested
       if (alternatives) {
@@ -64,14 +64,14 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
 
         // Measure costs of alternative forms
         for (auto&& alternative : decoded_alternatives->at(i + viterbi_order - 1)) {
-          if (alternative->FormIdentifier() == correction->FormIdentifier()) continue;
-          auto same_alternative = alternatives_cost.find(alternative->FormIdentifier());
+          if (alternative->form_id == correction->form_id) continue;
+          auto same_alternative = alternatives_cost.find(alternative->form_id);
           bool have_current_best = same_alternative != alternatives_cost.end() || alternatives_cost.size() == alternatives;
           double current_best = same_alternative != alternatives_cost.end() ? same_alternative->second.cost :
               !alternatives_heap.empty() ? alternatives_heap.top().cost : 0;
 
           // Measure emmision probability
-          double cost = alternative->EmmisionProbability();
+          double cost = alternative->emission_prob;
           if (have_current_best && cost > current_best) continue;
 
           // Measure transition costs of the alternative
@@ -89,22 +89,22 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
               same_alternative->second.alternative = alternative.get();
               alternatives_heap.push(same_alternative->second);
               // Normalize heap, i.e. remove dead top elements
-              if (alternatives_heap.top().alternative->FormIdentifier() == alternative->FormIdentifier()) {
+              if (alternatives_heap.top().alternative->form_id == alternative->form_id) {
                 alternatives_heap.pop();
-                while (alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier()) < alternatives_heap.top())
+                while (alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
                   alternatives_heap.pop();
               }
             }
           } else {
             if (alternatives_cost.size() < alternatives || cost < current_best) {
               if (alternatives_cost.size() >= alternatives) {
-                alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
+                alternatives_cost.erase(alternatives_heap.top().alternative->form_id);
                 alternatives_heap.pop();
                 // Normalize heap, i.e. remove dead top elements
-                while (alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier()) < alternatives_heap.top())
+                while (alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
                   alternatives_heap.pop();
               }
-              alternatives_cost.emplace(alternative->FormIdentifier(), AlternativeWithCost(cost, alternative.get()));
+              alternatives_cost.emplace(alternative->form_id, AlternativeWithCost(cost, alternative.get()));
               alternatives_heap.emplace(cost, alternative.get());
             }
           }
@@ -114,12 +114,12 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
         // Store best alternatives
         corrections.back().alternatives.resize(alternatives_cost.size());
         for (unsigned i = alternatives_cost.size(); i > 0; i--) {
-          corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->To_u16string();
-          alternatives_cost.erase(alternatives_heap.top().alternative->FormIdentifier());
+          corrections.back().alternatives[i - 1] = alternatives_heap.top().alternative->word;
+          alternatives_cost.erase(alternatives_heap.top().alternative->form_id);
           alternatives_heap.pop();
           if (i > 1)
             // Normalize heap, i.e. remove dead top elements
-            while (!alternatives_heap.empty() && alternatives_cost.at(alternatives_heap.top().alternative->FormIdentifier())< alternatives_heap.top())
+            while (!alternatives_heap.empty() && alternatives_cost.at(alternatives_heap.top().alternative->form_id)< alternatives_heap.top())
               alternatives_heap.pop();
         }
         assert(alternatives_heap.empty());
