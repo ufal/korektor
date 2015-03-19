@@ -17,7 +17,6 @@ const double Constants::prunning_constant = 6;
 const uint32_t Constants::sentence_start_id = 0;
 const uint32_t Constants::sentence_end_id = 1;
 const uint32_t Constants::unknown_word_id = 2;
-const uint32_t Constants::name_id = 3;
 
 } // namespace korektor
 } // namespace ufal

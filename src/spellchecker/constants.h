@@ -20,7 +20,6 @@ struct Constants {
   static const uint32_t sentence_start_id;
   static const uint32_t sentence_end_id;
   static const uint32_t unknown_word_id;
-  static const uint32_t name_id;
 };
 
 } // namespace korektor
