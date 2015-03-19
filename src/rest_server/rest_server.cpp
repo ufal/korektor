@@ -7,6 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+#include <cstdio>
 #include <sstream>
 
 #include "common.h"
@@ -92,6 +93,11 @@ int main(int argc, char* argv[]) {
   service.init(spellcheckers);
 #endif
 
+  // Open log file
+  string log_file_name = string(argv[0]) + ".log";
+  FILE* log_file = fopen(log_file_name.c_str(), "w");
+  if (!log_file) runtime_failure("Cannot open log file '" << log_file_name << "' for writing!");
+
   // Daemonize if requested
 #ifdef __linux__
   if (options.count("daemon")) {
@@ -106,10 +112,13 @@ int main(int argc, char* argv[]) {
 #endif
 
   // Start the server
-//  server.set_log_file(stderr);
-//  server.set_max_connections(connection_limit);
-//  server.set_threads(threads);
-//
+  server.set_log_file(log_file);
+  server.set_max_connections(512);
+  server.set_max_request_body_size(1 << 19);
+  server.set_min_generated(2048);
+  server.set_threads(0);
+  server.set_timeout(60);
+
 //  if (!server.start(&service, port))
 //    runtime_failure("Cannot start korektor_server'!");
 
@@ -118,6 +127,7 @@ int main(int argc, char* argv[]) {
   // Wait until finished
 //  server.wait_until_signalled();
 //  server.stop();
+  fclose(log_file);
 
   return 0;
 }
