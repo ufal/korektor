@@ -19,7 +19,6 @@
 #include "utils/options.h"
 #include "utils/parse.h"
 #include "utils/utf.h"
-#include "utils/utf8_input_stream.h"
 #include "version/version.h"
 
 using namespace ufal::korektor;
@@ -70,9 +69,12 @@ int main(int argc, char** argv)
     //hierarchy_node::print_hierarchy_rec(hierarchy_node::root, 0, cerr);
 
     string error_line;
-    UTF8InputStream utf8_errors(argv[2]);
 
-    while (utf8_errors.ReadLineString(error_line))
+    ifstream ifs_errors(argv[2]);
+    if (!ifs_errors.is_open())
+      runtime_failure("Cannot open errors file '" << argv[2] << "'!");
+
+    while (IO::ReadLine(ifs_errors, error_line))
     {
       if (error_line.empty() || error_line.substr(0, 2) == "//")
         continue;
@@ -98,14 +100,16 @@ int main(int argc, char** argv)
       }
     }
 
-    UTF8InputStream utf8_context(argv[3]);
+    ifstream ifs_context(argv[3]);
+    if (!ifs_context.is_open())
+      runtime_failure("Cannot open context file '" << argv[3] << "'!");
 
     string s;
     vector<string> toks;
 
     unordered_map<u16string, uint32_t> context_map;
 
-    while(utf8_context.ReadLineString(s))
+    while(IO::ReadLine(ifs_context, s))
     {
       IO::Split(s, ' ', toks);
 

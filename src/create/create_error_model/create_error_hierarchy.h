@@ -9,12 +9,13 @@
 
 #pragma once
 
+#include <fstream>
 #include <unordered_map>
 #include <unordered_set>
 
 #include "common.h"
 #include "error_hierarchy.h"
-#include "utils/utf8_input_stream.h"
+#include "utils/io.h"
 #include "utils/utf.h"
 
 namespace ufal {
@@ -35,34 +36,37 @@ int CreateErrorHierarchy(const string &layout_file, const string &error_hierarch
   hierarchy_nodeP null_parent;
   hierarchy_nodeP root = hierarchy_node::create_SP(UTF::UTF8To16("root"), null_parent, context_chars);
 
-  UTF8InputStream utf8_stream(layout_file);
+  ifstream ifs_layout(layout_file.c_str());
+  if (!ifs_layout.is_open())
+    runtime_failure("Canot open layout file '" << layout_file << "'!");
 
-  if (!utf8_stream.ReadLineUS(central_chars)) return -4;
-  if (!utf8_stream.ReadLineUS(context_chars)) return -4;
+  string line;
 
-  u16string diacritic_chars;
-  if (!utf8_stream.ReadLineUS(diacritic_chars)) return -4;
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  central_chars = UTF::UTF8To16(line);
 
-  u16string no_diacritic_chars;
-  if (!utf8_stream.ReadLineUS(no_diacritic_chars)) return -4;
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  context_chars = UTF::UTF8To16(line);
+
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  u16string diacritic_chars = UTF::UTF8To16(line);
+
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  u16string no_diacritic_chars = UTF::UTF8To16(line);
 
   vector<u16string> keyboard_layout;
 
-  u16string us;
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  keyboard_layout.push_back(UTF::UTF8To16(line));
 
-  if (!utf8_stream.ReadLineUS(us)) return -4;
-  keyboard_layout.push_back(us);
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  keyboard_layout.push_back(UTF::UTF8To16(line));
 
-  if (!utf8_stream.ReadLineUS(us)) return -4;
-  keyboard_layout.push_back(us);
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  keyboard_layout.push_back(UTF::UTF8To16(line));
 
-  if (!utf8_stream.ReadLineUS(us)) return -4;
-  keyboard_layout.push_back(us);
-
-  if (!utf8_stream.ReadLineUS(us)) return -4;
-  keyboard_layout.push_back(us);
-
-  while (utf8_stream.ReadLineUS(us)) ;
+  if (!IO::ReadLine(ifs_layout, line)) return -4;
+  keyboard_layout.push_back(UTF::UTF8To16(line));
 
   for (unsigned i = 0; i < 4; i++)
     for (unsigned j = 0; j < keyboard_layout[i].length(); j++)
