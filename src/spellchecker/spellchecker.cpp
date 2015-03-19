@@ -629,9 +629,59 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
   }
 }
 
-void Spellchecker::SpellcheckToken(const TokenP& /*token*/, SpellcheckerCorrection& correction, unsigned /*alternatives*/) {
-  // TODO
+void Spellchecker::SpellcheckToken(const TokenP& token, SpellcheckerCorrection& correction, unsigned alternatives) {
+  // Data structure for best correction selection
+  struct CorrectionWithCost {
+    double cost;
+    u16string correction;
+
+    bool operator<(const CorrectionWithCost& other) const { return cost < other.cost; }
+    CorrectionWithCost(double cost, const u16string& correction) : cost(cost), correction(correction) {}
+  };
+  priority_queue<CorrectionWithCost> corrections;
+
+  auto similar_words_map = configuration->simWordsFinder->Find(token);
+  for (auto&& similar_word : similar_words_map) {
+    uint32_t formID = similar_word.first;
+
+    // Find best analysis of this form
+    double best_analysis_cost = -1;
+    for (auto&& factor : configuration->morphology->GetMorphology(formID, configuration)) {
+      double cost = 0;
+      for (unsigned i = 1; i < configuration->NumFactors(); i++)
+        if (configuration->IsFactorEnabled(i))
+          cost += configuration->GetFactorWeight(i) * factor.emission_costs[i];
+
+      if (cost < best_analysis_cost || best_analysis_cost < 0) best_analysis_cost = cost;
+    }
+
+    // If there was any alternative
+    if (best_analysis_cost >= 0) {
+      double cost = similar_word.second.second + best_analysis_cost;
+
+      if (corrections.size() < alternatives + 1 || cost < corrections.top().cost) {
+        if (corrections.size() == alternatives + 1) corrections.pop();
+        corrections.emplace(cost, similar_word.second.first);
+      }
+    }
+  }
+
+  // Fill the correction information
   correction.type = SpellcheckerCorrection::NONE;
+  if (!corrections.empty()) {
+    // Fill out correction.correction and correction.alternatives
+    correction.alternatives.resize(corrections.size() - 1);
+    for (unsigned i = corrections.size() - 1; i; i--) {
+      correction.alternatives[i - 1] = corrections.top().correction;
+      corrections.pop();
+    }
+
+    // Now we have access to the best correction, fill correct correction.type
+    if (corrections.top().correction != token->str_u16) {
+      correction.correction = corrections.top().correction;
+      correction.type = token->isUnknown() ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::GRAMMAR;
+    }
+  }
 }
 
 Spellchecker::Spellchecker(Configuration* _configuration):
