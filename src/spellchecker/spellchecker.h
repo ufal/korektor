@@ -44,8 +44,6 @@ class Spellchecker {
 
   DecoderBaseP decoder;
 
-  map<uint32_t, vector<StagePossibilityP> > MakeSuggestionList(vector<StagePossibilityP> &decoded_pos, StagePossibilitiesType stage_posibilities);
-
  public:
   Spellchecker(Configuration* _configuration);
 
