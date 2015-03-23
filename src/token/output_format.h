@@ -10,7 +10,7 @@
 #pragma once
 
 #include "common.h"
-#include "spellchecker/spellchecker.h"
+#include "spellchecker/spellchecker_correction.h"
 #include "token.h"
 
 namespace ufal {
