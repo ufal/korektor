@@ -35,6 +35,7 @@ class xml_builder {
 
   // Return current xml
   inline string_piece current() const;
+  inline operator string_piece() const;
 
   // Remove current xml prefix; for response_generator
   void discard_current_prefix(size_t length);
@@ -123,6 +124,10 @@ xml_builder& xml_builder::indent() {
 
 string_piece xml_builder::current() const {
   return string_piece(xml.data(), xml.size());
+}
+
+xml_builder::operator string_piece() const {
+  return current();
 }
 
 void xml_builder::normalize_mode() {

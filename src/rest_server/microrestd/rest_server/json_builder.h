@@ -33,6 +33,7 @@ class json_builder {
 
   // Return current json
   inline string_piece current() const;
+  inline operator string_piece() const;
 
   // Remove current json prefix; for response_generator
   void discard_current_prefix(size_t length);
@@ -126,6 +127,10 @@ json_builder& json_builder::indent() {
 
 string_piece json_builder::current() const {
   return string_piece(json.data(), json.size());
+}
+
+json_builder::operator string_piece() const {
+  return current();
 }
 
 void json_builder::normalize_mode() {
