@@ -22,9 +22,9 @@ class OutputFormat {
 
   virtual bool CanHandleAlternatives() const = 0;
 
-  virtual void SetBlock(const string& /*block*/) {}
+  virtual void SetBlock(const string& block);
   virtual void AppendSentence(string& output, const vector<TokenP>& tokens, const vector<SpellcheckerCorrection>& corrections) = 0;
-  virtual void FinishBlock(string& /*output*/) {}
+  virtual void FinishBlock(string& output);
 
   static unique_ptr<OutputFormat> NewOutputFormat(const string& name);
   static unique_ptr<OutputFormat> NewHorizontalOutputFormat();

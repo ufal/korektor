@@ -13,6 +13,10 @@
 namespace ufal {
 namespace korektor {
 
+void OutputFormat::SetBlock(const string& /*block*/) {}
+
+void OutputFormat::FinishBlock(string& /*output*/) {}
+
 class HorizontalOutputFormat : public OutputFormat {
  public:
   virtual bool CanHandleAlternatives() const override {
