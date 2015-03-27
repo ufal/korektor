@@ -1,6 +1,5 @@
-/* menu links center fix*/
-.navbar .nav,
-.navbar .nav > li {
+/* nav-tabs menu center fix*/
+.nav-tabs > li {
     float:none;
     display:inline-block;
     *display:inline; /* ie7 fix */
@@ -8,7 +7,19 @@
     vertical-align: top;
 }
 
-.main-content-container {
-    margin-left: 1em;
-    margin-right: 1em;
+/* fix weird override in ufal-theme.css */
+.form-horizontal .control-label {
+  padding-top: 7px;
+  display: inline-block;
+}
+@media (min-width: 768px) {
+  .form-horizontal .control-label {
+    float: left;
+    text-align: right;
+  }
+}
+/* fix wrong margin of breadcrumbs */
+ul.breadcrumb {
+  margin-left: -15px;
+  margin-right: -15px;
 }
