@@ -123,7 +123,7 @@ def write_data(filename, outputDir):
     # write morphological lexicon and frequency counts
     blockSize = 100000 # 100000 words per write operation
     fHandles[0].write('form|lemma|pos\n')
-    fHandles[0].write('-----\n')
+    fHandles[1].write('form|lemma|pos\n')
     keyCountsList = []
     keysList = counts.keys()
     for k in counts.keys():

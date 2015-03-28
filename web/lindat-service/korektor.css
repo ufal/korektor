@@ -1,0 +1,25 @@
+/* nav-tabs menu center fix*/
+.nav-tabs > li {
+    float:none;
+    display:inline-block;
+    *display:inline; /* ie7 fix */
+    *zoom:1; /* hasLayout ie7 trigger */
+    vertical-align: top;
+}
+
+/* fix weird override in ufal-theme.css */
+.form-horizontal .control-label {
+  padding-top: 7px;
+  display: inline-block;
+}
+@media (min-width: 768px) {
+  .form-horizontal .control-label {
+    float: left;
+    text-align: right;
+  }
+}
+/* fix wrong margin of breadcrumbs */
+ul.breadcrumb {
+  margin-left: -15px;
+  margin-right: -15px;
+}
