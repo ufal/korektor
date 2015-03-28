@@ -61,7 +61,7 @@ handling.</p>
 supplies no model to a method call) is also returned &ndash; this is guaranteed
 to be the latest Czech spellchecking model.</p>
 
-<h5>Browser Example</h5>
+<h4>Browser Example</h4>
 
 <table style='width: 100%'>
  <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/models</pre></td>
@@ -74,7 +74,7 @@ to be the latest Czech spellchecking model.</p>
 of existing model names) and <code>default_model</code> (one of the models which
 is used when no model is specified).
 
-<h5>Example JSON Response</h5>
+<h4>Example JSON Response</h4>
 <pre class="prettyprint lang-json">
 {
  "models": [
@@ -99,7 +99,7 @@ is used when no model is specified).
 <tr><td>input</td><td>no</td><td>string (<code>untokenized</code> / <code>untokenized_lines</code> / <code>segmented</code> / <code>vertical</code> / <code>horizontal</code>)</td><td><a href="http://ufal.mff.cuni.cz/korektor/users-manual#korektor_input_formats">Input format to use</a>; default is <code>untokenized</code>.</td></tr>
 </table>
 
-<h5>Browser Examples</h5>
+<h4>Browser Examples</h4>
 <table style='width: 100%'>
  <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/correct?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.</pre></td>
      <td style='vertical-align: middle; width: 6em'><button style='width: 100%' type="button" class="btn btn-success btn-xs" onclick="window.open('http://lindat.mff.cuni.cz/services/korektor/api/correct?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.')">try&nbsp;this</button></td></tr>
@@ -124,7 +124,15 @@ format is <a href="#response_format">described later</a>.</p>
 <tr><td>suggestions</td><td>no</td><td>positive integer</td><td>The maximum number of suggestions to return for a single token. If unspecified, value 5 is used.</td></tr>
 </table>
 
-<h5>Result Object</h5>
+<h4>Browser Examples</h4>
+<table style='width: 100%'>
+ <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.</pre></td>
+     <td style='vertical-align: middle; width: 6em'><button style='width: 100%' type="button" class="btn btn-success btn-xs" onclick="window.open('http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.')">try&nbsp;this</button></td></tr>
+ <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Prilis zlutoucky kun upel dabelske ody.&amp;model=czech-diacritics_generator&amp;suggestions=3</pre></td>
+     <td style='vertical-align: middle; width: 6em'><button style='width: 100%' type="button" class="btn btn-success btn-xs" onclick="window.open('http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Prilis zlutoucky kun upel dabelske ody.&amp;model=czech-diacritics_generator&amp;suggestions=3')">try&nbsp;this</button></td></tr>
+</table>
+
+<h4>Result Object</h4>
 
 <p>The <code>result</code> field in the <a href="#response_format">response
 format</a> is an array of suggestions. Each suggestion is an array of strings,
@@ -133,7 +141,7 @@ may or may not be present) are the suggestions, from the most probable to the
 least probable. The concatenation of first elements of suggestions is equal to
 the original text.</p>
 
-<h6>Example JSON Response</h6>
+<h4>Example JSON Response</h4>
 <pre class="prettyprint lang-json">
 {
  "model": "czech-spellchecker-130202"
@@ -145,14 +153,6 @@ the original text.</p>
   [" kůň "],["ůpěl","úpěl","pěl"],[" ďábelské "],["ódi","ódy","zdi"],["."]]
 }
 </pre>
-
-<h5>Browser Examples</h5>
-<table style='width: 100%'>
- <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.</pre></td>
-     <td style='vertical-align: middle'><button style='width: 100%' type="button" class="btn btn-success btn-xs" onclick="window.open('http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.')">try&nbsp;this</button></td></tr>
- <tr><td style='vertical-align: middle'><pre style='margin-bottom: 0' class="prettyprint lang-html">http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Prilis zlutoucky kun upel dabelske ody.&amp;model=czech-diacritics_generator&amp;suggestions=3</pre></td>
-     <td style='vertical-align: middle'><button style='width: 100%' type="button" class="btn btn-success btn-xs" onclick="window.open('http://lindat.mff.cuni.cz/services/korektor/api/suggestions?data=Prilis zlutoucky kun upel dabelske ody.&amp;model=czech-diacritics_generator&amp;suggestions=3')">try&nbsp;this</button></td></tr>
-</table>
 
 <hr />
 
@@ -201,16 +201,16 @@ the <code>model</code> option:</p>
 
 The described API can be comfortably used by <code>curl</code>. Several examples follow:
 
-<h5>Passing Input on Command Line (if UTF-8 locale is being used)</h5>
+<h3>Passing Input on Command Line (if UTF-8 locale is being used)</h3>
 <pre class="prettyprint lang-sh">curl --data-urlencode 'data=Přílyš žluťoučky kůň ůpěl ďábelské ódi.' http://lindat.mff.cuni.cz/services/korektor/api/correct</pre>
 
-<h5>Using Files as Input (files must be in UTF-8 encoding)</h5>
+<h3>Using Files as Input (files must be in UTF-8 encoding)</h3>
 <pre class="prettyprint lang-sh">curl -F 'data=@input_file' http://lindat.mff.cuni.cz/services/korektor/api/suggestions</pre>
 
-<h5>Specifying Additional Parameters</h5>
+<h3>Specifying Additional Parameters</h3>
 <pre class="prettyprint lang-sh">curl -F 'data=@input_file' -F 'model=czech-diacritics_generator' -F 'suggestions=3' http://lindat.mff.cuni.cz/services/korektor/api/suggestions</pre>
 
-<h5>Converting JSON Result to Plain Text</h5>
+<h3>Converting JSON Result to Plain Text</h3>
 <pre class="prettyprint lang-sh">curl -F 'data=@input_file' http://lindat.mff.cuni.cz/services/korektor/api/correct | python -c "import sys,json; sys.stdout.write(json.load(sys.stdin)['result'])"</pre>
 
 <?php require('footer.php') ?>
