@@ -1,5 +1,7 @@
 <?php $main_page=basename(__FILE__); require('header.php') ?>
 
+<?php require('about.html') ?>
+
 <div class="panel panel-info">
   <div class="panel-heading">Basic info</div>
   <table class="table table-striped table-bordered">
