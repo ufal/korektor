@@ -8,22 +8,19 @@
 // modification, are permitted under 3-clause BSD licence.
 
 #include "korektor_service.h"
-
-//#include "Configuration.hpp"
-//#include "Spellchecker.hpp"
-//#include "Tokenizer.hpp"
-//
-//#include "utf8.h"
-//#include "unicode.h"
-//#include "uninorms.h"
+#include "spellchecker/configuration.h"
+#include "spellchecker/spellchecker.h"
+#include "token/input_format.h"
+#include "token/output_format.h"
+#include "token/tokenizer.h"
+#include "unilib/unistrip.h"
+#include "utils/utf.h"
 
 namespace ufal {
 namespace korektor {
 
 #if 0
-static const string strip_diacritics = "strip_diacritics";
-
-// Custom ResponseGenerator using JsonBuilder as data storage.
+// Custom ResponseGenerator using ufal::microrestd::json_builder as data storage.
 // Pointer to input data is used and additional logic for generate
 // is implemented.
 class KorektorResponseGenerator : public ResponseGenerator {
@@ -32,20 +29,20 @@ class KorektorResponseGenerator : public ResponseGenerator {
 
   virtual bool next() = 0;
 
-  virtual StringPiece current() override;
+  virtual ufal::microrestd::string_piece current() override;
   virtual void consume(size_t length) override;
   virtual bool generate() override;
 
  protected:
   const char* data;
-  JsonBuilder result;
+  ufal::microrestd::json_builder result;
 };
 
 KorektorResponseGenerator::KorektorResponseGenerator(const string& model, const char* data) : data(data) {
   result.object().key("model").value(model).key("result");
 }
 
-StringPiece KorektorResponseGenerator::current() {
+ufal::microrestd::string_piece KorektorResponseGenerator::current() {
   return result.current();
 }
 
@@ -62,24 +59,29 @@ bool KorektorResponseGenerator::generate() {
   }
   return true;
 }
+#endif
 
 // Spellchecker implementation using Korektor
 class KorektorService::KorektorProvider : public KorektorService::SpellcheckerProvider {
  public:
   KorektorProvider(const string& file) : configuration(new Configuration(file)) {}
 
-  class KorektorSpellchecker : public Spellchecker {
+  class KorektorSpellchecker : public SpellcheckerI {
    public:
     KorektorSpellchecker(Configuration* configuration) : spellchecker(configuration) {}
-    virtual void suggestions(const string& str, unsigned num, vector<pair<string, vector<string>>>& suggestions) override {
-      spellchecker.GetSuggestions(str, num, suggestions);
+
+    virtual void Suggestions(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned alternatives) override {
+      spellchecker.Spellcheck(tokens, corrections, alternatives);
     }
    private:
-    ngramchecker::Spellchecker spellchecker;
+    Spellchecker spellchecker;
   };
 
-  virtual Spellchecker* new_spellchecker() const override {
+  virtual SpellcheckerI* NewSpellchecker() const override {
     return new KorektorSpellchecker(configuration.get());
+  }
+  virtual LexiconP Lexicon() const override {
+    return configuration->lexicon;
   }
  private:
   unique_ptr<Configuration> configuration;
@@ -88,73 +90,64 @@ class KorektorService::KorektorProvider : public KorektorService::SpellcheckerPr
 // Spellchecker implementation stripping diacritics
 class KorektorService::StripDiacriticsProvider : public KorektorService::SpellcheckerProvider {
  public:
-  class StripDiacriticsSpellchecker : public Spellchecker {
+  class StripDiacriticsSpellchecker : public SpellcheckerI {
    public:
-    virtual void suggestions(const string& str, unsigned /*num*/, vector<pair<string, vector<string>>>& suggestions) override {
-      suggestions.clear();
+    virtual void Suggestions(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned /*alternatives*/) override {
+      corrections.clear();
+      for (auto&& token : tokens) {
+        bool contains_diacritics = false;
+        for (auto&& chr : token->str)
+          if (unilib::unistrip::is_combining_mark(chr) || unilib::unistrip::strip_combining_marks(chr) != chr) {
+            contains_diacritics = true;
+            break;
+          }
 
-      u16string text = MyUtils::utf8_to_utf16(str);
-      vector<vector<TokenP>> sentences = tokenizer.Tokenize(text);
-      unsigned text_index = 0;
-      for (auto&& sentence : sentences)
-        for (auto&& token : sentence) {
-          // Strip diacritics from token
-          utf8::decode(token->str_utf8, token_utf32);
-          uninorms::nfd(token_utf32);
-
-          stripped_utf32.clear();
-          for (auto&& chr : token_utf32)
-            if (unicode::category(chr) & ~unicode::Mn)
-              stripped_utf32 += chr;
-          if (stripped_utf32.size() == token_utf32.size()) continue;
-
-          uninorms::nfc(stripped_utf32);
-
-          if (text_index < token->first) suggestions.emplace_back(MyUtils::utf16_to_utf8(text.substr(text_index, token->first - text_index)), vector<string>());
-          utf8::encode(stripped_utf32, stripped);
-          suggestions.emplace_back(token->str_utf8, vector<string>{stripped});
-
-          text_index = token->first + token->length;
-        }
-      if (text_index < text.size()) suggestions.emplace_back(MyUtils::utf16_to_utf8(text.substr(text_index)), vector<string>());
+        corrections.emplace_back(contains_diacritics ? SpellcheckerCorrection::SPELLING : SpellcheckerCorrection::NONE);
+        if (contains_diacritics)
+          for (auto&& chr : token->str)
+            if (!unilib::unistrip::is_combining_mark(chr))
+              corrections.back().correction.push_back(unilib::unistrip::strip_combining_marks(chr));
+      }
     }
-   private:
-    Tokenizer tokenizer;
-    string stripped;
-    u32string token_utf32, stripped_utf32;
   };
 
-  virtual Spellchecker* new_spellchecker() const override {
+  virtual SpellcheckerI* NewSpellchecker() const override {
     return new StripDiacriticsSpellchecker();
+  }
+  virtual LexiconP Lexicon() const override {
+    return nullptr;
   }
 };
 
 // Init the Korektor service -- load the spellcheckers
-void KorektorService::init(const vector<SpellcheckerDescription>& spellchecker_descriptions) {
+void KorektorService::Init(const vector<SpellcheckerDescription>& spellchecker_descriptions) {
+  static const string strip_diacritics = "strip_diacritics";
+
   // Load spellcheckers
   spellcheckers.clear();
-  json_models.clear().object().key("models").array();
+  json_models.clear().object().indent().key("models").indent().array();
   for (auto& spellchecker_description : spellchecker_descriptions) {
     spellcheckers.emplace(spellchecker_description.id, unique_ptr<SpellcheckerProvider>(new KorektorProvider(spellchecker_description.file)));
-    json_models.value(spellchecker_description.id);
+    json_models.indent().value(spellchecker_description.id);
   }
   spellcheckers.emplace(strip_diacritics, unique_ptr<SpellcheckerProvider>(new StripDiacriticsProvider()));
-  json_models.value(strip_diacritics);
+  json_models.indent().value(strip_diacritics);
 
   default_model = spellchecker_descriptions.empty() ? strip_diacritics : spellchecker_descriptions.front().id;
-  json_models.close().key("default_model").value(default_model);
+  json_models.indent().close().indent().key("default_model").indent().value(default_model).finish(true);
 }
 
 // Handle a request
-bool KorektorService::handle(RestRequest& req) {
-  if (req.url == "/models") return req.respond_json(json_models);
-  if (req.url == "/correct") return handle_correct(req);
-  if (req.url == "/suggestions") return handle_suggestions(req);
+bool KorektorService::handle(ufal::microrestd::rest_request& req) {
+  if (req.url == "/models") return req.respond(json_models.mime, json_models);
+  if (req.url == "/correct") return HandleCorrect(req);
+  if (req.url == "/suggestions") return HandleSuggestions(req);
   return req.respond_not_found();
 }
 
-bool KorektorService::handle_suggestions(RestRequest& req) {
-  JsonBuilder error;
+bool KorektorService::HandleSuggestions(ufal::microrestd::rest_request& req) {
+#if 0
+  ufal::microrestd::json_builder error;
   auto data = get_data(req, error); if (!data) return req.respond_json(error);
   string model;
   auto provider = get_provider(req, model, error); if (!provider) return req.respond_json(error);
@@ -162,11 +155,11 @@ bool KorektorService::handle_suggestions(RestRequest& req) {
 
    class generator : public KorektorResponseGenerator {
    public:
-    generator(const string& model, const char* data, unsigned num, Spellchecker* spellchecker)
+    generator(const string& model, const char* data, unsigned num, SpellcheckerI* spellchecker)
         : KorektorResponseGenerator(model, data), num(num), spellchecker(spellchecker) { result.array(); }
 
     bool next() {
-      StringPiece line;
+      ufal::microrestd::string_piece line;
       if (!get_line(data, line)) return false;
 
       spellchecker->suggestions(string(line.str, line.len), num, suggestions);
@@ -182,94 +175,90 @@ bool KorektorService::handle_suggestions(RestRequest& req) {
 
    private:
     unsigned num;
-    unique_ptr<Spellchecker> spellchecker;
+    unique_ptr<SpellcheckerI> spellchecker;
     vector<pair<string, vector<string>>> suggestions;
   };
   return req.respond_json(new generator(model, data, suggestions, provider->new_spellchecker()));
+#endif
 }
 
-bool KorektorService::handle_correct(RestRequest& req) {
-  JsonBuilder error;
-  auto data = get_data(req, error); if (!data) return req.respond_json(error);
+bool KorektorService::HandleCorrect(ufal::microrestd::rest_request& req) {
+  string error;
+  auto data = GetData(req, error); if (!data) return req.respond_error(error);
   string model;
-  auto provider = get_provider(req, model, error); if (!provider) return req.respond_json(error);
+  auto provider = GetProvider(req, model, error); if (!provider) return req.respond_error(error);
+  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), provider->Lexicon());
 
-   class generator : public KorektorResponseGenerator {
+  class Generator : public ufal::microrestd::json_response_generator {
    public:
-    generator(const string& model, const char* data, Spellchecker* spellchecker)
-        : KorektorResponseGenerator(model, data), spellchecker(spellchecker) { result.value_open(); }
+    Generator(const string& model, const string& data, InputFormat* input_format, SpellcheckerI* spellchecker)
+        : input_format(input_format), output_format(OutputFormat::NewOriginalOutputFormat()), spellchecker(spellchecker) {
+      input_format->SetBlock(data);
+      output_format->SetBlock(data);
+      json.object().indent().key("model").indent().value(model).indent().key("result").indent().value("");
+    }
 
-    bool next() {
-      StringPiece line;
-      if (!get_line(data, line)) return result.value_close(), false;
+    bool generate() override {
+      if (!input_format->NextSentence(tokens)) {
+        corrected_sentence.clear();
+        output_format->FinishBlock(corrected_sentence);
+        json.value(corrected_sentence, true).finish(true);
+        return false;
+      }
 
-      spellchecker->suggestions(string(line.str, line.len), 1, suggestions);
-      for (auto&& suggestion : suggestions)
-        result.value_append(suggestion.second.empty() ? suggestion.first : suggestion.second.front());
+      spellchecker->Suggestions(tokens, corrections, 0);
+
+      corrected_sentence.clear();
+      output_format->AppendSentence(corrected_sentence, tokens, corrections);
+      json.value(corrected_sentence, true);
 
       return true;
     }
 
    private:
-    unique_ptr<Spellchecker> spellchecker;
-    vector<pair<string, vector<string>>> suggestions;
+    unique_ptr<InputFormat> input_format;
+    unique_ptr<OutputFormat> output_format;
+    unique_ptr<SpellcheckerI> spellchecker;
+    vector<TokenP> tokens;
+    vector<SpellcheckerCorrection> corrections;
+    string corrected_sentence;
   };
-  return req.respond_json(new generator(model, data, provider->new_spellchecker()));
+  return req.respond(ufal::microrestd::json_builder::mime, new Generator(model, *data, input_format.release(), provider->NewSpellchecker()));
 }
 
-const char* KorektorService::get_data(RestRequest& req, JsonBuilder& error) {
+const string* KorektorService::GetData(ufal::microrestd::rest_request& req, string& error) {
   auto data_it = req.params.find("data");
-  if (data_it == req.params.end()) {
-    error.clear().object().key("error").value("Required argument 'data' is missing.");
-    return nullptr;
-  }
+  if (data_it == req.params.end()) return error.assign("Required argument 'data' is missing."), nullptr;
 
-  return data_it->second.c_str();
+  return &data_it->second;
 }
 
-const KorektorService::SpellcheckerProvider* KorektorService::get_provider(RestRequest& req, string& model, JsonBuilder& error) {
+const KorektorService::SpellcheckerProvider* KorektorService::GetProvider(ufal::microrestd::rest_request& req, string& model, string& error) {
   auto data_it = req.params.find("model");
-  model = data_it == req.params.end() ? default_model : data_it->second;
+  model.assign(data_it == req.params.end() ? default_model : data_it->second);
 
   auto spellchecker_it = spellcheckers.find(model);
-  if (spellchecker_it == spellcheckers.end()) {
-    error.clear().object().key("error").value("Specified model '" + model + "' does not exist.");
-    return nullptr;
-  }
+  if (spellchecker_it == spellcheckers.end()) return error.assign("Specified model '").append(model).append("' does not exist."), nullptr;
 
   return spellchecker_it->second.get();
 }
 
-unsigned KorektorService::get_suggestions(RestRequest& req, JsonBuilder& error) {
+const string& KorektorService::GetInputFormat(ufal::microrestd::rest_request& req) {
+  static const string untokenized = "untokenized";
+
+  auto data_it = req.params.find("input");
+  return data_it != req.params.end() ? data_it->second : untokenized;
+}
+
+unsigned KorektorService::GetSuggestions(ufal::microrestd::rest_request& req, string& error) {
   auto data_it = req.params.find("suggestions");
   if (data_it == req.params.end()) return 5;
 
   int suggestions = atoi(data_it->second.c_str());
-  if (suggestions <= 0) return error.clear().object().key("error").value("Specified number of suggestions '" + data_it->second + "' is not a positive integer."), 0;
+  if (suggestions <= 0) return error.assign("Specified number of suggestions '").append(data_it->second).append("' is not a positive integer."), 0;
 
   return suggestions;
 }
-
-bool KorektorService::get_line(const char*& data, StringPiece& line) {
-  line.str = data;
-  while (*data && *data != '\r' && *data != '\n') data++;
-  line.len = data - line.str;
-
-  // If end of data was reached
-  if (!*data) return line.len;
-
-  // Otherwise, include the line ending
-  if (*data == '\r') {
-    data++;
-    if (*data == '\n') data++;
-  } else if (*data == '\n') {
-    data++;
-    if (*data == '\r') data++;
-  }
-  line.len = data - line.str;
-  return true;
-}
-#endif
 
 } // namespace korektor
 } // namespace ufal

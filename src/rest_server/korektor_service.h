@@ -11,48 +11,51 @@
 
 #include "common.h"
 #include "microrestd/microrestd.h"
+#include "spellchecker/spellchecker_correction.h"
+#include "token/input_format.h"
 
 namespace ufal {
 namespace korektor {
 
-#if 0
 struct SpellcheckerDescription {
   string id, file;
 
   SpellcheckerDescription(string id, string file) : id(id), file(file) {}
 };
 
-class KorektorService : public RestService {
+class KorektorService : public ufal::microrestd::rest_service {
  public:
-  void init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
+  void Init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
 
-  virtual bool handle(RestRequest& req) override;
+  virtual bool handle(ufal::microrestd::rest_request& req) override;
 
  private:
-  bool handle_correct(RestRequest& req);
-  bool handle_suggestions(RestRequest& req);
-
-  class Spellchecker {
+  // Generic Spellchecker interface
+  class SpellcheckerI {
    public:
-    virtual void suggestions(const string& str, unsigned num, vector<pair<string, vector<string>>>& suggestions) = 0;
+    virtual void Suggestions(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned alternatives) = 0;
   };
   class SpellcheckerProvider {
    public:
-    virtual Spellchecker* new_spellchecker() const = 0;
+    virtual LexiconP Lexicon() const = 0;
+    virtual SpellcheckerI* NewSpellchecker() const = 0;
   };
   class KorektorProvider;
   class StripDiacriticsProvider;
-
-  const char* get_data(RestRequest& req, JsonBuilder& error);
-  const SpellcheckerProvider* get_provider(RestRequest& req, string& model, JsonBuilder& error);
-  unsigned get_suggestions(RestRequest& req, JsonBuilder& error);
-  static bool get_line(const char*& data, StringPiece& line);
-
   unordered_map<string, unique_ptr<SpellcheckerProvider>> spellcheckers;
+
+  // REST service
+  bool HandleCorrect(ufal::microrestd::rest_request& req);
+  bool HandleSuggestions(ufal::microrestd::rest_request& req);
+
+  const string* GetData(ufal::microrestd::rest_request& req, string& error);
+  const SpellcheckerProvider* GetProvider(ufal::microrestd::rest_request& req, string& model, string& error);
+  const string& GetInputFormat(ufal::microrestd::rest_request& req);
+  unsigned GetSuggestions(ufal::microrestd::rest_request& req, string& error);
+
   string default_model;
-  JsonBuilder json_models;
+  ufal::microrestd::json_builder json_models;
 };
-#endif
 
 } // namespace korektor
 } // namespace ufal

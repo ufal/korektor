@@ -53,7 +53,7 @@ class syslog_streambuf : public streambuf {
 #endif
 
 ufal::microrestd::rest_server server;
-// KorektorService service;
+KorektorService service;
 
 int main(int argc, char* argv[]) {
   iostream::sync_with_stdio(false);
@@ -83,15 +83,13 @@ int main(int argc, char* argv[]) {
   if (options.count("daemon")) runtime_failure("The --daemon option is currently supported on Linux only!");
 #endif
 
-#if 0
   // Initialize the service
   vector<SpellcheckerDescription> spellcheckers;
-  for (; argi < argc; argi += 2)
-    spellcheckers.emplace_back(argv[argi], argv[argi + 1]);
+  for (int i = 2; i < argc; i += 2)
+    spellcheckers.emplace_back(argv[i], argv[i + 1]);
 
   // Initialize the service
-  service.init(spellcheckers);
-#endif
+  service.Init(spellcheckers);
 
   // Open log file
   string log_file_name = string(argv[0]) + ".log";
@@ -119,14 +117,14 @@ int main(int argc, char* argv[]) {
   server.set_threads(0);
   server.set_timeout(60);
 
-//  if (!server.start(&service, port))
-//    runtime_failure("Cannot start korektor_server'!");
+  if (!server.start(&service, port))
+    runtime_failure("Cannot start korektor_server'!");
 
   cerr << "Successfully started korektor_server on port " << port << "." << endl;
 
   // Wait until finished
-//  server.wait_until_signalled();
-//  server.stop();
+  server.wait_until_signalled();
+  server.stop();
   fclose(log_file);
 
   return 0;
