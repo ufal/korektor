@@ -30,8 +30,9 @@ class xml_builder {
   inline xml_builder& element(string_piece name);
   inline xml_builder& attribute(string_piece name, string_piece value);
   inline xml_builder& text(string_piece str);
-  inline xml_builder& close();
   inline xml_builder& indent();
+  inline xml_builder& close();
+  inline xml_builder& finish(bool indent = false);
 
   // Return current xml
   inline string_piece current() const;
@@ -98,6 +99,12 @@ xml_builder& xml_builder::text(string_piece str) {
   return *this;
 }
 
+xml_builder& xml_builder::indent() {
+  if (mode == IN_ELEMENT) normalize_mode();
+  mode = NEED_INDENT;
+  return *this;
+}
+
 xml_builder& xml_builder::close() {
   if (stack_length) {
     stack_length--;
@@ -116,9 +123,12 @@ xml_builder& xml_builder::close() {
   return *this;
 }
 
-xml_builder& xml_builder::indent() {
-  if (mode == IN_ELEMENT) normalize_mode();
-  mode = NEED_INDENT;
+xml_builder& xml_builder::finish(bool indent) {
+  while (stack_length) {
+    if (indent) this->indent();
+    close();
+  }
+  if (!xml.empty() && xml.back() != '\n') xml.push_back('\n');
   return *this;
 }
 
