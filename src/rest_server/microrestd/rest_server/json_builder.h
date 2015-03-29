@@ -42,15 +42,16 @@ class json_builder {
   static const char* mime;
 
  private:
-  enum mode_t { NORMAL, IN_VALUE, NEED_COMMA, NEED_INDENT };
+  enum mode_t { NORMAL, IN_VALUE, AFTER_VALUE };
 
-  inline void normalize_mode();
+  inline void normalize_mode(bool start_value);
   void encode(string_piece str);
   void encode_xml_escape(string_piece str);
 
   std::vector<char> json;
   std::vector<char> stack;
   mode_t mode = NORMAL;
+  bool need_indent = false;
 };
 
 
@@ -59,25 +60,26 @@ json_builder& json_builder::clear() {
   json.clear();
   stack.clear();
   mode = NORMAL;
+  need_indent = false;
   return *this;
 }
 
 json_builder& json_builder::object() {
-  normalize_mode();
+  normalize_mode(true);
   json.push_back('{');
   stack.push_back('}');
   return *this;
 }
 
 json_builder& json_builder::array() {
-  normalize_mode();
+  normalize_mode(true);
   json.push_back('[');
   stack.push_back(']');
   return *this;
 }
 
 json_builder& json_builder::key(string_piece str) {
-  normalize_mode();
+  normalize_mode(true);
   json.push_back('"');
   encode(str);
   json.push_back('"');
@@ -86,23 +88,21 @@ json_builder& json_builder::key(string_piece str) {
 }
 
 json_builder& json_builder::value(string_piece str, bool append) {
-  if (!append) normalize_mode();
-  if (mode != IN_VALUE) {
-    normalize_mode();
+  if (!append || mode != IN_VALUE) {
+    normalize_mode(true);
     json.push_back('"');
-    mode = IN_VALUE;
   }
+  mode = IN_VALUE;
   encode(str);
   return *this;
 }
 
 json_builder& json_builder::value_xml_escape(string_piece str, bool append) {
-  if (!append) normalize_mode();
-  if (mode != IN_VALUE) {
-    normalize_mode();
+  if (!append || mode != IN_VALUE) {
+    normalize_mode(true);
     json.push_back('"');
-    mode = IN_VALUE;
   }
+  mode = IN_VALUE;
   encode_xml_escape(str);
   return *this;
 }
@@ -111,17 +111,18 @@ json_builder& json_builder::close() {
   if (!stack.empty()) {
     char closing_char = stack.back();
     stack.pop_back();
-    if (mode == IN_VALUE) json.push_back('"');
-    else if (mode == NEED_INDENT) normalize_mode();
+    normalize_mode(false);
     json.push_back(closing_char);
-    mode = NEED_COMMA;
+    mode = AFTER_VALUE;
   }
   return *this;
 }
 
 json_builder& json_builder::indent() {
-  if (mode == IN_VALUE || mode == NEED_COMMA) normalize_mode();
-  mode = NEED_INDENT;
+  if (!need_indent) {
+    normalize_mode(false);
+    need_indent = true;
+  }
   return *this;
 }
 
@@ -133,22 +134,25 @@ json_builder::operator string_piece() const {
   return current();
 }
 
-void json_builder::normalize_mode() {
+void json_builder::normalize_mode(bool start_value) {
   if (mode == IN_VALUE) {
     json.push_back('"');
+    mode = AFTER_VALUE;
+  }
+
+  if (start_value && mode == AFTER_VALUE) {
     json.push_back(',');
     mode = NORMAL;
-  } else if (mode == NEED_COMMA) {
-    json.push_back(',');
-    mode = NORMAL;
-  } else if (mode == NEED_INDENT) {
+  }
+
+  if (need_indent) {
     if (!json.empty() && json.back() == ':') {
       json.push_back(' ');
     } else {
       json.push_back('\n');
       if (!stack.empty()) json.insert(json.end(), stack.size(), ' ');
     }
-    mode = NORMAL;
+    need_indent = false;
   }
 }
 

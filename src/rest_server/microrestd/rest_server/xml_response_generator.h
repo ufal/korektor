@@ -21,6 +21,7 @@ class xml_response_generator : public response_generator {
   virtual void consume(size_t length) override;
 
   xml_builder xml;
+  static const char* mime;
 };
 
 } // namespace microrestd

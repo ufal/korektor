@@ -21,6 +21,7 @@ class json_response_generator : public response_generator {
   virtual void consume(size_t length) override;
 
   json_builder json;
+  static const char* mime;
 };
 
 } // namespace microrestd

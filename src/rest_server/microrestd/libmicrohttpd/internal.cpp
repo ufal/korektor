@@ -29,6 +29,8 @@
  * @author Christian Grothoff
  */
 
+#include <chrono>
+
 #include "internal.h"
 
 namespace ufal {
@@ -190,6 +192,11 @@ MHD_http_unescape (char *val)
 time_t
 MHD_monotonic_time (void)
 {
+  // Use C++11 chrono::steady_clock, by Milan Straka
+  auto time_point = std::chrono::steady_clock::now();
+  auto duration = std::chrono::duration_cast<std::chrono::seconds>(time_point.time_since_epoch());
+  return duration.count();
+
 #ifdef HAVE_CLOCK_GETTIME
 #ifdef CLOCK_MONOTONIC
   struct timespec ts;

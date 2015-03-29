@@ -12,6 +12,8 @@
 namespace ufal {
 namespace microrestd {
 
+const char* json_response_generator::mime = "application/json";
+
 string_piece json_response_generator::current() const {
   return json.current();
 }

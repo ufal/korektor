@@ -12,6 +12,8 @@
 namespace ufal {
 namespace microrestd {
 
+const char* xml_response_generator::mime = "application/xml";
+
 string_piece xml_response_generator::current() const {
   return xml.current();
 }
