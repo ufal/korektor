@@ -18,7 +18,8 @@ namespace korektor {
 class Configuration;
 SP_DEF(Configuration);
 
-struct StagePossibility {
+class StagePossibility {
+ public:
   u16string word;
   bool original;
   float emission_prob;
