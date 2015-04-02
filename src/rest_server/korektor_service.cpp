@@ -120,21 +120,54 @@ class KorektorService::StripDiacriticsProvider : public KorektorService::Spellch
 };
 
 // Init the Korektor service -- load the spellcheckers
-void KorektorService::Init(const vector<SpellcheckerDescription>& spellchecker_descriptions) {
-  static const string strip_diacritics = "strip_diacritics";
+bool KorektorService::Init(const vector<SpellcheckerDescription>& spellchecker_descriptions) {
+  static const string strip_diacritics = "strip_diacritics-130202";
 
   // Load spellcheckers
   spellcheckers.clear();
-  json_models.clear().object().indent().key("models").indent().array();
-  for (auto& spellchecker_description : spellchecker_descriptions) {
-    spellcheckers.emplace(spellchecker_description.id, unique_ptr<SpellcheckerProvider>(new KorektorProvider(spellchecker_description.file)));
-    json_models.indent().value(spellchecker_description.id);
-  }
-  spellcheckers.emplace(strip_diacritics, unique_ptr<SpellcheckerProvider>(new StripDiacriticsProvider()));
-  json_models.indent().value(strip_diacritics);
+  spellcheckers_map.clear();
+  for (auto& spellchecker_description : spellchecker_descriptions)
+    spellcheckers.emplace_back(spellchecker_description.id, spellchecker_description.acknowledgements, new KorektorProvider(spellchecker_description.file));
+  spellcheckers.emplace_back(strip_diacritics, string(), new StripDiacriticsProvider());
 
-  default_model = spellchecker_descriptions.empty() ? strip_diacritics : spellchecker_descriptions.front().id;
-  json_models.indent().close().indent().key("default_model").indent().value(default_model).finish(true);
+  // Fill spellcheckers_map with model name and aliases
+  for (auto& spellchecker : spellcheckers) {
+    // Fail if this spellchecker id is aready in use.
+    if (!spellcheckers_map.emplace(spellchecker.id, &spellchecker).second) return false;
+
+    // Create (but not overwrite) id without version.
+    for (unsigned i = 0; i+1+6 < spellchecker.id.size(); i++)
+      if (spellchecker.id[i] == '-') {
+        bool is_version = true;
+        for (unsigned j = i+1; j < i+1+6; j++)
+          is_version = is_version && spellchecker.id[j] >= '0' && spellchecker.id[j] <= '9';
+        if (is_version)
+          spellcheckers_map.emplace(spellchecker.id.substr(0, i) + spellchecker.id.substr(i+1+6), &spellchecker);
+      }
+
+    // Create (but not overwrite) hyphen-separated prefixes.
+    for (unsigned i = 0; i < spellchecker.id.size(); i++)
+      if (spellchecker.id[i] == '-')
+        spellcheckers_map.emplace(spellchecker.id.substr(0, i), &spellchecker);
+  }
+  spellcheckers_map.emplace(string(), &spellcheckers.front());
+
+  // Fill json_models
+  json_models.clear().object().indent().key("models").indent().array();
+  for (auto& spellchecker : spellcheckers)
+    json_models.indent().value(spellchecker.id);
+  json_models.indent().close().indent().key("default_model").indent().value(spellcheckers.front().id).finish(true);
+
+  return true;
+}
+
+// Load selected model
+const KorektorService::SpellcheckerModel* KorektorService::LoadSpellchecker(const string& id, string& error) {
+  auto model_it = spellcheckers_map.find(id);
+  if (model_it == spellcheckers_map.end())
+    return error.assign("Requested model '").append(id).append("' does not exist.\n"), nullptr;
+
+  return model_it->second;
 }
 
 // Handle a request
@@ -185,17 +218,17 @@ bool KorektorService::HandleSuggestions(ufal::microrestd::rest_request& req) {
 bool KorektorService::HandleCorrect(ufal::microrestd::rest_request& req) {
   string error;
   auto data = GetData(req, error); if (!data) return req.respond_error(error);
-  string model;
-  auto provider = GetProvider(req, model, error); if (!provider) return req.respond_error(error);
-  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), provider->Lexicon());
+  auto model = LoadSpellchecker(GetModelId(req), error); if (!model) return req.respond_error(error);
+  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), model->spellchecker->Lexicon());
 
   class Generator : public ufal::microrestd::json_response_generator {
    public:
-    Generator(const string& model, const string& data, InputFormat* input_format, SpellcheckerI* spellchecker)
-        : input_format(input_format), output_format(OutputFormat::NewOriginalOutputFormat()), spellchecker(spellchecker) {
+    Generator(const SpellcheckerModel* model, const string& data, InputFormat* input_format)
+        : input_format(input_format), output_format(OutputFormat::NewOriginalOutputFormat()), spellchecker(model->spellchecker->NewSpellchecker()) {
       input_format->SetBlock(data);
       output_format->SetBlock(data);
-      json.object().indent().key("model").indent().value(model).indent().key("result").indent().value("");
+      CommonResponse(model, json);
+      json.value("");
     }
 
     bool generate() override {
@@ -223,24 +256,30 @@ bool KorektorService::HandleCorrect(ufal::microrestd::rest_request& req) {
     vector<SpellcheckerCorrection> corrections;
     string corrected_sentence;
   };
-  return req.respond(ufal::microrestd::json_builder::mime, new Generator(model, *data, input_format.release(), provider->NewSpellchecker()));
+  return req.respond(ufal::microrestd::json_builder::mime, new Generator(model, *data, input_format.release()));
+}
+
+void KorektorService::CommonResponse(const SpellcheckerModel* model, ufal::microrestd::json_builder& json) {
+  json.object();
+  json.indent().key("model").indent().value(model->id);
+  json.indent().key("acknowledgements").indent().array();
+  json.indent().value("http://ufal.mff.cuni.cz/korektor#korektor_acknowledgements");
+  if (!model->acknowledgements.empty()) json.indent().value(model->acknowledgements);
+  json.indent().close().indent().key("result").indent();
 }
 
 const string* KorektorService::GetData(ufal::microrestd::rest_request& req, string& error) {
   auto data_it = req.params.find("data");
-  if (data_it == req.params.end()) return error.assign("Required argument 'data' is missing."), nullptr;
+  if (data_it == req.params.end()) return error.assign("Required argument 'data' is missing.\n"), nullptr;
 
   return &data_it->second;
 }
 
-const KorektorService::SpellcheckerProvider* KorektorService::GetProvider(ufal::microrestd::rest_request& req, string& model, string& error) {
+const string& KorektorService::GetModelId(ufal::microrestd::rest_request& req) {
+  static const string empty;
+
   auto data_it = req.params.find("model");
-  model.assign(data_it == req.params.end() ? default_model : data_it->second);
-
-  auto spellchecker_it = spellcheckers.find(model);
-  if (spellchecker_it == spellcheckers.end()) return error.assign("Specified model '").append(model).append("' does not exist."), nullptr;
-
-  return spellchecker_it->second.get();
+  return data_it != req.params.end() ? data_it->second : empty;
 }
 
 const string& KorektorService::GetInputFormat(ufal::microrestd::rest_request& req) {
@@ -255,7 +294,7 @@ unsigned KorektorService::GetSuggestions(ufal::microrestd::rest_request& req, st
   if (data_it == req.params.end()) return 5;
 
   int suggestions = atoi(data_it->second.c_str());
-  if (suggestions <= 0) return error.assign("Specified number of suggestions '").append(data_it->second).append("' is not a positive integer."), 0;
+  if (suggestions <= 0) return error.assign("Specified number of suggestions '").append(data_it->second).append("' is not a positive integer.\n"), 0;
 
   return suggestions;
 }

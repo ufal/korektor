@@ -18,14 +18,17 @@ namespace ufal {
 namespace korektor {
 
 struct SpellcheckerDescription {
-  string id, file;
+  string id;
+  string file;
+  string acknowledgements;
 
-  SpellcheckerDescription(string id, string file) : id(id), file(file) {}
+  SpellcheckerDescription(const string& id, const string& file, const string& acknowledgements) :
+    id(id), file(file), acknowledgements(acknowledgements) {}
 };
 
 class KorektorService : public ufal::microrestd::rest_service {
  public:
-  void Init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
+  bool Init(const vector<SpellcheckerDescription>& spellchecker_descriptions);
 
   virtual bool handle(ufal::microrestd::rest_request& req) override;
 
@@ -42,18 +45,30 @@ class KorektorService : public ufal::microrestd::rest_service {
   };
   class KorektorProvider;
   class StripDiacriticsProvider;
-  unordered_map<string, unique_ptr<SpellcheckerProvider>> spellcheckers;
+
+  struct SpellcheckerModel {
+    string id;
+    string acknowledgements;
+    unique_ptr<SpellcheckerProvider> spellchecker;
+
+    SpellcheckerModel(string id, string acknowledgements, SpellcheckerProvider* spellchecker) :
+      id(id), acknowledgements(acknowledgements), spellchecker(spellchecker) {}
+  };
+  vector<SpellcheckerModel> spellcheckers;
+  unordered_map<string, const SpellcheckerModel*> spellcheckers_map;
+  const SpellcheckerModel* LoadSpellchecker(const string& id, string& error);
 
   // REST service
   bool HandleCorrect(ufal::microrestd::rest_request& req);
   bool HandleSuggestions(ufal::microrestd::rest_request& req);
 
+  static void CommonResponse(const SpellcheckerModel* model, ufal::microrestd::json_builder& json);
+
   const string* GetData(ufal::microrestd::rest_request& req, string& error);
-  const SpellcheckerProvider* GetProvider(ufal::microrestd::rest_request& req, string& model, string& error);
+  const string& GetModelId(ufal::microrestd::rest_request& req);
   const string& GetInputFormat(ufal::microrestd::rest_request& req);
   unsigned GetSuggestions(ufal::microrestd::rest_request& req, string& error);
 
-  string default_model;
   ufal::microrestd::json_builder json_models;
 };
 

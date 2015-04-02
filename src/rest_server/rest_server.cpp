@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
                        {"version", Options::Value::none},
                        {"help", Options::Value::none}}, argc, argv, options) ||
       options.count("help") ||
-      (!options.count("version") && (argc < 2 || (argc % 2) == 1)))
-    runtime_failure("Usage: " << argv[0] << " [options] port (model_name configuration_file)*\n"
+      (!options.count("version") && (argc < 2 || (argc % 3) != 2)))
+    runtime_failure("Usage: " << argv[0] << " [options] port (model_name configuration_file acknowledgements)*\n"
                     "Options: --daemon\n"
                     "         --version\n"
                     "         --help");
@@ -85,11 +85,12 @@ int main(int argc, char* argv[]) {
 
   // Initialize the service
   vector<SpellcheckerDescription> spellcheckers;
-  for (int i = 2; i < argc; i += 2)
-    spellcheckers.emplace_back(argv[i], argv[i + 1]);
+  for (int i = 2; i < argc; i += 3)
+    spellcheckers.emplace_back(argv[i], argv[i + 1], argv[i + 2]);
 
   // Initialize the service
-  service.Init(spellcheckers);
+  if (!service.Init(spellcheckers))
+    runtime_failure("Cannot load specified models!");
 
   // Open log file
   string log_file_name = string(argv[0]) + ".log";
