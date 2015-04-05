@@ -33,6 +33,8 @@ class KorektorService : public ufal::microrestd::rest_service {
   virtual bool handle(ufal::microrestd::rest_request& req) override;
 
  private:
+  static unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)> handlers;
+
   // Generic Spellchecker interface
   class SpellcheckerI {
    public:
@@ -59,6 +61,7 @@ class KorektorService : public ufal::microrestd::rest_service {
   const SpellcheckerModel* LoadSpellchecker(const string& id, string& error);
 
   // REST service
+  bool HandleModels(ufal::microrestd::rest_request& req);
   bool HandleCorrect(ufal::microrestd::rest_request& req);
   bool HandleSuggestions(ufal::microrestd::rest_request& req);
 

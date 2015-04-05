@@ -171,11 +171,20 @@ const KorektorService::SpellcheckerModel* KorektorService::LoadSpellchecker(cons
 }
 
 // Handle a request
+unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)> KorektorService::handlers = {
+  {"/models", &KorektorService::HandleModels},
+  {"/correct", &KorektorService::HandleCorrect},
+  {"/suggestions", &KorektorService::HandleSuggestions},
+};
+
 bool KorektorService::handle(ufal::microrestd::rest_request& req) {
-  if (req.url == "/models") return req.respond(json_models.mime, json_models);
-  if (req.url == "/correct") return HandleCorrect(req);
-  if (req.url == "/suggestions") return HandleSuggestions(req);
-  return req.respond_not_found();
+  auto handler_it = handlers.find(req.url);
+  return handler_it == handlers.end() ? req.respond_not_found() : (this->*handler_it->second)(req);
+}
+
+// REST service
+bool KorektorService::HandleModels(ufal::microrestd::rest_request& req) {
+  return req.respond(json_models.mime, json_models);
 }
 
 bool KorektorService::HandleSuggestions(ufal::microrestd::rest_request& req) {
