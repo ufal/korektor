@@ -75,18 +75,19 @@ class KorektorService::StripDiacriticsProvider : public KorektorService::Spellch
   virtual LexiconP Lexicon() const override {
     return nullptr;
   }
+
+  static const string model_name;
 };
+const string KorektorService::StripDiacriticsProvider::model_name = "strip_diacritics-130202";
 
 // Init the Korektor service -- load the spellcheckers
 bool KorektorService::Init(const vector<SpellcheckerDescription>& spellchecker_descriptions) {
-  static const string strip_diacritics = "strip_diacritics-130202";
-
   // Load spellcheckers
   spellcheckers.clear();
   spellcheckers_map.clear();
   for (auto& spellchecker_description : spellchecker_descriptions)
     spellcheckers.emplace_back(spellchecker_description.id, spellchecker_description.acknowledgements, new KorektorProvider(spellchecker_description.file));
-  spellcheckers.emplace_back(strip_diacritics, string(), new StripDiacriticsProvider());
+  spellcheckers.emplace_back(StripDiacriticsProvider::model_name, string(), new StripDiacriticsProvider());
 
   // Fill spellcheckers_map with model name and aliases
   for (auto& spellchecker : spellcheckers) {
