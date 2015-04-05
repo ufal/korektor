@@ -78,11 +78,11 @@ is used when no model is specified).
 <pre class="prettyprint lang-json">
 {
  "models": [
-  "czech-spellchecker-130202"
- ,"czech-diacritics_generator-130202"
- ,"strip_diacritics-130202"
- ]
-,"default_model": "czech-spellchecker-130202"
+  "czech-spellchecker-130202",
+  "czech-diacritics_generator-130202",
+  "strip_diacritics-130202"
+ ],
+ "default_model": "czech-spellchecker-130202"
 }
 </pre>
 
@@ -144,13 +144,12 @@ the original text.</p>
 <h4>Example JSON Response</h4>
 <pre class="prettyprint lang-json">
 {
- "model": "czech-spellchecker-130202"
-,"acknowledgements": [
+ "model": "czech-spellchecker-130202",
+ "acknowledgements": [
   "http://ufal.mff.cuni.cz/korektor#korektor_acknowledgements",
- ,"http://ufal.mff.cuni.cz/korektor/users-manual#korektor-czech_acknowledgements"
- ]
-,"result": [["Přílyš","Příliš","Přílis"],[" "],["žluťoučky","žluťoučký","žluťoučké"],
-  [" kůň "],["ůpěl","úpěl","pěl"],[" ďábelské "],["ódi","ódy","zdi"],["."]]
+  "https://ufal.mff.cuni.cz/korektor/users-manual#korektor-czech_acknowledgements"
+ ],
+ "result": [["Přílyš","Příliš"],[" "],["žluťoučky","žluťoučký","žluťoučké"],[" kůň "],["ůpěl","úpěl","pěl"],[" ďábelské "],["ódi","ódy","zdi"],["."]]
 }
 </pre>
 
@@ -165,9 +164,9 @@ the original text.</p>
 
 <pre class="prettyprint lang-json">
 {
- "model": "Model used"
-,"acknowledgements": ["URL with acknowledgements", ...]
-,"result": result_object
+ "model": "Model used",
+ "acknowledgements": ["URL with acknowledgements", ...],
+ "result": result_object
 }
 </pre>
 
