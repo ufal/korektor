@@ -19,48 +19,6 @@
 namespace ufal {
 namespace korektor {
 
-#if 0
-// Custom ResponseGenerator using ufal::microrestd::json_builder as data storage.
-// Pointer to input data is used and additional logic for generate
-// is implemented.
-class KorektorResponseGenerator : public ResponseGenerator {
- public:
-  KorektorResponseGenerator(const string& model, const char* data);
-
-  virtual bool next() = 0;
-
-  virtual ufal::microrestd::string_piece current() override;
-  virtual void consume(size_t length) override;
-  virtual bool generate() override;
-
- protected:
-  const char* data;
-  ufal::microrestd::json_builder result;
-};
-
-KorektorResponseGenerator::KorektorResponseGenerator(const string& model, const char* data) : data(data) {
-  result.object().key("model").value(model).key("result");
-}
-
-ufal::microrestd::string_piece KorektorResponseGenerator::current() {
-  return result.current();
-}
-
-void KorektorResponseGenerator::consume(size_t length) {
-  result.discard_prefix(length);
-}
-
-bool KorektorResponseGenerator::generate() {
-  if (!data) return false;
-
-  if (!next()) {
-    result.close_all();
-    data = nullptr;
-  }
-  return true;
-}
-#endif
-
 // Spellchecker implementation using Korektor
 class KorektorService::KorektorProvider : public KorektorService::SpellcheckerProvider {
  public:
