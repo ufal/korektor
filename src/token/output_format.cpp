@@ -152,10 +152,10 @@ class XmlOutputFormat : public OutputFormat {
     encoded.clear();
     for (auto&& chr : data)
       switch(chr) {
-        case '<': encoded.append(u"&lt;"); break;
-        case '>': encoded.append(u"&gt;"); break;
-        case '&': encoded.append(u"&amp;"); break;
-        case '"': encoded.append(u"&quot;"); break;
+        case '<': encoded.push_back('&'); encoded.push_back('l'); encoded.push_back('t'); encoded.push_back(';'); break;
+        case '>': encoded.push_back('&'); encoded.push_back('g'); encoded.push_back('t'); encoded.push_back(';'); break;
+        case '&': encoded.push_back('&'); encoded.push_back('a'); encoded.push_back('m'); encoded.push_back('p'); encoded.push_back(';'); break;
+        case '"': encoded.push_back('&'); encoded.push_back('q'); encoded.push_back('u'); encoded.push_back('o'); encoded.push_back('t'); encoded.push_back(';'); break;
         default: encoded.push_back(chr);
       }
 
