@@ -40,10 +40,12 @@ class KorektorService : public ufal::microrestd::rest_service {
   // Generic Spellchecker interface
   class SpellcheckerI {
    public:
+    virtual ~SpellcheckerI() {}
     virtual void Suggestions(const vector<TokenP>& tokens, vector<SpellcheckerCorrection>& corrections, unsigned alternatives) = 0;
   };
   class SpellcheckerProvider {
    public:
+    virtual ~SpellcheckerProvider() {}
     virtual LexiconP Lexicon() const = 0;
     virtual SpellcheckerI* NewSpellchecker() const = 0;
   };
