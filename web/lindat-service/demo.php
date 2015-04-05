@@ -2,16 +2,13 @@
 
 <?php require('about.html') ?>
 
-<p>
-Description of the available methods is available in the <a href="api-reference.php">API
-Documentation</a> and the models are described in the
-<a href="http://ufal.mff.cuni.cz/korektor/users-manual">Korektor User's Manual</a>.
-</p>
-
 <script type="text/javascript" charset="utf-8"><!--
+  var models = {};
+
   var suggestions;
   var text_original;
   var text_korektor;
+
   function callCorrector(model) {
     var text = jQuery('#input').val();
     jQuery('#error').hide().empty();
@@ -84,55 +81,105 @@ Documentation</a> and the models are described in the
   function submitCorrection() {
     text_corrected = jQuery('#output').text();
 
-    jQuery('#submit_correction_results').empty();
+    jQuery('#submit_correction_results').removeClass().empty();
     jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/log.php',
                 {dataType: "json", data: {original: text_original, korektor: text_korektor, corrected: text_corrected}, type: "POST", success: function(json) {
-      jQuery('#submit_correction_results').text('Submitted, thanks.');
+      jQuery('#submit_correction_results').addClass("text-success").text('Submitted, thanks.');
     }, error: function(jqXHR, textStatus) {
-      jQuery('#submit_correction_results').text('Cannot submit, sorry.');
+      jQuery('#submit_correction_results').addClass("text-danger").text('Cannot submit, sorry.');
     }});
   }
+
+  function updateModels() {
+    var language = jQuery('input[name=language]:checked').val();
+    var models_list = "";
+    var models_list_map = {};
+    for (var i in models)
+      if (models[i].indexOf(language+"-") == 0) {
+        var version = models[i].match(/-\d\d\d\d\d\d/);
+        if (version) {
+          version = version[0].substr(1);
+          if (!(version in models_list_map)) {
+            models_list_map[version] = 1;
+            models_list += "<option value='" + version + "'" + (models_list ? "" : " selected") + ">" + language + "-" + version + "</option>";
+          }
+        }
+      }
+    jQuery('#model').html(models_list);
+    updateMethods();
+  }
+
+  jQuery(document).ready(function() {
+    jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/api/models',
+                {dataType: "json", success: function(json) {
+      models = json.models;
+      updateModels();
+    }, complete: function() {
+      if (jQuery.isEmptyObject(models)) {
+        jQuery('#error').text("Cannot obtain the list of models from the service.").show();
+      }
+    }});
+  });
 --></script>
-<style type="text/css"><!--
-  #output span.single { color: #800 }
-  #output span.multiple { color: #800; text-decoration: underline }
-  #suggestions { padding: 5px; border: 1px solid #990; background-color: #ee4; }
-  #suggestions span { color: #800; text-decoration: underline; cursor: pointer; cursor: hand }
---></style>
 
-<h3>Demo</h3>
+<div class="panel panel-info">
+  <div class="panel-heading"><strong>Demo</strong></div>
+  <div class="panel-body">
+    <p>The demo is freely available for testing. Respect the
+    <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA</a>
+    licence of the models &ndash; <b>explicit written permission of the authors is
+    required for any commercial exploitation of the system</b>. If you use the
+    service, you agree that data obtained by us during such use can be used for further
+    improvements of the systems at UFAL. If you perform corrections to the output (either
+    by choosing other suggestions or by manually correcting the text), please use
+    the <b>Submit corrected text</b> button to send the corrected text to us.
+    All comments and reactions are welcome.</p>
 
-<p>The demo is freely available for testing. Respect the
-<a href="http://creativecommons.org/licenses/by-nc-sa/3.0/">CC BY-NC-SA</a>
-licence of the models &ndash; <b>explicit written permission of the authors is
-required for any commercial exploitation of the system</b>. If you run the
-demo, you agree that the data obtained during testing can be used for further
-improvemenets of the system. If you perform corrections to the output (either
-by choosing other suggestions or by manually correcting the text), please use
-the Submit corrected text button to send the corrected text to us. All comments
-and reactions are welcomed.</p>
+    <div id="error" class="alert alert-danger" style="display: none"></div>
 
-<h3>Input</h3>
-<p id="error" style="width: 95%; margin: auto; border: 1px solid gray; background-color: #D66; display: none"></p>
-<table style="width: 95%; margin: auto">
-  <tr><td colspan="3" style="text-align: center"><textarea id="input" rows="10" cols="80" style="border: 1px solid gray; padding: 0; ma
-rgin: 0; width: 100%" autofocus>Přílyš žluťoučky kůň ůpěl ďábelské ódi.</textarea></td></tr>
-  <tr>
-      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('czech-spellchecker')">Autocorrect</button></td>
-      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('strip_diacritics')">Strip Diacritics</button></td>
-      <td style="text-align: center"><button type="submit" class="btn btn-primary" style="width: 100%" onclick="callCorrector('czech-diacritics_generator')">Generate Diacritics</button></td>
-</tr>
-</table>
+    <div class="form-horizontal">
+      <div class="form-group row">
+        <label class="col-sm-2 control-label">Model:</label>
+        <div class="col-sm-10">
+          <label class="radio-inline"><input name="language" type="radio" value="czech" onchange="updateModels()" checked />Czech</label>
+        </div>
+      </div>
+      <div class="form-group row">
+        <div class="col-sm-offset-2 col-sm-10">
+          <select id="model" class="form-control" onchange="updateTasks()"></select>
+        </div>
+      </div>
+      <div class="form-group row" id="task_container" style="display: none">
+        <label class="col-sm-2 control-label">Task:</label>
+        <div class="col-sm-10 btn-group" data-toggle="buttons">
+          <label class="btn btn-primary active"><input type="radio" name="task" id="task_spellchecker" autocomplete="off" checked>Spellcheck</label>
+          <label class="btn btn-primary"><input type="radio" name="task" id="task_diacritics_generator" autocomplete="off">Generate Diacritics</label>
+          <label class="btn btn-primary"><input type="radio" name="task" id="task_strip_diacritics" autocomplete="off">Strip Diacritics</label>
+        </div>
+      </div>
+    </div>
 
-<h3 id="output_header">Output</h3>
+    <textarea id="input" class="form-control" rows="10" cols="80" placeholder="Přílyš žluťoučky kůň ůpěl ďábelské ódi." autofocus></textarea>
 
-<div style="width: 100%">
-  <p id="output" style="white-space: pre-wrap; width: 95%; margin: auto; border: 1px solid gray; background-color: #6D6; min-height: 2em" contenteditable="true"></p>
-  <div id='submit_correction' style='width: 95%; margin: auto; text-align: right; display: none'><span id='submit_correction_results'></span><button type="submit" class="btn btn-primary" onclick="submitCorrection()">Submit corrected text</button></div>
+    <button id="submit" class="btn btn-primary form-control" type="submit" style="margin-top: 15px; margin-bottom: 15px" onclick="callKorektor()"><span class="fa fa-arrow-down"></span> Process Input <span class="fa fa-arrow-down"></span></button>
+
+    <div class="panel panel-success" id="output_panel">
+      <div class="panel-heading">
+        <strong>Output (editable)</strong>
+        <div class="pull-right" style="display: none" id="submit_correction">
+          <span id="submit_correction_results"></span>
+          <button type="button" class="btn btn-primary btn-xs" style="padding: 0 2em" onclick="submitCorrection()">Submit corrected text</button>
+        </div>
+      </div>
+      <div class="panel-body">
+        <p id="output" style="white-space: pre-wrap" contenteditable="true"></p>
+        <div id='suggestions' style='position: absolute; display: none' onmouseover='overSugg()' onmouseout='outSugg()'></div>
+      </div>
+    </div>
+
+    <h3 id="acknowledgements_title" style="display: none">Acknowledgements</h3>
+    <p id="acknowledgements_text" style="display: none"> </p>
+  </div>
 </div>
-
-<div id='suggestions' style='position: absolute; display: none' onmouseover='overSugg()' onmouseout='outSugg()'></div>
-
-<br />
 
 <?php require('footer.php') ?>

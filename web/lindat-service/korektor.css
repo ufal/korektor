@@ -23,3 +23,9 @@ ul.breadcrumb {
   margin-left: -15px;
   margin-right: -15px;
 }
+
+/* Korektor-specific */
+#output span.single { color: #800 }
+#output span.multiple { color: #800; text-decoration: underline }
+#suggestions { padding: 5px; border: 1px solid #990; background-color: #ee4; }
+#suggestions span { color: #800; text-decoration: underline; cursor: pointer; cursor: hand }
