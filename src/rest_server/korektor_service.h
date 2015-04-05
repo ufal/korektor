@@ -9,6 +9,8 @@
 
 #pragma once
 
+#include <list>
+
 #include "common.h"
 #include "microrestd/microrestd.h"
 #include "spellchecker/spellchecker_correction.h"
@@ -56,7 +58,7 @@ class KorektorService : public ufal::microrestd::rest_service {
     SpellcheckerModel(string id, string acknowledgements, SpellcheckerProvider* spellchecker) :
       id(id), acknowledgements(acknowledgements), spellchecker(spellchecker) {}
   };
-  vector<SpellcheckerModel> spellcheckers;
+  list<SpellcheckerModel> spellcheckers;
   unordered_map<string, const SpellcheckerModel*> spellcheckers_map;
   const SpellcheckerModel* LoadSpellchecker(const string& id, string& error);
 
