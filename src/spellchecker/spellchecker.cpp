@@ -91,7 +91,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
               // Normalize heap, i.e. remove dead top elements
               if (alternatives_heap.top().alternative->form_id == alternative->form_id) {
                 alternatives_heap.pop();
-                while (alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
+                while (!alternatives_heap.empty() && alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
                   alternatives_heap.pop();
               }
             }
@@ -101,7 +101,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
                 alternatives_cost.erase(alternatives_heap.top().alternative->form_id);
                 alternatives_heap.pop();
                 // Normalize heap, i.e. remove dead top elements
-                while (alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
+                while (!alternatives_heap.empty() && alternatives_cost.at(alternatives_heap.top().alternative->form_id) < alternatives_heap.top())
                   alternatives_heap.pop();
               }
               alternatives_cost.emplace(alternative->form_id, AlternativeWithCost(cost, alternative.get()));
