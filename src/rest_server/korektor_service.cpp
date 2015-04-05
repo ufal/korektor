@@ -188,40 +188,66 @@ bool KorektorService::HandleModels(ufal::microrestd::rest_request& req) {
 }
 
 bool KorektorService::HandleSuggestions(ufal::microrestd::rest_request& req) {
-#if 0
-  ufal::microrestd::json_builder error;
-  auto data = get_data(req, error); if (!data) return req.respond_json(error);
-  string model;
-  auto provider = get_provider(req, model, error); if (!provider) return req.respond_json(error);
-  auto suggestions = get_suggestions(req, error); if (!suggestions) return req.respond_json(error);
+  string error;
+  auto data = GetData(req, error); if (!data) return req.respond_error(error);
+  auto model = LoadSpellchecker(GetModelId(req), error); if (!model) return req.respond_error(error);
+  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), model->spellchecker->Lexicon());
+  auto suggestions = GetSuggestions(req, error); if (!suggestions) return req.respond_error(error);
 
-   class generator : public KorektorResponseGenerator {
+  class Generator : public ufal::microrestd::json_response_generator {
    public:
-    generator(const string& model, const char* data, unsigned num, SpellcheckerI* spellchecker)
-        : KorektorResponseGenerator(model, data), num(num), spellchecker(spellchecker) { result.array(); }
+    Generator(const SpellcheckerModel* model, const string& data, InputFormat* input_format, unsigned suggestions)
+        : data(UTF::UTF8To16(data)), unprinted(0), input_format(input_format), spellchecker(model->spellchecker->NewSpellchecker()), suggestions(suggestions) {
+      input_format->SetBlock(data);
+      CommonResponse(model, json);
+      json.array();
+    }
 
-    bool next() {
-      ufal::microrestd::string_piece line;
-      if (!get_line(data, line)) return false;
-
-      spellchecker->suggestions(string(line.str, line.len), num, suggestions);
-      for (auto&& suggestion : suggestions) {
-        result.array().value(suggestion.first);
-        for (auto&& word : suggestion.second)
-          result.value(word);
-        result.close();
+    bool generate() override {
+      if (!input_format->NextSentence(tokens)) {
+        if (unprinted < data.size()) {
+          next_token.clear();
+          UTF::UTF16To8Append(data, unprinted, data.size() - unprinted, next_token);
+          json.array().value(next_token).close();
+        }
+        json.close().finish(true);
+        return false;
       }
+
+      spellchecker->Suggestions(tokens, corrections, suggestions - 1);
+
+      for (unsigned i = 0; i < tokens.size(); i++)
+        if (corrections[i].type != SpellcheckerCorrection::NONE) {
+          if (unprinted < tokens[i]->first) {
+            next_token.clear();
+            UTF::UTF16To8Append(data, unprinted, tokens[i]->first - unprinted, next_token);
+            json.array().value(next_token).close();
+          }
+
+          json.array();
+          next_token.clear(); UTF::UTF16To8Append(tokens[i]->str, next_token); json.value(next_token);
+          next_token.clear(); UTF::UTF16To8Append(corrections[i].correction, next_token); json.value(next_token);
+          for (auto&& alternative : corrections[i].alternatives) {
+            next_token.clear(); UTF::UTF16To8Append(alternative, next_token); json.value(next_token);
+          }
+          json.close();
+          unprinted = tokens[i]->first + tokens[i]->length;
+        }
 
       return true;
     }
 
    private:
-    unsigned num;
+    u16string data;
+    unsigned unprinted;
+    unique_ptr<InputFormat> input_format;
     unique_ptr<SpellcheckerI> spellchecker;
-    vector<pair<string, vector<string>>> suggestions;
+    unsigned suggestions;
+    vector<TokenP> tokens;
+    vector<SpellcheckerCorrection> corrections;
+    string next_token;
   };
-  return req.respond_json(new generator(model, data, suggestions, provider->new_spellchecker()));
-#endif
+  return req.respond(ufal::microrestd::json_builder::mime, new Generator(model, *data, input_format.release(), suggestions));
 }
 
 bool KorektorService::HandleCorrect(ufal::microrestd::rest_request& req) {
