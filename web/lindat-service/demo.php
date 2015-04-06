@@ -3,27 +3,43 @@
 <?php require('about.html') ?>
 
 <script type="text/javascript" charset="utf-8"><!--
-  var models = {};
+  var model_sets = { // Supported model sets
+    "czech-130202": [
+      {task: "Spellcheck", model: "czech-spellchecker-130202"},
+      {task: "Generate Diacritics", model: "czech-diacritics_generator-130202"},
+      {task: "Strip Diacritics", model: "strip_diacritics-130202"}
+    ]
+  };
+  var language_model_sets = { // List of model sets per language
+    "czech": ["czech-130202"]
+  };
+  var models = {}; // List of service models
+  var placeholders = { // Placeholders for service models
+    "czech-spellchecker-130202": "Přílyš žluťoučky kůň ůpěl ďábelské ódi.",
+    "czech-diacritics_generator-130202": "Prilis zlutoucky kun upel dabelske ody.",
+    "strip_diacritics-130202": "Příliš žluťoučký kůň úpěl ďábelské ódy."
+  };
+  var suggestions; // Array of suggestions for choosing
+  var text_original, text_korektor; // Texts for Corrected text submission
 
-  var suggestions;
-  var text_original;
-  var text_korektor;
+  function callKorektor() {
+    var model = jQuery('input[name=task]:checked').val();
+    if (!model) return;
 
-  function callCorrector(model) {
     var text = jQuery('#input').val();
-    jQuery('#error').hide().empty();
+    if (!text) text = jQuery('#input').attr('placeholder');
+    if (!text) text = "";
+
     jQuery('#submit_correction').hide();
     jQuery('#submit_correction_results').empty();
-    jQuery('#output_header').text("Output (computing...)");
-
-    jQuery('suggestions').hide();
+    jQuery('#submit').html('<span class="fa fa-cog"></span> Waiting for Results <span class="fa fa-cog"></span>');
+    jQuery('#submit').prop('disabled', true);
     suggestions = [];
     jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/api/suggestions',
                 {dataType: "json", data: {model: model, data: text}, type: "POST", success: function(json) {
       var result = '';
       for (var i in json.result) {
         var token = json.result[i];
-        if (token.length == 2 && token[0] == token[1]) token.splice(1, 1);
         if (token.length == 1) {
           result += token[0];
         } else if (token.length >= 2) {
@@ -34,13 +50,20 @@
       }
       jQuery('#output').html(result);
 
+      jQuery('#acknowledgements_title').show();
+      var acknowledgements = "";
+      for (var a in json.acknowledgements)
+        acknowledgements += "<a href='" + json.acknowledgements[a] + "'>" + json.acknowledgements[a] + "</a><br/>";
+      jQuery('#acknowledgements_text').html(acknowledgements).show();
+
       text_original = text;
       text_korektor = jQuery('#output').text();
       jQuery('#submit_correction').show();
     }, error: function(jqXHR, textStatus) {
-      jQuery('#error').text("An error occurred: " + textStatus).show();
+      alert("An error occurred: " + textStatus);
     }, complete: function() {
-      jQuery('#output_header').text("Output (done)");
+      jQuery('#submit').html('<span class="fa fa-arrow-down"></span> Process Input <span class="fa fa-arrow-down"></span>');
+      jQuery('#submit').prop('disabled', false);
     }});
   }
 
@@ -93,26 +116,41 @@
   function updateModels() {
     var language = jQuery('input[name=language]:checked').val();
     var models_list = "";
-    var models_list_map = {};
-    for (var i in models)
-      if (models[i].indexOf(language+"-") == 0) {
-        var version = models[i].match(/-\d\d\d\d\d\d/);
-        if (version) {
-          version = version[0].substr(1);
-          if (!(version in models_list_map)) {
-            models_list_map[version] = 1;
-            models_list += "<option value='" + version + "'" + (models_list ? "" : " selected") + ">" + language + "-" + version + "</option>";
-          }
-        }
+    for (var i in language_model_sets[language]) {
+      var model_set_name = language_model_sets[language][i];
+      var model_set = model_sets[model_set_name];
+      var have_required_models = true;
+      for (var j in model_set)
+        have_required_models = have_required_models && model_set[j].model in models;
+      if (have_required_models)
+        models_list += "<option value='" + model_set_name + "'" + (models_list ? "" : " selected") + ">" + model_set_name + "</option>";
       }
     jQuery('#model').html(models_list);
-    updateMethods();
+    updateTasks();
+  }
+
+  function updateTasks() {
+    var model_set = jQuery('#model :selected').text();
+    var tasks_list = "";
+    for (var i in model_sets[model_set]) {
+      var task = model_sets[model_set][i];
+      tasks_list += '<label class="btn btn-primary' + (tasks_list ? '' : ' active') + '"><input type="radio" name="task" value="' + task.model + '" onchange="updatePlaceholder()" autocomplete="off"' + (tasks_list ? '' : ' checked') + '>' + task.task + '</label>';
+    }
+    jQuery('#tasks').html(tasks_list);
+    jQuery('#tasks_container').show();
+    updatePlaceholder();
+  }
+
+  function updatePlaceholder() {
+    var model = jQuery('input[name=task]:checked').val();
+    jQuery('#input').attr('placeholder', model in placeholders ? placeholders[model] : '');
   }
 
   jQuery(document).ready(function() {
     jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/api/models',
                 {dataType: "json", success: function(json) {
-      models = json.models;
+      for (var i in json.models)
+        models[json.models[i]] = json.models[i];
       updateModels();
     }, complete: function() {
       if (jQuery.isEmptyObject(models)) {
@@ -149,12 +187,9 @@
           <select id="model" class="form-control" onchange="updateTasks()"></select>
         </div>
       </div>
-      <div class="form-group row" id="task_container" style="display: none">
+      <div class="form-group row" id="tasks_container" style="display: none">
         <label class="col-sm-2 control-label">Task:</label>
-        <div class="col-sm-10 btn-group" data-toggle="buttons">
-          <label class="btn btn-primary active"><input type="radio" name="task" id="task_spellchecker" autocomplete="off" checked>Spellcheck</label>
-          <label class="btn btn-primary"><input type="radio" name="task" id="task_diacritics_generator" autocomplete="off">Generate Diacritics</label>
-          <label class="btn btn-primary"><input type="radio" name="task" id="task_strip_diacritics" autocomplete="off">Strip Diacritics</label>
+        <div class="col-sm-10 btn-group" data-toggle="buttons" id="tasks">
         </div>
       </div>
     </div>
