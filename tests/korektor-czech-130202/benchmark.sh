@@ -6,7 +6,7 @@ set -e
 [ \! -d ../../models/korektor-czech-130202 ] && (cd ../../models && sh korektor-czech-130202.sh)
 
 # Compile korektor using release build
-make -C ../../src korektor MODE=release -j4 korektor
+make -C ../../src MODE=release -j3 korektor
 
 # Test various configurations.
 echo Date: `date` >&2
