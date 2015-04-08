@@ -35,7 +35,7 @@ Make targets and options:
 - ``mode=PROFILE``: create profile build
 
 
-=== Platforms ===
+=== Platforms ===[compilation_platforms]
 
 Platform can be selected using one of the following options:
 - ``PLATFORM=linux``, ``PLATFORM=linux-gcc``: gcc compiler on Linux operating system, default on Linux
@@ -49,7 +49,7 @@ Platform can be selected using one of the following options:
 
 Either POSIX shell or Windows CMD can be used as shell, it is detected automatically.
 
-=== Further Details ===
+=== Further Details ===[compilation_further_details]
 
 Korektor uses [C++ BuilTem system http://github.com/ufal/cpp_builtem],
 please refer to its manual if interested in all supported options.
