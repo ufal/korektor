@@ -1,3 +1,4 @@
+import codecs
 import re
 import xml.etree.ElementTree as ET
 
@@ -10,7 +11,10 @@ class CzeSLW:
 
     def get_token_by_id(self, id):
         token = self.wroot.find("./wdata:doc/wdata:para/wdata:w[@id='"+id+"']/wdata:token", CzeSLW.ns)
-        return token.text
+        try:
+            return token.text
+        except AttributeError:
+            return "<TextNotFound>"
 
 class CzeSLA:
     ns = {'ldata' : 'http://utkl.cuni.cz/czesl/'}
@@ -28,7 +32,10 @@ class CzeSLA:
 
     def get_token_by_id(self, id):
         token = self.aroot.find("./ldata:doc/ldata:para/ldata:s/ldata:w[@id='"+id+"']/ldata:token", CzeSLA.ns)
-        return token.text
+        try:
+            return token.text
+        except AttributeError:
+            return "<TextNotFound>"
 
     def determine_edge_path_format(self):
         """
@@ -65,15 +72,18 @@ class CzeSLA:
 
         w_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:from", CzeSLA.ns)
         w_ids = map(lambda x: re.sub(r'w\#', '', x.text), w_nodes)
+        w_tokens = map(lambda xid: self.wref.get_token_by_id(xid), w_ids)
 
-        if self.edge_path_format == 1:
+        if self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns):
             a_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns)
             a_ids = map(lambda to:to.text, a_nodes)
-        elif self.edge_path_format == 2:
+        elif self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns):
             a_nodes = self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns)
             a_ids = map(lambda w:w.get('id'), a_nodes)
+        elif self.aroot.findall(".//ldata:para/ldata:edge[@id='"+id+"']", CzeSLA.ns):
+            a_nodes = []
+            a_ids = []
 
-        w_tokens = map(lambda xid: self.wref.get_token_by_id(xid), w_ids)
         a_tokens = map(lambda xid: self.get_token_by_id(xid), a_ids)
 
         error_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:error/ldata:tag", CzeSLA.ns)
@@ -89,6 +99,7 @@ class CzeSLA:
         else:
             error_names = []
             error_names = map(lambda e: e.text, error_nodes)
+            error_names.sort()
             return (id, w_ids, a_ids, w_tokens, a_tokens, error_names)
 
     def print_errors(self):
@@ -100,3 +111,16 @@ class CzeSLA:
                 print ' '.join(e[3]).ljust(25)+'\t'+' '.join(e[4]).ljust(25)+'\t'+\
                       '+'.join(e[5])+'\t'+e[0].ljust(10)+\
                       '\t'+' '.join(e[1]).ljust(10)+'\t'+' '.join(e[2])
+
+    def write_errors(self, file_prefix):
+        out_file = file_prefix + '.err.txt'
+        edges = self.aroot.findall(".//ldata:edge", CzeSLA.ns)
+        edge_ids = map(lambda e: e.get('id'), edges)
+        with codecs.open(out_file, mode='w', encoding='utf-8') as f:
+            for eid in edge_ids:
+                e = self.get_error_info_at_edge(eid)
+                if e:
+                    f.write(' '.join(e[3]).ljust(25)+'\t'+' '.join(e[4]).ljust(25)+'\t'+\
+                          '+'.join(e[5])+'\t'+e[0].ljust(10)+\
+                          '\t'+' '.join(e[1]).ljust(10)+'\t'+' '.join(e[2])+'\n')
+        return
