@@ -17,7 +17,7 @@ for test in spellchecking_h2mor:olga.dirty:olga.gold diacritics_h2mor:capek.nodi
 
   dataset=$conf:$data
   echo $dataset
-  (time -p ../../src/korektor --input=vertical --output=vertical --corrections 3 ../../models/korektor-czech-130202/$conf.conf <eval/$data >eval/tmp) |& tr "\n" " "; echo
+  (time -p ../../src/korektor --input=vertical --output=vertical --corrections 3 "$@" ../../models/korektor-czech-130202/$conf.conf <eval/$data >eval/tmp) |& tr "\n" " "; echo
   perl eval.pl eval/tmp eval/$gold 3
   rm eval/tmp
   echo
