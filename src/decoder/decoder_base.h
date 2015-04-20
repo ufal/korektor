@@ -72,7 +72,7 @@ class DecoderBase
 
   Configuration* configuration;
 
-  uint32_t GetViterbiOrder();
+  uint32_t GetModelOrder();
 
   TransitionCostComputationP GetTransitionCostComputation();
 

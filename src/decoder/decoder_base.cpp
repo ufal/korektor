@@ -76,7 +76,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 }
 
 
-uint32_t DecoderBase::GetViterbiOrder()
+uint32_t DecoderBase::GetModelOrder()
 {
   return model_order;
 }

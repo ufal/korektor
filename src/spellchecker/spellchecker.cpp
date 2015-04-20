@@ -49,9 +49,9 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
   corrections.reserve(tokens.size());
 
   // Fill corrections
-  unsigned viterbi_order = decoder->GetViterbiOrder();
+  unsigned model_order = decoder->GetModelOrder();
   for (unsigned i = 0; i < tokens.size(); i++) {
-    auto correction = decoded_corrections[i + viterbi_order - 1];
+    auto correction = decoded_corrections[i + model_order - 1];
     if (correction->original) {
       corrections.emplace_back(SpellcheckerCorrection::NONE);
     } else {
@@ -63,7 +63,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
         alternatives_cost.reserve(8 + 2 * decoded_alternatives->size());
 
         // Measure costs of alternative forms
-        for (auto&& alternative : decoded_alternatives->at(i + viterbi_order - 1)) {
+        for (auto&& alternative : decoded_alternatives->at(i + model_order - 1)) {
           if (alternative->form_id == correction->form_id) continue;
           auto same_alternative = alternatives_cost.find(alternative->form_id);
           bool have_current_best = same_alternative != alternatives_cost.end() || alternatives_cost.size() == alternatives;
@@ -75,9 +75,9 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
           if (have_current_best && cost > current_best) continue;
 
           // Measure transition costs of the alternative
-          decoded_corrections[i + viterbi_order - 1] = alternative;
-          for (unsigned k = 0; k < viterbi_order && i + k < tokens.size() + 1/*</s>*/; k++) {
-            cost += decoder->ComputeTransitionCostSPSequence(decoded_corrections, i + k, i + viterbi_order - 1 + k);
+          decoded_corrections[i + model_order - 1] = alternative;
+          for (unsigned k = 0; k < model_order && i + k < tokens.size() + 1/*</s>*/; k++) {
+            cost += decoder->ComputeTransitionCostSPSequence(decoded_corrections, i + k, i + model_order - 1 + k);
             if (have_current_best && cost > current_best) break;
           }
 
@@ -109,7 +109,7 @@ void Spellchecker::Spellcheck(const vector<TokenP>& tokens, vector<SpellcheckerC
             }
           }
         }
-        decoded_corrections[i + viterbi_order - 1] = correction;
+        decoded_corrections[i + model_order - 1] = correction;
 
         // Store best alternatives
         corrections.back().alternatives.resize(alternatives_cost.size());
