@@ -64,6 +64,8 @@ class DecoderBase
 
   unsigned model_order;
   unsigned viterbi_order;
+  unsigned viterbi_beam_size;
+  double viterbi_stage_pruning;
 
   DecoderBase(Configuration* _configuration);
 

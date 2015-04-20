@@ -11,6 +11,7 @@
 #include <fstream>
 
 #include "configuration.h"
+#include "constants.h"
 #include "error_model/error_model_basic.h"
 #include "language_model/lm_wrapper.h"
 #include "language_model/zip_lm.h"
@@ -87,6 +88,8 @@ Configuration::Configuration(const string &conf_file)
 
   model_order = 1;
   viterbi_order = 0;
+  viterbi_beam_size = 0;
+  viterbi_stage_pruning = Constants::prunning_constant;
 
   vector<SimWordsFinder::SearchConfig> search_configs;
 
@@ -185,6 +188,18 @@ Configuration::Configuration(const string &conf_file)
       int order = Parse::Int(s.substr(14), "viterbi order");
       if (order <= 0) runtime_failure("Specified viterbi order '" << order << "' must be greater than zero!");
       viterbi_order = order;
+    }
+    else if (s.compare(0, 17, "viterbi_beam_size") == 0)
+    {
+      int beam_size = Parse::Int(s.substr(18), "viterbi beam size");
+      if (beam_size <= 0) runtime_failure("Specified viterbi beam size '" << beam_size << "' must be greater than zero!");
+      viterbi_beam_size = beam_size;
+    }
+    else if (s.compare(0, 21, "viterbi_stage_pruning") == 0)
+    {
+      double pruning = Parse::Double(s.substr(22), "viterbi stage pruning");
+      if (pruning <= 0) runtime_failure("Specified viterbi stage pruning '" << pruning << "' must be greater than zero!");
+      viterbi_stage_pruning = pruning;
     }
   }
 

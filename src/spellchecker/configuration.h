@@ -61,6 +61,8 @@ class Configuration
   TokenizerP tokenizer;
   ErrorModelP errorModel;
   SimWordsFinderP simWordsFinder;
+  unsigned viterbi_beam_size; // Beam size of Viterbi algorithm
+  double viterbi_stage_pruning; // Pruning constant of Viterbi stage
   bool diagnostics;
 
   Configuration() : last_enabled_factor_index(0) {}

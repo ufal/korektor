@@ -13,7 +13,6 @@
 #include "decoder_base.h"
 #include "morphology/morphology.h"
 #include "spellchecker/configuration.h"
-#include "spellchecker/constants.h"
 #include "utils/utf.h"
 
 namespace ufal {
@@ -135,7 +134,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
 
         assert(cost < 100000000);
 
-        if (cost > best + Constants::prunning_constant)
+        if (cost > best + viterbi_stage_pruning)
           continue;
 
         double transition_cost = ComputeTransitionCost(viterbi_stateP, stage_pos);
@@ -153,7 +152,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
 
         cost += transition_cost;
 
-        if (cost > best + Constants::prunning_constant)
+        if (cost > best + viterbi_stage_pruning)
           continue;
 
         if (cost < best)
@@ -195,13 +194,15 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
     for (Trellis_stage_set::iterator it = new_trellis_stage.begin(); it != new_trellis_stage.end(); it++)
     {
       ViterbiStateP state = *it;
-      if (state->distance < best + Constants::prunning_constant)
+      if (state->distance < best + viterbi_stage_pruning)
       {
         last_trellis_stage.push_back(state);
       }
     }
 
     std::sort(last_trellis_stage.begin(), last_trellis_stage.end(), ViterbiStateP_compare_distance());
+    if (viterbi_beam_size && last_trellis_stage.size() > viterbi_beam_size)
+      last_trellis_stage.resize(viterbi_beam_size);
     //cerr << "last_trellis_stage->size() = " << last_trellis_stage->size() << endl;
   }
 
@@ -240,6 +241,8 @@ DecoderBase::DecoderBase(Configuration* _configuration)
   configuration = _configuration;
   model_order = _configuration->model_order;
   viterbi_order = _configuration->viterbi_order;
+  viterbi_beam_size = _configuration->viterbi_beam_size;
+  viterbi_stage_pruning = _configuration->viterbi_stage_pruning;
 }
 
 } // namespace korektor

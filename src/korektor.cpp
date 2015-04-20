@@ -27,7 +27,9 @@ int main(int argc, char* argv[]) {
                        {"output",Options::Value{"original", "xml", "vertical", "horizontal"}},
                        {"corrections",Options::Value::any},
                        {"context_free", Options::Value::none},
-                       {"decoding_order", Options::Value::any},
+                       {"viterbi_order", Options::Value::any},
+                       {"viterbi_beam_size", Options::Value::any},
+                       {"viterbi_stage_pruning", Options::Value::any},
                        {"version", Options::Value::none},
                        {"help", Options::Value::none}}, argc, argv, options) ||
       options.count("help") ||
@@ -36,7 +38,9 @@ int main(int argc, char* argv[]) {
                     "Options: --input=untokenized|untokenized_lines|segmented|vertical|horizontal\n"
                     "         --output=original|xml|vertical|horizontal\n"
                     "         --corrections=maximum_number_of_corrections\n"
-                    "         --decoding_order=decoding_order\n"
+                    "         --viterbi_order=viterbi_decoding_order\n"
+                    "         --viterbi_beam_size=maximum_viterbi_beam_size\n"
+                    "         --viterbi_stage_pruning=maximum_viterbi_stage_cost_increment\n"
                     "         --context_free\n"
                     "         --version\n"
                     "         --help");
@@ -51,18 +55,34 @@ int main(int argc, char* argv[]) {
       runtime_failure("The maximum number of corrections (" << max_corrections << ") must be at least 1!");
   }
 
-  unsigned decoding_order = 0;
-  if (options.count("decoding_order")) {
-    int order = Parse::Int(options["decoding_order"], "decoding order");
-    if (order <= 0) runtime_failure("Specified decoding order '" << order << "' must be greater than zero!");
-    decoding_order = order;
+  unsigned viterbi_order = 0;
+  if (options.count("viterbi_order")) {
+    int order = Parse::Int(options["viterbi_order"], "viterbi order");
+    if (order <= 0) runtime_failure("Specified viterbi order '" << order << "' must be greater than zero!");
+    viterbi_order = order;
+  }
+
+  unsigned viterbi_beam_size = 0;
+  if (options.count("viterbi_beam_size")) {
+    int beam_size = Parse::Int(options["viterbi_beam_size"], "viterbi beam size");
+    if (beam_size <= 0) runtime_failure("Specified viterbi beam size '" << beam_size << "' must be greater than zero!");
+    viterbi_beam_size = beam_size;
+  }
+
+  double viterbi_stage_pruning = 0.;
+  if (options.count("viterbi_stage_pruning")) {
+    double pruning = Parse::Double(options["viterbi_stage_pruning"], "viterbi stage pruning");
+    if (pruning <= 0.) runtime_failure("Specified viterbi stage pruning '" << pruning << "' must be greater than zero!");
+    viterbi_stage_pruning = pruning;
   }
 
   bool context_free = options.count("context_free");
 
   // Load spellchecker
   ConfigurationP configuration(new Configuration(argv[1]));
-  if (decoding_order) configuration->viterbi_order = decoding_order;
+  if (viterbi_order) configuration->viterbi_order = viterbi_order;
+  if (viterbi_beam_size) configuration->viterbi_beam_size = viterbi_beam_size;
+  if (viterbi_stage_pruning) configuration->viterbi_stage_pruning = viterbi_stage_pruning;
   Spellchecker spellchecker = Spellchecker(configuration.get());
 
   // Init input format
