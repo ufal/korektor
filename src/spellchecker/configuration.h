@@ -81,11 +81,6 @@ class Configuration
   inline unsigned NumFactors() { return factor_LMS.size(); }
   inline unsigned GetLastEnabledFactorIndex() { return last_enabled_factor_index; }
 
-  inline unsigned ModelOrder()
-  {
-    return model_order;
-  }
-
   inline bool FactorIsEnabled(unsigned index)
   {
     return enabled_factors[index];
