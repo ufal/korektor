@@ -62,7 +62,7 @@ class DecoderBase
 
  protected:
 
-  uint32_t viterbi_order;
+  uint32_t model_order;
 
   DecoderBase(Configuration* _configuration);
 

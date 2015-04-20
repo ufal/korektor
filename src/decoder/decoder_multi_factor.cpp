@@ -29,7 +29,7 @@ double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePossi
 
   //TODO: is this n-gram ordering what we want???
 
-  factorLists[viterbi_order - 1] = next->factor_list;
+  factorLists[model_order - 1] = next->factor_list;
 
   for (unsigned i = 0; i < state->history.size(); i++)
     factorLists[i] = state->history[i]->factor_list;
@@ -40,15 +40,15 @@ double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePossi
   {
     if (configuration->FactorIsEnabled(i) == false) continue;
 
-    for (unsigned j = 0; j < viterbi_order; j++)
+    for (unsigned j = 0; j < model_order; j++)
     {
       //changing the word id ordering:
       //ngram_search_key.word_ids[j] = morpho_nodes[j]->factorID;
-      ngram_search_key.word_ids[viterbi_order - 1 - j] = factorLists[j].factors[i];
+      ngram_search_key.word_ids[model_order - 1 - j] = factorLists[j].factors[i];
     }
 
     ////changing the word id ordering:
-    //ngram_search_key.word_ids += viterbi_order - ngram_search_key.order;
+    //ngram_search_key.word_ids += model_order - ngram_search_key.order;
     ngram_search_key.order = configuration->GetFactorOrder(i);
 
     double cost = configuration->GetFactorWeight(i) * configuration->GetFactorLM(i)->GetProb(ngram_search_key, ngram_val);
@@ -67,7 +67,7 @@ double DecoderMultiFactor::ComputeTransitionCost(ViterbiStateP state, StagePossi
       cout << ") ~ " << cost << endl;
     }
 
-    ngram_search_key.word_ids -= viterbi_order - ngram_search_key.order;
+    ngram_search_key.word_ids -= model_order - ngram_search_key.order;
   }
 
   if (configuration->diagnostics)
@@ -182,9 +182,9 @@ vector<vector<StagePossibilityP> > DecoderMultiFactor::init_inner_stage_posibili
 DecoderMultiFactor::DecoderMultiFactor(Configuration* _configuration):
   DecoderBase(_configuration)
 {
-  ngram_search_key = NGram(viterbi_order);
-  ngram_val = NGram(this->viterbi_order);
-  factorLists.resize(viterbi_order);
+  ngram_search_key = NGram(model_order);
+  ngram_val = NGram(this->model_order);
+  factorLists.resize(model_order);
 
 }
 

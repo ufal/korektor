@@ -54,7 +54,7 @@ class Configuration
 
  public:
 
-  unsigned viterbi_order;
+  unsigned model_order;
   LexiconP lexicon;
   MorphologyP morphology;
   TokenizerP tokenizer;
@@ -70,7 +70,7 @@ class Configuration
 
   bool is_initialized()
   {
-    return viterbi_order > 0 && viterbi_order < 50 && lexicon && morphology
+    return model_order > 0 && model_order < 50 && lexicon && morphology
         && tokenizer && errorModel && simWordsFinder;
   }
 
@@ -81,9 +81,9 @@ class Configuration
   inline unsigned NumFactors() { return factor_LMS.size(); }
   inline unsigned GetLastEnabledFactorIndex() { return last_enabled_factor_index; }
 
-  inline unsigned ViterbiOrder()
+  inline unsigned ModelOrder()
   {
-    return viterbi_order;
+    return model_order;
   }
 
   inline bool FactorIsEnabled(unsigned index)

@@ -85,7 +85,7 @@ Configuration::Configuration(const string &conf_file)
   if (ifs.is_open() == false)
     runtime_failure("Opening configuration file '" << conf_file << "' failed!");
 
-  viterbi_order = 1;
+  model_order = 1;
 
   vector<SimWordsFinder::SearchConfig> search_configs;
 
@@ -139,8 +139,8 @@ Configuration::Configuration(const string &conf_file)
 
       EnableFactor(lm->GetFactorName(), weight, order);
 
-      if (viterbi_order < order)
-        viterbi_order = order;
+      if (model_order < order)
+        model_order = order;
     }
     else if (s.substr(0, 6) == "search")
     {

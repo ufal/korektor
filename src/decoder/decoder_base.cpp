@@ -32,7 +32,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
   vector<StagePossibilityP> start_sp;
   start_sp.push_back(sentence_start_SP());
 
-  for (uint32_t i = 0; i < viterbi_order - 1; i++)
+  for (uint32_t i = 0; i < model_order - 1; i++)
   {
     stage_posibilities->push_back(start_sp);
   }
@@ -78,7 +78,7 @@ void DecoderBase::init_posibilities(const vector<TokenP> &tokens)
 
 uint32_t DecoderBase::GetViterbiOrder()
 {
-  return viterbi_order;
+  return model_order;
 }
 
 vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<TokenP> &tokens)
@@ -104,7 +104,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
 
   vector<StagePossibilityP> start_state_history;
 
-  for (uint32_t i = 0; i < viterbi_order - 1; i++)
+  for (uint32_t i = 0; i < model_order - 1; i++)
     start_state_history.push_back(sentence_start_SP());
 
   ViterbiStateP init_vsP = ViterbiStateP(new ViterbiState(start_state_history));
@@ -113,7 +113,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
   //cerr << "...Decoder start...\n";
 
 
-  for (uint32_t i = viterbi_order - 1; i < stage_posibilities->size(); i++)
+  for (uint32_t i = model_order - 1; i < stage_posibilities->size(); i++)
   {
     vector<StagePossibilityP> &current_stage_posibilities = stage_posibilities->operator [](i);
     new_trellis_stage.clear();
@@ -217,9 +217,9 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
     ret_vec.push_back(state->GetYoungestHistory());
   }
 
-  if (viterbi_order > 1)
+  if (model_order > 1)
   {
-    for (uint32_t i = 0; i < viterbi_order - 2; i++)
+    for (uint32_t i = 0; i < model_order - 2; i++)
       ret_vec.push_back(sentence_start_SP());
   }
 
@@ -238,7 +238,7 @@ void DecoderBase::DecodeTokenizedSentence_ReturnStagePossibilities(const vector<
 DecoderBase::DecoderBase(Configuration* _configuration)
 {
   configuration = _configuration;
-  viterbi_order = _configuration->viterbi_order;
+  model_order = _configuration->model_order;
 }
 
 } // namespace korektor
