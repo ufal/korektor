@@ -16,7 +16,6 @@
 #include <sstream>
 
 #include "configuration.h"
-#include "constants.h"
 #include "decoder/decoder_multi_factor.h"
 #include "decoder/stage_possibility.h"
 #include "lexicon/sim_words_finder.h"
