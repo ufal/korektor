@@ -107,7 +107,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
   for (uint32_t i = 0; i < model_order - 1; i++)
     start_state_history.push_back(sentence_start_SP());
 
-  ViterbiStateP init_vsP = ViterbiStateP(new ViterbiState(start_state_history));
+  ViterbiStateP init_vsP = ViterbiStateP(new ViterbiState(start_state_history, viterbi_order));
   last_trellis_stage.push_back(init_vsP);
 
   //cerr << "...Decoder start...\n";
@@ -165,7 +165,7 @@ vector<StagePossibilityP> DecoderBase::DecodeTokenizedSentence(const vector<Toke
         //LMStateKeyP new_lm_state_keyP = LMStateKeyP(new LMStateKey(viterbi_stateP->lmState, wf_cp.word_factors));
         //GlobalVars::lmServer->Reduce(new_lm_state_keyP);
 
-        ViterbiStateP new_viterbi_stateP = ViterbiStateP(new ViterbiState(viterbi_stateP, stage_pos, cost));
+        ViterbiStateP new_viterbi_stateP = ViterbiStateP(new ViterbiState(viterbi_stateP, stage_pos, cost, viterbi_order));
 
         //TODO: Wouldn't it be actually better to store the new states in a vector and sort and make unique afterwards?
         Trellis_stage_set::iterator it = new_trellis_stage.find(new_viterbi_stateP);
@@ -239,6 +239,7 @@ DecoderBase::DecoderBase(Configuration* _configuration)
 {
   configuration = _configuration;
   model_order = _configuration->model_order;
+  viterbi_order = _configuration->viterbi_order;
 }
 
 } // namespace korektor

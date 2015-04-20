@@ -46,14 +46,14 @@ class ViterbiState
 
   bool Equals(ViterbiState &state);
 
-  ViterbiState(vector<StagePossibilityP> _history);
+  ViterbiState(vector<StagePossibilityP> _history, unsigned viterbi_order);
 
-  ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance);
+  ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance, unsigned viterbi_order);
 
   string ToString();
 
  private:
-  void ComputeUniqueIdentifier();
+  void ComputeUniqueIdentifier(unsigned viterbi_order);
 };
 
 

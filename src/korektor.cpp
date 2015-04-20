@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
                        {"output",Options::Value{"original", "xml", "vertical", "horizontal"}},
                        {"corrections",Options::Value::any},
                        {"context_free", Options::Value::none},
+                       {"decoding_order", Options::Value::any},
                        {"version", Options::Value::none},
                        {"help", Options::Value::none}}, argc, argv, options) ||
       options.count("help") ||
@@ -35,6 +36,7 @@ int main(int argc, char* argv[]) {
                     "Options: --input=untokenized|untokenized_lines|segmented|vertical|horizontal\n"
                     "         --output=original|xml|vertical|horizontal\n"
                     "         --corrections=maximum_number_of_corrections\n"
+                    "         --decoding_order=decoding_order\n"
                     "         --context_free\n"
                     "         --version\n"
                     "         --help");
@@ -49,10 +51,18 @@ int main(int argc, char* argv[]) {
       runtime_failure("The maximum number of corrections (" << max_corrections << ") must be at least 1!");
   }
 
+  unsigned decoding_order = 0;
+  if (options.count("decoding_order")) {
+    int order = Parse::Int(options["decoding_order"], "decoding order");
+    if (order <= 0) runtime_failure("Specified decoding order '" << order << "' must be greater than zero!");
+    decoding_order = order;
+  }
+
   bool context_free = options.count("context_free");
 
   // Load spellchecker
   ConfigurationP configuration(new Configuration(argv[1]));
+  if (decoding_order) configuration->viterbi_order = decoding_order;
   Spellchecker spellchecker = Spellchecker(configuration.get());
 
   // Init input format

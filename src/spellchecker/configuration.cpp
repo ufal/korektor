@@ -86,6 +86,7 @@ Configuration::Configuration(const string &conf_file)
     runtime_failure("Opening configuration file '" << conf_file << "' failed!");
 
   model_order = 1;
+  viterbi_order = 0;
 
   vector<SimWordsFinder::SearchConfig> search_configs;
 
@@ -179,6 +180,12 @@ Configuration::Configuration(const string &conf_file)
       morphology->initMorphoWordLists(configuration_directory + ConvertPathSeparators(s.substr(12)));
       morphology->initMorphoWordMaps();
     }
+    else if (s.compare(0, 13, "viterbi_order") == 0)
+    {
+      int order = Parse::Int(s.substr(14), "viterbi order");
+      if (order <= 0) runtime_failure("Specified viterbi order '" << order << "' must be greater than zero!");
+      viterbi_order = order;
+    }
   }
 
   tokenizer = TokenizerP(new Tokenizer() );
@@ -189,6 +196,8 @@ Configuration::Configuration(const string &conf_file)
   //search_configs.push_back(SimWordsFinder::SearchConfig(SimWordsFinder::ignore_case, 2, 9));
 
   simWordsFinder = SimWordsFinderP(new SimWordsFinder(this, search_configs));
+
+  if (!viterbi_order) viterbi_order = model_order - 1;
 
   if (is_initialized() == false)
   {

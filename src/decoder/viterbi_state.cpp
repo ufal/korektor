@@ -27,13 +27,13 @@ bool ViterbiState::Equals(ViterbiState &state)
   return this->unique_identifier == state.unique_identifier;
 }
 
-ViterbiState::ViterbiState(vector<StagePossibilityP> _history):
+ViterbiState::ViterbiState(vector<StagePossibilityP> _history, unsigned viterbi_order):
   history(_history), distance(0), ancestor(ViterbiStateP())
 {
-  ComputeUniqueIdentifier();
+  ComputeUniqueIdentifier(viterbi_order);
 }
 
-ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance):distance(_distance), ancestor(prev_state)
+ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, double _distance, unsigned viterbi_order):distance(_distance), ancestor(prev_state)
 {
   history.reserve(prev_state->history.size());
 
@@ -44,7 +44,7 @@ ViterbiState::ViterbiState(ViterbiStateP prev_state, StagePossibilityP next_sp, 
 
   history.push_back(next_sp);
 
-  ComputeUniqueIdentifier();
+  ComputeUniqueIdentifier(viterbi_order);
 }
 
 string ViterbiState::ToString()
@@ -61,11 +61,11 @@ string ViterbiState::ToString()
   return strs.str();
 }
 
-void ViterbiState::ComputeUniqueIdentifier() {
+void ViterbiState::ComputeUniqueIdentifier(unsigned viterbi_order) {
   unique_identifier = 0;
-  Hash::Combine(unique_identifier, history.size());
-  for (auto&& h : history)
-    Hash::Combine(unique_identifier, h->unique_id);
+  Hash::Combine(unique_identifier, viterbi_order);
+  for (unsigned i = viterbi_order >= history.size() ? 0 : history.size() - viterbi_order; i < history.size(); i++)
+    Hash::Combine(unique_identifier, history[i]->unique_id);
 }
 
 } // namespace korektor

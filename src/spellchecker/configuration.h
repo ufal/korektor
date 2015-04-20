@@ -54,7 +54,8 @@ class Configuration
 
  public:
 
-  unsigned model_order;
+  unsigned model_order; // Maximum order of any LM
+  unsigned viterbi_order; // Decoding order of Viterbi algorithm
   LexiconP lexicon;
   MorphologyP morphology;
   TokenizerP tokenizer;
@@ -70,8 +71,8 @@ class Configuration
 
   bool is_initialized()
   {
-    return model_order > 0 && model_order < 50 && lexicon && morphology
-        && tokenizer && errorModel && simWordsFinder;
+    return model_order > 0 && model_order < 50 && viterbi_order > 0 && viterbi_order <= model_order &&
+        lexicon && morphology && tokenizer && errorModel && simWordsFinder;
   }
 
   inline LMWrapper* GetFactorLM(unsigned index) { return factor_LMS[index].get(); }
