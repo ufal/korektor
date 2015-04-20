@@ -75,6 +75,8 @@
       </li>
       <li><a href="#korektor_context_free">5.2.4. Context Free Corrections</a>
       </li>
+      <li><a href="#korektor_viterbi_decoding_options">5.2.5. Viterbi Decoding Options</a>
+      </li>
       </ul>
     </li>
     <li><a href="#run_tokenizer">5.3. Running the tokenizer</a>
@@ -421,6 +423,9 @@ korektor [options] model_configuration
 Options: --input=untokenized|untokenized_lines|segmented|vertical|horizontal
          --output=original|xml|vertical|horizontal
          --corrections=maximum_number_of_corrections
+         --viterbi_order=viterbi_decoding_order
+         --viterbi_beam_size=maximum_viterbi_beam_size
+         --viterbi_stage_pruning=maximum_viterbi_stage_cost_increment
          --context_free
          --version
          --help
@@ -550,6 +555,25 @@ option. In that case each word is considered separately and sentences boundaries
 are ignored. This mode produces much worse results and should be used only when
 no context is really available.
 </p>
+
+<a id="korektor_viterbi_decoding_options" name="korektor_viterbi_decoding_options"></a>
+<h3>5.2.5. Viterbi Decoding Options</h3>
+
+<p style="margin-bottom:0">
+The decoding Viterbi algorithm can be tweaked using the following options:
+</p>
+<ul style="margin-top:0">
+<li><code>--viterbi_order</code>: Use specific Viterbi decoding order instead of the default
+  one. Use 1 for fastest execution, but worst accuracy. Setting this to higher
+  value than maximum model order minus one has no effect.
+</li>
+<li><code>--viterbi_beam_size</code>: Limit Viterbi beam size to specified constant.
+  Use smaller value for faster execution, but worse accuracy.
+</li>
+<li><code>--viterbi_stage_pruning</code>: Limit maximum cost increment in one Viterbi stage.
+  Use smaller value for faster execution, but worse accuracy.
+</li>
+</ul>
 
 <a id="run_tokenizer" name="run_tokenizer"></a>
 <h2>5.3. Running the tokenizer</h2>
