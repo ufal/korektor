@@ -9,8 +9,7 @@ set -e
 make -C ../../src -j3 korektor
 
 # Test various configurations.
-#for test in {spellchecking_h2mor,spellchecking_h2mor_2edits}:{olga.dirty:olga.gold,capek.gold:capek.gold} diacritics_h2mor:capek.nodia:capek.gold; do
-for test in spellchecking_h2mor:olga.dirty:olga.gold diacritics_h2mor:capek.nodia:capek.gold spellchecking_h2mor:capek.gold:capek.gold; do
+for test in {spellchecking_h2mor,spellchecking_h2mor_2edits}:{olga.dirty:olga.gold,capek.dirty:capek.gold,capek.gold:capek.gold} diacritics_h2mor:capek.nodia:capek.gold; do
   conf=${test%%:*}; test=${test#*:}
   data=${test%%:*}; test=${test#*:}
   gold=$test
