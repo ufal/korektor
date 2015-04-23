@@ -30,9 +30,10 @@ class SimWordsFinder {
     casing_treatment casing;
     unsigned max_ed_dist;
     float max_cost;
+    unsigned min_length, max_length;
 
-    SearchConfig(casing_treatment _casing, unsigned _max_ed_dist, float _max_cost):
-      casing(_casing), max_ed_dist(_max_ed_dist), max_cost(_max_cost) {}
+    SearchConfig(casing_treatment _casing, unsigned _max_ed_dist, float _max_cost, unsigned _min_length, unsigned _max_length):
+      casing(_casing), max_ed_dist(_max_ed_dist), max_cost(_max_cost), min_length(_min_length), max_length(_max_length) {}
   };
 
  private:

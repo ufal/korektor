@@ -162,11 +162,12 @@ Similar_Words_Map SimWordsFinder::Find(const TokenP &token)
 {
   Similar_Words_Map swm;
 
-  unsigned i = 0;
-  while (swm.empty() && i < search_configs.size())
-  {
-    SearchConfig sc = search_configs[i];
+  for (auto&& sc : search_configs) {
+    // Skip non-matching search configs.
+    if (sc.min_length && token->length < sc.min_length) continue;
+    if (sc.max_length && token->length > sc.max_length) continue;
 
+    // Search according to given sc
     if (sc.casing == case_sensitive)
     {
       Find_basic(token, sc.max_ed_dist, sc.max_cost, swm);
@@ -180,7 +181,7 @@ Similar_Words_Map SimWordsFinder::Find(const TokenP &token)
       Find_basic_ignore_case(token, true, sc.max_ed_dist, sc.max_cost, swm);
     }
 
-    i++;
+    if (!swm.empty()) break;
   }
 
   return swm;

@@ -151,8 +151,10 @@ Configuration::Configuration(const string &conf_file)
       vector<string> toks;
       IO::Split(s, '-', toks);
 
-      if (toks.size() != 4)
-        runtime_failure("Not four hyphen-separated columns on line '" << s << "' in file '" << conf_file << "'!");
+      if (toks.size() < 4)
+        runtime_failure("Less than four hyphen-separated columns on line '" << s << "' in file '" << conf_file << "'!");
+      if (toks.size() > 6)
+        runtime_failure("More than six hyphen-separated columns on line '" << s << "' in file '" << conf_file << "'!");
 
       SimWordsFinder::casing_treatment ct;
 
@@ -170,8 +172,10 @@ Configuration::Configuration(const string &conf_file)
 
       unsigned max_edit_distance = Parse::Int(toks[2], "search max edit distance");
       float max_cost = Parse::Double(toks[3], "search max cost");
+      unsigned min_length = toks.size() > 4 ? Parse::Int(toks[4], "minimum length") : 0;
+      unsigned max_length = toks.size() > 5 ? Parse::Int(toks[5], "maximum length") : 0;
 
-      search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost));
+      search_configs.push_back(SimWordsFinder::SearchConfig(ct, max_edit_distance, max_cost, min_length, max_length));
     }
     else if (s.substr(0, 4) == "mode")
     {
