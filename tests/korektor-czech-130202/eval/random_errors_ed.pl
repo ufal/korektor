@@ -19,7 +19,7 @@ while(<>) {
       my $op = int(rand(5));
       substr $word, $j, 1, lc substr($word,$j) ne substr($word,$j) ? lc substr($word,$j) : uc substr($word,$j) if $op == 0;
       substr $word, $j, 0, chr(ord(int(rand(2))?"A":"a")+int(rand(26))) if $op == 1;
-      substr $word, $j, 1, "" if $op == 2;
+      substr $word, $j, 1, "" if $op == 2 && length $word > 1;
       substr $word, $j, 1, chr(ord(int(rand(2))?"A":"a")+int(rand(26))) if $op == 3;
       substr $word, $j, 2, substr($word,$j+1,1).substr($word,$j,1) if $op == 4 && substr($word,$j,2) =~ /\w\w/;
     }
