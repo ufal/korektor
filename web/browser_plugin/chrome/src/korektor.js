@@ -1,49 +1,33 @@
-// Copyright 2014 by Institute of Formal and Applied Linguistics, Faculty of
+// Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty of
 // Mathematics and Physics, Charles University in Prague, Czech Republic.
 // All rights reserved.
 
-function onKorektor(info) {
-  var models = {
-    spellcheck: "czech-spellchecker",
-    generate_diacritics: "czech-diacritics_generator",
-    strip_diacritics: "strip_diacritics"
-  };
+function korektorSpellcheck(info, tab) {
+  if ("menuItemId" in info) {
+    var model = info.menuItemId;
+    var edit = false;
+    if (model.lastIndexOf("with-edit_", 0) == 0) {
+      model = model.substr(10);
+      edit = true;
+    }
 
-  if (info.menuItemId in models)
-    chrome.tabs.executeScript({
-      code: 'if (document.activeElement && "value" in document.activeElement) {' +
-            '  var c = document.activeElement;' +
-            '  var xhr = new XMLHttpRequest();' +
-            '  xhr.open("POST", "https://lindat.mff.cuni.cz/services/korektor/api/correct", true);' +
-            '  xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");' +
-            '  xhr.responseType = "text";' +
-            '  xhr.onreadystatechange = function(a,e) {' +
-            '    if (xhr.readyState == 4) {' +
-            '      try {' +
-            '        if (xhr.status == 200 && xhr.response) {' +
-            '          var response = JSON.parse(xhr.response);' +
-            '          if ("result" in response) {' +
-            '            c.value = response.result;'+
-            '            c.disabled = false;' +
-            '            return;' +
-            '          }' +
-            '        }' +
-            '      } catch(e) {}' +
-            '      c.disabled = false;' +
-            '      alert("' + chrome.i18n.getMessage("korektor_error") + '");' +
-            '    }' +
-            '  };' +
-            '  c.disabled = true; ' +
-            '  xhr.send("model=' + models[info.menuItemId] + '&data=" + encodeURIComponent(c.value));' +
-            '}'
+    chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {
+      chrome.tabs.executeScript(null, { file: "spellcheck.js" }, function() {
+        chrome.tabs.executeScript(null, { code: "performSpellcheck('" + model + "', " + (edit ? "true" : "false") + ")" });
+      });
     });
-};
+  }
+}
 
-chrome.contextMenus.onClicked.addListener(onKorektor);
+chrome.contextMenus.onClicked.addListener(korektorSpellcheck);
 
 chrome.runtime.onInstalled.addListener(function() {
-  chrome.contextMenus.create({id: "parent", title: chrome.i18n.getMessage("menu_korektor"), contexts: ["editable"]})
-  chrome.contextMenus.create({id: "spellcheck", parentId: "parent", title: chrome.i18n.getMessage("menu_korektor_spellcheck"), contexts: ["editable"]})
-  chrome.contextMenus.create({id: "generate_diacritics", parentId: "parent", title: chrome.i18n.getMessage("menu_korektor_generate_diacritics"), contexts: ["editable"]})
-  chrome.contextMenus.create({id: "strip_diacritics", parentId: "parent", title: chrome.i18n.getMessage("menu_korektor_strip_diacritics"), contexts: ["editable"]})
+  chrome.contextMenus.create({id: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_czech"), contexts: ["editable"]});
+  chrome.contextMenus.create({id: "czech-spellchecker", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_spellcheck"), contexts: ["editable"]});
+  chrome.contextMenus.create({id: "czech-diacritics_generator", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_generate_diacritics"), contexts: ["editable"]});
+  chrome.contextMenus.create({id: "strip_diacritics", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_strip_diacritics"), contexts: ["editable"]});
+  chrome.contextMenus.create({type: "separator", id: "korektor_czech_separator", parentId: "korektor_czech", contexts: ["editable"]});
+  chrome.contextMenus.create({id: "with-edit_czech-spellchecker", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_spellcheck")+" "+chrome.i18n.getMessage("menu_korektor_with_edit"), contexts: ["editable"]});
+  chrome.contextMenus.create({id: "with-edit_czech-diacritics_generator", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_generate_diacritics")+" "+chrome.i18n.getMessage("menu_korektor_with_edit"), contexts: ["editable"]});
+  chrome.contextMenus.create({id: "with-edit_strip_diacritics", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_strip_diacritics")+" "+chrome.i18n.getMessage("menu_korektor_with_edit"), contexts: ["editable"]});
 });
