@@ -74,11 +74,11 @@ function korektorEdit(control, textArray) {
   jQuery('body').append(
     '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
-    ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:70px; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
-    '  <div style="'+style+'position:absolute; width:100%; top:0px; height:30px; background-color:#f00; line-height:30px; text-align:center">\n' +
+    ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
+    '  <div style="'+style+'position:absolute; width:100%; top:0px; height:36px; line-height:36px; text-align:center">\n' +
     '   <span style="'+style+'font-weight:bold; font-size:20px">Korektor Spellchecker</span>\n' +
     '  </div>\n' +
-    '  <div style="'+style+'position:absolute; width:100%; top:30px; bottom:30px; background-color:#0f0; overflow-x:hidden; overflow-y:auto; ">\n' +
+    '  <div style="'+style+'position:absolute; left:8px; right:8px; top:36px; bottom:44px; background-color:#fff; border-radius:4px; border:1px solid #999; overflow-x: hidden; overflow-y: visible">\n' +
     '   Eu congue metus ligula sed justo. Suspendisse\n' +
     '   potenti. Donec sodales elementum turpis. Duis dolor elit, dapibus sed,\n' +
     '   placerat vitae, auctor sit amet, nunc. Donec nisl quam, hendrerit vitae,\n' +
@@ -91,19 +91,19 @@ function korektorEdit(control, textArray) {
     '   lorem dolor mollis turpis, a consectetuer nunc justo ac nisl.\n' +
     '   <div style="'+style+'height: 5em;"></div>\n' +
     '  </div>\n' +
-    '  <div style="'+style+'position:absolute; width:100%; bottom:0px; height:36px; background-color:#00f;">\n' +
-    '   <div style="'+style+'position:absolute; left:0px; width:50%; height:100%; line-height:36px; text-align:center">\n' +
+    '  <div style="'+style+'position:absolute; width:100%; bottom:0px; height:44px;">\n' +
+    '   <div style="'+style+'position:absolute; left:0px; width:50%; height:100%; line-height:44px; text-align:center">\n' +
     '    <input type="checkbox" id="korektorEditReportText" style="'+style+'cursor:pointer" checked>\n' +
     '    <label style="'+style+'cursor:pointer" id="korektorEditReportTextLabel">Report corrected text</label>\n' +
     '   </div>\n' +
     '   <div style="'+style+'position:absolute; left:50%; width:25%; height:100%">\n' +
-    '    <div style="'+style+'position:absolute; left:4px; right:2px; top:4px; bottom:4px">\n' +
-    '     <button style="'+style+'width:100%; height:100%" id="korektorEditOk">OK</button>\n' +
+    '    <div style="'+style+'position:absolute; left:8px; right:4px; top:8px; bottom:8px">\n' +
+    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditOk">OK</button>\n' +
     '    </div>\n' +
     '   </div>\n' +
     '   <div style="'+style+'position:absolute; left:75%; width:25%; height:100%">\n' +
-    '    <div style="'+style+'position:absolute; left:2px; right:4px; top:4px; bottom:4px">\n' +
-    '     <button style="'+style+'width:100%; height:100%" id="korektorEditCancel">Cancel</button>\n' +
+    '    <div style="'+style+'position:absolute; left:4px; right:8px; top:8px; bottom:8px">\n' +
+    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditCancel">Cancel</button>\n' +
     '    </div>\n' +
     '   </div>\n' +
     '  </div>\n' +
