@@ -10,9 +10,9 @@
 function korektorSpellcheck(info, tab) {
   if (!("menuItemId" in info)) return;
 
-  if (info.menuItemId ~ /^spellcheck(_and_edit)?-/) {
-    var edit = info.menuItemId ~ /^spellcheck_and_edit-/;
-    var model = info.menuItemId ~ s/^spellcheck(_and_edit)?-//;
+  if (info.menuItemId.search(/^spellcheck(_and_edit)?-/) != -1) {
+    var edit = info.menuItemId.search(/^spellcheck_and_edit-/) != -1;
+    var model = info.menuItemId.replace(/^spellcheck(_and_edit)?-/, "");
 
     chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {
       chrome.tabs.executeScript(null, { file: "spellcheck.js" }, function() {
@@ -22,11 +22,11 @@ function korektorSpellcheck(info, tab) {
   }
 
   if (info.menuItemId == 'about_korektor_service') {
-    chrome.tabs.open "https://lindat.mff.cuni.cz/services/korektor/";
+    chrome.tabs.create({url: "https://lindat.mff.cuni.cz/services/korektor/"});
   }
 
   if (info.menuItemId == 'about_korektor') {
-    chrome.tabs.open "http://ufal.mff.cuni.cz/korektor";
+    chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor"});
   }
 }
 

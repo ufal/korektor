@@ -7,6 +7,6 @@
   "menu_korektor_strip_diacritics": { "message": "Strip diacritics" },
   "menu_korektor_with_edit": { "message": "and Edit (experimental)" },
   "menu_korektor_service_about": { "message": "About Korektor Service" },
-  "menu_korektor_service": { "message": "About Korektor" },
+  "menu_korektor_about": { "message": "About Korektor" },
   "korektor_error": { "message": "An error occurred when accessing the Korektor service." }
 }
