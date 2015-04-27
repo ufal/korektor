@@ -20,17 +20,21 @@ function korektorSetText(control, textArray) {
   if ("value" in control) {
     var text = '';
     for (var i in textArray)
-      text += textArray[i][textArray[i].length > 1 ? 1 : 0];
+      if (textArray[i].length > 0)
+        text += textArray[i][textArray[i].length > 1 ? 1 : 0];
     control.value = text;
   }
 }
 
 function korektorPerformSpellcheck(model, edit) {
+  // Ignore if edit is in progress
+  if (jQuery('#korektorEditDialog').length > 0) return;
+
   // Get current control
   var control = document.activeElement;
   if (!control) return;
 
-  korektorEdit(control, []);
+  korektorEdit(control, [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"]]);
   return;
 
   // Try getting original text
@@ -62,15 +66,9 @@ function korektorPerformSpellcheck(model, edit) {
   });
 }
 
-var korektorEditControl;
-var korektorEditTextArray;
-
 function korektorEdit(control, textArray) {
-  korektorEditControl = control;
-  korektorEditTextArray = textArray;
-
+  // Add dialog
   var style = 'z-index:123456789; color:#000; background-color:transparent; font-family:serif; font-size:16px;';
-
   jQuery('body').append(
     '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
@@ -78,18 +76,7 @@ function korektorEdit(control, textArray) {
     '  <div style="'+style+'position:absolute; width:100%; top:0px; height:36px; line-height:36px; text-align:center">\n' +
     '   <span style="'+style+'font-weight:bold; font-size:20px">Korektor Spellchecker</span>\n' +
     '  </div>\n' +
-    '  <div style="'+style+'position:absolute; left:8px; right:8px; top:36px; bottom:44px; background-color:#fff; border-radius:4px; border:1px solid #999; overflow-x: hidden; overflow-y: visible">\n' +
-    '   Eu congue metus ligula sed justo. Suspendisse\n' +
-    '   potenti. Donec sodales elementum turpis. Duis dolor elit, dapibus sed,\n' +
-    '   placerat vitae, auctor sit amet, nunc. Donec nisl quam, hendrerit vitae,\n' +
-    '   porttitor et, imperdiet id, quam. Quisque dolor. Nulla tincidunt, lacus id\n' +
-    '   dapibus ullamcorper, turpis diam fringilla eros, quis aliquet dolor felis\n' +
-    '   at lorem. Pellentesque et lacus. Vestibulum tempor lectus at est.\n' +
-    '   Pellentesque habitant morbi tristique senectus et netus et malesuada fames\n' +
-    '   ac turpis egestas. Sed vitae eros. Nulla pulvinar turpis eget nunc. Sed\n' +
-    '   bibendum pellentesque nunc. Integer tristique, lorem ac faucibus tempor,\n' +
-    '   lorem dolor mollis turpis, a consectetuer nunc justo ac nisl.\n' +
-    '   <div style="'+style+'height: 5em;"></div>\n' +
+    '  <div style="'+style+'position:absolute; left:8px; right:8px; top:36px; bottom:44px; background-color:#fff; border-radius:4px; border:1px solid #999; overflow-x: hidden; overflow-y: visible; white-space: pre-wrap" id="korektorEditText">\n' +
     '  </div>\n' +
     '  <div style="'+style+'position:absolute; width:100%; bottom:0px; height:44px;">\n' +
     '   <div style="'+style+'position:absolute; left:0px; width:50%; height:100%; line-height:44px; text-align:center">\n' +
@@ -110,12 +97,82 @@ function korektorEdit(control, textArray) {
     ' </div>\n' +
     '</div>\n'
   );
+  function korektorEditDialogClose() {
+    jQuery('#korektorEditDialog').remove();
+    jQuery(document).off('keyup', korektorEditDialogHandleEscape);
+  }
+  function korektorEditDialogHandleEscape(event) {
+    var dialog = jQuery('#korektorEditDialog');
+    if (dialog.length > 0 && event.keyCode == 27) dialog.remove();
+    if (!dialog.length || event.keyCode == 27) jQuery(document).off('keyup', korektorEditDialogHandleEscape);
+  }
+  jQuery(document).keyup(korektorEditDialogHandleEscape);
+
+  // Fill suggestions
+  var html = '';
+  for (var i in textArray)
+    if (textArray[i].length <= 1) {
+      html += textArray[i].length == 1 ? textArray[i][0] : '';
+    } else {
+      html += '<span style="'+style+'color:#800;' + (textArray[i].length > 2 ? 'text-decoration: underline;' : '') +
+              '" id="korektorEditSuggestion' + i + '">' + textArray[i][1] + '</span>';
+    }
+  html += '<div style="'+style+'height: 5em;"></div>';
+  html += '<div style="'+style+'position:absolute; background-color:#eee; padding:10px; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5); display:none" id="korektorEditSuggestions"></div>';
+  jQuery('#korektorEditText').html(html);
+
+  // Suggestion dialog handling
+  var korektorEditSuggestionsHovering = false;
+  var korektorEditSuggestionsHideTimeout = null;
+  function korektorEditSuggestionsHover() {
+    korektorEditSuggestionsHovering = true;
+  }
+  function korektorEditSuggestionsHide() {
+    korektorEditSuggestionsHovering = false;
+    if (korektorEditSuggestionsHideTimeout !== null) clearTimeout(korektorEditSuggestionsHideTimeout);
+    korektorEditSuggestionsHideTimeout = setTimeout(function(){
+      korektorEditSuggestionsHideTimeout = null;
+      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions').hide()
+    }, 500);
+  }
+  function korektorEditSuggestionsFill(suggestion) {
+    var suggestion_current = suggestion.text();
+    var id = suggestion.attr('id').replace(/^korektorEditSuggestion/, '');
+
+    var html = '<b>Original</b>';
+    for (var i in textArray[id]) {
+      if (i == 1) html += '<br/><b>Suggestions</b>';
+      var current = textArray[id][i] == suggestion_current;
+      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;' + (current ? 'font-weight:bold;' : '') + '">' + textArray[id][i] + '</span>';
+    }
+
+    jQuery('#korektorEditSuggestions')
+      .html('')
+      .show()
+      .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
+      .html(html);
+    jQuery('#korektorEditSuggestions span').click(function() {
+      suggestion.text(jQuery(this).text());
+      korektorEditSuggestionsFill(suggestion);
+    });
+  }
+  function korektorEditSuggestionsShow() {
+    korektorEditSuggestionsHover();
+    korektorEditSuggestionsFill(jQuery(this));
+  }
+  jQuery('#korektorEditSuggestions').hover(korektorEditSuggestionsHover, korektorEditSuggestionsHide);
+  jQuery('#korektorEditText span').hover(korektorEditSuggestionsShow, korektorEditSuggestionsHide)
+
+  // Dialog controls
   jQuery('#korektorEditReportTextLabel').click(function() {
     jQuery('#korektorEditReportText').prop('checked', !jQuery('#korektorEditReportText').prop('checked'));
   });
   jQuery('#korektorEditOk').click(function() {
+    var resultArray = [];
+    for (var i in textArray)
+      resultArray.push(textArray[i].length <= 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
+    korektorSetText(control, resultArray);
+    korektorEditDialogClose();
   });
-  jQuery('#korektorEditCancel').click(function() {
-    jQuery('#korektorEditDialog').remove();
-  });
+  jQuery('#korektorEditCancel').click(korektorEditDialogClose);
 }
