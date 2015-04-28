@@ -34,7 +34,7 @@ function korektorPerformSpellcheck(model, edit) {
   var control = document.activeElement;
   if (!control) return;
 
-  korektorEdit(control, [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"]]);
+  korektorEdit(control, [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]]);
   return;
 
   // Try getting original text
@@ -124,10 +124,10 @@ function korektorEdit(control, textArray) {
   // Suggestion dialog handling
   var korektorEditSuggestionsHovering = false;
   var korektorEditSuggestionsHideTimeout = null;
-  function korektorEditSuggestionsHover() {
+  function korektorEditSuggestionsMouseEnter() {
     korektorEditSuggestionsHovering = true;
   }
-  function korektorEditSuggestionsHide() {
+  function korektorEditSuggestionsMouseLeave() {
     korektorEditSuggestionsHovering = false;
     if (korektorEditSuggestionsHideTimeout !== null) clearTimeout(korektorEditSuggestionsHideTimeout);
     korektorEditSuggestionsHideTimeout = setTimeout(function(){
@@ -135,33 +135,44 @@ function korektorEdit(control, textArray) {
       if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions').hide()
     }, 500);
   }
+  function korektorEditSuggestionsUpdate(suggestion) {
+    var suggestion_text = suggestion.text();
+    jQuery('#korektorEditSuggestions span').each(function() {
+      var span = jQuery(this);
+      span.css('font-weight', span.text() == suggestion_text ? 'bold' : 'normal');
+    });
+  }
   function korektorEditSuggestionsFill(suggestion) {
-    var suggestion_current = suggestion.text();
     var id = suggestion.attr('id').replace(/^korektorEditSuggestion/, '');
 
     var html = '<b>Original</b>';
     for (var i in textArray[id]) {
       if (i == 1) html += '<br/><b>Suggestions</b>';
-      var current = textArray[id][i] == suggestion_current;
-      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;' + (current ? 'font-weight:bold;' : '') + '">' + textArray[id][i] + '</span>';
+      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + textArray[id][i] + '</span>';
     }
+    html += '<br/><b>Custom</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text() + '"/>';
 
     jQuery('#korektorEditSuggestions')
       .html('')
       .show()
       .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
       .html(html);
+    korektorEditSuggestionsUpdate(suggestion);
     jQuery('#korektorEditSuggestions span').click(function() {
       suggestion.text(jQuery(this).text());
-      korektorEditSuggestionsFill(suggestion);
+      korektorEditSuggestionsUpdate(suggestion);
+    });
+    jQuery('#korektorEditSuggestions input').on('change input',function() {
+      suggestion.text(jQuery(this).val());
+      korektorEditSuggestionsUpdate(suggestion);
     });
   }
   function korektorEditSuggestionsShow() {
-    korektorEditSuggestionsHover();
+    korektorEditSuggestionsMouseEnter();
     korektorEditSuggestionsFill(jQuery(this));
   }
-  jQuery('#korektorEditSuggestions').hover(korektorEditSuggestionsHover, korektorEditSuggestionsHide);
-  jQuery('#korektorEditText span').hover(korektorEditSuggestionsShow, korektorEditSuggestionsHide)
+  jQuery('#korektorEditSuggestions').hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
+  jQuery('#korektorEditText span').hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave)
 
   // Dialog controls
   jQuery('#korektorEditReportTextLabel').click(function() {
