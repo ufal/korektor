@@ -9,20 +9,38 @@
 
 function korektorGetText(control) {
   // Input and textarea fields
-  if ("value" in control)
-    return control.value;
+  if ("value" in control) {
+    if ("selectionStart" in control && "selectionEnd" in control) {
+      var start = control.selectionStart;
+      var end = control.selectionEnd;
+      if (start < end) {
+        var text = control.value;
+        return {type:"value_selection", control:control, text:text.substring(start, end),
+                text_prefix:text.substr(0, start), text_suffix:text.substr(end), start:start, end:end};
+      }
+    }
+    return {type:"value", control:control, text:control.value};
+  }
 
   return null;
 }
 
-function korektorSetText(control, textArray) {
+function korektorSetText(data, textArray) {
   // Input and textarea fields
-  if ("value" in control) {
+  if (data.type == "value" || data.type == "value_selection") {
+    // Concatenate new text
     var text = '';
     for (var i in textArray)
-      if (textArray[i].length > 0)
-        text += textArray[i][textArray[i].length > 1 ? 1 : 0];
-    control.value = text;
+      text += textArray[i][textArray[i].length > 1 ? 1 : 0];
+
+    // Replace the text in the control
+    if (data.type == "value") {
+      data.control.value = text;
+    } else /*if (data.type == "value_selection")*/ {
+      data.control.value = data.text_prefix + text + data.text_suffix;
+      data.control.selectionStart = data.start;
+      data.control.selectionEnd = data.start + text.length;
+    }
   }
 }
 
@@ -34,39 +52,43 @@ function korektorPerformSpellcheck(model, edit) {
   var control = document.activeElement;
   if (!control) return;
 
-  korektorEdit(control, [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]]);
-  return;
-
   // Try getting original text
-  var text = korektorGetText(control);
-  if (!text) return;
+  var data = korektorGetText(control);
+  if (!data) return;
 
   // Run Korektor
   control.disabled = true;
-  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
-              {dataType: "json", data: {model: model, data: text, suggestions: edit ? 5 : 1}, type: "POST",
-    success: function(json) {
+//  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
+//              {dataType: "json", data: {model: model, data: data.text, suggestions: edit ? 5 : 1}, type: "POST",
+//    success: function(json) {
+      var json = {};
+      json.result = [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]];
+
       if (!("result" in json)) {
         alert(chrome.i18n.getMessage("korektor_error"));
         return;
       }
+      var textArray = [];
+      for (var i in json.result)
+        if (json.result[i].length)
+          textArray.push(json.result[i]);
 
       // Edit result or use it directly
-      if (edit)
-        korektorEdit(control, json.result);
-      else
-        korektorSetText(control, json.result);
-    },
-    error: function(jqXHR, textStatus) {
-      alert(chrome.i18n.getMessage("korektor_error"));
-    },
-    complete: function() {
-      control.disabled = false;
-    }
-  });
+      if (edit) {
+        korektorEdit(data, textArray);
+      } else {
+        korektorSetText(data, textArray);
+        control.disabled = false;
+      }
+//    },
+//    error: function(jqXHR, textStatus) {
+//      alert(chrome.i18n.getMessage("korektor_error"));
+//      control.disabled = false;
+//    }
+//  });
 }
 
-function korektorEdit(control, textArray) {
+function korektorEdit(data, textArray) {
   // Add dialog
   var style = 'z-index:123456789; color:#000; background-color:transparent; font-family:serif; font-size:16px;';
   jQuery('body').append(
@@ -98,6 +120,7 @@ function korektorEdit(control, textArray) {
     '</div>\n'
   );
   function korektorEditDialogClose() {
+    data.control.disabled = false;
     jQuery('#korektorEditDialog').remove();
     jQuery(document).off('keyup', korektorEditDialogHandleEscape);
   }
@@ -111,8 +134,8 @@ function korektorEdit(control, textArray) {
   // Fill suggestions
   var html = '';
   for (var i in textArray)
-    if (textArray[i].length <= 1) {
-      html += textArray[i].length == 1 ? textArray[i][0] : '';
+    if (textArray[i].length == 1) {
+      html += textArray[i][0];
     } else {
       html += '<span style="'+style+'color:#800;' + (textArray[i].length > 2 ? 'text-decoration: underline;' : '') +
               '" id="korektorEditSuggestion' + i + '">' + textArray[i][1] + '</span>';
@@ -181,8 +204,8 @@ function korektorEdit(control, textArray) {
   jQuery('#korektorEditOk').click(function() {
     var resultArray = [];
     for (var i in textArray)
-      resultArray.push(textArray[i].length <= 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
-    korektorSetText(control, resultArray);
+      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
+    korektorSetText(data, resultArray);
     korektorEditDialogClose();
   });
   jQuery('#korektorEditCancel').click(korektorEditDialogClose);
