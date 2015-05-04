@@ -62,7 +62,7 @@ function korektorPerformSpellcheck(model, edit) {
 //              {dataType: "json", data: {model: model, data: data.text, suggestions: edit ? 5 : 1}, type: "POST",
 //    success: function(json) {
       var json = {};
-      json.result = [["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]];
+      json.result = [["< & > <b>fasd</b>", "< & > <b>fasd</b>"], ["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]];
 
       if (!("result" in json)) {
         alert(chrome.i18n.getMessage("korektor_error"));
@@ -133,12 +133,13 @@ function korektorEdit(data, textArray) {
 
   // Fill suggestions
   var html = '';
+  var quoter = jQuery('<div/>');
   for (var i in textArray)
     if (textArray[i].length == 1) {
-      html += textArray[i][0];
+      html += quoter.text(textArray[i][0]).html();
     } else {
       html += '<span style="'+style+'color:#800;' + (textArray[i].length > 2 ? 'text-decoration: underline;' : '') +
-              '" id="korektorEditSuggestion' + i + '">' + textArray[i][1] + '</span>';
+              '" id="korektorEditSuggestion' + i + '">' + quoter.text(textArray[i][1]).html() + '</span>';
     }
   html += '<div style="'+style+'height: 5em;"></div>';
   html += '<div style="'+style+'position:absolute; background-color:#eee; padding:10px; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5); display:none" id="korektorEditSuggestions"></div>';
@@ -169,14 +170,15 @@ function korektorEdit(data, textArray) {
     var id = suggestion.attr('id').replace(/^korektorEditSuggestion/, '');
 
     var html = '<b>Original</b>';
+    var quoter = jQuery('<div/>');
     for (var i in textArray[id]) {
       if (i == 1) html += '<br/><b>Suggestions</b>';
-      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + textArray[id][i] + '</span>';
+      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.text(textArray[id][i]).html() + '</span>';
     }
     html += '<br/><b>Custom</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text() + '"/>';
 
     jQuery('#korektorEditSuggestions')
-      .html('')
+      .empty()
       .show()
       .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
       .html(html);
