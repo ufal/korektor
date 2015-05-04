@@ -5,7 +5,8 @@
   "menu_korektor_spellcheck": { "message": "Spellcheck" },
   "menu_korektor_generate_diacritics": { "message": "Generate diacritics" },
   "menu_korektor_strip_diacritics": { "message": "Strip diacritics" },
-  "menu_korektor_with_edit": { "message": "and Edit (experimental)" },
+  "menu_korektor_with_edit": { "message": "..." },
+  "menu_korektor_without_edit": { "message": " without further editing" },
   "menu_korektor_service_about": { "message": "About Korektor Service" },
   "menu_korektor_about": { "message": "About Korektor" },
   "korektor_error": { "message": "An error occurred when accessing the Korektor service." }
