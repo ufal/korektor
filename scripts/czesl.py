@@ -181,7 +181,76 @@ class CzeSLA:
                     else:
                         gold_token = w.find("./ldata:token", CzeSLA.ns).text
                         orig_token = error_dictionary[w.get('id')][3][0]
-                        tokens.append("<orig=\""+orig_token+"\"\t"+"gold=\""+gold_token+"\">")
+                        error_signature = get_error_signature(orig_token, gold_token)
+                        if error_signature:
+                            tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                        else:
+                            tokens.append(gold_token)
                 sen_to_write = ' '.join(tokens)
                 f.write(sen_to_write + '\n')
         return
+
+def get_error_signature(misspelled, correct):
+    """Get the spelling error type given the correct word and the misspelled word.
+
+    The function imitates the functionality of the C++ header from src/create/create_error_model/get_error_signature.h
+
+    Args:
+        misspelled: Token with spelling error
+        correct: Gold token
+
+    Returns:
+        The error signature if and only if the error is caused by only one of edit operations (insertion, deletion,
+        substitution, or swapping).
+        
+    """
+
+    signature = ''
+
+    if len(misspelled) == len(correct):
+        for i in range(len(misspelled)):
+            if misspelled[i] != correct[i] and (i + 1) < len(misspelled) and misspelled[i+1] == correct[i] and misspelled[i] == correct[i+1]:
+                for j in range(i+2, len(misspelled)):
+                    if misspelled[j] != correct[j]:
+                        return False
+                signature = u'swap_'+ misspelled[i] + misspelled[i+1]
+                return signature
+            elif misspelled[i] != correct[i]:
+                for j in range(i+1, len(misspelled)):
+                    if misspelled[j] != correct[j]:
+                        return False
+                signature = u's_'+ misspelled[i] + correct[i]
+                return signature
+    elif len(misspelled) == len(correct)+1:
+        for i in range(len(correct)):
+            if misspelled[i] != correct[i]:
+                for j in range(i, len(correct)):
+                    if misspelled[j+1] != correct[j]:
+                        return False
+
+                signature = u'i_'+ misspelled[i]
+                if i == 0:
+                    signature += ' '
+                else:
+                    signature += correct[i-1]
+
+                signature += correct[i]
+                return signature
+
+        signature = u'i_'+ misspelled[len(misspelled)-1]
+        signature += correct[len(correct)-1]
+        signature += ' '
+        return signature
+    elif len(misspelled)+1 == len(correct):
+        for i in range(len(misspelled)):
+            if misspelled[i] != correct[i]:
+                for j in range(i, len(misspelled)):
+                    if misspelled[j] != correct[j+1]:
+                        return False
+                signature = u'd_'+correct[i]
+                if i == 0:
+                    signature += ' '
+                else:
+                    signature += correct[i-1]
+                return signature
+    return
