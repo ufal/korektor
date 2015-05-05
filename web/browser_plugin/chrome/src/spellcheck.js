@@ -61,8 +61,18 @@ function korektorPerformSpellcheck(model, edit) {
 //  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
 //              {dataType: "json", data: {model: model, data: data.text, suggestions: edit ? 5 : 1}, type: "POST",
 //    success: function(json) {
-      var json = {};
-      json.result = [["< & > <b>fasd</b>", "< & > <b>fasd</b>"], ["ahoj "], ["idi", "lidi"], [", "], ["ak", "jak", "jestli"], [" se "], ["mate", "máte", "mateš"], ["?"], [" megadlouhéslovo", " megamegadlouhéslovo"]];
+      var json = {result: []};
+      var text = data.text;
+      while (text)
+        if (text.match(/^\s+/)) {
+          var token = text.match(/^\s+/);
+          text = text.replace(/^\s+/, "");
+          json.result.push([token]);
+        } else {
+          var token = text.match(/^\S+/);
+          text = text.replace(/^\S+/, "");
+          json.result.push([token, token]);
+        }
 
       if (!("result" in json)) {
         alert(chrome.i18n.getMessage("korektor_error"));
