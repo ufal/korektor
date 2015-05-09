@@ -202,7 +202,7 @@ def get_error_signature(misspelled, correct):
     Returns:
         The error signature if and only if the error is caused by only one of edit operations (insertion, deletion,
         substitution, or swapping).
-        
+
     """
 
     signature = ''
@@ -253,4 +253,6 @@ def get_error_signature(misspelled, correct):
                 else:
                     signature += correct[i-1]
                 return signature
+        signature = u'd_'+correct[len(correct)-1]+correct[len(correct)-2]
+        return signature
     return
