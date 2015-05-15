@@ -230,7 +230,7 @@ def get_error_signature(misspelled, correct):
 
                 signature = u'i_'+ misspelled[i]
                 if i == 0:
-                    signature += ' '
+                    signature += '^'
                 else:
                     signature += correct[i-1]
 
@@ -239,7 +239,7 @@ def get_error_signature(misspelled, correct):
 
         signature = u'i_'+ misspelled[len(misspelled)-1]
         signature += correct[len(correct)-1]
-        signature += ' '
+        signature += '$'
         return signature
     elif len(misspelled)+1 == len(correct):
         for i in range(len(misspelled)):
@@ -249,7 +249,7 @@ def get_error_signature(misspelled, correct):
                         return False
                 signature = u'd_'+correct[i]
                 if i == 0:
-                    signature += ' '
+                    signature += '^'
                 else:
                     signature += correct[i-1]
                 return signature

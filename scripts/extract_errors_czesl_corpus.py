@@ -10,7 +10,7 @@ def extract_errors(file_prefix):
     czesl_w = czesl.CzeSLW(w_file)
     czesl_a = czesl.CzeSLA(a_file)
     czesl_a.set_wref(czesl_w)
-    print 'Writing the corpus errors to : ' + file_prefix+'.err.txt'
+    print 'Writing the corpus errors to : ' + file_prefix+'.err.sen.txt'
     #czesl_a.write_errors(file_prefix)
     czesl_a.write_errors_by_sentences(file_prefix)
 
