@@ -11,6 +11,7 @@ import re
 import collections
 import math
 import sys
+import unicodedata
 
 class ErrorModel:
     """Basic error model.
@@ -31,25 +32,23 @@ class ErrorModel:
         """
         self.error_file = error_file
 
-        # letter counts
+        # letter/biletter counts
         self.num_letters = 0
         self.letter_count = collections.defaultdict(int)
+        self.num_biletters = 0
         self.biletter_count = collections.defaultdict(int)
-        self.triletter_count = collections.defaultdict(int)
 
         # other counts
         self.num_pos_diac = 0
         self.num_diac = 0
-        self.num_i = 0
-        self.num_y = 0
-        self.num_s = 0
-        self.num_z = 0
         self.num_vocal = 0
-        self.num_n = 0
         self.num_has_hadj_neighbour = 0
         self.num_has_vadj_neighbour = 0
         self.num_has_random_neighbours = 0
         self.num_same_letter_twice = 0
+
+        self.case_errors = 0
+        self.diac_errors = 0
 
         # Confusion set for different edit operations
         self.cm_del = collections.defaultdict(int)
@@ -57,10 +56,18 @@ class ErrorModel:
         self.cm_sub = collections.defaultdict(int)
         self.cm_rev = collections.defaultdict(int)
 
+        # Error model probabilities for different edit operations
         self.prob_del = collections.defaultdict(int)
         self.prob_add = collections.defaultdict(int)
         self.prob_sub = collections.defaultdict(int)
         self.prob_rev = collections.defaultdict(int)
+
+        # general cost
+        self.case_cost = 0.0
+        self.sub_cost = 0.0
+        self.add_cost = 0.0
+        self.del_cost = 0.0
+        self.rev_cost = 0.0
 
         self.read_error_data()
         self.create_model()
@@ -90,6 +97,10 @@ class ErrorModel:
                         # the correct character at the place of typo
                         correct = spell_err[0][3]
                         self.cm_sub[typo+correct] += 1
+                        if typo.lower() == correct.lower():
+                            self.case_errors += 1
+                        if is_chars_diff_by_diacritic(typo, correct):
+                            self.diac_errors += 1
                     elif re.search(r'i\_', spell_err[0]):
                         # inserted typo
                         typo = spell_err[0][2]
@@ -152,6 +163,14 @@ class ErrorModel:
                 print 'Warning: division by zero (add[' \
                       + edit_key.encode('utf-8') +']/bigram['+ denom_key.encode('utf-8') + '],\t' \
                       + repr(self.cm_add[edit_key]) + '/' + repr(self.biletter_count[denom_key]) + ')'
+
+        # calculate general costs
+        self.case_cost = -math.log10((self.case_errors + 1.0) / self.num_letters)
+        self.sub_cost =  -math.log10((len(self.cm_sub) + 1.0) / self.num_letters)
+        self.add_cost = -math.log10((len(self.cm_add) + 1.0) / self.num_biletters)
+        self.del_cost = -math.log10((len(self.cm_del) + 1.0) / self.num_biletters)
+        self.rev_cost = -math.log10((len(self.cm_rev) + 1.0) / self.num_biletters)
+
         return
 
     def count_letters(self, input_str):
@@ -167,10 +186,13 @@ class ErrorModel:
                     self.letter_count[letter] += 1
                 if i == 0:
                     self.biletter_count['^'+w[i]] += 1
+                    self.num_biletters += 1
                 if i == len(w)-1:
                     self.biletter_count[w[i]+'$'] += 1
+                    self.num_biletters += 1
                 if i+1 < len(w):
                     self.biletter_count[w[i:i+2]] += 1
+                    self.num_biletters += 1
 
                 if i < len(w)-1 and w[i] == w[i+1]:
                     self.num_same_letter_twice += 1
@@ -251,6 +273,16 @@ class ErrorModel:
         """Print the error model.
 
         """
+        print '\n'
+        print '*************************'
+        print 'Error model probabilities'
+        print '*************************'
+        print 'case\t0\t' + self.case_cost
+        print 'substitutions\t1\t' + self.sub_cost
+        print 'insertions\t1\t' + self.add_cost
+        print 'deletions\t1\t' + self.del_cost
+        print 'swaps\t1\t' + self.rev_cost
+
         for edit_key in self.prob_del:
             print 'd_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_del[edit_key])
         for edit_key in self.prob_sub:
@@ -260,6 +292,25 @@ class ErrorModel:
         for edit_key in self.prob_add:
             print 'i_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_add[edit_key])
 
+
+def is_chars_diff_by_diacritic(char1, char2):
+    """Check whether two characters differ only by diacritic.
+
+    """
+    if isinstance(char1, str):
+        char1 = unicode(char1, encoding='utf-8')
+    if isinstance(char2, str):
+        char2 = unicode(char2, encoding='utf-8')
+    char1_d = unicodedata.normalize('NFD', char1)
+    char2_d = unicodedata.normalize('NFD', char2)
+    if len(char1_d) == 1 and len(char2_d) == 2:
+        if char1_d[0] == char2_d[0] and ord(char2_d[1]) == 769:
+            return True
+    elif len(char1_d) == 2 and len(char2_d) == 1:
+        if char1_d[0] == char2_d[0] and ord(char1_d[1]) == 769:
+            return True
+    else:
+        return False
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script for training the error model for Korektor')
