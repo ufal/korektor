@@ -16,7 +16,7 @@ class ErrorModel:
     """Basic error model.
 
     """
-    all_letters = u'ABCDEFGHIJKLMNOPQRSTUVWXYZĚŠČŘŽÝÁÍÉÓĎŤŇÚÚabcdefghijklmnopqrstuvwxyzěščřžýáíéóďťňúů'
+    all_letters = u'ABCDEFGHIJKLMNOPQRSTUVWXYZĚŠČŘŽÝÁÍÉÓĎŤŇÚŮabcdefghijklmnopqrstuvwxyzěščřžýáíéóďťňúů'
     letters_pos_diac = u'ESCRZYAIODTNUescrzyaiodtnu'
     letters_diac = u'ĚŠČŘŽÝÁÍÉÓĎŤŇÚÚěščřžýáíéóďťňúů'
     letters_vocal = u'AEIOUYÁÉÍÓÚÝaeiouyáéíóúý'
@@ -104,42 +104,54 @@ class ErrorModel:
                         # the character to the left of the deleted character
                         correct_prev = spell_err[0][3]
                         self.cm_del[correct_prev+deleted_char] += 1
-
-                    self.count_letters(spell_err[2])
+                    self.count_letters(spell_err[3])
                 line_wo_err = re.sub(r'<type=\"((swap|s|i|d)_.+?)\"\sorig=\"(.+?)\"\sgold=\"(.+?)\">', '', line)
                 self.count_letters(line_wo_err)
             else:
                 self.count_letters(line)
 
         self.print_confusion_sets()
-        sys.exit()
 
         # calculate log probabilities
         for edit_key in self.cm_del:
-            print 'Edit key: ' + edit_key
-            err_prob = self.cm_del[edit_key] / self.biletter_count[edit_key]
-            err_logprob = math.log10(err_prob)
-            self.prob_del[edit_key] = err_logprob
-
+            if float(self.biletter_count[edit_key]) != 0.0:
+                err_prob = self.cm_del[edit_key] / float(self.biletter_count[edit_key])
+                #print 'Error prob: \t' + str(err_prob)
+                err_logprob = -math.log10(err_prob)
+                self.prob_del[edit_key] = err_logprob
+            else:
+                print 'Warning: division by zero (del[' \
+                      + edit_key.encode('utf-8') +']/bigram['+ edit_key.encode('utf-8') + '],\t' \
+                      + repr(self.cm_del[edit_key]) + '/' + repr(self.biletter_count[edit_key]) + ')'
         for edit_key in self.cm_rev:
-            print 'Edit key: ' + edit_key
-            err_prob = self.cm_rev[edit_key] / self.biletter_count[edit_key]
-            err_logprob = math.log10(err_prob)
-            self.prob_rev[edit_key] = err_logprob
-
+            if float(self.biletter_count[edit_key]) != 0.0:
+                err_prob = self.cm_rev[edit_key] / float(self.biletter_count[edit_key])
+                err_logprob = -math.log10(err_prob)
+                self.prob_rev[edit_key] = err_logprob
+            else:
+                print 'Warning: division by zero (rev[' \
+                      + edit_key.encode('utf-8') +']/bigram['+ edit_key.encode('utf-8') + '],\t' \
+                      + repr(self.cm_rev[edit_key]) + '/' + repr(self.biletter_count[edit_key]) + ')'
         for edit_key in self.cm_sub:
             denom_key = edit_key[1]
-            print 'Edit key: ' + edit_key + ', \tDenom Key: ' + denom_key
-            err_prob = self.cm_rev[edit_key] / self.letter_count[denom_key]
-            err_logprob = math.log10(err_prob)
-            self.prob_sub[edit_key] = err_logprob
-
+            if float(self.letter_count[denom_key]) != 0.0:
+                err_prob = self.cm_sub[edit_key] / float(self.letter_count[denom_key])
+                err_logprob = -math.log10(err_prob)
+                self.prob_sub[edit_key] = err_logprob
+            else:
+                print 'Warning: division by zero (sub[' \
+                      + edit_key.encode('utf-8') +']/bigram['+ denom_key.encode('utf-8') + '],\t' \
+                      + repr(self.cm_sub[edit_key]) + '/' + repr(self.letter_count[denom_key]) + ')'
         for edit_key in self.cm_add:
-            denom_key = edit_key[1:2]
-            print 'Edit key: ' + edit_key + ', \tDenom Key: ' + denom_key
-            err_prob = self.cm_rev[edit_key] / self.biletter_count[denom_key]
-            err_logprob = math.log10(err_prob)
-            self.prob_add[edit_key] = err_logprob
+            denom_key = edit_key[1:3]
+            if float(self.biletter_count[denom_key]) != 0.0:
+                err_prob = self.cm_add[edit_key] / float(self.biletter_count[denom_key])
+                err_logprob = -math.log10(err_prob)
+                self.prob_add[edit_key] = err_logprob
+            else:
+                print 'Warning: division by zero (add[' \
+                      + edit_key.encode('utf-8') +']/bigram['+ denom_key.encode('utf-8') + '],\t' \
+                      + repr(self.cm_add[edit_key]) + '/' + repr(self.biletter_count[denom_key]) + ')'
         return
 
     def count_letters(self, input_str):
@@ -150,20 +162,15 @@ class ErrorModel:
         for w in words:
             for i in range(len(w)):
                 letter = w[i]
-
                 if letter in ErrorModel.all_letters:
                     self.num_letters += 1
                     self.letter_count[letter] += 1
-
                 if i == 0:
                     self.biletter_count['^'+w[i]] += 1
                 if i == len(w)-1:
                     self.biletter_count[w[i]+'$'] += 1
                 if i+1 < len(w):
-                    self.biletter_count[w[i:i+1]] += 1
-                if i+2 < len(w):
-                    self.triletter_count[w[i:i+2]] += 1
-
+                    self.biletter_count[w[i:i+2]] += 1
 
                 if i < len(w)-1 and w[i] == w[i+1]:
                     self.num_same_letter_twice += 1
@@ -173,17 +180,6 @@ class ErrorModel:
                     self.num_diac += 1
                 if letter in ErrorModel.letters_vocal:
                     self.num_vocal += 1
-
-                # if letter == 'i' or letter == 'í' or letter == 'I' or letter == 'Í':
-                #     self.num_i += 1
-                # if letter == 'y' or letter == 'ý' or letter == 'Y' or letter == 'Ý':
-                #     self.num_y += 1
-                # if letter == 's' or letter == 'S':
-                #     self.num_s += 1
-                # if letter == 'z' or letter == 'Z':
-                #     self.num_z += 1
-                # if letter == 'n' or letter == 'N':
-                #     self.num_n += 1
 
                 has_hadj_neighbor = False
                 has_vadj_neighbor = False
@@ -256,13 +252,13 @@ class ErrorModel:
 
         """
         for edit_key in self.prob_del:
-            print 'd_' + edit_key + '\t1\t'+ self.prob_del[edit_key]
+            print 'd_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_del[edit_key])
         for edit_key in self.prob_sub:
-            print 's_' + edit_key + '\t1\t'+ self.prob_sub[edit_key]
+            print 's_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_sub[edit_key])
         for edit_key in self.prob_rev:
-            print 'swap_' + edit_key + '\t1\t'+ self.prob_rev[edit_key]
+            print 'swap_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_rev[edit_key])
         for edit_key in self.prob_add:
-            print 'i_' + edit_key + '\t1\t'+ self.prob_add[edit_key]
+            print 'i_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_add[edit_key])
 
 
 if __name__ == '__main__':
