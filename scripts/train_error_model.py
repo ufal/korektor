@@ -174,6 +174,9 @@ class ErrorModel:
         return
 
     def write_model(self):
+        """Write model output to file.
+
+        """
         with codecs.open(self.model_file, mode='w', encoding='utf-8') as f:
             f.write('case\t0\t' + repr(self.case_cost)+'\n')
             f.write('substitutions\t1\t' + repr(self.sub_cost)+'\n')
@@ -182,6 +185,7 @@ class ErrorModel:
             f.write('swaps\t1\t' + repr(self.rev_cost)+'\n')
 
             for edit_key in self.prob_del:
+                edit_key_c = edit_key[1] + edit_key[0]
                 edit_key_c = re.sub('[\^|\$]', ' ', edit_key)
                 f.write('d_' + edit_key_c + '\t1\t'+ repr(self.prob_del[edit_key])+'\n')
             for edit_key in self.prob_sub:
@@ -310,7 +314,8 @@ class ErrorModel:
         print 'swaps\t1\t' + repr(self.rev_cost)
 
         for edit_key in self.prob_del:
-            print 'd_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_del[edit_key])
+            edit_key_c = edit_key[1] + edit_key[0]
+            print 'd_' + edit_key_c.encode('utf-8') + '\t1\t'+ repr(self.prob_del[edit_key])
         for edit_key in self.prob_sub:
             dist = 1
             if edit_key[0].lower() == edit_key[1].lower():
