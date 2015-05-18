@@ -26,11 +26,12 @@ class ErrorModel:
     keyboard_cols = [u'qaz', u'ěwsx', u'šedc', u'črfv', u'řtgb', u'žyhn', u'ýujm', u'áik', u'íol', u'épů']
     keyboard_extra_vadj = {'sz' : 1, 'dx' : 1, 'fc' : 1, 'gv' : 1, 'hb' : 1, 'jn' : 1, 'km' : 1}
 
-    def __init__(self, error_file):
+    def __init__(self, error_file, model_file):
         """Constructor.
 
         """
         self.error_file = error_file
+        self.model_file = model_file
 
         # letter/biletter counts
         self.num_letters = 0
@@ -71,6 +72,7 @@ class ErrorModel:
 
         self.read_error_data()
         self.create_model()
+        self.write_model()
 
     def read_error_data(self):
         """Read the text file containing containing spelling errors.
@@ -121,8 +123,6 @@ class ErrorModel:
             else:
                 self.count_letters(line)
 
-        self.print_confusion_sets()
-
         # calculate log probabilities
         for edit_key in self.cm_del:
             if float(self.biletter_count[edit_key]) != 0.0:
@@ -172,6 +172,32 @@ class ErrorModel:
         self.rev_cost = -math.log10((len(self.cm_rev) + 1.0) / self.num_biletters)
 
         return
+
+    def write_model(self):
+        with codecs.open(self.model_file, mode='w', encoding='utf-8') as f:
+            f.write('case\t0\t' + repr(self.case_cost)+'\n')
+            f.write('substitutions\t1\t' + repr(self.sub_cost)+'\n')
+            f.write('insertions\t1\t' + repr(self.add_cost)+'\n')
+            f.write('deletions\t1\t' + repr(self.del_cost)+'\n')
+            f.write('swaps\t1\t' + repr(self.rev_cost)+'\n')
+
+            for edit_key in self.prob_del:
+                edit_key_c = re.sub('[\^|\$]', ' ', edit_key)
+                f.write('d_' + edit_key_c + '\t1\t'+ repr(self.prob_del[edit_key])+'\n')
+            for edit_key in self.prob_sub:
+                edit_key_c = re.sub('[\^|\$]', ' ', edit_key)
+                dist = 1
+                if edit_key[0].lower() == edit_key[1].lower():
+                    dist = 0
+                if is_chars_diff_by_diacritic(edit_key[0], edit_key[1]):
+                    dist = 0
+                f.write('s_' + edit_key_c + '\t' + repr(dist) + '\t'+ repr(self.prob_sub[edit_key])+'\n')
+            for edit_key in self.prob_rev:
+                edit_key_c = re.sub('[\^|\$]', ' ', edit_key)
+                f.write('swap_' + edit_key_c + '\t1\t'+ repr(self.prob_rev[edit_key])+'\n')
+            for edit_key in self.prob_add:
+                edit_key_c = re.sub('[\^|\$]', ' ', edit_key)
+                f.write('i_' + edit_key_c + '\t1\t'+ repr(self.prob_add[edit_key])+'\n')
 
     def count_letters(self, input_str):
         """Updates letter counts for different letter groups.
@@ -277,16 +303,21 @@ class ErrorModel:
         print '*************************'
         print 'Error model probabilities'
         print '*************************'
-        print 'case\t0\t' + self.case_cost
-        print 'substitutions\t1\t' + self.sub_cost
-        print 'insertions\t1\t' + self.add_cost
-        print 'deletions\t1\t' + self.del_cost
-        print 'swaps\t1\t' + self.rev_cost
+        print 'case\t0\t' + repr(self.case_cost)
+        print 'substitutions\t1\t' + repr(self.sub_cost)
+        print 'insertions\t1\t' + repr(self.add_cost)
+        print 'deletions\t1\t' + repr(self.del_cost)
+        print 'swaps\t1\t' + repr(self.rev_cost)
 
         for edit_key in self.prob_del:
             print 'd_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_del[edit_key])
         for edit_key in self.prob_sub:
-            print 's_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_sub[edit_key])
+            dist = 1
+            if edit_key[0].lower() == edit_key[1].lower():
+                dist = 0
+            if is_chars_diff_by_diacritic(edit_key[0], edit_key[1]):
+                dist = 0
+            print 's_' + edit_key.encode('utf-8') + '\t' + repr(dist) + '\t'+ repr(self.prob_sub[edit_key])
         for edit_key in self.prob_rev:
             print 'swap_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_rev[edit_key])
         for edit_key in self.prob_add:
@@ -315,6 +346,7 @@ def is_chars_diff_by_diacritic(char1, char2):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script for training the error model for Korektor')
     parser.add_argument('error_file', help='Text file containing errors')
+    parser.add_argument('model_file', help='Filename where the model output should be written')
     args = parser.parse_args()
-    error_model1 = ErrorModel(args.error_file)
+    error_model1 = ErrorModel(args.error_file, args.model_file)
     error_model1.print_error_model()
