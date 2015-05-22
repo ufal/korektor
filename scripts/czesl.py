@@ -105,6 +105,17 @@ class CzeSLA:
 
         a_tokens = map(lambda xid: self.get_token_by_id(xid), a_ids)
 
+        # check if any token is empty, i.e., <token />
+        # Warning: this error may be left out in the error outputs. It must be
+        # handled some other way.
+        for a_tok in a_tokens:
+            if not a_tok:
+                return False
+
+        for w_tok in w_tokens:
+            if not w_tok:
+                return False
+
         error_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:error/ldata:tag", CzeSLA.ns)
         if not error_nodes:
             # error without a tag, tokens mismatch between a-token and w-token
