@@ -18,6 +18,7 @@ def extract_errors(file_prefix):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Tool for creating error corpus for Korektor")
     parser.add_argument('input_dirs', nargs='+', help='List of directories containing data - separated by spaces')
+    parser.add_argument('--parallel', help='Parallel execution in the multi-core machines', action='store_true')
     args = parser.parse_args()
 
     a_files = []
@@ -26,12 +27,15 @@ if __name__ == '__main__':
         a_files.extend(glob.glob(my_dir + '/*.a.xml'))
 
     files_pre = map(lambda x: re.sub(r'\.a\.xml$', '', x), a_files)
-    error_extractors = map(lambda fpre: mp.Process(target=extract_errors, args=(fpre,)), files_pre)
 
-    for x in error_extractors:
-        x.start()
-
-    for x in error_extractors:
-        x.join()
+    if args.parallel:
+        error_extractors = map(lambda fpre: mp.Process(target=extract_errors, args=(fpre,)), files_pre)
+        for x in error_extractors:
+            x.start()
+        for x in error_extractors:
+            x.join()
+    else:
+        for fp in files_pre:
+            extract_errors(fp)
 
 
