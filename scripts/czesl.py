@@ -177,7 +177,8 @@ class CzeSLA:
                 for w in sen.findall("./ldata:w", CzeSLA.ns):
                     if not w.get('id') in error_dictionary:
                         t = w.find("./ldata:token", CzeSLA.ns).text
-                        tokens.append(t)
+                        if t:
+                            tokens.append(t)
                     else:
                         gold_token = w.find("./ldata:token", CzeSLA.ns).text
                         orig_token = error_dictionary[w.get('id')][3][0]
