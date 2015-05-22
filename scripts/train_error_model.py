@@ -22,6 +22,11 @@ class ErrorModel:
     letters_diac = u'ĚŠČŘŽÝÁÍÉÓĎŤŇÚÚěščřžýáíéóďťňúů'
     letters_vocal = u'AEIOUYÁÉÍÓÚÝaeiouyáéíóúý'
 
+    code_points_diacritics = {
+        u'\u0301' : 1, # as in 'ý'
+        u'\u030c' : 1, # as in 'š'
+    }
+
     keyboard_rows = [u'ěščřžýáíé', u'qwertyuiopú', u'asdfghjklů', u'zxcvbnm']
     keyboard_cols = [u'qaz', u'ěwsx', u'šedc', u'črfv', u'řtgb', u'žyhn', u'ýujm', u'áik', u'íol', u'épů']
     keyboard_extra_vadj = {'sz' : 1, 'dx' : 1, 'fc' : 1, 'gv' : 1, 'hb' : 1, 'jn' : 1, 'km' : 1}
@@ -340,10 +345,10 @@ def is_chars_diff_by_diacritic(char1, char2):
     char1_d = unicodedata.normalize('NFD', char1)
     char2_d = unicodedata.normalize('NFD', char2)
     if len(char1_d) == 1 and len(char2_d) == 2:
-        if char1_d[0] == char2_d[0] and ord(char2_d[1]) == 769:
+        if char1_d[0] == char2_d[0] and char2_d[1] in ErrorModel.code_points_diacritics:
             return True
     elif len(char1_d) == 2 and len(char2_d) == 1:
-        if char1_d[0] == char2_d[0] and ord(char1_d[1]) == 769:
+        if char1_d[0] == char2_d[0] and char1_d[1] in ErrorModel.code_points_diacritics:
             return True
     else:
         return False
