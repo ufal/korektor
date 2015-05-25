@@ -12,6 +12,7 @@ import collections
 import math
 import sys
 import unicodedata
+import operator
 
 class ErrorModel:
     """Basic error model.
@@ -39,22 +40,30 @@ class ErrorModel:
         self.model_file = model_file
 
         # letter/biletter counts
-        self.num_letters = 0
+        self.num_letters = 0.0
         self.letter_count = collections.defaultdict(int)
-        self.num_biletters = 0
+        self.num_biletters = 0.0
         self.biletter_count = collections.defaultdict(int)
 
         # other counts
-        self.num_pos_diac = 0
-        self.num_diac = 0
-        self.num_vocal = 0
-        self.num_has_hadj_neighbour = 0
-        self.num_has_vadj_neighbour = 0
-        self.num_has_random_neighbours = 0
-        self.num_same_letter_twice = 0
+        self.num_pos_diac = 0.0
+        self.num_diac = 0.0
+        self.num_vocal = 0.0
+        self.num_has_hadj_neighbour = 0.0
+        self.num_has_vadj_neighbour = 0.0
+        self.num_has_random_neighbours = 0.0
+        self.num_same_letter_twice = 0.0
 
-        self.case_errors = 0
-        self.diac_errors = 0
+        # number of errors in each error types
+        self.num_sub_errors = 0.0
+        self.num_add_errors = 0.0
+        self.num_del_errors = 0.0
+        self.num_swap_errors = 0.0
+        self.total_errors = 0.0
+
+        # errors within substitution
+        self.case_errors = 0.0
+        self.diac_errors = 0.0
 
         # Confusion set for different edit operations
         self.cm_del = collections.defaultdict(int)
@@ -94,16 +103,19 @@ class ErrorModel:
             error_matches = re.findall(r'<type=\"((swap|s|i|d)_.+?)\"\sorig=\"(.+?)\"\sgold=\"(.+?)\">', line)
             if error_matches:
                 for spell_err in error_matches:
+                    self.total_errors += 1
                     if re.search(r'swap\_', spell_err[0]):
                         correct_i =  spell_err[0][6]
                         correct_i1 = spell_err[0][5]
                         self.cm_rev[correct_i + correct_i1] += 1
+                        self.num_swap_errors += 1
                     elif re.search(r's\_', spell_err[0]):
                         # typo
                         typo =  spell_err[0][2]
                         # the correct character at the place of typo
                         correct = spell_err[0][3]
                         self.cm_sub[typo+correct] += 1
+                        self.num_sub_errors += 1
                         if typo.lower() == correct.lower():
                             self.case_errors += 1
                         if is_chars_diff_by_diacritic(typo, correct):
@@ -116,12 +128,14 @@ class ErrorModel:
                         # character to the right of the typo
                         correct_next = spell_err[0][4]
                         self.cm_add[typo+correct_prev+correct_next] += 1
+                        self.num_add_errors += 1
                     elif re.search(r'd\_', spell_err[0]):
                         # deleted character from the correct word
                         deleted_char = spell_err[0][2]
                         # the character to the left of the deleted character
                         correct_prev = spell_err[0][3]
                         self.cm_del[correct_prev+deleted_char] += 1
+                        self.num_del_errors += 1
                     self.count_letters(spell_err[3])
                 line_wo_err = re.sub(r'<type=\"((swap|s|i|d)_.+?)\"\sorig=\"(.+?)\"\sgold=\"(.+?)\">', '', line)
                 self.count_letters(line_wo_err)
@@ -279,36 +293,60 @@ class ErrorModel:
                     return True
         return False
 
-    def print_confusion_sets(self):
+    def print_statistics(self):
         """Print the confusion set for misspellings that occurred by a single edit operation.
 
         """
-        print "Substitution"
-        print "============"
-        for edit_key in self.cm_sub:
-            print 'count("'+ edit_key.encode('utf-8') + '")\t' + repr(self.cm_sub[edit_key])
+        print '*****************************************************'
+        print 'Error types and their frequencies in the error corpus'
+        print '*****************************************************'
+        print 'Substitution errors'.ljust(30) + '\t:\t' + repr(self.num_sub_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_sub_errors / self.total_errors)+'%'
+        print '      - Case errors'.ljust(30) + '\t:\t' + repr(self.case_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.case_errors / self.num_sub_errors)+'% (of sub errors)'
+        print '      - Diacritic errors'.ljust(30) + '\t:\t' + repr(self.diac_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.diac_errors / self.num_sub_errors)+'% (of sub errors)'
+        print 'Insertion errors'.ljust(30) + '\t:\t' + repr(self.num_add_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_add_errors / self.total_errors)+'%'
+        print 'Deletion errors'.ljust(30) + '\t:\t' + repr(self.num_del_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_del_errors / self.total_errors)+'%'
+        print 'Swap errors'.ljust(30) + '\t:\t' + repr(self.num_swap_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_swap_errors / self.total_errors)+'%'
+        print '\n'
+        print 'Total errors'.ljust(30) + '\t:\t' + repr(self.total_errors).rjust(10)
+        print '\n'
 
-        print "\n\nDeletion"
-        print "============"
-        for edit_key in self.cm_del:
-            print 'count("'+ edit_key.encode('utf-8') + '")\t' + repr(self.cm_del[edit_key])
+        print '*****************************************************'
+        print 'Substitution errors'
+        print '*****************************************************'
+        sorted_sub = sorted(self.cm_sub.items(), key=operator.itemgetter(1), reverse=True)
+        for edit_key, v in sorted_sub:
+            print 's_'+ edit_key.encode('utf-8') + '\t' + repr(v)
+        print '\n'
 
-        print "\n\nInsertion"
-        print "============"
-        for edit_key in self.cm_add:
-            print 'count("'+ edit_key.encode('utf-8') + '")\t' + repr(self.cm_add[edit_key])
+        print '*****************************************************'
+        print 'Deletion errors'
+        print '*****************************************************'
+        sorted_del = sorted(self.cm_del.items(), key=operator.itemgetter(1), reverse=True)
+        for edit_key, v in sorted_del:
+            print 'd_'+ edit_key.encode('utf-8') + '\t' + repr(v)
+        print '\n'
 
-        print "\n\nSwap"
-        print "============"
-        for edit_key in self.cm_rev:
-            print 'count("'+ edit_key.encode('utf-8') + '")\t' + repr(self.cm_rev[edit_key])
+        print '*****************************************************'
+        print 'Insertion errors'
+        print '*****************************************************'
+        sorted_add = sorted(self.cm_add.items(), key=operator.itemgetter(1), reverse=True)
+        for edit_key, v in sorted_add:
+            print 'i_'+ edit_key.encode('utf-8') + '\t' + repr(v)
+        print '\n'
+
+        print '*****************************************************'
+        print 'Swap errors'
+        print '*****************************************************'
+        sorted_swap = sorted(self.cm_rev.items(), key=operator.itemgetter(1), reverse=True)
+        for edit_key, v in sorted_swap:
+            print 'swap_'+ edit_key.encode('utf-8') + '\t' + repr(v)
+        print '\n'
         return
 
     def print_error_model(self):
         """Print the error model.
 
         """
-        print '\n'
         print '*************************'
         print 'Error model probabilities'
         print '*************************'
@@ -332,7 +370,8 @@ class ErrorModel:
             print 'swap_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_rev[edit_key])
         for edit_key in self.prob_add:
             print 'i_' + edit_key.encode('utf-8') + '\t1\t'+ repr(self.prob_add[edit_key])
-
+        print '\n'
+        return
 
 def is_chars_diff_by_diacritic(char1, char2):
     """Check whether two characters differ only by diacritic.
@@ -357,6 +396,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Script for training the error model for Korektor')
     parser.add_argument('error_file', help='Text file containing errors')
     parser.add_argument('model_file', help='Filename where the model output should be written')
+    parser.add_argument('--print_error_model', help='Prints the error model in terminal', action='store_true')
+    parser.add_argument('--print_statistics', help='Prints error statistics from the error corpus', action='store_true')
     args = parser.parse_args()
     error_model1 = ErrorModel(args.error_file, args.model_file)
-    error_model1.print_error_model()
+    if args.print_error_model:
+        error_model1.print_error_model()
+    if args.print_statistics:
+        error_model1.print_statistics()
