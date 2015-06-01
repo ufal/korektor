@@ -18,11 +18,11 @@ class CzeSLW:
         self.wroot = self.wtree.getroot()
 
     def get_token_by_id(self, id):
-        token = self.wroot.find("./wdata:doc/wdata:para/wdata:w[@id='"+id+"']/wdata:token", CzeSLW.ns)
         try:
+            token = self.wroot.find("./wdata:doc/wdata:para/wdata:w[@id='"+id+"']/wdata:token", CzeSLW.ns)
             return token.text
         except AttributeError:
-            return "<TextNotFound>"
+            return '<TokenElementMissing>'
 
 class CzeSLA:
     """Class representing the correction of orthographical errors in the first level CzeSL data.
@@ -36,7 +36,7 @@ class CzeSLA:
         self.aroot = self.atree.getroot()
 
     def set_wref(self, czesl_wref):
-        """ Set the reference to w-file.
+        """ Set the reference to w-level data object.
 
         Args:
             czesl_wref: Object of type CzeSLW
@@ -45,11 +45,11 @@ class CzeSLA:
         self.wref = czesl_wref
 
     def get_token_by_id(self, id):
-        token = self.aroot.find("./ldata:doc/ldata:para/ldata:s/ldata:w[@id='"+id+"']/ldata:token", CzeSLA.ns)
         try:
+            token = self.aroot.find("./ldata:doc/ldata:para/ldata:s/ldata:w[@id='"+id+"']/ldata:token", CzeSLA.ns)
             return token.text
         except AttributeError:
-            return "<TextNotFound>"
+            return '<TokenElementMissing>'
 
     def determine_edge_path_format(self):
         """Determine the format of the path to edge element in the xml file.
@@ -219,6 +219,34 @@ class CzeSLA:
                 gf.write(gold_sen_to_write + '\n')
                 ef.write(err_sen_to_write + '\n')
         return
+
+
+class CzeSLB:
+    """Class representing the correction of grammar errors at level-a.
+
+    """
+    ns = {'ldata' : 'http://utkl.cuni.cz/czesl/'}
+
+    def __init__(self, filename):
+        self.btree = ET.parse(filename)
+        self.broot = self.btree.getroot()
+
+    def set_wref(self, czesl_aref):
+        """ Set the reference to a-file data object.
+
+        Args:
+            czesl_aref: Object of type CzeSLA
+
+        """
+        self.aref = czesl_aref
+
+    def get_token_by_id(self, id):
+        try:
+            token = self.broot.find('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+id+'"]/ldata:token', CzeSLB.ns)
+            return token.text
+        except AttributeError:
+            return '<TokenElementMissing>'
+
 
 def get_error_signature(misspelled, correct):
     """Get the spelling error type given the correct word and the misspelled word.
