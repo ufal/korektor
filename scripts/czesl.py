@@ -231,7 +231,7 @@ class CzeSLB:
         self.btree = ET.parse(filename)
         self.broot = self.btree.getroot()
 
-    def set_wref(self, czesl_aref):
+    def set_aref(self, czesl_aref):
         """ Set the reference to a-file data object.
 
         Args:
@@ -246,6 +246,18 @@ class CzeSLB:
             return token.text
         except AttributeError:
             return '<TokenElementMissing>'
+
+    def get_a_level_id(self, bid):
+        from_node = self.broot.find('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+bid+'"]/ldata:edge/ldata:from', CzeSLB.ns)
+        a_level_id = re.sub(r'a#', r'', from_node.text)
+        return a_level_id
+
+    def get_error_info_at_edge(self, id):
+        return
+
+    def write_errors_by_sentences(self, file_prefix):
+        return
+
 
 
 def get_error_signature(misspelled, correct):
