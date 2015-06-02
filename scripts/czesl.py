@@ -6,6 +6,7 @@
 import codecs
 import re
 import xml.etree.ElementTree as ET
+import sys
 
 class CzeSLW:
     """Class representing the first level CzeSL data.
@@ -69,7 +70,7 @@ class CzeSLA:
         elif self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge", CzeSLA.ns):
             self.edge_path_format = 2
 
-    def get_error_info_at_edge(self, id):
+    def get_error_info_at_edge(self, edge_id):
         """Determine if the edge has an error in the upper level and return relevant details.
 
         Method for finding whether the edge contains an error. If there is no error, the method returns False,
@@ -89,20 +90,12 @@ class CzeSLA:
         w_tokens = []
         a_tokens = []
 
-        w_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:from", CzeSLA.ns)
-        w_ids = map(lambda x: re.sub(r'w\#', '', x.text), w_nodes)
+        w_ids = self.find_lower_level_node_ids(edge_id)
+        if not w_ids:
+            return edge_error
         w_tokens = map(lambda xid: self.wref.get_token_by_id(xid), w_ids)
 
-        if self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns):
-            a_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns)
-            a_ids = map(lambda to:to.text, a_nodes)
-        elif self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns):
-            a_nodes = self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns)
-            a_ids = map(lambda w:w.get('id'), a_nodes)
-        elif self.aroot.findall(".//ldata:para/ldata:edge[@id='"+id+"']", CzeSLA.ns):
-            a_nodes = []
-            a_ids = []
-
+        a_ids = self.find_current_level_node_ids(edge_id)
         a_tokens = map(lambda xid: self.get_token_by_id(xid), a_ids)
 
         # check if any token is empty, i.e., <token />
@@ -120,21 +113,19 @@ class CzeSLA:
         if len(a_tokens) !=1 or len(w_tokens) != 1:
             return False
 
-        error_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:error/ldata:tag", CzeSLA.ns)
-        if not error_nodes:
+        error_names = self.find_error_tags(edge_id)
+        if not error_names:
             # error without a tag, tokens mismatch between a-token and w-token
-            if len(w_nodes) == 1 and len(a_nodes) == 1:
+            if len(w_ids) == 1 and len(a_ids) == 1:
                 if w_tokens[0] != a_tokens[0]:
-                    return (id, w_ids, a_ids, w_tokens, a_tokens, ['multiple_choices'])
+                    return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['multiple_choices'])
                 else:
                     return edge_error
             else:
-                return (id, w_ids, a_ids, w_tokens, a_tokens, ['unknown_error'])
+                return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['unknown_error'])
         else:
-            error_names = []
-            error_names = map(lambda e: e.text, error_nodes)
             error_names.sort()
-            return (id, w_ids, a_ids, w_tokens, a_tokens, error_names)
+            return (edge_id, w_ids, a_ids, w_tokens, a_tokens, error_names)
 
     def print_errors(self):
         edges = self.aroot.findall(".//ldata:edge", CzeSLA.ns)
@@ -220,6 +211,29 @@ class CzeSLA:
                 ef.write(err_sen_to_write + '\n')
         return
 
+    def find_current_level_node_ids(self, edge_id):
+        current_ids = []
+        if self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLA.ns):
+            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLA.ns)
+            current_ids = map(lambda x: x.text, current_nodes)
+        elif self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLA.ns):
+            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:w', CzeSLA.ns)
+            current_ids = map(lambda x: x.get('id'), current_nodes)
+        return current_ids
+
+    def find_lower_level_node_ids(self, edge_id):
+        next_level_ids = []
+        if self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLA.ns):
+            next_level_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLA.ns)
+            next_level_ids = map(lambda x: re.sub(r'w#', r'',x.text), next_level_nodes)
+        return next_level_ids
+
+    def find_error_tags(self, edge_id):
+        error_tags = []
+        if self.aroot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLA.ns):
+            error_nodes = self.aroot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLA.ns)
+            error_tags = map(lambda x: x.text, error_nodes)
+        return error_tags
 
 class CzeSLB:
     """Class representing the correction of grammar errors at level-a.
@@ -247,13 +261,118 @@ class CzeSLB:
         except AttributeError:
             return '<TokenElementMissing>'
 
-    def get_a_level_id(self, bid):
+    def get_lower_level_word_id(self, bid):
+        """Get a-level word element id given b-level word element id
+
+        """
         from_node = self.broot.find('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+bid+'"]/ldata:edge/ldata:from', CzeSLB.ns)
         a_level_id = re.sub(r'a#', r'', from_node.text)
         return a_level_id
 
-    def get_error_info_at_edge(self, id):
-        return
+    def get_lower_level_edge_id(self, edge_id):
+        """Get an edge between a-level word element and w-level word element given the edge id between b-level word element and a-level word element.
+
+        """
+        # get 'word'/'token' elements in a-level if any
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:from", CzeSLB.ns):
+            a_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:from", CzeSLB.ns)
+            a_ids = map(lambda x: re.sub(r'a#', r'',x.text), a_nodes)
+        else:
+            return False
+
+        # expected number of ids : 1
+        if len(a_ids) == 1:
+            a_edge_nodes = self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns)
+            if len(a_edge_nodes) == 1:
+                a_edge_id = a_edge_nodes[0].get('id')
+                return a_edge_id
+            if not a_edge_nodes or len(a_edge_nodes) > 1:
+                return False
+        else:
+            return False
+
+
+
+    def get_error_info_at_edge(self, edge_id):
+        """Provide error info at an edge between b-level node and a-level node.
+
+        """
+        edge_error = False
+        b_ids = []
+        a_ids = []
+        b_tokens = []
+        a_tokens = []
+        error_nodes = []
+        error_names = []
+
+        # get 'word'/'token' elements in b-level
+        b_ids = self.find_current_level_node_ids(edge_id)
+        b_tokens = map(lambda xid: self.get_token_by_id(xid), b_ids)
+
+        # get 'word'/'token' elements in a-level if any
+
+        a_ids = self.find_lower_level_node_ids(edge_id)
+        if not a_ids:
+            return edge_error
+        a_tokens = map(lambda xid: self.aref.get_token_by_id(xid), a_ids)
+
+        # get b-level edge errors
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns):
+            error_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns)
+            error_names = map(lambda x: x.text, error_nodes)
+            error_names.sort()
+
+        if len(b_tokens) ==1 and len(a_tokens) ==1:
+            if b_tokens[0] == a_tokens[0] and not error_names:
+                return False
+            elif b_tokens[0] == a_tokens[0] and error_names:
+                return (edge_id, a_ids, b_ids, a_tokens, b_tokens, error_names)
+            elif b_tokens[0] != a_tokens[0]:
+                return (edge_id, a_ids, b_ids, a_tokens, b_tokens, error_names)
+        return edge_error
+
+    def find_current_level_node_ids(self, edge_id):
+        current_ids = []
+        if self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLB.ns):
+            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLB.ns)
+            current_ids = map(lambda x: x.text, current_nodes)
+        elif self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLB.ns):
+            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:w', CzeSLB.ns)
+            current_ids = map(lambda x: x.get('id'), current_nodes)
+        return current_ids
+
+    def find_lower_level_node_ids(self, edge_id):
+        next_level_ids = []
+        if self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLB.ns):
+            next_level_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLB.ns)
+            next_level_ids = map(lambda x: re.sub(r'a#', r'',x.text), next_level_nodes)
+        return next_level_ids
+
+    def find_error_tags(self, edge_id):
+        error_tags = []
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns):
+            error_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns)
+            error_tags = map(lambda x: x.text, error_nodes)
+        return error_tags
+
+    def get_projected_error(self, edge_id):
+        """Obtain error information between w-level and b-level node given the b-level edge id.
+
+        """
+        projected_error = False
+
+        b_a_level_error = []
+        a_w_level_error =[]
+
+        b_a_level_error = self.get_error_info_at_edge(edge_id)
+        lower_edge_id = self.get_lower_level_edge_id(edge_id)
+        if lower_edge_id:
+            a_w_level_error = self.aref.get_error_info_at_edge(lower_edge_id)
+
+        if b_a_level_error:
+            print 'b_tokens: ' + ','.join(b_a_level_error[4]) + '\t|\t' + 'a_tokens: ' + ','.join(b_a_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(b_a_level_error[5])
+        if a_w_level_error:
+            print 'a_tokens: ' + ','.join(a_w_level_error[4]) + '\t|\t' + 'w_tokens: ' + ','.join(a_w_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(a_w_level_error[5])
 
     def write_errors_by_sentences(self, file_prefix):
         return
