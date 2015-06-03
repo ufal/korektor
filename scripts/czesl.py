@@ -217,7 +217,7 @@ class CzeSLA:
             current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLA.ns)
             current_ids = map(lambda x: x.text, current_nodes)
         elif self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLA.ns):
-            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:w', CzeSLA.ns)
+            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLA.ns)
             current_ids = map(lambda x: x.get('id'), current_nodes)
         return current_ids
 
@@ -261,14 +261,6 @@ class CzeSLB:
         except AttributeError:
             return '<TokenElementMissing>'
 
-    def get_lower_level_word_id(self, bid):
-        """Get a-level word element id given b-level word element id
-
-        """
-        from_node = self.broot.find('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+bid+'"]/ldata:edge/ldata:from', CzeSLB.ns)
-        a_level_id = re.sub(r'a#', r'', from_node.text)
-        return a_level_id
-
     def get_lower_level_edge_id(self, edge_id):
         """Get an edge between a-level word element and w-level word element given the edge id between b-level word element and a-level word element.
 
@@ -282,7 +274,17 @@ class CzeSLB:
 
         # expected number of ids : 1
         if len(a_ids) == 1:
-            a_edge_nodes = self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns)
+            a_edge_nodes = []
+            if self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns):
+                a_edge_nodes = self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns)
+            else:
+                all_edge_nodes = self.aref.aroot.findall('.//ldata:edge', CzeSLA.ns)
+                if all_edge_nodes:
+                    for ed in all_edge_nodes:
+                        to_nodes = ed.findall('./ldata:to', CzeSLA.ns)
+                        for tn in to_nodes:
+                            if tn.text == a_ids[0]:
+                                a_edge_nodes.append(ed)
             if len(a_edge_nodes) == 1:
                 a_edge_id = a_edge_nodes[0].get('id')
                 return a_edge_id
@@ -337,7 +339,7 @@ class CzeSLB:
             current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLB.ns)
             current_ids = map(lambda x: x.text, current_nodes)
         elif self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLB.ns):
-            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:w', CzeSLB.ns)
+            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLB.ns)
             current_ids = map(lambda x: x.get('id'), current_nodes)
         return current_ids
 
