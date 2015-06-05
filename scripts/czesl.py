@@ -311,6 +311,10 @@ class CzeSLB:
         b_ids = self.find_current_level_node_ids(edge_id)
         b_tokens = map(lambda xid: self.get_token_by_id(xid), b_ids)
 
+        for b_tok in b_tokens:
+            if not b_tok:
+                return False
+
         # get 'word'/'token' elements in a-level if any
 
         a_ids = self.find_lower_level_node_ids(edge_id)
@@ -395,12 +399,13 @@ class CzeSLB:
                     if not re.match(r'(\{\s+\}|\|)', eaw[3][0]):
                         bids = self.find_current_level_node_ids(eid)
                         btokens = map(lambda x: self.get_token_by_id(x), bids)
-                        if btokens and len(btokens) == 1:
+
+                        if btokens and len(btokens) == 1 and btokens[0]:
                             error_str_bw = u''
                             if eba:
-                                error_str_bw = u'+'.join(eaw[5]) + '_' + u'+'.join(eba[5])
+                                error_str_bw = u'form:' + u'+'.join(eaw[5]) + '#' + u'gram:' + u'+'.join(eba[5])
                             else:
-                                error_str_bw = u'+'.join(eaw[5])
+                                error_str_bw = u'form:' + u'+'.join(eaw[5])
                             error_dictionary[bids[0]] = (btokens[0], eaw[3][0], error_str_bw)
             if eba and not eaw:
                 if len(eba[1]) == 1 and len(eba[2]) == 1:
