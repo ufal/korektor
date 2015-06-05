@@ -122,7 +122,7 @@ class CzeSLA:
                 else:
                     return edge_error
             else:
-                return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['unknown_error'])
+                return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['error_multiword'])
         else:
             error_names.sort()
             return (edge_id, w_ids, a_ids, w_tokens, a_tokens, error_names)
@@ -371,12 +371,81 @@ class CzeSLB:
         if lower_edge_id:
             a_w_level_error = self.aref.get_error_info_at_edge(lower_edge_id)
 
-        if b_a_level_error:
-            print 'b_tokens: ' + ','.join(b_a_level_error[4]) + '\t|\t' + 'a_tokens: ' + ','.join(b_a_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(b_a_level_error[5])
-        if a_w_level_error:
-            print 'a_tokens: ' + ','.join(a_w_level_error[4]) + '\t|\t' + 'w_tokens: ' + ','.join(a_w_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(a_w_level_error[5])
+        # if b_a_level_error:
+        #     print 'b_tokens: ' + ','.join(b_a_level_error[4]) + '\t|\t' + 'a_tokens: ' + ','.join(b_a_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(b_a_level_error[5])
+        # if a_w_level_error:
+        #     print 'a_tokens: ' + ','.join(a_w_level_error[4]) + '\t|\t' + 'w_tokens: ' + ','.join(a_w_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(a_w_level_error[5])
+
+        return (b_a_level_error, a_w_level_error)
 
     def write_errors_by_sentences(self, file_prefix):
+        train_file = file_prefix + '.train.sen.txt'
+        err_file = file_prefix + '.err.sen.txt'
+        gold_file = file_prefix + '.gold.sen.txt'
+        # training file that contains error labels of CzeSL corpus in addition to other error types
+        train_file_czesl = file_prefix + '.train.czesl.sen.txt'
+
+        edges = self.broot.findall(".//ldata:edge", CzeSLB.ns)
+        edge_ids = map(lambda e: e.get('id'), edges)
+        error_dictionary = {}
+        for eid in edge_ids:
+            (eba, eaw) = self.get_projected_error(eid)
+            if eaw:
+                if len(eaw[1]) == 1 and len(eaw[2]) == 1 and eaw[5][0] != 'multiple_choices':
+                    if not re.match(r'(\{\s+\}|\|)', eaw[3][0]):
+                        bids = self.find_current_level_node_ids(eid)
+                        btokens = map(lambda x: self.get_token_by_id(x), bids)
+                        if btokens and len(btokens) == 1:
+                            error_str_bw = u''
+                            if eba:
+                                error_str_bw = u'+'.join(eaw[5]) + '_' + u'+'.join(eba[5])
+                            else:
+                                error_str_bw = u'+'.join(eaw[5])
+                            error_dictionary[bids[0]] = (btokens[0], eaw[3][0], error_str_bw)
+            if eba and not eaw:
+                if len(eba[1]) == 1 and len(eba[2]) == 1:
+                    aw_edge_id = self.get_lower_level_edge_id(eid)
+                    if aw_edge_id:
+                        error_str_bw = u'gram:' + 'u'.join(eba[5])
+                        error_dictionary[eba[2][0]] = (eba[4][0], eba[3][0], error_str_bw)
+
+        # iterate over sentences
+        with codecs.open(train_file, mode='w', encoding='utf-8') as f, codecs.open(gold_file, mode='w', encoding='utf-8') as gf, codecs.open(err_file, mode='w', encoding='utf-8') as ef, codecs.open(train_file_czesl, mode='w', encoding='utf-8') as tf_czesl:
+            for sen in self.broot.findall("./ldata:doc/ldata:para/ldata:s", CzeSLB.ns):
+                tokens = []
+                gtokens = []
+                err_tokens = []
+                czesl_tokens = []
+                for w in sen.findall("./ldata:w", CzeSLB.ns):
+                    if not w.get('id') in error_dictionary:
+                        t = w.find("./ldata:token", CzeSLB.ns).text
+                        if t:
+                            tokens.append(t)
+                            czesl_tokens.append(t)
+                            gtokens.append(t)
+                            err_tokens.append(t)
+                    else:
+                        gold_token = w.find("./ldata:token", CzeSLB.ns).text
+                        orig_token = error_dictionary[w.get('id')][1]
+                        error_signature = get_error_signature(orig_token, gold_token)
+                        if error_signature:
+                            tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                            czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
+                            err_tokens.append(orig_token)
+                        else:
+                            tokens.append(gold_token)
+                            err_tokens.append(gold_token)
+                            czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
+                        gtokens.append(gold_token)
+
+                sen_to_write = ' '.join(tokens)
+                gold_sen_to_write = ' '.join(gtokens)
+                err_sen_to_write = ' '.join(err_tokens)
+                czesl_train_sen_to_write = ' '.join(czesl_tokens)
+                f.write(sen_to_write + '\n')
+                gf.write(gold_sen_to_write + '\n')
+                ef.write(err_sen_to_write + '\n')
+                tf_czesl.write(czesl_train_sen_to_write + '\n')
         return
 
 
