@@ -113,6 +113,7 @@ class CzeSLA:
         if len(a_tokens) !=1 or len(w_tokens) != 1:
             return False
 
+
         error_names = self.find_error_tags(edge_id)
         if not error_names:
             # error without a tag, tokens mismatch between a-token and w-token
@@ -125,6 +126,11 @@ class CzeSLA:
                 return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['error_multiword'])
         else:
             error_names.sort()
+            # return False for multiple choices
+            if len(w_ids) == 1 and len(a_ids) == 1:
+                if re.search(r'\s+', w_tokens[0]) or re.search(r'\s+', a_tokens[0]):
+                    return False
+
             return (edge_id, w_ids, a_ids, w_tokens, a_tokens, error_names)
 
     def print_errors(self):
@@ -150,7 +156,7 @@ class CzeSLA:
                           '\t'+' '.join(e[1]).ljust(10)+'\t'+' '.join(e[2])+'\n')
         return
 
-    def write_errors_by_sentences(self, file_prefix):
+    def write_errors_by_sentences(self, file_prefix, complexity):
         """Write original sentences along with correct words if there are any spelling errors found.
 
         The sentence with errors will be printed if and only if,
@@ -168,6 +174,8 @@ class CzeSLA:
         train_file = file_prefix + '.train.sen.txt'
         err_file = file_prefix + '.err.sen.txt'
         gold_file = file_prefix + '.gold.sen.txt'
+        # training file that contains error labels of CzeSL corpus in addition to other error types
+        train_file_czesl = file_prefix + '.train.czesl.sen.txt'
 
         edges = self.aroot.findall(".//ldata:edge", CzeSLA.ns)
         edge_ids = map(lambda e: e.get('id'), edges)
@@ -177,38 +185,50 @@ class CzeSLA:
             if e:
                 if len(e[1]) == 1 and len(e[2]) == 1 and e[5][0] != 'multiple_choices':
                     if not re.match(r'(\{\s+\}|\|)', e[3][0]):
-                        error_dictionary[e[2][0]] = e
+                        error_str_bw = u'form:' + u'+'.join(e[5])
+                        error_dictionary[e[2][0]] = (e[4][0], e[3][0], error_str_bw)
 
         # iterate over sentences
-        with codecs.open(train_file, mode='w', encoding='utf-8') as f, codecs.open(gold_file, mode='w', encoding='utf-8') as gf, codecs.open(err_file, mode='w', encoding='utf-8') as ef:
+        with codecs.open(train_file, mode='w', encoding='utf-8') as f, codecs.open(gold_file, mode='w', encoding='utf-8') as gf, codecs.open(err_file, mode='w', encoding='utf-8') as ef, codecs.open(train_file_czesl, mode='w', encoding='utf-8') as tf_czesl:
             for sen in self.aroot.findall("./ldata:doc/ldata:para/ldata:s", CzeSLA.ns):
                 tokens = []
                 gtokens = []
                 err_tokens = []
+                czesl_tokens = []
                 for w in sen.findall("./ldata:w", CzeSLA.ns):
                     if not w.get('id') in error_dictionary:
                         t = w.find("./ldata:token", CzeSLA.ns).text
-                        if t:
+                        if t is not None:
                             tokens.append(t)
                             gtokens.append(t)
                             err_tokens.append(t)
+                            czesl_tokens.append(t)
                     else:
                         gold_token = w.find("./ldata:token", CzeSLA.ns).text
-                        orig_token = error_dictionary[w.get('id')][3][0]
-                        error_signature = get_error_signature(orig_token, gold_token)
-                        if error_signature:
-                            tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
-                            err_tokens.append(orig_token)
-                        else:
-                            tokens.append(gold_token)
-                            err_tokens.append(gold_token)
-                        gtokens.append(gold_token)
+                        orig_token = error_dictionary[w.get('id')][1]
+                        if gold_token is not None and orig_token is not None:
+                            error_signature = get_error_signature(orig_token, gold_token)
+                            if error_signature:
+                                tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
+                                err_tokens.append(orig_token)
+                            else:
+                                tokens.append(gold_token)
+                                if complexity == 'easy':
+                                    err_tokens.append(gold_token)
+                                else:
+                                    err_tokens.append(orig_token)
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
+
+                            gtokens.append(gold_token)
                 sen_to_write = ' '.join(tokens)
                 gold_sen_to_write = ' '.join(gtokens)
                 err_sen_to_write = ' '.join(err_tokens)
+                czesl_train_sen_to_write = ' '.join(czesl_tokens)
                 f.write(sen_to_write + '\n')
                 gf.write(gold_sen_to_write + '\n')
                 ef.write(err_sen_to_write + '\n')
+                tf_czesl.write(czesl_train_sen_to_write + '\n')
         return
 
     def find_current_level_node_ids(self, edge_id):
@@ -382,7 +402,7 @@ class CzeSLB:
 
         return (b_a_level_error, a_w_level_error)
 
-    def write_errors_by_sentences(self, file_prefix):
+    def write_errors_by_sentences(self, file_prefix, complexity):
         train_file = file_prefix + '.train.sen.txt'
         err_file = file_prefix + '.err.sen.txt'
         gold_file = file_prefix + '.gold.sen.txt'
@@ -424,7 +444,7 @@ class CzeSLB:
                 for w in sen.findall("./ldata:w", CzeSLB.ns):
                     if not w.get('id') in error_dictionary:
                         t = w.find("./ldata:token", CzeSLB.ns).text
-                        if t:
+                        if t is not None:
                             tokens.append(t)
                             czesl_tokens.append(t)
                             gtokens.append(t)
@@ -432,16 +452,20 @@ class CzeSLB:
                     else:
                         gold_token = w.find("./ldata:token", CzeSLB.ns).text
                         orig_token = error_dictionary[w.get('id')][1]
-                        error_signature = get_error_signature(orig_token, gold_token)
-                        if error_signature:
-                            tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
-                            czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
-                            err_tokens.append(orig_token)
-                        else:
-                            tokens.append(gold_token)
-                            err_tokens.append(gold_token)
-                            czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
-                        gtokens.append(gold_token)
+                        if gold_token is not None and orig_token is not None:
+                            error_signature = get_error_signature(orig_token, gold_token)
+                            if error_signature:
+                                tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
+                                err_tokens.append(orig_token)
+                            else:
+                                tokens.append(gold_token)
+                                if complexity == 'easy':
+                                    err_tokens.append(gold_token)
+                                else:
+                                    err_tokens.append(orig_token)
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
+                            gtokens.append(gold_token)
 
                 sen_to_write = ' '.join(tokens)
                 gold_sen_to_write = ' '.join(gtokens)
@@ -471,6 +495,9 @@ def get_error_signature(misspelled, correct):
     """
 
     signature = ''
+
+    if misspelled is None or correct is None:
+        return False
 
     if len(misspelled) == len(correct):
         for i in range(len(misspelled)):

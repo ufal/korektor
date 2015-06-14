@@ -220,38 +220,36 @@ class SpellEval:
     def get_suggestions_map(self, out_file_lines):
         i = 0
         suggestions_map = {}
-        with codecs.open('tmp.txt', mode='w', encoding='utf-8') as ofh:
-            while i < len(out_file_lines):
-                out_line = out_file_lines[i]
-                # # output format: xml
-                out_line = re.sub(r'\n$', '', out_line)
-                out_line = re.sub(r'\<spelling\s+suggestions','<spellingsuggestions', out_line)
-                out_line = re.sub(r'\<grammar\s+suggestions','<grammarsuggestions', out_line)
-                matches = re.findall(r'(<(spelling|grammar)suggestions=\"(.+?)\">(.+?)\<\/\2\>)', out_line)
-                ofh.write(out_line + '\n')
-                if matches:
-                    for m in matches:
-                        corr_type = m[1]
-                        sugg_orig = m[2]
-                        orig_str = m[3]
-                        sugg_new = re.sub(r'\s+', '|', sugg_orig)
-                        sugg_pat_orig = r'<' + corr_type + 'suggestions=\"' + sugg_orig \
-                                        + '\">' + orig_str + '</' + corr_type +'>'
-                        sugg_pat_orig = sugg_pat_orig.replace(')', '\)')
-                        sugg_pat_orig = sugg_pat_orig.replace('(', '\(')
-                        sugg_pat_new = r'<' + corr_type + 'suggestions=\"' + sugg_new   \
-                                       + '\">' + orig_str + '</' + corr_type +'>'
-                        out_line = re.sub(sugg_pat_orig, sugg_pat_new, out_line, count=1)
-                out_words = re.split(r'\s+', out_line)
-                j = 0
-                while j < len(out_words):
-                    suggestion_match = re.search(r'suggestions=\"(.+)\"', out_words[j])
-                    if suggestion_match:
-                        suggestion_line= suggestion_match.group(1)
-                        suggestions = re.split(r'\|', suggestion_line)
-                        suggestions_map[(i,j)] = suggestions
-                    j += 1
-                i += 1
+        while i < len(out_file_lines):
+            out_line = out_file_lines[i]
+            # # output format: xml
+            out_line = re.sub(r'\n$', '', out_line)
+            out_line = re.sub(r'\<spelling\s+suggestions','<spellingsuggestions', out_line)
+            out_line = re.sub(r'\<grammar\s+suggestions','<grammarsuggestions', out_line)
+            matches = re.findall(r'(<(spelling|grammar)suggestions=\"(.+?)\">(.+?)\<\/\2\>)', out_line)
+            if matches:
+                for m in matches:
+                    corr_type = m[1]
+                    sugg_orig = m[2]
+                    orig_str = m[3]
+                    sugg_new = re.sub(r'\s+', '|', sugg_orig)
+                    sugg_pat_orig = r'<' + corr_type + 'suggestions=\"' + sugg_orig \
+                                    + '\">' + orig_str + '</' + corr_type +'>'
+                    sugg_pat_orig = sugg_pat_orig.replace(')', '\)')
+                    sugg_pat_orig = sugg_pat_orig.replace('(', '\(')
+                    sugg_pat_new = r'<' + corr_type + 'suggestions=\"' + sugg_new   \
+                                   + '\">' + orig_str + '</' + corr_type +'>'
+                    out_line = re.sub(sugg_pat_orig, sugg_pat_new, out_line, count=1)
+            out_words = re.split(r'\s+', out_line)
+            j = 0
+            while j < len(out_words):
+                suggestion_match = re.search(r'suggestions=\"(.+)\"', out_words[j])
+                if suggestion_match:
+                    suggestion_line= suggestion_match.group(1)
+                    suggestions = re.split(r'\|', suggestion_line)
+                    suggestions_map[(i,j)] = suggestions
+                j += 1
+            i += 1
         return suggestions_map
 
     def print_results(self):
