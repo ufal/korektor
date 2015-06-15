@@ -103,7 +103,7 @@ class ErrorModel:
             error_matches = re.findall(r'<type=\"((swap|s|i|d)_.+?)\"\sorig=\"(.+?)\"\sgold=\"(.+?)\">', line)
             if error_matches:
                 for spell_err in error_matches:
-                    self.total_errors += 1
+                    self.total_errors += 1.0
                     if re.search(r'swap\_', spell_err[0]):
                         correct_i =  spell_err[0][6]
                         correct_i1 = spell_err[0][5]
@@ -293,10 +293,24 @@ class ErrorModel:
                     return True
         return False
 
-    def print_statistics(self):
+    def print_statistics(self, fixed_total_errors):
         """Print the confusion set for misspellings that occurred by a single edit operation.
 
         """
+        single_edit_errors = self.total_errors
+        multi_edit_errors = 0.0
+        if fixed_total_errors > self.total_errors:
+            multi_edit_errors = fixed_total_errors - self.total_errors
+            self.total_errors = fixed_total_errors
+
+        print '*****************************************************'
+        print 'Single-edit/multi-edit errors percentage'
+        print '*****************************************************'
+        print 'Single-edit errors'.ljust(30) + '\t:\t' + repr(single_edit_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * single_edit_errors / self.total_errors)+'%'
+        print 'Multi-edit errors'.ljust(30) + '\t:\t' + repr(multi_edit_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * multi_edit_errors / self.total_errors)+'%'
+        print 'Total errors'.ljust(30) + '\t:\t' + repr(self.total_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * (single_edit_errors + multi_edit_errors) / self.total_errors)+'%'
+        print '\n'
+        
         print '*****************************************************'
         print 'Error types and their frequencies in the error corpus'
         print '*****************************************************'
@@ -306,6 +320,7 @@ class ErrorModel:
         print 'Insertion errors'.ljust(30) + '\t:\t' + repr(self.num_add_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_add_errors / self.total_errors)+'%'
         print 'Deletion errors'.ljust(30) + '\t:\t' + repr(self.num_del_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_del_errors / self.total_errors)+'%'
         print 'Swap errors'.ljust(30) + '\t:\t' + repr(self.num_swap_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * self.num_swap_errors / self.total_errors)+'%'
+        print 'Multi-edit errors'.ljust(30) + '\t:\t' + repr(multi_edit_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * multi_edit_errors / self.total_errors)+'%'
         print '\n'
         print 'Total errors'.ljust(30) + '\t:\t' + repr(self.total_errors).rjust(10)
         print '\n'
@@ -398,9 +413,10 @@ if __name__ == '__main__':
     parser.add_argument('model_file', help='Filename where the model output should be written')
     parser.add_argument('--print_error_model', help='Prints the error model in terminal', action='store_true')
     parser.add_argument('--print_statistics', help='Prints error statistics from the error corpus', action='store_true')
+    parser.add_argument('--total_errors', help='Total number of errors (not just single edit errors)', default=0, type=int)
     args = parser.parse_args()
     error_model1 = ErrorModel(args.error_file, args.model_file)
     if args.print_error_model:
         error_model1.print_error_model()
     if args.print_statistics:
-        error_model1.print_statistics()
+        error_model1.print_statistics(args.total_errors)
