@@ -310,7 +310,7 @@ class ErrorModel:
         print 'Multi-edit errors'.ljust(30) + '\t:\t' + repr(multi_edit_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * multi_edit_errors / self.total_errors)+'%'
         print 'Total errors'.ljust(30) + '\t:\t' + repr(self.total_errors).rjust(10) + '\t:\t' + '{:5.2f}'.format(100.0 * (single_edit_errors + multi_edit_errors) / self.total_errors)+'%'
         print '\n'
-        
+
         print '*****************************************************'
         print 'Error types and their frequencies in the error corpus'
         print '*****************************************************'
