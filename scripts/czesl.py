@@ -6,6 +6,7 @@
 import codecs
 import re
 import xml.etree.ElementTree as ET
+import sys
 
 class CzeSLW:
     """Class representing the first level CzeSL data.
@@ -18,11 +19,11 @@ class CzeSLW:
         self.wroot = self.wtree.getroot()
 
     def get_token_by_id(self, id):
-        token = self.wroot.find("./wdata:doc/wdata:para/wdata:w[@id='"+id+"']/wdata:token", CzeSLW.ns)
         try:
+            token = self.wroot.find("./wdata:doc/wdata:para/wdata:w[@id='"+id+"']/wdata:token", CzeSLW.ns)
             return token.text
         except AttributeError:
-            return "<TextNotFound>"
+            return '<TokenElementMissing>'
 
 class CzeSLA:
     """Class representing the correction of orthographical errors in the first level CzeSL data.
@@ -36,7 +37,7 @@ class CzeSLA:
         self.aroot = self.atree.getroot()
 
     def set_wref(self, czesl_wref):
-        """ Set the reference to w-file.
+        """ Set the reference to w-level data object.
 
         Args:
             czesl_wref: Object of type CzeSLW
@@ -45,11 +46,11 @@ class CzeSLA:
         self.wref = czesl_wref
 
     def get_token_by_id(self, id):
-        token = self.aroot.find("./ldata:doc/ldata:para/ldata:s/ldata:w[@id='"+id+"']/ldata:token", CzeSLA.ns)
         try:
+            token = self.aroot.find("./ldata:doc/ldata:para/ldata:s/ldata:w[@id='"+id+"']/ldata:token", CzeSLA.ns)
             return token.text
         except AttributeError:
-            return "<TextNotFound>"
+            return '<TokenElementMissing>'
 
     def determine_edge_path_format(self):
         """Determine the format of the path to edge element in the xml file.
@@ -69,7 +70,7 @@ class CzeSLA:
         elif self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge", CzeSLA.ns):
             self.edge_path_format = 2
 
-    def get_error_info_at_edge(self, id):
+    def get_error_info_at_edge(self, edge_id):
         """Determine if the edge has an error in the upper level and return relevant details.
 
         Method for finding whether the edge contains an error. If there is no error, the method returns False,
@@ -89,37 +90,48 @@ class CzeSLA:
         w_tokens = []
         a_tokens = []
 
-        w_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:from", CzeSLA.ns)
-        w_ids = map(lambda x: re.sub(r'w\#', '', x.text), w_nodes)
+        w_ids = self.find_lower_level_node_ids(edge_id)
+        if not w_ids:
+            return edge_error
         w_tokens = map(lambda xid: self.wref.get_token_by_id(xid), w_ids)
 
-        if self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns):
-            a_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:to", CzeSLA.ns)
-            a_ids = map(lambda to:to.text, a_nodes)
-        elif self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns):
-            a_nodes = self.aroot.findall(".//ldata:para/ldata:s/ldata:w/ldata:edge[@id='"+id+"']/..", CzeSLA.ns)
-            a_ids = map(lambda w:w.get('id'), a_nodes)
-        elif self.aroot.findall(".//ldata:para/ldata:edge[@id='"+id+"']", CzeSLA.ns):
-            a_nodes = []
-            a_ids = []
-
+        a_ids = self.find_current_level_node_ids(edge_id)
         a_tokens = map(lambda xid: self.get_token_by_id(xid), a_ids)
 
-        error_nodes = self.aroot.findall(".//ldata:edge[@id='"+id+"']/ldata:error/ldata:tag", CzeSLA.ns)
-        if not error_nodes:
+        # check if any token is empty, i.e., <token />
+        # Warning: this error may be left out in the error outputs. It must be
+        # handled some other way.
+        for a_tok in a_tokens:
+            if not a_tok:
+                return False
+
+        for w_tok in w_tokens:
+            if not w_tok:
+                return False
+
+        # allow only 1-1 errors
+        if len(a_tokens) !=1 or len(w_tokens) != 1:
+            return False
+
+
+        error_names = self.find_error_tags(edge_id)
+        if not error_names:
             # error without a tag, tokens mismatch between a-token and w-token
-            if len(w_nodes) == 1 and len(a_nodes) == 1:
+            if len(w_ids) == 1 and len(a_ids) == 1:
                 if w_tokens[0] != a_tokens[0]:
-                    return (id, w_ids, a_ids, w_tokens, a_tokens, ['multiple_choices'])
+                    return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['multiple_choices'])
                 else:
                     return edge_error
             else:
-                return (id, w_ids, a_ids, w_tokens, a_tokens, ['unknown_error'])
+                return (edge_id, w_ids, a_ids, w_tokens, a_tokens, ['error_multiword'])
         else:
-            error_names = []
-            error_names = map(lambda e: e.text, error_nodes)
             error_names.sort()
-            return (id, w_ids, a_ids, w_tokens, a_tokens, error_names)
+            # return False for multiple choices
+            if len(w_ids) == 1 and len(a_ids) == 1:
+                if re.search(r'\s+', w_tokens[0]) or re.search(r'\s+', a_tokens[0]):
+                    return False
+
+            return (edge_id, w_ids, a_ids, w_tokens, a_tokens, error_names)
 
     def print_errors(self):
         edges = self.aroot.findall(".//ldata:edge", CzeSLA.ns)
@@ -144,7 +156,7 @@ class CzeSLA:
                           '\t'+' '.join(e[1]).ljust(10)+'\t'+' '.join(e[2])+'\n')
         return
 
-    def write_errors_by_sentences(self, file_prefix):
+    def write_errors_by_sentences(self, file_prefix, complexity):
         """Write original sentences along with correct words if there are any spelling errors found.
 
         The sentence with errors will be printed if and only if,
@@ -159,7 +171,12 @@ class CzeSLA:
             file_prefix: File name - only the prefix.
 
         """
-        out_file = file_prefix + '.err.sen.txt'
+        train_file = file_prefix + '.train.sen.txt'
+        err_file = file_prefix + '.err.sen.txt'
+        gold_file = file_prefix + '.gold.sen.txt'
+        # training file that contains error labels of CzeSL corpus in addition to other error types
+        train_file_czesl = file_prefix + '.train.czesl.sen.txt'
+
         edges = self.aroot.findall(".//ldata:edge", CzeSLA.ns)
         edge_ids = map(lambda e: e.get('id'), edges)
         error_dictionary = {}
@@ -168,20 +185,366 @@ class CzeSLA:
             if e:
                 if len(e[1]) == 1 and len(e[2]) == 1 and e[5][0] != 'multiple_choices':
                     if not re.match(r'(\{\s+\}|\|)', e[3][0]):
-                        error_dictionary[e[2][0]] = e
+                        error_str_bw = u'form:' + u'+'.join(e[5])
+                        error_dictionary[e[2][0]] = (e[4][0], e[3][0], error_str_bw)
 
         # iterate over sentences
-        with codecs.open(out_file, mode='w', encoding='utf-8') as f:
+        with codecs.open(train_file, mode='w', encoding='utf-8') as f, codecs.open(gold_file, mode='w', encoding='utf-8') as gf, codecs.open(err_file, mode='w', encoding='utf-8') as ef, codecs.open(train_file_czesl, mode='w', encoding='utf-8') as tf_czesl:
             for sen in self.aroot.findall("./ldata:doc/ldata:para/ldata:s", CzeSLA.ns):
                 tokens = []
+                gtokens = []
+                err_tokens = []
+                czesl_tokens = []
                 for w in sen.findall("./ldata:w", CzeSLA.ns):
                     if not w.get('id') in error_dictionary:
                         t = w.find("./ldata:token", CzeSLA.ns).text
-                        tokens.append(t)
+                        if t is not None:
+                            tokens.append(t)
+                            gtokens.append(t)
+                            err_tokens.append(t)
+                            czesl_tokens.append(t)
                     else:
                         gold_token = w.find("./ldata:token", CzeSLA.ns).text
-                        orig_token = error_dictionary[w.get('id')][3][0]
-                        tokens.append("<orig=\""+orig_token+"\"\t"+"gold=\""+gold_token+"\">")
+                        orig_token = error_dictionary[w.get('id')][1]
+                        if gold_token is not None and orig_token is not None:
+                            error_signature = get_error_signature(orig_token, gold_token)
+                            if error_signature:
+                                tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
+                                err_tokens.append(orig_token)
+                            else:
+                                tokens.append(gold_token)
+                                if complexity == 'easy':
+                                    err_tokens.append(gold_token)
+                                else:
+                                    err_tokens.append(orig_token)
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
+
+                            gtokens.append(gold_token)
                 sen_to_write = ' '.join(tokens)
+                gold_sen_to_write = ' '.join(gtokens)
+                err_sen_to_write = ' '.join(err_tokens)
+                czesl_train_sen_to_write = ' '.join(czesl_tokens)
                 f.write(sen_to_write + '\n')
+                gf.write(gold_sen_to_write + '\n')
+                ef.write(err_sen_to_write + '\n')
+                tf_czesl.write(czesl_train_sen_to_write + '\n')
         return
+
+    def find_current_level_node_ids(self, edge_id):
+        current_ids = []
+        if self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLA.ns):
+            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLA.ns)
+            current_ids = map(lambda x: x.text, current_nodes)
+        elif self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLA.ns):
+            current_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLA.ns)
+            current_ids = map(lambda x: x.get('id'), current_nodes)
+        return current_ids
+
+    def find_lower_level_node_ids(self, edge_id):
+        next_level_ids = []
+        if self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLA.ns):
+            next_level_nodes = self.aroot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLA.ns)
+            next_level_ids = map(lambda x: re.sub(r'w#', r'',x.text), next_level_nodes)
+        return next_level_ids
+
+    def find_error_tags(self, edge_id):
+        error_tags = []
+        if self.aroot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLA.ns):
+            error_nodes = self.aroot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLA.ns)
+            error_tags = map(lambda x: x.text, error_nodes)
+        return error_tags
+
+class CzeSLB:
+    """Class representing the correction of grammar errors at level-a.
+
+    """
+    ns = {'ldata' : 'http://utkl.cuni.cz/czesl/'}
+
+    def __init__(self, filename):
+        self.btree = ET.parse(filename)
+        self.broot = self.btree.getroot()
+
+    def set_aref(self, czesl_aref):
+        """ Set the reference to a-file data object.
+
+        Args:
+            czesl_aref: Object of type CzeSLA
+
+        """
+        self.aref = czesl_aref
+
+    def get_token_by_id(self, id):
+        try:
+            token = self.broot.find('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+id+'"]/ldata:token', CzeSLB.ns)
+            return token.text
+        except AttributeError:
+            return '<TokenElementMissing>'
+
+    def get_lower_level_edge_id(self, edge_id):
+        """Get an edge between a-level word element and w-level word element given the edge id between b-level word element and a-level word element.
+
+        """
+        # get 'word'/'token' elements in a-level if any
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:from", CzeSLB.ns):
+            a_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:from", CzeSLB.ns)
+            a_ids = map(lambda x: re.sub(r'a#', r'',x.text), a_nodes)
+        else:
+            return False
+
+        # expected number of ids : 1
+        if len(a_ids) == 1:
+            a_edge_nodes = []
+            if self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns):
+                a_edge_nodes = self.aref.aroot.findall('./ldata:doc/ldata:para/ldata:s/ldata:w[@id="'+a_ids[0]+'"]/ldata:edge', CzeSLA.ns)
+            else:
+                all_edge_nodes = self.aref.aroot.findall('.//ldata:edge', CzeSLA.ns)
+                if all_edge_nodes:
+                    for ed in all_edge_nodes:
+                        to_nodes = ed.findall('./ldata:to', CzeSLA.ns)
+                        for tn in to_nodes:
+                            if tn.text == a_ids[0]:
+                                a_edge_nodes.append(ed)
+            if len(a_edge_nodes) == 1:
+                a_edge_id = a_edge_nodes[0].get('id')
+                return a_edge_id
+            if not a_edge_nodes or len(a_edge_nodes) > 1:
+                return False
+        else:
+            return False
+
+
+
+    def get_error_info_at_edge(self, edge_id):
+        """Provide error info at an edge between b-level node and a-level node.
+
+        """
+        edge_error = False
+        b_ids = []
+        a_ids = []
+        b_tokens = []
+        a_tokens = []
+        error_nodes = []
+        error_names = []
+
+        # get 'word'/'token' elements in b-level
+        b_ids = self.find_current_level_node_ids(edge_id)
+        b_tokens = map(lambda xid: self.get_token_by_id(xid), b_ids)
+
+        for b_tok in b_tokens:
+            if not b_tok:
+                return False
+
+        # get 'word'/'token' elements in a-level if any
+
+        a_ids = self.find_lower_level_node_ids(edge_id)
+        if not a_ids:
+            return edge_error
+        a_tokens = map(lambda xid: self.aref.get_token_by_id(xid), a_ids)
+
+        # get b-level edge errors
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns):
+            error_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns)
+            error_names = map(lambda x: x.text, error_nodes)
+            error_names.sort()
+
+        if len(b_tokens) ==1 and len(a_tokens) ==1:
+            if b_tokens[0] == a_tokens[0] and not error_names:
+                return False
+            elif b_tokens[0] == a_tokens[0] and error_names:
+                return (edge_id, a_ids, b_ids, a_tokens, b_tokens, error_names)
+            elif b_tokens[0] != a_tokens[0]:
+                return (edge_id, a_ids, b_ids, a_tokens, b_tokens, error_names)
+        return edge_error
+
+    def find_current_level_node_ids(self, edge_id):
+        current_ids = []
+        if self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLB.ns):
+            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:to', CzeSLB.ns)
+            current_ids = map(lambda x: x.text, current_nodes)
+        elif self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLB.ns):
+            current_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/..', CzeSLB.ns)
+            current_ids = map(lambda x: x.get('id'), current_nodes)
+        return current_ids
+
+    def find_lower_level_node_ids(self, edge_id):
+        next_level_ids = []
+        if self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLB.ns):
+            next_level_nodes = self.broot.findall('.//ldata:edge[@id="'+edge_id+'"]/ldata:from', CzeSLB.ns)
+            next_level_ids = map(lambda x: re.sub(r'a#', r'',x.text), next_level_nodes)
+        return next_level_ids
+
+    def find_error_tags(self, edge_id):
+        error_tags = []
+        if self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns):
+            error_nodes = self.broot.findall(".//ldata:edge[@id='"+edge_id+"']/ldata:error/ldata:tag", CzeSLB.ns)
+            error_tags = map(lambda x: x.text, error_nodes)
+        return error_tags
+
+    def get_projected_error(self, edge_id):
+        """Obtain error information between w-level and b-level node given the b-level edge id.
+
+        """
+        projected_error = False
+
+        b_a_level_error = []
+        a_w_level_error =[]
+
+        b_a_level_error = self.get_error_info_at_edge(edge_id)
+        lower_edge_id = self.get_lower_level_edge_id(edge_id)
+        if lower_edge_id:
+            a_w_level_error = self.aref.get_error_info_at_edge(lower_edge_id)
+
+        # if b_a_level_error:
+        #     print 'b_tokens: ' + ','.join(b_a_level_error[4]) + '\t|\t' + 'a_tokens: ' + ','.join(b_a_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(b_a_level_error[5])
+        # if a_w_level_error:
+        #     print 'a_tokens: ' + ','.join(a_w_level_error[4]) + '\t|\t' + 'w_tokens: ' + ','.join(a_w_level_error[3]) + '\t|\t' + 'errors: ' + ','.join(a_w_level_error[5])
+
+        return (b_a_level_error, a_w_level_error)
+
+    def write_errors_by_sentences(self, file_prefix, complexity):
+        train_file = file_prefix + '.train.sen.txt'
+        err_file = file_prefix + '.err.sen.txt'
+        gold_file = file_prefix + '.gold.sen.txt'
+        # training file that contains error labels of CzeSL corpus in addition to other error types
+        train_file_czesl = file_prefix + '.train.czesl.sen.txt'
+
+        edges = self.broot.findall(".//ldata:edge", CzeSLB.ns)
+        edge_ids = map(lambda e: e.get('id'), edges)
+        error_dictionary = {}
+        for eid in edge_ids:
+            (eba, eaw) = self.get_projected_error(eid)
+            if eaw:
+                if len(eaw[1]) == 1 and len(eaw[2]) == 1 and eaw[5][0] != 'multiple_choices':
+                    if not re.match(r'(\{\s+\}|\|)', eaw[3][0]):
+                        bids = self.find_current_level_node_ids(eid)
+                        btokens = map(lambda x: self.get_token_by_id(x), bids)
+
+                        if btokens and len(btokens) == 1 and btokens[0]:
+                            error_str_bw = u''
+                            if eba:
+                                error_str_bw = u'form:' + u'+'.join(eaw[5]) + '#' + u'gram:' + u'+'.join(eba[5])
+                            else:
+                                error_str_bw = u'form:' + u'+'.join(eaw[5])
+                            error_dictionary[bids[0]] = (btokens[0], eaw[3][0], error_str_bw)
+            if eba and not eaw:
+                if len(eba[1]) == 1 and len(eba[2]) == 1:
+                    aw_edge_id = self.get_lower_level_edge_id(eid)
+                    if aw_edge_id:
+                        error_str_bw = u'gram:' + 'u'.join(eba[5])
+                        error_dictionary[eba[2][0]] = (eba[4][0], eba[3][0], error_str_bw)
+
+        # iterate over sentences
+        with codecs.open(train_file, mode='w', encoding='utf-8') as f, codecs.open(gold_file, mode='w', encoding='utf-8') as gf, codecs.open(err_file, mode='w', encoding='utf-8') as ef, codecs.open(train_file_czesl, mode='w', encoding='utf-8') as tf_czesl:
+            for sen in self.broot.findall("./ldata:doc/ldata:para/ldata:s", CzeSLB.ns):
+                tokens = []
+                gtokens = []
+                err_tokens = []
+                czesl_tokens = []
+                for w in sen.findall("./ldata:w", CzeSLB.ns):
+                    if not w.get('id') in error_dictionary:
+                        t = w.find("./ldata:token", CzeSLB.ns).text
+                        if t is not None:
+                            tokens.append(t)
+                            czesl_tokens.append(t)
+                            gtokens.append(t)
+                            err_tokens.append(t)
+                    else:
+                        gold_token = w.find("./ldata:token", CzeSLB.ns).text
+                        orig_token = error_dictionary[w.get('id')][1]
+                        if gold_token is not None and orig_token is not None:
+                            error_signature = get_error_signature(orig_token, gold_token)
+                            if error_signature:
+                                tokens.append("<type=\""+error_signature+"\" " +"orig=\""+orig_token+"\" "+"gold=\""+gold_token+"\">")
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"yes\">')
+                                err_tokens.append(orig_token)
+                            else:
+                                tokens.append(gold_token)
+                                if complexity == 'easy':
+                                    err_tokens.append(gold_token)
+                                else:
+                                    err_tokens.append(orig_token)
+                                czesl_tokens.append('<type=\"'+error_dictionary[w.get('id')][2]+'\" ' +'orig=\"'+orig_token+'\" '+'gold=\"'+gold_token+'\" ' +'training=\"no\">')
+                            gtokens.append(gold_token)
+
+                sen_to_write = ' '.join(tokens)
+                gold_sen_to_write = ' '.join(gtokens)
+                err_sen_to_write = ' '.join(err_tokens)
+                czesl_train_sen_to_write = ' '.join(czesl_tokens)
+                f.write(sen_to_write + '\n')
+                gf.write(gold_sen_to_write + '\n')
+                ef.write(err_sen_to_write + '\n')
+                tf_czesl.write(czesl_train_sen_to_write + '\n')
+        return
+
+
+
+def get_error_signature(misspelled, correct):
+    """Get the spelling error type given the correct word and the misspelled word.
+
+    The function imitates the functionality of the C++ header from src/create/create_error_model/get_error_signature.h
+
+    Args:
+        misspelled: Token with spelling error
+        correct: Gold token
+
+    Returns:
+        The error signature if and only if the error is caused by only one of edit operations (insertion, deletion,
+        substitution, or swapping).
+
+    """
+
+    signature = ''
+
+    if misspelled is None or correct is None:
+        return False
+
+    if len(misspelled) == len(correct):
+        for i in range(len(misspelled)):
+            if misspelled[i] != correct[i] and (i + 1) < len(misspelled) and misspelled[i+1] == correct[i] and misspelled[i] == correct[i+1]:
+                for j in range(i+2, len(misspelled)):
+                    if misspelled[j] != correct[j]:
+                        return False
+                signature = u'swap_'+ misspelled[i] + misspelled[i+1]
+                return signature
+            elif misspelled[i] != correct[i]:
+                for j in range(i+1, len(misspelled)):
+                    if misspelled[j] != correct[j]:
+                        return False
+                signature = u's_'+ misspelled[i] + correct[i]
+                return signature
+    elif len(misspelled) == len(correct)+1:
+        for i in range(len(correct)):
+            if misspelled[i] != correct[i]:
+                for j in range(i, len(correct)):
+                    if misspelled[j+1] != correct[j]:
+                        return False
+
+                signature = u'i_'+ misspelled[i]
+                if i == 0:
+                    signature += '^'
+                else:
+                    signature += correct[i-1]
+
+                signature += correct[i]
+                return signature
+
+        signature = u'i_'+ misspelled[len(misspelled)-1]
+        signature += correct[len(correct)-1]
+        signature += '$'
+        return signature
+    elif len(misspelled)+1 == len(correct):
+        for i in range(len(misspelled)):
+            if misspelled[i] != correct[i]:
+                for j in range(i, len(misspelled)):
+                    if misspelled[j] != correct[j+1]:
+                        return False
+                signature = u'd_'+correct[i]
+                if i == 0:
+                    signature += '^'
+                else:
+                    signature += correct[i-1]
+                return signature
+        signature = u'd_'+correct[len(correct)-1]+correct[len(correct)-2]
+        return signature
+    return

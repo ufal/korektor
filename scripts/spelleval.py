@@ -2,6 +2,7 @@ import re
 import codecs
 import sys
 
+
 """
 ====================
 Korektor Evaluation
@@ -56,6 +57,7 @@ class SpellEval:
         self.tn_d = 0
         self.fn_d = 0
         self.f1_d = 0.0
+        self.accuracy_d = 0.0
 
         # results: spelling error correction
         self.precision_c = [0.0] * self.nbest
@@ -65,6 +67,7 @@ class SpellEval:
         self.tn_c = [0] * self.nbest
         self.fn_c = [0] * self.nbest
         self.f1_c = [0.0] * self.nbest
+        self.accuracy_c = [0.0] * self.nbest
 
         self.corpus_size = 0
         self.gold_content = {}
@@ -209,12 +212,14 @@ class SpellEval:
         self.precision_d = (1.0 * self.tp_d) / (self.tp_d + self.fp_d)
         self.recall_d = (1.0 * self.tp_d) / (self.tp_d + self.fn_d)
         self.f1_d = 2 * (self.precision_d * self.recall_d) / (self.precision_d + self.recall_d)
+        self.accuracy_d = (self.tp_d + self.tn_d)/ (self.tp_d + self.tn_d + self.fp_d + self.fn_d)
 
         # calculate precision/recall, f-measure for spelling correction
         for i in range(len(self.tp_c)):
             self.precision_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fp_c[i])
             self.recall_c[i] = (1.0 * self.tp_c[i]) / (self.tp_c[i] + self.fn_c[i])
             self.f1_c[i] = 2 * (self.precision_c[i] * self.recall_c[i]) / (self.precision_c[i] + self.recall_c[i])
+            self.accuracy_c[i] = (self.tp_c[i] + self.tn_c[i])/ (self.tp_c[i] + self.tn_c[i] + self.fp_c[i] + self.fn_c[i])
 
     def get_suggestions_map(self, out_file_lines):
         i = 0
@@ -227,15 +232,16 @@ class SpellEval:
             out_line = re.sub(r'\<grammar\s+suggestions','<grammarsuggestions', out_line)
             matches = re.findall(r'(<(spelling|grammar)suggestions=\"(.+?)\">(.+?)\<\/\2\>)', out_line)
             if matches:
-
                 for m in matches:
                     corr_type = m[1]
                     sugg_orig = m[2]
                     orig_str = m[3]
                     sugg_new = re.sub(r'\s+', '|', sugg_orig)
-                    sugg_pat_orig = '<' + corr_type + 'suggestions=\"' + sugg_orig \
+                    sugg_pat_orig = r'<' + corr_type + 'suggestions=\"' + sugg_orig \
                                     + '\">' + orig_str + '</' + corr_type +'>'
-                    sugg_pat_new = '<' + corr_type + 'suggestions=\"' + sugg_new   \
+                    sugg_pat_orig = sugg_pat_orig.replace(')', '\)')
+                    sugg_pat_orig = sugg_pat_orig.replace('(', '\(')
+                    sugg_pat_new = r'<' + corr_type + 'suggestions=\"' + sugg_new   \
                                    + '\">' + orig_str + '</' + corr_type +'>'
                     out_line = re.sub(sugg_pat_orig, sugg_pat_new, out_line, count=1)
             out_words = re.split(r'\s+', out_line)
@@ -257,6 +263,7 @@ class SpellEval:
         print 'Precision'.ljust(10), ':', '{:5.1f}'.format(self.precision_d * 100.0)
         print 'Recall'.ljust(10), ':', '{:5.1f}'.format(self.recall_d * 100.0)
         print 'F1-score'.ljust(10), ':', '{:5.1f}'.format(self.f1_d * 100.0)
+        print 'Accuracy'.ljust(10), ':', '{:5.1f}'.format(self.accuracy_d * 100.0)
         print ""
 
         print ''.rjust(20), "***************"
@@ -271,7 +278,8 @@ class SpellEval:
             top = 'top-' + str(i+1)
             print top.ljust(6), ''.rjust(4), '{:5.1f}'.format(self.precision_c[i]*100.0), \
                 ''.rjust(4), '{:5.1f}'.format(self.recall_c[i]*100.0), \
-                ''.rjust(4), '{:5.1f}'.format(self.f1_c[i] * 100.0)
+                ''.rjust(4), '{:5.1f}'.format(self.f1_c[i] * 100.0), \
+                ''.rjust(4), '{:5.1f}'.format(self.accuracy_c[i] * 100.0)
             i += 1
 
     def print_summary(self):
