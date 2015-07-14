@@ -185,7 +185,7 @@ function korektorEdit(data, textArray) {
       if (i == 1) html += '<br/><b>Suggestions</b>';
       html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.text(textArray[id][i]).html() + '</span>';
     }
-    html += '<br/><b>Custom</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text() + '"/>';
+    html += '<br/><b>Custom</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace('"', '&quot;') + '"/>';
 
     jQuery('#korektorEditSuggestions')
       .empty()
