@@ -136,8 +136,8 @@ function korektorEdit(data, textArray) {
   }
   function korektorEditDialogHandleEscape(event) {
     var dialog = jQuery('#korektorEditDialog');
-    if (dialog.length > 0 && event.keyCode == 27) dialog.remove();
-    if (!dialog.length || event.keyCode == 27) jQuery(document).off('keyup', korektorEditDialogHandleEscape);
+    if (dialog.length > 0 && event.keyCode == 27) korektorEditDialogClose();
+    else if (!dialog.length) jQuery(document).off('keyup', korektorEditDialogHandleEscape);
   }
   jQuery(document).keyup(korektorEditDialogHandleEscape);
 
