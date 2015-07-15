@@ -22,10 +22,35 @@ function korektorGetText(control) {
     return {type:"value", control:control, text:control.value};
   }
 
+  // Contenteditable fields
+  if ("contentEditable" in control) {
+    var text = '';
+    function getText(node) {
+      if (!("childNodes" in node)) return;
+      var children = node.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        if (child.nodeType == 3)
+          text += child.textContent;
+        else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0)
+          text += "\n";
+        else
+          getText(child);
+      }
+    }
+    getText(control);
+    return {type:"contentEditable", control:control, text:text};
+  }
+
   return null;
 }
 
 function korektorSetText(data, textArray) {
+  // Remove identical replacements from textArray
+  for (var i in textArray)
+    if (textArray[i].length > 1 && textArray[i][1] == textArray[i][0])
+      textArray[i].splice(1, textArray[i].length - 1)
+
   // Input and textarea fields
   if (data.type == "value" || data.type == "value_selection") {
     // Concatenate new text
@@ -40,6 +65,66 @@ function korektorSetText(data, textArray) {
       data.control.value = data.text_prefix + text + data.text_suffix;
       data.control.selectionStart = data.start;
       data.control.selectionEnd = data.start + text.length;
+    }
+  }
+
+  // Contenteditable fields
+  if (data.type == "contentEditable") {
+    // Check that the text is the same
+    var text = '';
+    function getText(node) {
+      if (!("childNodes" in node)) return;
+      var children = node.childNodes;
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        if (child.nodeType == 3)
+          text += child.textContent;
+        else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0)
+          text += "\n";
+        else
+          getText(child);
+      }
+    }
+    getText(data.control);
+
+    // Replace the corrections in the control content
+    if (text != data.text) {
+      alert("The text of the editable fields was changed, not replacing it.");
+    } else {
+      function setText(node) {
+        if (!("childNodes" in node)) return;
+        var children = node.childNodes;
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          if (child.nodeType == 3) {
+            var prev = child.textContent, prev_ori = prev, next = '';
+            while (prev) {
+              while (textArray && !textArray[0][0]) textArray.shift();
+              if (!textArray) break;
+              var len = prev.length < textArray[0][0].length ? prev.length : textArray[0][0].length;
+              if (textArray[0].length == 1) {
+                next += prev.substr(0, len);
+              } else if (textArray[0].length > 1 && textArray[0][0].length > len && textArray[0][1].substr(0, len) == prev.substr(0, len)) {
+                next += textArray[0][1].substr(0, len);
+                textArray[0][1] = textArray[0][1].substr(len);
+              } else if (textArray[0].length > 1 && textArray[0][1]) {
+                next += textArray[0][1];
+                textArray[0][1] = "";
+              }
+              prev = prev.substr(len);
+              textArray[0][0] = textArray[0][0].substr(len);
+            }
+            next += prev;
+            if (next != prev_ori) child.textContent = next;
+          } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
+            while (textArray && !textArray[0][0]) textArray.shift();
+            if (textArray && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
+          } else {
+            setText(child);
+          }
+        }
+      }
+      setText(data.control);
     }
   }
 }
@@ -65,11 +150,11 @@ function korektorPerformSpellcheck(model, edit) {
       var text = data.text;
       while (text)
         if (text.match(/^\s+/)) {
-          var token = text.match(/^\s+/);
+          var token = text.match(/^\s+/)[0];
           text = text.replace(/^\s+/, "");
           json.result.push([token]);
         } else {
-          var token = text.match(/^\S+/);
+          var token = text.match(/^\S+/)[0];
           text = text.replace(/^\S+/, "");
           json.result.push([token, token]);
         }
