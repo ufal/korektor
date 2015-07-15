@@ -10,16 +10,19 @@
 function korektorGetText(control) {
   // Input and textarea fields
   if ("value" in control) {
+    var text = control.value;
+    var text_prefix = '', text_suffix = '';
+    var selection_start = -1;
     if ("selectionStart" in control && "selectionEnd" in control) {
-      var start = control.selectionStart;
-      var end = control.selectionEnd;
-      if (start < end) {
-        var text = control.value;
-        return {type:"value_selection", control:control, text:text.substring(start, end),
-                text_prefix:text.substr(0, start), text_suffix:text.substr(end), start:start, end:end};
+      selection_start = control.selectionStart;
+      var selection_end = control.selectionEnd;
+      if (selection_start < selection_end) {
+        text_prefix = text.substr(0, selection_start);
+        text_suffix = text.substr(selection_end);
+        text = text.substring(selection_start, selection_end);
       }
     }
-    return {type:"value", control:control, text:control.value};
+    return {type:"value", control:control, text:text, text_prefix:text_prefix, text_suffix:text_suffix, selection_start:selection_start};
   }
 
   // Contenteditable fields
@@ -52,19 +55,19 @@ function korektorSetText(data, textArray) {
       textArray[i].splice(1, textArray[i].length - 1)
 
   // Input and textarea fields
-  if (data.type == "value" || data.type == "value_selection") {
+  if (data.type == "value") {
     // Concatenate new text
     var text = '';
     for (var i in textArray)
       text += textArray[i][textArray[i].length > 1 ? 1 : 0];
 
     // Replace the text in the control
-    if (data.type == "value") {
-      data.control.value = text;
-    } else /*if (data.type == "value_selection")*/ {
-      data.control.value = data.text_prefix + text + data.text_suffix;
-      data.control.selectionStart = data.start;
-      data.control.selectionEnd = data.start + text.length;
+    data.control.value = data.text_prefix + text + data.text_suffix;
+
+    // Update selection if there was any
+    if (data.selection_start != -1) {
+      data.control.selectionStart = data.text_prefix.length;
+      data.control.selectionEnd = data.text_prefix.length + text.length;
     }
   }
 
