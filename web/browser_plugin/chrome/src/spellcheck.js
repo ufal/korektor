@@ -14,12 +14,13 @@ function korektorGetText(control) {
     var text_prefix = '', text_suffix = '';
     var selection_start = -1;
     if ("selectionStart" in control && "selectionEnd" in control) {
-      selection_start = control.selectionStart;
-      var selection_end = control.selectionEnd;
-      if (selection_start < selection_end) {
-        text_prefix = text.substr(0, selection_start);
-        text_suffix = text.substr(selection_end);
-        text = text.substring(selection_start, selection_end);
+      var start = control.selectionStart;
+      var end = control.selectionEnd;
+      if (start < end) {
+        selection_start = start;
+        text_prefix = text.substr(0, start);
+        text_suffix = text.substr(end);
+        text = text.substring(start, end);
       }
     }
     return {type:"value", control:control, text:text, text_prefix:text_prefix, text_suffix:text_suffix, selection_start:selection_start};
