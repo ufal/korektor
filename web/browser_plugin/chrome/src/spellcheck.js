@@ -29,6 +29,7 @@ function korektorGetText(control) {
   if ("contentEditable" in control) {
     var text = '';
     function getText(node) {
+      if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
@@ -76,6 +77,7 @@ function korektorSetText(data, textArray) {
     // Check that the text is the same
     var text = '';
     function getText(node) {
+      if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
@@ -95,6 +97,7 @@ function korektorSetText(data, textArray) {
       alert("The text of the editable fields was changed, not replacing it.");
     } else {
       function setText(node) {
+        if ("contentDocument" in node) node = node.contentDocument.body;
         if (!("childNodes" in node)) return;
         var children = node.childNodes;
         for (var i = 0; i < children.length; i++) {
