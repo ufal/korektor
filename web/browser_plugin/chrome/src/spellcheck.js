@@ -51,6 +51,13 @@ function korektorGetText(control) {
 }
 
 function korektorSetText(data, textArray) {
+  // Check that current value is still the same
+  var new_data = korektorGetText(data.control);
+  if (new_data.text != data.text) {
+      alert("The text of the editable fields has changed, not replacing it.");
+      return;
+    }
+
   // Remove identical replacements from textArray
   for (var i in textArray)
     if (textArray[i].length > 1 && textArray[i][1] == textArray[i][0])
@@ -75,64 +82,41 @@ function korektorSetText(data, textArray) {
 
   // Contenteditable fields
   if (data.type == "contentEditable") {
-    // Check that the text is the same
-    var text = '';
-    function getText(node) {
+    function setText(node) {
       if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.nodeType == 3)
-          text += child.textContent;
-        else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0)
-          text += "\n";
-        else
-          getText(child);
-      }
-    }
-    getText(data.control);
-
-    // Replace the corrections in the control content
-    if (text != data.text) {
-      alert("The text of the editable fields was changed, not replacing it.");
-    } else {
-      function setText(node) {
-        if ("contentDocument" in node) node = node.contentDocument.body;
-        if (!("childNodes" in node)) return;
-        var children = node.childNodes;
-        for (var i = 0; i < children.length; i++) {
-          var child = children[i];
-          if (child.nodeType == 3) {
-            var prev = child.textContent, prev_ori = prev, next = '';
-            while (prev) {
-              while (textArray && !textArray[0][0]) textArray.shift();
-              if (!textArray) break;
-              var len = prev.length < textArray[0][0].length ? prev.length : textArray[0][0].length;
-              if (textArray[0].length == 1) {
-                next += prev.substr(0, len);
-              } else if (textArray[0].length > 1 && textArray[0][0].length > len && textArray[0][1].substr(0, len) == prev.substr(0, len)) {
-                next += textArray[0][1].substr(0, len);
-                textArray[0][1] = textArray[0][1].substr(len);
-              } else if (textArray[0].length > 1 && textArray[0][1]) {
-                next += textArray[0][1];
-                textArray[0][1] = "";
-              }
-              prev = prev.substr(len);
-              textArray[0][0] = textArray[0][0].substr(len);
-            }
-            next += prev;
-            if (next != prev_ori) child.textContent = next;
-          } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
+        if (child.nodeType == 3) {
+          var prev = child.textContent, prev_ori = prev, next = '';
+          while (prev) {
             while (textArray && !textArray[0][0]) textArray.shift();
-            if (textArray && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
-          } else {
-            setText(child);
+            if (!textArray) break;
+            var len = prev.length < textArray[0][0].length ? prev.length : textArray[0][0].length;
+            if (textArray[0].length == 1) {
+              next += prev.substr(0, len);
+            } else if (textArray[0].length > 1 && textArray[0][0].length > len && textArray[0][1].substr(0, len) == prev.substr(0, len)) {
+              next += textArray[0][1].substr(0, len);
+              textArray[0][1] = textArray[0][1].substr(len);
+            } else if (textArray[0].length > 1 && textArray[0][1]) {
+              next += textArray[0][1];
+              textArray[0][1] = "";
+            }
+            prev = prev.substr(len);
+            textArray[0][0] = textArray[0][0].substr(len);
           }
+          next += prev;
+          if (next != prev_ori) child.textContent = next;
+        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
+          while (textArray && !textArray[0][0]) textArray.shift();
+          if (textArray && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
+        } else {
+          setText(child);
         }
       }
-      setText(data.control);
     }
+    setText(data.control);
   }
 }
 
