@@ -193,7 +193,7 @@ function korektorEdit(data, textArray) {
   // Add dialog
   var style = 'z-index:123456789; color:#000; background-color:transparent; font-family:serif; font-size:16px;';
   jQuery('body').append(
-    '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog">\n' +
+    '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
     ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
     '  <div style="'+style+'position:absolute; width:100%; top:0px; height:36px; line-height:36px; text-align:center">\n' +
@@ -220,6 +220,8 @@ function korektorEdit(data, textArray) {
     ' </div>\n' +
     '</div>\n'
   );
+  jQuery('#korektorEditDialog').focus();
+
   function korektorEditDialogClose() {
     data.control.disabled = false;
     jQuery('#korektorEditDialog').remove();
