@@ -260,7 +260,7 @@ function korektorEdit(data, textArray) {
     korektorEditSuggestionsHideTimeout = setTimeout(function(){
       korektorEditSuggestionsHideTimeout = null;
       if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions').hide()
-    }, 500);
+    }, 300);
   }
   function korektorEditSuggestionsUpdate(suggestion) {
     var suggestion_text = suggestion.text();
