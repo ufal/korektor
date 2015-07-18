@@ -133,7 +133,6 @@ function korektorPerformSpellcheck(model, edit) {
   if (!data) return;
 
   // Run Korektor
-  control.disabled = true;
 //  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
 //              {dataType: "json", data: {model: model, data: data.text, suggestions: edit ? 5 : 1}, type: "POST",
 //    success: function(json) {
@@ -164,12 +163,10 @@ function korektorPerformSpellcheck(model, edit) {
         korektorEdit(data, textArray);
       } else {
         korektorSetText(data, textArray);
-        control.disabled = false;
       }
 //    },
 //    error: function(jqXHR, textStatus) {
 //      alert(chrome.i18n.getMessage("korektor_error"));
-//      control.disabled = false;
 //    }
 //  });
 }
@@ -208,7 +205,6 @@ function korektorEdit(data, textArray) {
   jQuery('#korektorEditDialog').focus();
 
   function korektorEditDialogClose() {
-    data.control.disabled = false;
     jQuery('#korektorEditDialog').remove();
     jQuery(document).off('keyup', korektorEditDialogHandleEscape);
   }
