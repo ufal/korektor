@@ -7,44 +7,52 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-function korektorGetText(control) {
+function korektorGetText(control, selection) {
   // Input and textarea fields
   if ("value" in control) {
     var text = control.value;
     var text_prefix = '', text_suffix = '';
-    var selection_start = -1;
-    if ("selectionStart" in control && "selectionEnd" in control) {
-      var start = control.selectionStart;
-      var end = control.selectionEnd;
-      if (start < end) {
-        selection_start = start;
-        text_prefix = text.substr(0, start);
-        text_suffix = text.substr(end);
-        text = text.substring(start, end);
-      }
+    if (selection == "findout") {
+      var start = 0, end = 0;
+      if ("selectionStart" in control && "selectionEnd" in control) { start = control.selectionStart; end = control.selectionEnd; }
+      selection = start < end ? {start:start, end:end} : null;
     }
-    return {type:"value", control:control, text:text, text_prefix:text_prefix, text_suffix:text_suffix, selection_start:selection_start};
+    if (selection) {
+      text_prefix = text.substr(0, selection.start);
+      text_suffix = text.substr(selection.end);
+      text = text.substring(selection.start, selection.end);
+    }
+    return {type:"value", control:control, text:text, text_prefix:text_prefix, text_suffix:text_suffix, selection:selection};
   }
 
   // Contenteditable fields
   if ("contentEditable" in control) {
     var text = '';
+    if (selection == "findout") {
+      var selection = window.getSelection();
+      selection = selection != null && !selection.isCollapsed && selection.rangeCount == 1 ? selection.getRangeAt(0) : null;
+      if (selection && !selection.intersectsNode(control)) selection = null;
+    }
+
     function getText(node) {
       if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.nodeType == 3)
-          text += child.textContent;
-        else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0)
+        if (child.nodeType == 3 && (!selection || selection.intersectsNode(child))) {
+          var t = child.textContent;
+          if (selection && selection.endContainer.isEqualNode(child)) t = t.substr(0, selection.endOffset);
+          if (selection && selection.startContainer.isEqualNode(child)) t = t.substr(selection.startOffset);
+          text += t;
+        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0 && (!selection || selection.intersectsNode(child)))
           text += "\n";
-        else
+        else if (child.nodeType != 3)
           getText(child);
       }
     }
     getText(control);
-    return {type:"contentEditable", control:control, text:text};
+    return {type:"contentEditable", control:control, text:text, selection:selection};
   }
 
   return null;
@@ -52,7 +60,7 @@ function korektorGetText(control) {
 
 function korektorSetText(data, textArray) {
   // Check that current value is still the same
-  var new_data = korektorGetText(data.control);
+  var new_data = korektorGetText(data.control, data.selection);
   if (new_data.text != data.text) {
       alert("The text of the editable fields has changed, not replacing it.");
       return;
@@ -74,10 +82,11 @@ function korektorSetText(data, textArray) {
     data.control.value = data.text_prefix + text + data.text_suffix;
 
     // Update selection if there was any
-    if (data.selection_start != -1) {
-      data.control.selectionStart = data.text_prefix.length;
-      data.control.selectionEnd = data.text_prefix.length + text.length;
+    if (data.selection) {
+      data.control.selectionStart = data.selection.start;
+      data.control.selectionEnd = data.selection.end + text.length - data.text.length;
     }
+    data.control.focus();
   }
 
   // Contenteditable fields
@@ -88,8 +97,12 @@ function korektorSetText(data, textArray) {
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.nodeType == 3) {
-          var prev = child.textContent, prev_ori = prev, next = '';
+        if (child.nodeType == 3 && (!data.selection || data.selection.intersectsNode(child))) {
+          var prev_all = child.textContent, prev = prev_all, prev_prefix_len = -1, prev_suffix_index = -1;
+          if (data.selection && data.selection.endContainer.isEqualNode(child)) { prev_suffix_index = data.selection.endOffset; prev = prev.substr(0, data.selection.endOffset); }
+          if (data.selection && data.selection.startContainer.isEqualNode(child)) { prev_prefix_len = data.selection.startOffset; prev = prev.substr(data.selection.startOffset); }
+          var prev_ori = prev, next = '';
+
           while (prev) {
             while (textArray && !textArray[0][0]) textArray.shift();
             if (!textArray) break;
@@ -107,16 +120,31 @@ function korektorSetText(data, textArray) {
             textArray[0][0] = textArray[0][0].substr(len);
           }
           next += prev;
-          if (next != prev_ori) child.textContent = next;
-        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
+
+          if (next != prev_ori) {
+            if (prev_prefix_len >= 0) next = prev_all.substr(0, prev_prefix_len) + next;
+            if (prev_suffix_index >= 0) next = next + prev_all.substr(prev_suffix_index);
+            child.textContent = next;
+            if (prev_prefix_len >= 0) data.selection.setStart(child, prev_prefix_len);
+            if (prev_suffix_index >= 0) data.selection.setEnd(child, prev_suffix_index + next.length - prev_all.length);
+          }
+        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0 && (!data.selection || data.selection.intersectsNode(child))) {
           while (textArray && !textArray[0][0]) textArray.shift();
           if (textArray && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
-        } else {
+        } else if (child.nodeType != 3) {
           setText(child);
         }
       }
     }
     setText(data.control);
+    data.control.focus();
+    if (data.selection) {
+      var selection = window.getSelection();
+      if (selection) {
+        selection.removeAllRanges();
+        selection.addRange(data.selection);
+      }
+    }
   }
 }
 
@@ -129,7 +157,7 @@ function korektorPerformSpellcheck(model, edit) {
   if (!control) return;
 
   // Try getting original text
-  var data = korektorGetText(control);
+  var data = korektorGetText(control, "findout");
   if (!data) return;
 
   // Run Korektor
