@@ -151,6 +151,19 @@ function korektorSetText(data, textArray) {
   }
 }
 
+function korektorReport(data, korektorArray, correctedArray) {
+  var original = data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text;
+  var korektor = '';
+  for (var i in korektorArray)
+    korektor += korektorArray[i][korektorArray[i].length > 1 ? 1 : 0];
+  var corrected = '';
+  for (var i in correctedArray)
+    corrected += correctedArray[i][correctedArray[i].length > 1 ? 1 : 0];
+
+  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/log.php',
+              {dataType: "json", data: {original: original, korektor:korektor, corrected:corrected, origin:"korektor_plugin"}, type: "POST"});
+}
+
 function korektorPerformSpellcheck(model, edit) {
   // Ignore if edit is in progress
   if (jQuery('#korektorEditDialog').length > 0) return;
@@ -309,6 +322,7 @@ function korektorEdit(data, textArray) {
     var resultArray = [];
     for (var i in textArray)
       resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
+    if (jQuery('#korektorEditReportText').prop('checked')) korektorReport(data, textArray, resultArray);
     korektorSetText(data, resultArray);
     korektorEditDialogClose();
   });
