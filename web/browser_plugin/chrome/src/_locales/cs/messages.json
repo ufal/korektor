@@ -7,7 +7,7 @@
   "menu_korektor_strip_diacritics": { "message": "Odebrání diakritiky" },
   "menu_korektor_with_edit": { "message": "..." },
   "menu_korektor_without_edit": { "message": "bez následné editace" },
-  "menu_korektor_service_about": { "message": "O službě Korektor" },
+  "menu_korektor_plugin_about": { "message": "O rozšíření Korektor Spellchecker" },
   "menu_korektor_about": { "message": "O Korektoru" },
   "korektor_error": { "message": "Nelze kontaktovat službu Korektor." }
 }
