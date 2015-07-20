@@ -27,15 +27,27 @@ Online
 ======
 
 
-Online Demo
------------
+Korektor Spellchecker Browser Plugin
+------------------------------------
+
+Korektor Spellchecker is a browser plugin which allows using the Korektor
+Spellchecker for most editable input fields. The plugin is available for the
+following browers:
+- Chrome (soon): available as Korektor Spellchecker plugin in the Google Web
+  Store
+- Firefox (planned): available as Korektor Spellchecker plugin in the Mozilla
+  Add-ons repository
+
+
+Korektor Online Demo
+--------------------
 
 Online demo (https://lindat.mff.cuni.cz/services/korektor/) is available as one
 of LINDAT/CLARIN services (https://lindat.mff.cuni.cz/services/).
 
 
-Web Service
------------
+Korektor Web Service
+--------------------
 
 Web service (https://lindat.mff.cuni.cz/services/korektor/api-reference.php) is
 also available as one of LINDAT/CLARIN services
