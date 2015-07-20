@@ -22,7 +22,7 @@ function korektorSpellcheck(info, tab) {
   }
 
   if (info.menuItemId == 'about_korektor_plugin') {
-    chrome.tabs.create({url: "https://ufal.mff.cuni.cz/korektor/online#plugin"});
+    chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor/online#plugin"});
   }
 
   if (info.menuItemId == 'about_korektor') {
