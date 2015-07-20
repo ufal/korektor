@@ -40,8 +40,9 @@ function korektorGetText(control) {
         } else {
           if (range && range.startContainer == node && range.startOffset == i) selection.start = text.length;
           if (range && range.endContainer == node && range.endOffset == i) selection.end = text.length;
+          getText(child);
           if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) text += "\n";
-          else getText(child);
+          if (child.nodeType == 1 && child.nodeName.search(/^(p|div)$/i) == 0) text += "\n\n";
           if (range && range.startContainer == node && range.startOffset == i+1) selection.start = text.length;
           if (range && range.endContainer == node && range.endOffset == i+1) selection.end = text.length;
         }
