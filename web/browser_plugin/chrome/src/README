@@ -1,0 +1,8 @@
+Korektor Spellchecker
+=====================
+
+Korektor Spellchecker extension allows using Korektor service on any editable
+input fields.
+
+Korekor service is described at https://lindat.mff.cuni.cz/services/korektor/ ,
+the Korektor itself is available from http://ufal.mff.cuni.cz/korektor .
