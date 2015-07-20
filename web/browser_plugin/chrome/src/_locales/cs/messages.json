@@ -9,5 +9,5 @@
   "menu_korektor_without_edit": { "message": "bez následné editace" },
   "menu_korektor_service_about": { "message": "O službě Korektor" },
   "menu_korektor_about": { "message": "O Korektoru" },
-  "korektor_error": { "message": "Při použití služby Korektor došlo k chybě." }
+  "korektor_error": { "message": "Nelze kontaktovat službu Korektor." }
 }

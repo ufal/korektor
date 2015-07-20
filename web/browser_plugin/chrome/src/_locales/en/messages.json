@@ -9,5 +9,5 @@
   "menu_korektor_without_edit": { "message": " without further editing" },
   "menu_korektor_service_about": { "message": "About Korektor Service" },
   "menu_korektor_about": { "message": "About Korektor" },
-  "korektor_error": { "message": "An error occurred when accessing the Korektor service." }
+  "korektor_error": { "message": "Cannot conact the korektor service." }
 }
