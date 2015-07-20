@@ -7,32 +7,25 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-function korektorGetText(control, selection) {
+function korektorGetText(control) {
   // Input and textarea fields
   if ("value" in control) {
     var text = control.value;
-    var text_prefix = '', text_suffix = '';
-    if (selection == "findout") {
-      var start = 0, end = 0;
-      if ("selectionStart" in control && "selectionEnd" in control) { start = control.selectionStart; end = control.selectionEnd; }
-      selection = start < end ? {start:start, end:end} : null;
+    var selection = null;
+    if ("selectionStart" in control && "selectionEnd" in control) {
+      var start = control.selectionStart;
+      var end = control.selectionEnd;
+      if (start < end) selection = {start:start, end:end};
     }
-    if (selection) {
-      text_prefix = text.substr(0, selection.start);
-      text_suffix = text.substr(selection.end);
-      text = text.substring(selection.start, selection.end);
-    }
-    return {type:"value", control:control, text:text, text_prefix:text_prefix, text_suffix:text_suffix, selection:selection};
+    return {type:"value", control:control, text:text, selection:selection};
   }
 
   // Contenteditable fields
   if ("contentEditable" in control) {
     var text = '';
-    if (selection == "findout") {
-      var selection = window.getSelection();
-      selection = selection != null && !selection.isCollapsed && selection.rangeCount == 1 ? selection.getRangeAt(0) : null;
-      if (selection && !selection.intersectsNode(control)) selection = null;
-    }
+    var range = window.getSelection();
+    range = range != null && !range.isCollapsed && range.rangeCount == 1 ? range.getRangeAt(0) : null;
+    var selection = {};
 
     function getText(node) {
       if ("contentDocument" in node) node = node.contentDocument.body;
@@ -40,19 +33,22 @@ function korektorGetText(control, selection) {
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.nodeType == 3 && (!selection || selection.intersectsNode(child))) {
-          var t = child.textContent;
-          if (selection && selection.endContainer.isEqualNode(child)) t = t.substr(0, selection.endOffset);
-          if (selection && selection.startContainer.isEqualNode(child)) t = t.substr(selection.startOffset);
-          text += t;
-        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0 && (!selection || selection.intersectsNode(child)))
-          text += "\n";
-        else if (child.nodeType != 3)
-          getText(child);
+        if (child.nodeType == 3) {
+          if (range && range.startContainer == child) selection.start = text.length + range.startOffset;
+          if (range && range.endContainer == child) selection.end = text.length + range.endOffset;
+          text += child.textContent;
+        } else {
+          if (range && range.startContainer == node && range.startOffset == i) selection.start = text.length;
+          if (range && range.endContainer == node && range.endOffset == i) selection.end = text.length;
+          if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) text += "\n";
+          else getText(child);
+          if (range && range.startContainer == node && range.startOffset == i+1) selection.start = text.length;
+          if (range && range.endContainer == node && range.endOffset == i+1) selection.end = text.length;
+        }
       }
     }
     getText(control);
-    return {type:"contentEditable", control:control, text:text, selection:selection};
+    return {type:"contentEditable", control:control, text:text, selection:("start" in selection && "end" in selection) ? selection : null};
   }
 
   return null;
@@ -60,8 +56,8 @@ function korektorGetText(control, selection) {
 
 function korektorSetText(data, textArray) {
   // Check that current value is still the same
-  var new_data = korektorGetText(data.control, data.selection);
-  if (new_data.text != data.text) {
+  var new_data = korektorGetText(data.control);
+  if (!new_data || new_data.text != data.text) {
       alert("The text of the editable fields has changed, not replacing it.");
       return;
     }
@@ -78,33 +74,34 @@ function korektorSetText(data, textArray) {
     for (var i in textArray)
       text += textArray[i][textArray[i].length > 1 ? 1 : 0];
 
-    // Replace the text in the control
-    data.control.value = data.text_prefix + text + data.text_suffix;
-
-    // Update selection if there was any
+    // Replace the text in the control and update selection if any
     if (data.selection) {
+      data.control.value = data.text.substr(0, data.selection.start) + text + data.text.substr(data.selection.end);
       data.control.selectionStart = data.selection.start;
-      data.control.selectionEnd = data.selection.end + text.length - data.text.length;
-    }
+      data.control.selectionEnd = data.selection.start + text.length;
+    } else
+      data.control.value = text;
     data.control.focus();
   }
 
   // Contenteditable fields
   if (data.type == "contentEditable") {
+    var index = 0;
+    var range = data.selection ? document.createRange() : null;
     function setText(node) {
       if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
-        if (child.nodeType == 3 && (!data.selection || data.selection.intersectsNode(child))) {
+        if (child.nodeType == 3) {
           var prev_all = child.textContent, prev = prev_all, prev_prefix_len = -1, prev_suffix_index = -1;
-          if (data.selection && data.selection.endContainer.isEqualNode(child)) { prev_suffix_index = data.selection.endOffset; prev = prev.substr(0, data.selection.endOffset); }
-          if (data.selection && data.selection.startContainer.isEqualNode(child)) { prev_prefix_len = data.selection.startOffset; prev = prev.substr(data.selection.startOffset); }
+          if (data.selection && data.selection.end-index >= 0 && data.selection.end-index <= prev_all.length) { prev_suffix_index = data.selection.end - index; prev = prev.substr(0, prev_suffix_index); }
+          if (data.selection && data.selection.start-index >= 0 && data.selection.start-index <= prev_all.length) { prev_prefix_len = data.selection.start - index; prev = prev.substr(prev_prefix_len); }
           var prev_ori = prev, next = '';
 
-          while (prev) {
-            while (textArray && !textArray[0][0]) textArray.shift();
+          if (!data.selection || (data.selection.start < index + prev_all.length && data.selection.end > index)) while (prev) {
+            while (textArray.length && !textArray[0][0]) textArray.shift();
             if (!textArray) break;
             var len = prev.length < textArray[0][0].length ? prev.length : textArray[0][0].length;
             if (textArray[0].length == 1) {
@@ -121,30 +118,36 @@ function korektorSetText(data, textArray) {
           }
           next += prev;
 
-          if (next != prev_ori) {
-            if (prev_prefix_len >= 0) next = prev_all.substr(0, prev_prefix_len) + next;
-            if (prev_suffix_index >= 0) next = next + prev_all.substr(prev_suffix_index);
-            child.textContent = next;
-            if (prev_prefix_len >= 0) data.selection.setStart(child, prev_prefix_len);
-            if (prev_suffix_index >= 0) data.selection.setEnd(child, prev_suffix_index + next.length - prev_all.length);
-          }
-        } else if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0 && (!data.selection || data.selection.intersectsNode(child))) {
-          while (textArray && !textArray[0][0]) textArray.shift();
-          if (textArray && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
-        } else if (child.nodeType != 3) {
-          setText(child);
+          if (prev_prefix_len >= 0) next = prev_all.substr(0, prev_prefix_len) + next;
+          if (prev_suffix_index >= 0) next = next + prev_all.substr(prev_suffix_index);
+          if (next != prev_all) child.textContent = next;
+          index += prev_all.length;
+          if (prev_prefix_len >= 0) range.setStart(child, prev_prefix_len);
+          if (prev_suffix_index >= 0) range.setEnd(child, prev_suffix_index + next.length - prev_all.length);
+        } else {
+          if (data.selection && data.selection.start == index) range.setStart(node, i);
+          if (data.selection && data.selection.end == index) range.setEnd(node, i);
+          if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
+            if (!data.selection || (data.selection.start < index + 1 && data.selection.end > index)) {
+              while (textArray.length && !textArray[0][0]) textArray.shift();
+              if (textArray.length && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
+            }
+            index++;
+          } else setText(child);
+          if (data.selection && data.selection.start == index) range.setStart(node, i+1);
+          if (data.selection && data.selection.end == index) range.setEnd(node, i+1);
         }
       }
     }
     setText(data.control);
-    data.control.focus();
     if (data.selection) {
       var selection = window.getSelection();
       if (selection) {
         selection.removeAllRanges();
-        selection.addRange(data.selection);
+        selection.addRange(range);
       }
     }
+    data.control.focus();
   }
 }
 
@@ -157,15 +160,15 @@ function korektorPerformSpellcheck(model, edit) {
   if (!control) return;
 
   // Try getting original text
-  var data = korektorGetText(control, "findout");
+  var data = korektorGetText(control);
   if (!data) return;
 
   // Run Korektor
 //  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
-//              {dataType: "json", data: {model: model, data: data.text, suggestions: edit ? 5 : 1}, type: "POST",
+//              {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
 //    success: function(json) {
       var json = {result: []};
-      var text = data.text;
+      var text = data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text;
       while (text)
         if (text.match(/^\s+/)) {
           var token = text.match(/^\s+/)[0];
