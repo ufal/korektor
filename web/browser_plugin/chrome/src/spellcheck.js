@@ -164,22 +164,9 @@ function korektorPerformSpellcheck(model, edit) {
   if (!data) return;
 
   // Run Korektor
-//  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
-//              {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
-//    success: function(json) {
-      var json = {result: []};
-      var text = data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text;
-      while (text)
-        if (text.match(/^\s+/)) {
-          var token = text.match(/^\s+/)[0];
-          text = text.replace(/^\s+/, "");
-          json.result.push([token]);
-        } else {
-          var token = text.match(/^\S+/)[0];
-          text = text.replace(/^\S+/, "");
-          json.result.push([token, token]);
-        }
-
+  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
+              {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
+    success: function(json) {
       if (!("result" in json)) {
         alert(chrome.i18n.getMessage("korektor_error"));
         return;
@@ -195,11 +182,11 @@ function korektorPerformSpellcheck(model, edit) {
       } else {
         korektorSetText(data, textArray);
       }
-//    },
-//    error: function(jqXHR, textStatus) {
-//      alert(chrome.i18n.getMessage("korektor_error"));
-//    }
-//  });
+    },
+    error: function(jqXHR, textStatus) {
+      alert(chrome.i18n.getMessage("korektor_error"));
+    }
+  });
 }
 
 function korektorEdit(data, textArray) {
