@@ -1,0 +1,9 @@
+
+    <!-- Localization -->
+    <em:localized>
+      <Description>
+        <em:locale>cs-CZ</em:locale>
+        <em:name>Korektor Spellchecker</em:name>
+        <em:description>Umožňuje používání služby Korektor v editačních ovládacích prvcích.</em:description>
+      </Description>
+    </em:localized>

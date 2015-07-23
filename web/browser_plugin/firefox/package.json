@@ -1,0 +1,12 @@
+{
+  "id": "korektor_spellchecker@ufal.mff.cuni.cz",
+  "name": "korektor_spellchecker",
+  "title": "Korektor Spellchecker",
+  "description": "Allow using Korektor service on editable controls.",
+  "homepage": "http://ufal.mff.cuni.cz/korektor",
+  "permissions": { "cross-domain-content": ["https://lindat.mff.cuni.cz/"] },
+  "icon": "data/korektor_48.png",
+  "author": "Milan Straka <straka@ufal.mff.cuni.cz>",
+  "license": "BSD-3-Clause",
+  "version": "0.9.1-devel"
+}
