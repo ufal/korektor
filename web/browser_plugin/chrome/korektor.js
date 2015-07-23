@@ -16,7 +16,7 @@ function korektorSpellcheck(info, tab) {
 
     chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {
       chrome.tabs.executeScript(null, { file: "spellcheck.js" }, function() {
-        chrome.tabs.executeScript(null, { code: "korektorPerformSpellcheck('" + model + "', " + (edit ? "true" : "false") + ")" });
+        chrome.tabs.executeScript(null, { code: "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, '" + model + "', " + (edit ? "true" : "false") + ")" });
       });
     });
   }

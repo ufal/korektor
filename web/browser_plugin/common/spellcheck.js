@@ -165,13 +165,12 @@ function korektorReport(data, korektorArray, correctedArray) {
               {dataType: "json", data: {original: original, korektor:korektor, corrected:corrected, origin:"korektor_plugin"}, type: "POST"});
 }
 
-function korektorPerformSpellcheck(model, edit) {
+function korektorPerformSpellcheck(gettext, control, model, edit) {
+  // Abort if no control was given
+  if (!control) return;
+
   // Ignore if edit is in progress
   if (jQuery('#korektorEditDialog').length > 0) return;
-
-  // Get current control
-  var control = document.activeElement;
-  if (!control) return;
 
   // Try getting original text
   var data = korektorGetText(control);
@@ -182,7 +181,7 @@ function korektorPerformSpellcheck(model, edit) {
               {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
     success: function(json) {
       if (!("result" in json)) {
-        alert(chrome.i18n.getMessage("korektor_error"));
+        alert(gettext("korektor_error"));
         return;
       }
       var textArray = [];
@@ -198,7 +197,7 @@ function korektorPerformSpellcheck(model, edit) {
       }
     },
     error: function(jqXHR, textStatus) {
-      alert(chrome.i18n.getMessage("korektor_error"));
+      alert(gettext("korektor_error"));
     }
   });
 }
