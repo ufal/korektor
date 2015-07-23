@@ -9,5 +9,12 @@
   "menu_korektor_without_edit": { "message": "bez následné editace" },
   "menu_korektor_plugin_about": { "message": "O rozšíření Korektor Spellchecker" },
   "menu_korektor_about": { "message": "O Korektoru" },
-  "korektor_error": { "message": "Nelze kontaktovat službu Korektor." }
+  "korektor_service_error": { "message": "Nelze kontaktovat službu Korektor." },
+  "korektor_text_modified_error": { "message": "Obsah editačního prvku byl změněn, nahrazení nebude provedeno." },
+  "korektor_dlg_ok": { "message": "OK" },
+  "korektor_dlg_cancel": { "message": "Storno" },
+  "korektor_dlg_report_text": { "message": "Odeslat provedené opravy" },
+  "korektor_dlg_suggestions": { "message": "Návrhy" },
+  "korektor_dlg_suggestions_original": { "message": "Původní" },
+  "korektor_dlg_suggestions_custom": { "message": "Vlastní" }
 }

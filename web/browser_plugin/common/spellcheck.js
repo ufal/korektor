@@ -55,11 +55,11 @@ function korektorGetText(control) {
   return null;
 }
 
-function korektorSetText(data, textArray) {
+function korektorSetText(gettext, data, textArray) {
   // Check that current value is still the same
   var new_data = korektorGetText(data.control);
   if (!new_data || new_data.text != data.text) {
-      alert("The text of the editable fields has changed, not replacing it.");
+      alert(gettext('korektor_text_modified_error'));
       return;
     }
 
@@ -181,7 +181,7 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
               {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
     success: function(json) {
       if (!("result" in json)) {
-        alert(gettext("korektor_error"));
+        alert(gettext('korektor_service_error'));
         return;
       }
       var textArray = [];
@@ -191,18 +191,18 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
 
       // Edit result or use it directly
       if (edit) {
-        korektorEdit(data, textArray);
+        korektorEdit(gettext, data, textArray);
       } else {
-        korektorSetText(data, textArray);
+        korektorSetText(gettext, data, textArray);
       }
     },
     error: function(jqXHR, textStatus) {
-      alert(gettext("korektor_error"));
+      alert(gettext('korektor_service_error'));
     }
   });
 }
 
-function korektorEdit(data, textArray) {
+function korektorEdit(gettext, data, textArray) {
   // Add dialog
   var style = 'z-index:123456789; color:#000; background-color:transparent; font-family:serif; font-size:16px;';
   jQuery('body').append(
@@ -217,16 +217,16 @@ function korektorEdit(data, textArray) {
     '  <div style="'+style+'position:absolute; width:100%; bottom:0px; height:44px;">\n' +
     '   <div style="'+style+'position:absolute; left:0px; width:50%; height:100%; line-height:44px; text-align:center">\n' +
     '    <input type="checkbox" id="korektorEditReportText" style="'+style+'cursor:pointer" checked>\n' +
-    '    <label style="'+style+'cursor:pointer" id="korektorEditReportTextLabel">Report corrected text</label>\n' +
+    '    <label style="'+style+'cursor:pointer" id="korektorEditReportTextLabel">'+gettext('korektor_dlg_report_text')+'</label>\n' +
     '   </div>\n' +
     '   <div style="'+style+'position:absolute; left:50%; width:25%; height:100%">\n' +
     '    <div style="'+style+'position:absolute; left:8px; right:4px; top:8px; bottom:8px">\n' +
-    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditOk">OK</button>\n' +
+    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditOk">'+gettext('korektor_dlg_ok')+'</button>\n' +
     '    </div>\n' +
     '   </div>\n' +
     '   <div style="'+style+'position:absolute; left:75%; width:25%; height:100%">\n' +
     '    <div style="'+style+'position:absolute; left:4px; right:8px; top:8px; bottom:8px">\n' +
-    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditCancel">Cancel</button>\n' +
+    '     <button style="'+style+'width:100%; height:100%; background-color: #ddd; border:1px solid #999; border-radius:4px" id="korektorEditCancel">'+gettext('korektor_dlg_cancel')+'</button>\n' +
     '    </div>\n' +
     '   </div>\n' +
     '  </div>\n' +
@@ -284,13 +284,13 @@ function korektorEdit(data, textArray) {
   function korektorEditSuggestionsFill(suggestion) {
     var id = suggestion.attr('id').replace(/^korektorEditSuggestion/, '');
 
-    var html = '<b>Original</b>';
+    var html = '<b>'+gettext('korektor_dlg_suggestions_original')+'</b>';
     var quoter = jQuery('<div/>');
     for (var i in textArray[id]) {
-      if (i == 1) html += '<br/><b>Suggestions</b>';
+      if (i == 1) html += '<br/><b>'+gettext('korektor_dlg_suggestions')+'</b>';
       html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.text(textArray[id][i]).html() + '</span>';
     }
-    html += '<br/><b>Custom</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace(/"/g, '&quot;') + '"/>';
+    html += '<br/><b>'+gettext('korektor_dlg_suggestions_custom')+'</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace(/"/g, '&quot;') + '"/>';
 
     jQuery('#korektorEditSuggestions')
       .empty()
@@ -323,7 +323,7 @@ function korektorEdit(data, textArray) {
     for (var i in textArray)
       resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
     if (jQuery('#korektorEditReportText').prop('checked')) korektorReport(data, textArray, resultArray);
-    korektorSetText(data, resultArray);
+    korektorSetText(gettext, data, resultArray);
     korektorEditDialogClose();
   });
   jQuery('#korektorEditCancel').click(korektorEditDialogClose);

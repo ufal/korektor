@@ -9,5 +9,12 @@
   "menu_korektor_without_edit": { "message": " without further editing" },
   "menu_korektor_plugin_about": { "message": "About Korektor Spellchecker extension" },
   "menu_korektor_about": { "message": "About Korektor" },
-  "korektor_error": { "message": "Cannot conact the korektor service." }
+  "korektor_service_error": { "message": "Cannot conact the korektor service." },
+  "korektor_text_modified_error": { "message": "The text of the editable fields has changed, not replacing it." },
+  "korektor_dlg_ok": { "message": "OK" },
+  "korektor_dlg_cancel": { "message": "Cancel" },
+  "korektor_dlg_report_text": { "message": "Report corrected text" },
+  "korektor_dlg_suggestions": { "message": "Suggestions" },
+  "korektor_dlg_suggestions_original": { "message": "Original" },
+  "korektor_dlg_suggestions_custom": { "message": "Custom" }
 }
