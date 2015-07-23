@@ -10,16 +10,20 @@
 function korektorSpellcheck(info, tab) {
   if (!("menuItemId" in info)) return;
 
-  if (info.menuItemId.search(/^spellcheck(_and_edit)?-/) != -1) {
-    var edit = info.menuItemId.search(/^spellcheck_and_edit-/) != -1;
-    var model = info.menuItemId.replace(/^spellcheck(_and_edit)?-/, "");
-
+  var spellcheckCommands = {
+    "spellcheck_and_edit-czech-spellchecker":         "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-spellchecker', true)",
+    "spellcheck_and_edit-czech-diacritics_generator": "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-diacritics_generator', true)",
+    "spellcheck_and_edit-strip_diacritics":           "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'strip_diacritics', true)",
+    "spellcheck-czech-spellchecker":                  "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-spellchecker', false)",
+    "spellcheck-czech-diacritics_generator":          "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-diacritics_generator', false)",
+    "spellcheck-strip_diacritics":                    "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'strip_diacritics', false)"
+  };
+  if (info.menuItemId in spellcheckCommands)
     chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {
       chrome.tabs.executeScript(null, { file: "spellcheck.js" }, function() {
-        chrome.tabs.executeScript(null, { code: "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, '" + model + "', " + (edit ? "true" : "false") + ")" });
+        chrome.tabs.executeScript(null, { code: spellcheckCommands[info.menuItemId] });
       });
     });
-  }
 
   if (info.menuItemId == 'about_korektor_plugin') {
     chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor/online#plugin"});
