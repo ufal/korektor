@@ -1,8 +1,8 @@
 .PHONY: all plugin
 all: plugin
-plugin: addon-sdk-1.17 $(addprefix ../common/,AUTHORS CHANGES LICENSE README jquery-2.1.3.min.js korektor_48.png spellcheck.js) lib/main.js package.json
+plugin: addon-sdk-1.17 $(addprefix ../common/,AUTHORS CHANGES LICENSE README jquery-2.1.3.min.js korektor_48.png spellcheck.js) $(wildcard data/* lib/* locale/*) package.json
 	@mkdir -p build
-	cp -r data/ lib/ package.json build
+	cp -r data/ lib/ locale/ package.json build
 	cp -r $(addprefix ../common/,AUTHORS CHANGES LICENSE README) build
 	cp -r $(addprefix ../common/,jquery-2.1.3.min.js spellcheck.js korektor_48.png) build/data
 
