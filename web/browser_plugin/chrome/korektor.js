@@ -33,10 +33,9 @@ function korektorSpellcheck(info, tab) {
     chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor"});
   }
 }
-
 chrome.contextMenus.onClicked.addListener(korektorSpellcheck);
 
-chrome.runtime.onInstalled.addListener(function() {
+function korektorAddContextMenu() {
   chrome.contextMenus.create({id: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_czech"), contexts: ["editable"]});
   chrome.contextMenus.create({id: "spellcheck_and_edit-czech-spellchecker", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_spellcheck")+chrome.i18n.getMessage("menu_korektor_with_edit"), contexts: ["editable"]});
   chrome.contextMenus.create({id: "spellcheck_and_edit-czech-diacritics_generator", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_generate_diacritics")+chrome.i18n.getMessage("menu_korektor_with_edit"), contexts: ["editable"]});
@@ -48,4 +47,7 @@ chrome.runtime.onInstalled.addListener(function() {
   chrome.contextMenus.create({type: "separator", id: "korektor_czech_separator_2", parentId: "korektor_czech", contexts: ["editable"]});
   chrome.contextMenus.create({id: "about_korektor_plugin", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_plugin_about"), contexts: ["editable"]});
   chrome.contextMenus.create({id: "about_korektor", parentId: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_about"), contexts: ["editable"]});
-});
+}
+
+chrome.runtime.onInstalled.addListener(korektorAddContextMenu);
+chrome.runtime.onStartup.addListener(korektorAddContextMenu);

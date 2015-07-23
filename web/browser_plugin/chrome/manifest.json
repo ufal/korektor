@@ -15,6 +15,7 @@
     "contextMenus",
     "https://lindat.mff.cuni.cz/"
   ],
+  "minimum_chrome_version": "23",
   "background": {
     "scripts": ["korektor.js"],
     "persistent": false
