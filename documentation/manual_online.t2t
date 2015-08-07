@@ -4,12 +4,18 @@ Korektor Online
 == Korektor Spellchecker Browser Plugin ==[plugin]
 
 Korektor Spellchecker is a browser plugin which allows using the Korektor
-Spellchecker for most editable input fields. The plugin is available
-for the following browers:
-- Chrome (soon): available as Korektor Spellchecker plugin in the Google Web
+Spellchecker for most editable input fields. The plugin allows either
+directly correcting the content, or showing a dialog with suggested corrections.
+
+Note that the dialog with suggestions is injected directly into the original
+page, so there can be various problems on untested sites. However, the plugin
+seem to work fine on many sites.
+
+The plugin is available for the following browers:
+- Chrome: available as Korektor Spellchecker plugin in the Google Web
   Store
-- Firefox (planned): available as Korektor Spellchecker plugin in the Mozilla
-  Add-ons repository
+- Firefox: available as Korektor Spellchecker plugin in the AMO (Mozilla
+  Add-ons repository)
 
 
 == Korektor Online Demo ==[online_demo]
