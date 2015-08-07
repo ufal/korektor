@@ -11,12 +11,12 @@ function korektorSpellcheck(info, tab) {
   if (!("menuItemId" in info)) return;
 
   var spellcheckCommands = {
-    "spellcheck_and_edit-czech-spellchecker":         "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-spellchecker', true)",
-    "spellcheck_and_edit-czech-diacritics_generator": "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-diacritics_generator', true)",
-    "spellcheck_and_edit-strip_diacritics":           "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'strip_diacritics', true)",
-    "spellcheck-czech-spellchecker":                  "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-spellchecker', false)",
-    "spellcheck-czech-diacritics_generator":          "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'czech-diacritics_generator', false)",
-    "spellcheck-strip_diacritics":                    "korektorPerformSpellcheck(chrome.i18n.getMessage, document.activeElement, 'strip_diacritics', false)"
+    "spellcheck_and_edit-czech-spellchecker":         "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-spellchecker', true)",
+    "spellcheck_and_edit-czech-diacritics_generator": "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-diacritics_generator', true)",
+    "spellcheck_and_edit-strip_diacritics":           "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'strip_diacritics', true)",
+    "spellcheck-czech-spellchecker":                  "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-spellchecker', false)",
+    "spellcheck-czech-diacritics_generator":          "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-diacritics_generator', false)",
+    "spellcheck-strip_diacritics":                    "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'strip_diacritics', false)"
   };
   if (info.menuItemId in spellcheckCommands)
     chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {

@@ -23,7 +23,7 @@ function korektorGetText(control) {
   // Contenteditable fields
   if ("contentEditable" in control) {
     var text = '';
-    var range = window.getSelection();
+    var range = control.ownerDocument.getSelection();
     range = range != null && !range.isCollapsed && range.rangeCount == 1 ? range.getRangeAt(0) : null;
     var selection = {};
 
@@ -166,6 +166,15 @@ function korektorReport(data, korektorArray, correctedArray) {
 }
 
 function korektorPerformSpellcheck(gettext, control, model, edit) {
+  // Chrome does not give us the control, find it manually.  Note that
+  // when the contenteditable is inside an iframe, document.activeElement
+  // contains only the iframe, so we need to hop over it ourselves.
+  if (!control) {
+    control = document.activeElement;
+    while (control && control.contentDocument && control.contentDocument.activeElement && control.contentDocument.activeElement != control)
+      control = control.contentDocument.activeElement;
+  }
+
   // Abort if no control was given
   if (!control) return;
 
