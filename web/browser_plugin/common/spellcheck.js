@@ -53,7 +53,6 @@ function korektorGetText(control) {
     }
     getText(control);
     var have_selection = range && "start" in selection && "end" in selection;
-    console.log(text);
     return {type:"contentEditable", control:control, text:text, whiteSpace:jQuery(control).css("white-space"), selection:have_selection ? selection : null};
   }
 
