@@ -1,7 +1,9 @@
-Version 0.9.1-devel
--------------------
+Version 0.9.1 [07 Aug 2015]
+---------------------------
 - Localize the dialog too.
 - Create plugin also for Firefox.
+- Show the formatted HTML when editing contentEditable control.
+- Various bug fixes.
 
 
 Version 0.9.0 [20 Jul 2015]

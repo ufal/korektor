@@ -8,5 +8,5 @@
   "icon": "data/korektor_48.png",
   "author": "Milan Straka <straka@ufal.mff.cuni.cz>",
   "license": "BSD-3-Clause",
-  "version": "0.9.1-devel"
+  "version": "0.9.1"
 }
