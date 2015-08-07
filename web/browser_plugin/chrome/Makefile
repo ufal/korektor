@@ -4,10 +4,14 @@ plugin: $(addprefix ../common/,AUTHORS CHANGES LICENSE README jquery-2.1.3.min.j
 	@mkdir -p build
 	cp -r $^ build/
 
+.PHONY: zip
+zip: plugin
+	cd build && zip -r ../korektor_spellchecker.zip *
+
 .PHONY: run
 run: plugin
 	chromium ../test.html
 
 .PHONY: clean
 clean:
-	rm -rf build
+	rm -rf build korektor_spellchecker.zip
