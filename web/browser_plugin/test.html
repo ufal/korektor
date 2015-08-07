@@ -13,5 +13,13 @@
     <h1>Contenteditable</h1>
     <div style="text-align: center"><div contenteditable
          style="text-align: left; display:inline-block; width:50%; height: 6em; border: 1px solid gray; white-space: pre-wrap;">Text <b>text</b>  <i>te</i>xt<br>Text <b>t<i>e</i>x</b>t<br/>&lt;&amp;&gt;&quot;</div></div>
+
+    <h1>IFrame</h1>
+    <div style="text-align: center"><iframe id="iframe" src="javascript:''" style="margin:auto; width: 70%; height: 40%; border: 1px solid black"></div>
+    </iframe>
+    <script><!--
+      document.getElementById("iframe").contentDocument.write('<h1>Ndpis</h1><p>Text <b>text</b>  <i>te</i>xt<br>Text <b>t<i>e</i>x</b>t<br/>&lt;&amp;&gt;&quot');
+      document.getElementById("iframe").contentDocument.body.setAttribute('contenteditable', 'true');
+    --></script>
   </body>
 </html>
