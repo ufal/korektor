@@ -17,42 +17,59 @@ function korektorGetText(control) {
       var end = control.selectionEnd;
       if (start < end) selection = {start:start, end:end};
     }
-    return {type:"value", control:control, text:text, selection:selection};
+    return {type:"value", control:control, text:text, whiteSpace:"pre-wrap", selection:selection};
   }
 
   // Contenteditable fields
-  if ("contentEditable" in control) {
+  if (control.contentEditable == "true") {
     var text = '';
     var range = control.ownerDocument.getSelection();
     range = range != null && !range.isCollapsed && range.rangeCount == 1 ? range.getRangeAt(0) : null;
     var selection = {};
 
     function getText(node) {
-      if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
-      var children = node.childNodes;
+      var children = node.childNodes, keep_newlines = jQuery(node).css("white-space").search(/^pre/i) != -1;
+      if (range && range.startContainer == node && range.startOffset == 0) selection.start = text.length;
+      if (range && range.endContainer == node && range.endOffset == 0) selection.end = text.length;
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
         if (child.nodeType == 3) {
           if (range && range.startContainer == child) selection.start = text.length + range.startOffset;
           if (range && range.endContainer == child) selection.end = text.length + range.endOffset;
-          text += child.textContent;
-        } else {
+          var child_text = child.textContent;
+          text += keep_newlines ? child_text : child_text.replace(/[\r\n]/g, ' ');
+        } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
+          var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+
           if (range && range.startContainer == node && range.startOffset == i) selection.start = text.length;
           if (range && range.endContainer == node && range.endOffset == i) selection.end = text.length;
           getText(child);
-          if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) text += "\n";
-          if (child.nodeType == 1 && child.nodeName.search(/^(p|div)$/i) == 0) text += "\n\n";
+          if (block_display || child.nodeName.search(/^br$/i) != -1) text += block_display ? "\n\n" : "\n";
           if (range && range.startContainer == node && range.startOffset == i+1) selection.start = text.length;
           if (range && range.endContainer == node && range.endOffset == i+1) selection.end = text.length;
         }
       }
     }
     getText(control);
-    return {type:"contentEditable", control:control, text:text, selection:("start" in selection && "end" in selection) ? selection : null};
+    var have_selection = range && "start" in selection && "end" in selection;
+    console.log(text);
+    return {type:"contentEditable", control:control, text:text, whiteSpace:jQuery(control).css("white-space"), selection:have_selection ? selection : null};
   }
 
   return null;
+}
+
+function korektorProcessResults(data, textArray) {
+  // Remove empty elements from textArray
+  for (var i = 0; i < textArray.length; i++)
+    if (textArray[i].length == 0)
+      textArray.splice(i--, 1);
+
+  // Remove identical replacements from textArray
+  for (var i = 0; i < textArray.length; i++)
+    if (textArray[i].length > 1 && textArray[i][1] == textArray[i][0])
+      textArray[i].splice(1, textArray[i].length - 1)
 }
 
 function korektorSetText(gettext, data, textArray) {
@@ -63,16 +80,11 @@ function korektorSetText(gettext, data, textArray) {
       return;
     }
 
-  // Remove identical replacements from textArray
-  for (var i in textArray)
-    if (textArray[i].length > 1 && textArray[i][1] == textArray[i][0])
-      textArray[i].splice(1, textArray[i].length - 1)
-
   // Input and textarea fields
   if (data.type == "value") {
     // Concatenate new text
     var text = '';
-    for (var i in textArray)
+    for (var i = 0; i < textArray.length; i++)
       text += textArray[i][textArray[i].length > 1 ? 1 : 0];
 
     // Replace the text in the control and update selection if any
@@ -82,7 +94,6 @@ function korektorSetText(gettext, data, textArray) {
       data.control.selectionEnd = data.selection.start + text.length;
     } else
       data.control.value = text;
-    data.control.focus();
   }
 
   // Contenteditable fields
@@ -90,9 +101,10 @@ function korektorSetText(gettext, data, textArray) {
     var index = 0;
     var range = data.selection ? document.createRange() : null;
     function setText(node) {
-      if ("contentDocument" in node) node = node.contentDocument.body;
       if (!("childNodes" in node)) return;
       var children = node.childNodes;
+      if (data.selection && data.selection.start == 0) range.setStart(node, 0);
+      if (data.selection && data.selection.end == 0) range.setEnd(node, 0);
       for (var i = 0; i < children.length; i++) {
         var child = children[i];
         if (child.nodeType == 3) {
@@ -107,9 +119,6 @@ function korektorSetText(gettext, data, textArray) {
             var len = prev.length < textArray[0][0].length ? prev.length : textArray[0][0].length;
             if (textArray[0].length == 1) {
               next += prev.substr(0, len);
-            } else if (textArray[0].length > 1 && textArray[0][0].length > len && textArray[0][1].substr(0, len) == prev.substr(0, len)) {
-              next += textArray[0][1].substr(0, len);
-              textArray[0][1] = textArray[0][1].substr(len);
             } else if (textArray[0].length > 1 && textArray[0][1]) {
               next += textArray[0][1];
               textArray[0][1] = "";
@@ -125,16 +134,20 @@ function korektorSetText(gettext, data, textArray) {
           index += prev_all.length;
           if (prev_prefix_len >= 0) range.setStart(child, prev_prefix_len);
           if (prev_suffix_index >= 0) range.setEnd(child, prev_suffix_index + next.length - prev_all.length);
-        } else {
+        } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
+          var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+
           if (data.selection && data.selection.start == index) range.setStart(node, i);
           if (data.selection && data.selection.end == index) range.setEnd(node, i);
-          if (child.nodeType == 1 && child.nodeName.search(/^br$/i) == 0) {
-            if (!data.selection || (data.selection.start < index + 1 && data.selection.end > index)) {
-              while (textArray.length && !textArray[0][0]) textArray.shift();
-              if (textArray.length && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
+          setText(child);
+          if (block_display || child.nodeName.search(/^br$/i) != -1)
+            for (var newlines = block_display ? 2 : 1; newlines > 0; newlines--) {
+              if (!data.selection || (data.selection.start < index + 1 && data.selection.end > index)) {
+                while (textArray.length && !textArray[0][0]) textArray.shift();
+                if (textArray.length && textArray[0][0][0] == "\n") textArray[0][0] = textArray[0][0].substr(1);
+              }
+              index++;
             }
-            index++;
-          } else setText(child);
           if (data.selection && data.selection.start == index) range.setStart(node, i+1);
           if (data.selection && data.selection.end == index) range.setEnd(node, i+1);
         }
@@ -142,23 +155,23 @@ function korektorSetText(gettext, data, textArray) {
     }
     setText(data.control);
     if (data.selection) {
-      var selection = window.getSelection();
+      var selection = data.control.ownerDocument.getSelection();
       if (selection) {
         selection.removeAllRanges();
         selection.addRange(range);
       }
     }
-    data.control.focus();
   }
+  data.control.focus();
 }
 
 function korektorReport(data, korektorArray, correctedArray) {
   var original = data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text;
   var korektor = '';
-  for (var i in korektorArray)
+  for (var i = 0; i < korektorArray.length; i++)
     korektor += korektorArray[i][korektorArray[i].length > 1 ? 1 : 0];
   var corrected = '';
-  for (var i in correctedArray)
+  for (var i = 0; i < correctedArray.length; i++)
     corrected += correctedArray[i][correctedArray[i].length > 1 ? 1 : 0];
 
   jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/log.php',
@@ -178,14 +191,19 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
   // Abort if no control was given
   if (!control) return;
 
+  // In Firefox, if control is in an iframe, window refers to its window.
+  // Therefore, explicitly use the document of the top window.
+  var topDocument = window.top.document;
+
   // Ignore if edit is in progress
-  if (jQuery('#korektorEditDialog').length > 0) return;
+  if (jQuery('#korektorEditDialog', topDocument).length > 0) return;
 
   // Try getting original text
   var data = korektorGetText(control);
   if (!data) return;
 
   // Run Korektor
+  data.topDocument = topDocument;
   jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
               {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
     success: function(json) {
@@ -194,16 +212,18 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
         return;
       }
       var textArray = [];
-      for (var i in json.result)
+      for (var i = 0; i < json.result.length; i++)
         if (json.result[i].length)
           textArray.push(json.result[i]);
 
+      // Process the results
+      korektorProcessResults(data, textArray);
+
       // Edit result or use it directly
-      if (edit) {
+      if (edit)
         korektorEdit(gettext, data, textArray);
-      } else {
+      else
         korektorSetText(gettext, data, textArray);
-      }
     },
     error: function(jqXHR, textStatus) {
       alert(gettext('korektor_service_error'));
@@ -211,17 +231,111 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
   });
 }
 
+
 function korektorEdit(gettext, data, textArray) {
+  var styleWithoutFont = 'z-index:123456789; color:#000; background-color:transparent;';
+  var style = styleWithoutFont + 'font-family:serif; font-size:16px;';
+
+  // Fill suggestions
+  function fillSuggestions(data, textArray) {
+    // Check that current value is still the same
+    var new_data = korektorGetText(data.control);
+    if (!new_data || new_data.text != data.text) {
+        alert(gettext('korektor_text_modified_error'));
+        return;
+      }
+
+    var container = document.createElement("div");
+    function suggestionSpan(index) {
+      var span = document.createElement("span");
+      span.setAttribute("style", styleWithoutFont+'color:#800;'+(textArray[index].length > 2 ? 'text-decoration: underline;' : ''));
+      span.setAttribute("id", "korektorEditSuggestion" + index);
+      return span;
+    }
+
+    if (data.type == "value") {
+      for (var i = 0; i < textArray.length; i++)
+        if (textArray[i].length == 1)
+          container.appendChild(document.createTextNode(textArray[i][0]));
+        else
+          container.appendChild(suggestionSpan(i)).appendChild(document.createTextNode(textArray[i][1]));
+    } else if (data.type == "contentEditable") {
+      // Copy textArray
+      var suggestions = [];
+      for (var i = 0; i < textArray.length; i++)
+        suggestions.push(textArray[i].length == 1 ? [textArray[i][0]] : [textArray[i][0], textArray[i][1]]);
+      // Process node and create suggestion spans
+      var index = 0;
+      function process(node, copy) {
+        if (!("childNodes" in node)) return;
+        var children = node.childNodes;
+        for (var i = 0; i < children.length; i++) {
+          var child = children[i];
+          if (child.nodeType == 3) {
+            var text_all = child.textContent, text = text_all, next = '';
+            if (data.selection && data.selection.end-index >= 0 && data.selection.end-index <= text_all.length) text = text.substr(0, data.selection.end - index);
+            if (data.selection && data.selection.start-index >= 0 && data.selection.start-index <= text_all.length) text = text.substr(data.selection.start - index);
+
+            if (!data.selection || (data.selection.start < index + text_all.length && data.selection.end > index)) while (text) {
+              while (suggestions.length && !suggestions[0][0]) suggestions.shift();
+              if (!suggestions) break;
+              var len = text.length < suggestions[0][0].length ? text.length : suggestions[0][0].length;
+              if (suggestions[0].length == 1) {
+                next += text.substr(0, len);
+              } else if (suggestions[0].length > 1 && suggestions[0][1]) {
+                if (next.length) copy.appendChild(document.createTextNode(next));
+                copy.appendChild(suggestionSpan(textArray.length - suggestions.length)).appendChild(document.createTextNode(suggestions[0][1]));
+                next = '';
+                suggestions[0][1] = '';
+              }
+              text = text.substr(len);
+              suggestions[0][0] = suggestions[0][0].substr(len);
+            }
+            if (next.length) {
+              copy.appendChild(document.createTextNode(next));
+              nonempty = true;
+            }
+
+            index += text_all.length;
+          } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
+            var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+
+            var start_index = index;
+            var childCopy = "cloneNode" in child ? child.cloneNode(false) : null;
+            process(child, childCopy ? childCopy : copy);
+            if (!data.selection || (data.selection.start < index && data.selection.end > start_index))
+              if (childCopy) copy.appendChild(childCopy);
+
+            if (block_display || child.nodeName.search(/^br$/i) != -1)
+              for (var newlines = block_display ? 2 : 1; newlines > 0; newlines--) {
+                if (!data.selection || (data.selection.start < index + 1 && data.selection.end > index)) {
+                  while (suggestions.length && !suggestions[0][0]) suggestions.shift();
+                  if (suggestions.length && suggestions[0][0][0] == "\n") suggestions[0][0] = suggestions[0][0].substr(1);
+                  nonempty = true;
+                }
+                index++;
+              }
+          }
+        }
+      }
+      process(data.control, container);
+    }
+    return container.innerHTML +
+      '<div style="'+style+'height: 5em;"></div>' +
+      '<div style="'+style+'position:absolute; background-color:#eee; padding:10px; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5); display:none" id="korektorEditSuggestions"></div>';
+  }
+  var html = fillSuggestions(data, textArray);
+  if (!html) return;
+
   // Add dialog
-  var style = 'z-index:123456789; color:#000; background-color:transparent; font-family:serif; font-size:16px;';
-  jQuery('body').append(
-    '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1">\n' +
+  jQuery('body', data.topDocument).append(
+    '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1" contenteditable="false">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
     ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
     '  <div style="'+style+'position:absolute; width:100%; top:0px; height:36px; line-height:36px; text-align:center">\n' +
     '   <span style="'+style+'font-weight:bold; font-size:20px">Korektor Spellchecker</span>\n' +
     '  </div>\n' +
-    '  <div style="'+style+'position:absolute; left:8px; right:8px; top:36px; bottom:44px; background-color:#fff; border-radius:4px; border:1px solid #999; overflow-x: hidden; overflow-y: visible; white-space: pre-wrap" id="korektorEditText">\n' +
+    '  <div style="'+style+'position:absolute; left:8px; right:8px; top:36px; bottom:44px; background-color:#fff; border-radius:4px; border:1px solid #999; overflow-x: hidden; overflow-y: visible" id="korektorEditText">\n' +
     '  </div>\n' +
     '  <div style="'+style+'position:absolute; width:100%; bottom:0px; height:44px;">\n' +
     '   <div style="'+style+'position:absolute; left:0px; width:50%; height:100%; line-height:44px; text-align:center">\n' +
@@ -240,34 +354,34 @@ function korektorEdit(gettext, data, textArray) {
     '   </div>\n' +
     '  </div>\n' +
     ' </div>\n' +
-    '</div>\n'
+    '</div>'
   );
-  jQuery('#korektorEditDialog').focus();
-
+  // Dialog controls
   function korektorEditDialogClose() {
-    jQuery('#korektorEditDialog').remove();
-    jQuery(document).off('keyup', korektorEditDialogHandleEscape);
+    jQuery('#korektorEditDialog', data.topDocument).remove();
+    jQuery(data.topDocument).off('keyup', korektorEditDialogHandleEscape);
+    data.control.focus();
   }
   function korektorEditDialogHandleEscape(event) {
-    var dialog = jQuery('#korektorEditDialog');
+    var dialog = jQuery('#korektorEditDialog', data.topDocument);
     if (dialog.length > 0 && event.keyCode == 27) korektorEditDialogClose();
-    else if (!dialog.length) jQuery(document).off('keyup', korektorEditDialogHandleEscape);
+    else if (!dialog.length) jQuery(data.topDocument).off('keyup', korektorEditDialogHandleEscape);
   }
-  jQuery(document).keyup(korektorEditDialogHandleEscape);
+  jQuery(data.topDocument).keyup(korektorEditDialogHandleEscape);
 
-  // Fill suggestions
-  var html = '';
-  var quoter = jQuery('<div/>');
-  for (var i in textArray)
-    if (textArray[i].length == 1) {
-      html += quoter.text(textArray[i][0]).html();
-    } else {
-      html += '<span style="'+style+'color:#800;' + (textArray[i].length > 2 ? 'text-decoration: underline;' : '') +
-              '" id="korektorEditSuggestion' + i + '">' + quoter.text(textArray[i][1]).html() + '</span>';
-    }
-  html += '<div style="'+style+'height: 5em;"></div>';
-  html += '<div style="'+style+'position:absolute; background-color:#eee; padding:10px; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5); display:none" id="korektorEditSuggestions"></div>';
-  jQuery('#korektorEditText').html(html);
+  jQuery('#korektorEditReportTextLabel', data.topDocument).click(function() {
+    var reportText = jQuery('#korektorEditReportText', data.topDocument);
+    reportText.prop('checked', !reportText.prop('checked'));
+  });
+  jQuery('#korektorEditOk', data.topDocument).click(function() {
+    var resultArray = [];
+    for (var i = 0; i < textArray.length; i++)
+      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i, data.topDocument).text()]);
+    if (jQuery('#korektorEditReportText', data.topDocument).prop('checked')) korektorReport(data, textArray, resultArray);
+    korektorSetText(gettext, data, resultArray);
+    korektorEditDialogClose();
+  });
+  jQuery('#korektorEditCancel', data.topDocument).click(korektorEditDialogClose);
 
   // Suggestion dialog handling
   var korektorEditSuggestionsHovering = false;
@@ -280,12 +394,12 @@ function korektorEdit(gettext, data, textArray) {
     if (korektorEditSuggestionsHideTimeout !== null) clearTimeout(korektorEditSuggestionsHideTimeout);
     korektorEditSuggestionsHideTimeout = setTimeout(function(){
       korektorEditSuggestionsHideTimeout = null;
-      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions').hide()
+      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions', data.topDocument).hide()
     }, 300);
   }
   function korektorEditSuggestionsUpdate(suggestion) {
     var suggestion_text = suggestion.text();
-    jQuery('#korektorEditSuggestions span').each(function() {
+    jQuery('#korektorEditSuggestions span', data.topDocument).each(function() {
       var span = jQuery(this);
       span.css('font-weight', span.text() == suggestion_text ? 'bold' : 'normal');
     });
@@ -295,23 +409,23 @@ function korektorEdit(gettext, data, textArray) {
 
     var html = '<b>'+gettext('korektor_dlg_suggestions_original')+'</b>';
     var quoter = jQuery('<div/>');
-    for (var i in textArray[id]) {
+    for (var i = 0; i < textArray[id].length; i++) {
       if (i == 1) html += '<br/><b>'+gettext('korektor_dlg_suggestions')+'</b>';
       html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.text(textArray[id][i]).html() + '</span>';
     }
     html += '<br/><b>'+gettext('korektor_dlg_suggestions_custom')+'</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace(/"/g, '&quot;') + '"/>';
 
-    jQuery('#korektorEditSuggestions')
+    jQuery('#korektorEditSuggestions', data.topDocument)
       .empty()
       .show()
       .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
       .html(html);
     korektorEditSuggestionsUpdate(suggestion);
-    jQuery('#korektorEditSuggestions span').click(function() {
+    jQuery('#korektorEditSuggestions span', data.topDocument).click(function() {
       suggestion.text(jQuery(this).text());
       korektorEditSuggestionsUpdate(suggestion);
     });
-    jQuery('#korektorEditSuggestions input').on('change input',function() {
+    jQuery('#korektorEditSuggestions input', data.topDocument).on('change input',function() {
       suggestion.text(jQuery(this).val());
       korektorEditSuggestionsUpdate(suggestion);
     });
@@ -320,20 +434,10 @@ function korektorEdit(gettext, data, textArray) {
     korektorEditSuggestionsMouseEnter();
     korektorEditSuggestionsFill(jQuery(this));
   }
-  jQuery('#korektorEditSuggestions').hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
-  jQuery('#korektorEditText span').hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave)
 
-  // Dialog controls
-  jQuery('#korektorEditReportTextLabel').click(function() {
-    jQuery('#korektorEditReportText').prop('checked', !jQuery('#korektorEditReportText').prop('checked'));
-  });
-  jQuery('#korektorEditOk').click(function() {
-    var resultArray = [];
-    for (var i in textArray)
-      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i).text()]);
-    if (jQuery('#korektorEditReportText').prop('checked')) korektorReport(data, textArray, resultArray);
-    korektorSetText(gettext, data, resultArray);
-    korektorEditDialogClose();
-  });
-  jQuery('#korektorEditCancel').click(korektorEditDialogClose);
+  // Fill the dialog with suggestions
+  try { jQuery('#korektorEditText', data.topDocument).css("white-space", data.whiteSpace).html(html); } catch (e) {}
+  jQuery('#korektorEditSuggestions', data.topDocument).hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
+  jQuery('#korektorEditText span', data.topDocument).hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave);
+  jQuery('#korektorEditDialog', data.topDocument).focus();
 }
