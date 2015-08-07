@@ -9,8 +9,8 @@ function gettext(locale) {
     "korektor_dlg_suggestions_original": "Původní",
     "korektor_dlg_suggestions_custom": "Vlastní"
   } : {
-    "korektor_service_error": "Cannot conact the korektor service.",
-    "korektor_text_modified_error": "The text of the editable fields has changed, not replacing it.",
+    "korektor_service_error": "Cannot contact the Korektor service.",
+    "korektor_text_modified_error": "The text of the editable field has changed, not replacing it.",
     "korektor_dlg_ok": "OK",
     "korektor_dlg_cancel": "Cancel",
     "korektor_dlg_report_text": "Report corrected text",
