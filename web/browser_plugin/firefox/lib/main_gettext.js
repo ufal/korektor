@@ -5,7 +5,7 @@ function gettext(locale) {
     "menu_korektor_generate_diacritics": "Doplnění diakritiky",
     "menu_korektor_strip_diacritics": "Odebrání diakritiky",
     "menu_korektor_with_edit": "...",
-    "menu_korektor_without_edit": "bez následné editace",
+    "menu_korektor_without_edit": " bez následné editace",
     "menu_korektor_plugin_about": "O rozšíření Korektor Spellchecker",
     "menu_korektor_about": "O Korektoru"
   } : {
