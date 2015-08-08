@@ -38,6 +38,10 @@ Note that the dialog with suggestions is injected directly into the original
 page, so there can be various problems on untested sites. However, the plugin
 seem to work fine on many sites.
 
+Although the sources of Korektor service and this plugin are available under
+BSD-3-Clause license, please respect the CC BY-SA-NC licence of the
+spellchecking models.
+
 The plugin is available for the following browers:
 - Chrome: available as Korektor Spellchecker plugin in the Google Web Store
 - Firefox: available as Korektor Spellchecker plugin in the AMO (Mozilla
