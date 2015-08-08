@@ -8,7 +8,7 @@ plugin: addon-sdk-1.17 $(addprefix ../common/,AUTHORS CHANGES LICENSE README jqu
 
 xpi: plugin
 	addon-sdk-1.17/bin/cfx --pkgdir=build xpi
-	unzip -c korektor_spellchecker.xpi install.rdf | sed '/<em:homepageURL>/r install.rdf.add' >build/install.rdf
+	unzip -q -c korektor_spellchecker.xpi install.rdf | sed '/<em:homepageURL>/r install.rdf.add' >build/install.rdf
 	zip korektor_spellchecker.xpi --junk-paths build/install.rdf $(addprefix build/,AUTHORS CHANGES LICENSE README)
 
 run: plugin
