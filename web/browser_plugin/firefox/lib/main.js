@@ -3,7 +3,7 @@ var tabs = require("sdk/tabs");
 
 var locale = require("sdk/l10n").get("locale");
 locale = locale == 'cs' ? 'cs' : 'en'; // Make sure we a) have reasonable default, b) sanitize locale value as we put it to content scripts
-var gettext = require("./main_gettext.js").gettext(locale); // We do not use sdk/l10n because we cannot specify default locale
+var gettext = require("./main_gettext").gettext(locale); // We do not use sdk/l10n because we cannot specify default locale
 
 var cm = require("sdk/context-menu");
 cm.Menu({
