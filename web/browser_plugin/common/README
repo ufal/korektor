@@ -1,8 +1,20 @@
 Korektor Spellchecker
 =====================
 
-Korektor Spellchecker extension allows using Korektor service on any editable
-input fields.
+Korektor Spellchecker extension allows using Korektor service
+(spellchecker and occassional grammarchecker developed at Institute
+of Formal and Applied Linguistics, Charles University in Prague)
+on any editable input fields of web pages.
+
+The extension allows either directly correcting the content, or showing
+a dialog with suggested corrections. Note that the dialog with
+suggestions is injected directly into the original page, so there
+can be various problems on untested sites. However, the extension seem
+to work fine on many sites.
+
+Although the sources of Korektor service and this extension are available
+under BSD-3-Clause license, please respect the CC BY-SA-NC licence
+of the spellchecking models.
 
 Korekor service is described at https://lindat.mff.cuni.cz/services/korektor/ ,
 the Korektor itself is available from http://ufal.mff.cuni.cz/korektor .
