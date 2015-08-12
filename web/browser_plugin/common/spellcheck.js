@@ -195,7 +195,7 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
   var topDocument = window.top.document;
 
   // Ignore if edit is in progress
-  if (jQuery('#korektorEditDialog', topDocument).length > 0) return;
+  if (jQuery('#korektorEditDialogFrame', topDocument).length > 0) return;
 
   // Try getting original text
   var data = korektorGetText(control);
@@ -327,7 +327,9 @@ function korektorEdit(gettext, data, textArray) {
   if (!html) return;
 
   // Add dialog
-  jQuery('body', data.topDocument).append(
+  jQuery('body', data.topDocument).append('<iframe src="javascript:\"\"" width="100%" height="100%" style="'+style+'display:block; position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialogFrame" tabindex="-1" contenteditable="false"></iframe>');
+  data.dlgDocument = jQuery('#korektorEditDialogFrame', data.topDocument).get(-1).contentDocument;
+  jQuery('body', data.dlgDocument).html(
     '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1" contenteditable="false">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
     ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
@@ -357,30 +359,28 @@ function korektorEdit(gettext, data, textArray) {
   );
   // Dialog controls
   function korektorEditDialogClose() {
-    jQuery('#korektorEditDialog', data.topDocument).remove();
-    jQuery(data.topDocument).off('keyup', korektorEditDialogHandleEscape);
+    jQuery('#korektorEditDialogFrame', data.topDocument).remove();
     data.control.focus();
   }
   function korektorEditDialogHandleEscape(event) {
-    var dialog = jQuery('#korektorEditDialog', data.topDocument);
+    var dialog = jQuery('#korektorEditDialogFrame', data.topDocument);
     if (dialog.length > 0 && event.keyCode == 27) korektorEditDialogClose();
-    else if (!dialog.length) jQuery(data.topDocument).off('keyup', korektorEditDialogHandleEscape);
   }
-  jQuery(data.topDocument).keyup(korektorEditDialogHandleEscape);
+  jQuery(data.dlgDocument).keyup(korektorEditDialogHandleEscape);
 
-  jQuery('#korektorEditReportTextLabel', data.topDocument).click(function() {
-    var reportText = jQuery('#korektorEditReportText', data.topDocument);
+  jQuery('#korektorEditReportTextLabel', data.dlgDocument).click(function() {
+    var reportText = jQuery('#korektorEditReportText', data.dlgDocument);
     reportText.prop('checked', !reportText.prop('checked'));
   });
-  jQuery('#korektorEditOk', data.topDocument).click(function() {
+  jQuery('#korektorEditOk', data.dlgDocument).click(function() {
     var resultArray = [];
     for (var i = 0; i < textArray.length; i++)
-      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i, data.topDocument).text()]);
-    if (jQuery('#korektorEditReportText', data.topDocument).prop('checked')) korektorReport(data, textArray, resultArray);
+      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i, data.dlgDocument).text()]);
+    if (jQuery('#korektorEditReportText', data.dlgDocument).prop('checked')) korektorReport(data, textArray, resultArray);
     korektorSetText(gettext, data, resultArray);
     korektorEditDialogClose();
   });
-  jQuery('#korektorEditCancel', data.topDocument).click(korektorEditDialogClose);
+  jQuery('#korektorEditCancel', data.dlgDocument).click(korektorEditDialogClose);
 
   // Suggestion dialog handling
   var korektorEditSuggestionsHovering = false;
@@ -393,12 +393,12 @@ function korektorEdit(gettext, data, textArray) {
     if (korektorEditSuggestionsHideTimeout !== null) clearTimeout(korektorEditSuggestionsHideTimeout);
     korektorEditSuggestionsHideTimeout = setTimeout(function(){
       korektorEditSuggestionsHideTimeout = null;
-      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions', data.topDocument).hide()
+      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions', data.dlgDocument).hide()
     }, 300);
   }
   function korektorEditSuggestionsUpdate(suggestion) {
     var suggestion_text = suggestion.text();
-    jQuery('#korektorEditSuggestions span', data.topDocument).each(function() {
+    jQuery('#korektorEditSuggestions span', data.dlgDocument).each(function() {
       var span = jQuery(this);
       span.css('font-weight', span.text() == suggestion_text ? 'bold' : 'normal');
     });
@@ -414,17 +414,17 @@ function korektorEdit(gettext, data, textArray) {
     }
     html += '<br/><b>'+gettext('korektor_dlg_suggestions_custom')+'</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace(/"/g, '&quot;') + '"/>';
 
-    jQuery('#korektorEditSuggestions', data.topDocument)
+    jQuery('#korektorEditSuggestions', data.dlgDocument)
       .empty()
       .show()
       .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
       .html(html);
     korektorEditSuggestionsUpdate(suggestion);
-    jQuery('#korektorEditSuggestions span', data.topDocument).click(function() {
+    jQuery('#korektorEditSuggestions span', data.dlgDocument).click(function() {
       suggestion.text(jQuery(this).text());
       korektorEditSuggestionsUpdate(suggestion);
     });
-    jQuery('#korektorEditSuggestions input', data.topDocument).on('change input',function() {
+    jQuery('#korektorEditSuggestions input', data.dlgDocument).on('change input',function() {
       suggestion.text(jQuery(this).val());
       korektorEditSuggestionsUpdate(suggestion);
     });
@@ -435,8 +435,8 @@ function korektorEdit(gettext, data, textArray) {
   }
 
   // Fill the dialog with suggestions
-  try { jQuery('#korektorEditText', data.topDocument).css("white-space", data.whiteSpace).html(html); } catch (e) {}
-  jQuery('#korektorEditSuggestions', data.topDocument).hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
-  jQuery('#korektorEditText span', data.topDocument).hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave);
-  jQuery('#korektorEditDialog', data.topDocument).focus();
+  try { jQuery('#korektorEditText', data.dlgDocument).css("white-space", data.whiteSpace).html(html); } catch (e) {}
+  jQuery('#korektorEditSuggestions', data.dlgDocument).hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
+  jQuery('#korektorEditText span', data.dlgDocument).hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave);
+  jQuery('#korektorEditDialog', data.dlgDocument).focus();
 }
