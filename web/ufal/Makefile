@@ -1,7 +1,10 @@
 TARGETS=korektor.html online.html install.html user.html model_creation.html
 all: $(TARGETS)
 
-../../documentation/web%html:
+.PHONY: force
+force:
+
+../../documentation/web%html: force
 	$(MAKE) -C $(@D) $(@F)
 
 korektor.html: ../../documentation/web.html
