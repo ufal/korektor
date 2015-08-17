@@ -137,6 +137,8 @@ unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)
 };
 
 bool KorektorService::handle(ufal::microrestd::rest_request& req) {
+  if (req.method != "GET" && req.method != "HEAD" && req.method != "POST") return req.respond_method_not_allowed("GET, HEAD, POST");
+
   auto handler_it = handlers.find(req.url);
   return handler_it == handlers.end() ? req.respond_not_found() : (this->*handler_it->second)(req);
 }
