@@ -131,9 +131,14 @@ const KorektorService::SpellcheckerModel* KorektorService::LoadSpellchecker(cons
 
 // Handle a request
 unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)> KorektorService::handlers = {
+  // REST service
   {"/models", &KorektorService::HandleModels},
   {"/correct", &KorektorService::HandleCorrect},
   {"/suggestions", &KorektorService::HandleSuggestions},
+  // Weblicht service
+  {"/weblicht/spellcheck", &KorektorService::WeblichtSpellcheck},
+  {"/weblicht/generate_diacritics", &KorektorService::WeblichtGenerateDiacritics},
+  {"/weblicht/strip_diacritics", &KorektorService::WeblichtStripDiacritics},
 };
 
 bool KorektorService::handle(ufal::microrestd::rest_request& req) {
@@ -293,6 +298,19 @@ unsigned KorektorService::GetSuggestions(ufal::microrestd::rest_request& req, st
   if (suggestions <= 0) return error.assign("Specified number of suggestions '").append(data_it->second).append("' is not a positive integer.\n"), 0;
 
   return suggestions;
+}
+
+// Weblicht service
+bool KorektorService::WeblichtSpellcheck(ufal::microrestd::rest_request& req) {
+  return req.respond_error("Not implemented yet");
+}
+
+bool KorektorService::WeblichtGenerateDiacritics(ufal::microrestd::rest_request& req) {
+  return req.respond_error("Not implemented yet");
+}
+
+bool KorektorService::WeblichtStripDiacritics(ufal::microrestd::rest_request& req) {
+  return req.respond_error("Not implemented yet");
 }
 
 } // namespace korektor

@@ -77,6 +77,11 @@ class KorektorService : public ufal::microrestd::rest_service {
   unsigned GetSuggestions(ufal::microrestd::rest_request& req, string& error);
 
   ufal::microrestd::json_builder json_models;
+
+  // Weblicht service
+  bool WeblichtSpellcheck(ufal::microrestd::rest_request& req);
+  bool WeblichtGenerateDiacritics(ufal::microrestd::rest_request& req);
+  bool WeblichtStripDiacritics(ufal::microrestd::rest_request& req);
 };
 
 } // namespace korektor
