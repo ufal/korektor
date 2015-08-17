@@ -135,7 +135,7 @@ itself.
 Requirements
 ------------
 
-- G++ 4.7 or newer, clang 3.2 or newer, Visual C++ 2013 or newer
+- G++ 4.7 or newer, clang 3.2 or newer, Visual C++ 2015 or newer
 - make: on Windows, you can use mingw32-make
   (http://sourceforge.net/projects/mingw/files/MinGW/Extension/make/make-3.82-mingw32/)
 
@@ -168,7 +168,7 @@ Platform can be selected using one of the following options:
   BITS=32+64 enables multiarch build
 - PLATFORM=win, PLATFORM=win-gcc: gcc compiler on Windows (TDM-GCC is well
   tested), default on Windows
-- PLATFORM=win-vs: Visual C++ 2013 compiler on Windows, must be selected
+- PLATFORM=win-vs: Visual C++ 2015 compiler on Windows, must be selected
   manually; note that the cl.exe compiler must be already present in PATH and
   corresponding BITS=32 or BITS=64 must be specified
 
