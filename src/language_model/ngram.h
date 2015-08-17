@@ -58,7 +58,7 @@ class NGram {
 /// @brief Data structure for comparing N-grams
 struct NGram_compare: std::less<NGram>
 {
-  bool operator()(const NGram &x, const NGram &y)
+  bool operator()(const NGram &x, const NGram &y) const
   {
     unsigned min_order = x.order < y.order ? x.order : y.order;
 
