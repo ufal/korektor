@@ -13,6 +13,7 @@
 
 #include "common.h"
 #include "microrestd/microrestd.h"
+#include "microrestd/pugixml.h"
 #include "spellchecker/spellchecker_correction.h"
 #include "token/input_format.h"
 
@@ -79,9 +80,10 @@ class KorektorService : public ufal::microrestd::rest_service {
   ufal::microrestd::json_builder json_models;
 
   // Weblicht service
-  bool WeblichtSpellcheck(ufal::microrestd::rest_request& req);
-  bool WeblichtGenerateDiacritics(ufal::microrestd::rest_request& req);
-  bool WeblichtStripDiacritics(ufal::microrestd::rest_request& req);
+  bool HandleWeblicht(ufal::microrestd::rest_request& req);
+
+  static const char* tcf_mime;
+  bool ParseTCF(const ufal::microrestd::rest_request& req, string& language, string& text, string& error);
 };
 
 } // namespace korektor

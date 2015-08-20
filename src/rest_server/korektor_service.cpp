@@ -136,16 +136,14 @@ unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)
   {"/correct", &KorektorService::HandleCorrect},
   {"/suggestions", &KorektorService::HandleSuggestions},
   // Weblicht service
-  {"/weblicht/spellcheck", &KorektorService::WeblichtSpellcheck},
-  {"/weblicht/generate_diacritics", &KorektorService::WeblichtGenerateDiacritics},
-  {"/weblicht/strip_diacritics", &KorektorService::WeblichtStripDiacritics},
+  {"/weblicht", &KorektorService::HandleWeblicht},
 };
 
 bool KorektorService::handle(ufal::microrestd::rest_request& req) {
   if (req.method != "GET" && req.method != "HEAD" && req.method != "POST") return req.respond_method_not_allowed("GET, HEAD, POST");
 
-  auto handler_it = handlers.find(req.url);
-  return handler_it == handlers.end() ? req.respond_not_found() : (this->*handler_it->second)(req);
+  auto handler = handlers.find(req.url);
+  return handler == handlers.end() ? req.respond_not_found() : (this->*handler->second)(req);
 }
 
 // REST service
@@ -301,16 +299,30 @@ unsigned KorektorService::GetSuggestions(ufal::microrestd::rest_request& req, st
 }
 
 // Weblicht service
-bool KorektorService::WeblichtSpellcheck(ufal::microrestd::rest_request& req) {
-  return req.respond_error("Not implemented yet");
+bool KorektorService::HandleWeblicht(ufal::microrestd::rest_request& req) {
+  // TODO
+  return req.respond_error("Not implemented");
 }
 
-bool KorektorService::WeblichtGenerateDiacritics(ufal::microrestd::rest_request& req) {
-  return req.respond_error("Not implemented yet");
-}
+const char* KorektorService::tcf_mime = "text/tcf+xml";
 
-bool KorektorService::WeblichtStripDiacritics(ufal::microrestd::rest_request& req) {
-  return req.respond_error("Not implemented yet");
+bool KorektorService::ParseTCF(const ufal::microrestd::rest_request& req, string& /*language*/, string& text, string& error) {
+  using namespace ufal::microrestd::pugi;
+
+  // Ignore the Content-Type check, instead we just try to parse the body
+  // and find the requirede <text> element.
+//  if (req.content_type.find(tcf_mime) == string::npos)
+//    return error.assign("Unsupported content type'").append(req.content_type).append("', expected text/tcf+xml.\n"), false;
+
+  xml_document tcf;
+  auto result = tcf.load_buffer_inplace((void*) req.body.c_str(), req.body.size());
+  if (result.status != status_ok) return error.assign("Cannot parse the TCF: ").append(result.description()).append(".\n"), false;
+
+  auto tcf_text_element = tcf.child("D-Spin").child("TextCorpus").child("text");
+  if (tcf_text_element.empty()) return error.assign("Cannot find <text> element in the given TCF.\n"), false;
+
+  text.assign(tcf_text_element.text().get());
+  return true;
 }
 
 } // namespace korektor
