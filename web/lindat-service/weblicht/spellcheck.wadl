@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<application xmlns="http://wadl.dev.java.net/2009/02" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <resources base="https://lindat.mff.cuni.cz/services/korektor/api/weblicht/">
+    <resource path="spellcheck">
+      <method name="POST" id="spellcheck">
+        <request>
+          <param name="model" type="xsd:string" style="query" required="true"/>
+          <representation mediaType="text/tcf+xml"/>
+        </request>
+        <response status="200">
+          <representation mediaType="text/tcf+xml"/>
+        </response>
+      </method>
+    </resource>
+  </resources>
+</application>
