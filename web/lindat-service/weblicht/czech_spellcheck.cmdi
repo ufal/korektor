@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cmd:CMD xmlns:cmd="http://www.clarin.eu/cmd/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" CMDVersion="1.1" xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1320657629644/xsd">
   <cmd:Header>
-    <cmd:MdSelfLink>PID Korektor: Spellcheck</cmd:MdSelfLink>
+    <cmd:MdSelfLink>PID Korektor: Czech Spellcheck</cmd:MdSelfLink>
     <cmd:MdProfile>clarin.eu:cr1:p_1320657629644</cmd:MdProfile>
   </cmd:Header>
   <cmd:Resources>
@@ -17,9 +17,9 @@
   <cmd:Components>
     <cmd:WebLichtWebService>
       <cmd:Service>
-        <cmd:Name>Korektor: Spellcheck</cmd:Name>
-        <cmd:Description>Perform spellchecking and automatic correction using Korektor service https://lindat.mff.cuni.cz/services/korektor .</cmd:Description>
-        <cmd:Description type="short">Perform spellchecking and automatic correction using Korektor service https://lindat.mff.cuni.cz/services/korektor .</cmd:Description>
+        <cmd:Name>Korektor: Czech Spellcheck</cmd:Name>
+        <cmd:Description>Perform Czech spellchecking and automatic correction using Korektor service https://lindat.mff.cuni.cz/services/korektor .</cmd:Description>
+        <cmd:Description type="short">Perform Czech spellchecking and automatic correction using Korektor service https://lindat.mff.cuni.cz/services/korektor .</cmd:Description>
         <cmd:ApplicationType>webService</cmd:ApplicationType>
         <cmd:TypeOfWebservice>RESTfull</cmd:TypeOfWebservice>
         <cmd:url>https://lindat.mff.cuni.cz/services/korektor/api/weblicht/spellcheck</cmd:url>
@@ -82,17 +82,25 @@
                     <cmd:AllowManualSelectionFallback>false</cmd:AllowManualSelectionFallback>
                   </cmd:Parameter>
                   <cmd:Parameter>
-                    <cmd:Name>model</cmd:Name>
+                    <cmd:Name>korektor_model</cmd:Name>
                     <cmd:WebServiceArgValue>model</cmd:WebServiceArgValue>
                     <cmd:AllowManualSelectionFallback>true</cmd:AllowManualSelectionFallback>
                     <cmd:Values>
                       <cmd:ParameterValue>
-                        <cmd:Value>default</cmd:Value>
-                        <cmd:WebServiceArgValue>default</cmd:WebServiceArgValue>
+                        <cmd:Value>spellchecker-newest</cmd:Value>
+                        <cmd:WebServiceArgValue>czech-spellchecker-130202</cmd:WebServiceArgValue>
                       </cmd:ParameterValue>
                       <cmd:ParameterValue>
-                        <cmd:Value>czech-spellchecker_130202</cmd:Value>
-                        <cmd:WebServiceArgValue>czech-spellchecker_130202</cmd:WebServiceArgValue>
+                        <cmd:Value>diacritics_generator-newest</cmd:Value>
+                        <cmd:WebServiceArgValue>czech-diacritics_generator-130202</cmd:WebServiceArgValue>
+                      </cmd:ParameterValue>
+                      <cmd:ParameterValue>
+                        <cmd:Value>spellchecker-130202</cmd:Value>
+                        <cmd:WebServiceArgValue>czech-spellchecker-130202</cmd:WebServiceArgValue>
+                      </cmd:ParameterValue>
+                      <cmd:ParameterValue>
+                        <cmd:Value>diacritics_generator-130202</cmd:Value>
+                        <cmd:WebServiceArgValue>czech-diacritics_generator-130202</cmd:WebServiceArgValue>
                       </cmd:ParameterValue>
                     </cmd:Values>
                   </cmd:Parameter>
