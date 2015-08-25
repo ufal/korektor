@@ -306,7 +306,7 @@ bool KorektorService::HandleWeblicht(ufal::microrestd::rest_request& req) {
 
 const char* KorektorService::tcf_mime = "text/tcf+xml";
 
-bool KorektorService::ParseTCF(const ufal::microrestd::rest_request& req, string& /*language*/, string& text, string& error) {
+bool KorektorService::ParseTCF(const ufal::microrestd::rest_request& req, string& language, string& text, string& error) {
   using namespace ufal::microrestd::pugi;
 
   // Allow either empty Content-Type, ore one containing text/tcf+xml.
@@ -320,8 +320,13 @@ bool KorektorService::ParseTCF(const ufal::microrestd::rest_request& req, string
   // Find required <text> element.
   auto tcf_text_element = tcf.child("D-Spin").child("TextCorpus").child("text");
   if (tcf_text_element.empty()) return error.assign("Cannot find <text> element in the given TCF.\n"), false;
-
   text.assign(tcf_text_element.text().get());
+
+  // Find required lang attribute.
+  auto lang_attribute = tcf.child("D-Spin").child("TextCorpus").attribute("lang");
+  if (lang_attribute.empty()) return error.assign("Cannot find 'lang' attribute of the <TextCorpus> element.\n"), false;
+  language.assign(lang_attribute.value());
+
   return true;
 }
 
