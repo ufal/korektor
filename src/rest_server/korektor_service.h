@@ -22,11 +22,12 @@ namespace korektor {
 
 struct SpellcheckerDescription {
   string id;
+  string language;
   string file;
   string acknowledgements;
 
-  SpellcheckerDescription(const string& id, const string& file, const string& acknowledgements) :
-    id(id), file(file), acknowledgements(acknowledgements) {}
+  SpellcheckerDescription(const string& id, const string& language, const string& file, const string& acknowledgements) :
+    id(id), language(language), file(file), acknowledgements(acknowledgements) {}
 };
 
 class KorektorService : public ufal::microrestd::rest_service {
@@ -55,11 +56,12 @@ class KorektorService : public ufal::microrestd::rest_service {
 
   struct SpellcheckerModel {
     string id;
+    string language;
     string acknowledgements;
     unique_ptr<SpellcheckerProvider> spellchecker;
 
-    SpellcheckerModel(string id, string acknowledgements, SpellcheckerProvider* spellchecker) :
-      id(id), acknowledgements(acknowledgements), spellchecker(spellchecker) {}
+    SpellcheckerModel(const string& id, const string& language, const string& acknowledgements, SpellcheckerProvider* spellchecker) :
+      id(id), language(language), acknowledgements(acknowledgements), spellchecker(spellchecker) {}
   };
   list<SpellcheckerModel> spellcheckers;
   unordered_map<string, const SpellcheckerModel*> spellcheckers_map;

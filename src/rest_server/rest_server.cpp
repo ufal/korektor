@@ -63,8 +63,8 @@ int main(int argc, char* argv[]) {
                        {"version", Options::Value::none},
                        {"help", Options::Value::none}}, argc, argv, options) ||
       options.count("help") ||
-      (!options.count("version") && (argc < 2 || (argc % 3) != 2)))
-    runtime_failure("Usage: " << argv[0] << " [options] port (model_name configuration_file acknowledgements)*\n"
+      (!options.count("version") && (argc < 2 || (argc % 4) != 2)))
+    runtime_failure("Usage: " << argv[0] << " [options] port (model_name language configuration_file acknowledgements)*\n"
                     "Options: --daemon\n"
                     "         --version\n"
                     "         --help");
@@ -85,8 +85,8 @@ int main(int argc, char* argv[]) {
 
   // Initialize the service
   vector<SpellcheckerDescription> spellcheckers;
-  for (int i = 2; i < argc; i += 3)
-    spellcheckers.emplace_back(argv[i], argv[i + 1], argv[i + 2]);
+  for (int i = 2; i < argc; i += 4)
+    spellcheckers.emplace_back(argv[i], argv[i + 1], argv[i + 2], argv[i + 3]);
 
   // Initialize the service
   if (!service.Init(spellcheckers))

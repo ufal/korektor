@@ -86,8 +86,8 @@ bool KorektorService::Init(const vector<SpellcheckerDescription>& spellchecker_d
   spellcheckers.clear();
   spellcheckers_map.clear();
   for (auto& spellchecker_description : spellchecker_descriptions)
-    spellcheckers.emplace_back(spellchecker_description.id, spellchecker_description.acknowledgements, new KorektorProvider(spellchecker_description.file));
-  spellcheckers.emplace_back(StripDiacriticsProvider::model_name, string(), new StripDiacriticsProvider());
+    spellcheckers.emplace_back(spellchecker_description.id, spellchecker_description.language, spellchecker_description.acknowledgements, new KorektorProvider(spellchecker_description.file));
+  spellcheckers.emplace_back(StripDiacriticsProvider::model_name, string(), string(), new StripDiacriticsProvider());
 
   // Fill spellcheckers_map with model name and aliases
   for (auto& spellchecker : spellcheckers) {
