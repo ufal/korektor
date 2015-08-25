@@ -136,7 +136,7 @@ unordered_map<string, bool (KorektorService::*)(ufal::microrestd::rest_request&)
   {"/correct", &KorektorService::HandleCorrect},
   {"/suggestions", &KorektorService::HandleSuggestions},
   // Weblicht service
-  {"/weblicht", &KorektorService::HandleWeblicht},
+  {"/weblicht/spellcheck", &KorektorService::HandleWeblicht},
 };
 
 bool KorektorService::handle(ufal::microrestd::rest_request& req) {
