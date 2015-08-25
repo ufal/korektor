@@ -300,6 +300,21 @@ unsigned KorektorService::GetSuggestions(ufal::microrestd::rest_request& req, st
 
 // Weblicht service
 bool KorektorService::HandleWeblicht(ufal::microrestd::rest_request& req) {
+  string language, text, error;
+
+  // Parse the input TCF
+  if (!ParseTCF(req, language, text, error)) return req.respond_error(error);
+
+  // Get the required model
+  auto id = GetModelId(req);
+  if (id.empty()) return req.respond_error("The required parameter 'model' was not provided.\n");
+  auto model = LoadSpellchecker(id, error);
+  if (!model) return req.respond_error(error);
+
+  // Check that the languages are consistent
+  if (!language.empty() && !model->language.empty() && language != model->language)
+    return error.assign("The language of the TCF '").append(language).append("' is not consistent with the model language '").append(model->language).append("'.\n"), req.respond_error(error);
+
   // TODO
   return req.respond_error("Not implemented");
 }
