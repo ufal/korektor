@@ -309,15 +309,15 @@ const char* KorektorService::tcf_mime = "text/tcf+xml";
 bool KorektorService::ParseTCF(const ufal::microrestd::rest_request& req, string& /*language*/, string& text, string& error) {
   using namespace ufal::microrestd::pugi;
 
-  // Ignore the Content-Type check, instead we just try to parse the body
-  // and find the requirede <text> element.
-//  if (req.content_type.find(tcf_mime) == string::npos)
-//    return error.assign("Unsupported content type'").append(req.content_type).append("', expected text/tcf+xml.\n"), false;
+  // Allow either empty Content-Type, ore one containing text/tcf+xml.
+  if (!req.content_type.empty() && req.content_type.find(tcf_mime) == string::npos)
+    return error.assign("Unsupported content type'").append(req.content_type).append("', expected text/tcf+xml.\n"), false;
 
   xml_document tcf;
   auto result = tcf.load_buffer_inplace((void*) req.body.c_str(), req.body.size());
   if (result.status != status_ok) return error.assign("Cannot parse the TCF: ").append(result.description()).append(".\n"), false;
 
+  // Find required <text> element.
   auto tcf_text_element = tcf.child("D-Spin").child("TextCorpus").child("text");
   if (tcf_text_element.empty()) return error.assign("Cannot find <text> element in the given TCF.\n"), false;
 
