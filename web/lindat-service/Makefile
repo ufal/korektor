@@ -1,4 +1,5 @@
 TARGETS = .htaccess about.html api-reference.php demo.php footer.php header.php icon.png info.php korektor.css log.php
+TARGETS += weblicht/czech_spellcheck.cmdi weblicht/spellcheck.wadl weblicht/strip_diacritics.cmdi
 
 .PHONY: all
 all: $(TARGETS)
