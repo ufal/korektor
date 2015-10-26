@@ -4,22 +4,26 @@
     <title>Korektor</title>
     <meta charset="utf-8">
 
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
     <link rel="stylesheet" href="branding/public/css/lindat.css" type="text/css" />
     <link rel="stylesheet" href="korektor.css" type="text/css" />
 
-    <script src="//code.jquery.com/jquery-1.11.0.min.js" type="text/javascript"></script>
-    <script src="branding/public/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    <script src="https://google-code-prettify.googlecode.com/svn/loader/run_prettify.js" type="text/javascript"></script>
+    <script src="//code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+    <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js" type="text/javascript"></script>
   </head>
 
   <body id="lindat-services">
     <?php require('branding/header.htm')?>
-    <div class="container-fluid">
+    <div class="lindat-common">
       <div class="container">
         <!-- breadcrumb -->
         <ul class="breadcrumb">
-          <li><a href="http://lindat.mff.cuni.cz/">LINDAT/CLARIN</a></li>
-          <li><a href="http://lindat.mff.cuni.cz/services/">Services</a></li>
+          <li><a href="//lindat.mff.cuni.cz/">LINDAT/CLARIN</a></li>
+          <li><a href="//lindat.mff.cuni.cz/services/">Services</a></li>
           <li class="active">Korektor</li>
         </ul>
 

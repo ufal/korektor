@@ -1,3 +1,12 @@
+.lindat-common .container {
+  background-color: #FFF;
+  border-left: 1px solid #C0C0C0;
+  border-right: 1px solid #C0C0C0;
+  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #C0C0C0;
+  -moz-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #C0C0C0;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #C0C0C0;
+}
+
 /* nav-tabs menu center fix*/
 .nav-tabs > li {
     float:none;
@@ -7,17 +16,6 @@
     vertical-align: top;
 }
 
-/* fix weird override in ufal-theme.css */
-.form-horizontal .control-label {
-  padding-top: 7px;
-  display: inline-block;
-}
-@media (min-width: 768px) {
-  .form-horizontal .control-label {
-    float: left;
-    text-align: right;
-  }
-}
 /* fix wrong margin of breadcrumbs */
 ul.breadcrumb {
   margin-left: -15px;
