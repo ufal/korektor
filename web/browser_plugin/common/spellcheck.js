@@ -188,7 +188,10 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
   }
 
   // Abort if no control was given
-  if (!control) return;
+  if (!control) {
+    alert(gettext('korektor_editable_control_not_found'));
+    return;
+  }
 
   // In Firefox, if control is in an iframe, window refers to its window.
   // Therefore, explicitly use the document of the top window.
@@ -199,7 +202,10 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
 
   // Try getting original text
   var data = korektorGetText(control);
-  if (!data) return;
+  if (!data) {
+    alert(gettext('korektor_editable_control_not_found'));
+    return;
+  }
 
   // Run Korektor
   data.topDocument = topDocument;

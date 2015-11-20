@@ -2,6 +2,7 @@ Version 0.9.3 [20 Nov 2015]
 ---------------------------
 - Append the dialog after body so that pages with frameset element
   work too.
+- Add warning when the editable input could not be found.
 
 
 Version 0.9.2 [12 Aug 2015]

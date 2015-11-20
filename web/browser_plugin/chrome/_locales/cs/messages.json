@@ -10,6 +10,7 @@
   "menu_korektor_plugin_about": { "message": "O rozšíření Korektor Spellchecker" },
   "menu_korektor_about": { "message": "O Korektoru" },
   "korektor_service_error": { "message": "Nelze kontaktovat službu Korektor." },
+  "korektor_editable_control_not_found": { "message": "Nelze najít editační prvek, který by bylo možné použít." },
   "korektor_text_modified_error": { "message": "Obsah editačního prvku byl změněn, nahrazení nebude provedeno." },
   "korektor_dlg_ok": { "message": "OK" },
   "korektor_dlg_cancel": { "message": "Storno" },

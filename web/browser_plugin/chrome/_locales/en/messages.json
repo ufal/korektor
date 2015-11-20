@@ -10,6 +10,7 @@
   "menu_korektor_plugin_about": { "message": "About Korektor Spellchecker extension" },
   "menu_korektor_about": { "message": "About Korektor" },
   "korektor_service_error": { "message": "Cannot contact the Korektor service." },
+  "korektor_editable_control_not_found": { "message": "Cannot find editable control to use." },
   "korektor_text_modified_error": { "message": "The text of the editable field has changed, not replacing it." },
   "korektor_dlg_ok": { "message": "OK" },
   "korektor_dlg_cancel": { "message": "Cancel" },
