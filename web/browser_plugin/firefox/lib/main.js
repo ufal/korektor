@@ -11,7 +11,7 @@ cm.Menu({
   image: data.url("korektor_48.png"),
   context: cm.SelectorContext("input, textarea, [contenteditable='true'], [contenteditable='']"),
   contentScriptFile: [data.url("jquery-2.1.3.min.js"), data.url("spellcheck.js"), data.url("spellcheck_gettext.js")],
-  contentScript: 'self.on("click", function(node, data) { korektorPerformSpellcheck(gettext("'+locale+'"), node, data.replace(/-editing$/, ""), data.search(/-editing$/) != -1); });',
+  contentScript: 'self.on("click", function(node, data) { if (data) korektorPerformSpellcheck(gettext("'+locale+'"), node, data.replace(/-editing$/, ""), data.search(/-editing$/) != -1); });',
   items: [
     cm.Item({label: gettext("menu_korektor_spellcheck")+gettext("menu_korektor_with_edit"), data: "czech-spellchecker-editing"}),
     cm.Item({label: gettext("menu_korektor_generate_diacritics")+gettext("menu_korektor_with_edit"), data: "czech-diacritics_generator-editing"}),
