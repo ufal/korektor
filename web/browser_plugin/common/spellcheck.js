@@ -327,9 +327,9 @@ function korektorEdit(gettext, data, textArray) {
   if (!html) return;
 
   // Add dialog
-  jQuery('body', data.topDocument).append('<iframe src="javascript:\"\"" width="100%" height="100%" style="'+style+'display:block; position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialogFrame" tabindex="-1" contenteditable="false"></iframe>');
+  jQuery(data.topDocument.body).after('<iframe src="javascript:\"\"" width="100%" height="100%" style="'+style+'display:block; position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialogFrame" tabindex="-1" contenteditable="false"></iframe>');
   data.dlgDocument = jQuery('#korektorEditDialogFrame', data.topDocument).get(-1).contentDocument;
-  jQuery('body', data.dlgDocument).html(
+  jQuery(data.dlgDocument.body).html(
     '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1" contenteditable="false">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
     ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
