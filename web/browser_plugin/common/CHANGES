@@ -1,4 +1,4 @@
-Version 0.9.3 [20 Nov 2015]
+Version 1.0.0 [20 Nov 2015]
 ---------------------------
 - Append the dialog after body so that pages with frameset element
   work too.
