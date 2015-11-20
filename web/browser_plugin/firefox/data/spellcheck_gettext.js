@@ -5,7 +5,7 @@ function gettext(locale) {
     "korektor_text_modified_error": "Obsah editačního prvku byl změněn, nahrazení nebude provedeno.",
     "korektor_dlg_ok": "OK",
     "korektor_dlg_cancel": "Storno",
-    "korektor_dlg_report_text": "Odeslat provedené opravy",
+    "korektor_dlg_report_text": "Odeslat nám provedené změny",
     "korektor_dlg_suggestions": "Návrhy",
     "korektor_dlg_suggestions_original": "Původní",
     "korektor_dlg_suggestions_custom": "Vlastní"
@@ -15,7 +15,7 @@ function gettext(locale) {
     "korektor_text_modified_error": "The text of the editable field has changed, not replacing it.",
     "korektor_dlg_ok": "OK",
     "korektor_dlg_cancel": "Cancel",
-    "korektor_dlg_report_text": "Report corrected text",
+    "korektor_dlg_report_text": "Send us performed changes",
     "korektor_dlg_suggestions": "Suggestions",
     "korektor_dlg_suggestions_original": "Original",
     "korektor_dlg_suggestions_custom": "Custom"
