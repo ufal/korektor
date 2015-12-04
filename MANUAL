@@ -425,10 +425,19 @@ output formats are:
 Running the REST Server
 -----------------------
 
-The REST server can be run using the korektor_server binary. It uses microrestd
-(github.com/ufal/microrestd) as a REST server.
+The REST server can be run using the korektor_server binary. The binary uses
+MicroRestD (http://github.com/ufal/microrestd) as a REST server implementation
+and provides Korektor REST API
+(http://lindat.mff.cuni.cz/services/korektor/api-reference.php).
 
-TODO
+The full command syntax of korektor_server is
+  korektor_server [options] port (model_name weblicht_language model_file acknowledgements)*
+  Options: --daemon
+
+The korektor_server can run either in foreground or in background (when --daemon
+is used). The specified model files are loaded during start and kept in memory
+all the time. This behaviour might change in future to load the models on
+demand.
 
 
 Model Creation
