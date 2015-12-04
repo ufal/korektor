@@ -7,7 +7,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-BUILTEM_VERSION := 1.1.0
+BUILTEM_VERSION := 1.1.2
 
 ###########
 # PATFORM #
@@ -126,8 +126,8 @@ endif
 #####################
 
 # executable and library namings
-builtem_mangle = $(subst /,-,$(subst -,--,$(subst //,/,$(1))))
-builtem_demangle = $(subst //,-,$(subst -,/,$(1)))
+builtem_mangle = $(subst /,-,$(subst /_,-__,$(subst /-,-_-,$(subst //,-_-_,$(subst -,--,$(1))))))
+builtem_demangle = $(subst /_,/,$(subst //,-,$(subst -,/,$(1))))
 builtem_obj = .build/$(call builtem_mangle,$(1)).$(PLATFORM)-$(MODE)$(BITS)
 ifneq ($(filter linux-%,$(PLATFORM)),)
   exe = $(1)
