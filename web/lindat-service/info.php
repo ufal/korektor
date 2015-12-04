@@ -19,7 +19,7 @@
   </tr>
   <tr>
       <th>Status</th>
-      <td>Beta, version 2.0 to appear soon</td>
+      <td>Stable, version 2.0.0</td>
   </tr>
   <tr>
       <th>OS</th>
