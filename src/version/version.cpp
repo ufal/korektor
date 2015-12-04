@@ -17,7 +17,7 @@ namespace korektor {
 
 // Returns current version.
 version version::current() {
-  return {1, 9, 0, "devel"};
+  return {2, 0, 0, ""};
 }
 
 // Returns multi-line formated version and copyright string.
