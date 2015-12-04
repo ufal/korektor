@@ -7,7 +7,7 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
-#include <cstdio>
+#include <fstream>
 #include <sstream>
 
 #include "common.h"
@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
 
   // Open log file
   string log_file_name = string(argv[0]) + ".log";
-  FILE* log_file = fopen(log_file_name.c_str(), "w");
+  ofstream log_file(log_file_name.c_str(), ofstream::app);
   if (!log_file) runtime_failure("Cannot open log file '" << log_file_name << "' for writing!");
 
   // Daemonize if requested
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) {
 #endif
 
   // Start the server
-  server.set_log_file(log_file);
+  server.set_log_file(&log_file);
   server.set_max_connections(512);
   server.set_max_request_body_size(1 << 19);
   server.set_min_generated(2048);
@@ -126,7 +126,6 @@ int main(int argc, char* argv[]) {
   // Wait until finished
   server.wait_until_signalled();
   server.stop();
-  fclose(log_file);
 
   return 0;
 }
