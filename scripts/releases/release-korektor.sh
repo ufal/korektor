@@ -34,10 +34,10 @@ done
 make -C ../../src clean
 rsync -a --exclude .gitignore ../../src/ "$dir/src"
 
-make -C ../../doc install
+make -C ../../documentation install
 cp ../../INSTALL ../../MANUAL* ../../README ../../AUTHORS ../../LICENSE ../../CHANGES "$dir"
-make -C ../../doc manual.pdf
-cp ../../doc/manual.pdf "$dir"/MANUAL.pdf
-make -C ../../doc clean
+make -C ../../documentation manual.pdf
+cp ../../documentation/manual.pdf "$dir"/MANUAL.pdf
+make -C ../../documentation clean
 
 echo All done
