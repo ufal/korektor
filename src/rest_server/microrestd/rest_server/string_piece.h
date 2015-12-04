@@ -10,6 +10,7 @@
 #pragma once
 
 #include <cstring>
+#include <ostream>
 #include <string>
 
 namespace ufal {
@@ -24,6 +25,11 @@ struct string_piece {
   string_piece(const char* str, size_t len) : str(str), len(len) {}
   string_piece(const std::string& str) : str(str.c_str()), len(str.size()) {}
 };
+
+inline std::ostream& operator<<(std::ostream& os, const string_piece& str) {
+  os.write(str.str, str.len);
+  return os;
+}
 
 } // namespace microrestd
 } // namespace ufal

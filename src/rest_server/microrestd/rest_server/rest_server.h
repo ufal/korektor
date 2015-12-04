@@ -10,6 +10,7 @@
 #pragma once
 
 #include <mutex>
+#include <ostream>
 #include <string>
 
 #include "rest_request.h"
@@ -26,7 +27,7 @@ struct MHD_Connection;
 
 class rest_server {
  public:
-  void set_log_file(FILE* log_file, unsigned max_log_size = 0);
+  void set_log_file(std::ostream* log_file, unsigned max_log_size = 0);
   void set_min_generated(unsigned min_generated);
   void set_max_connections(unsigned max_connections);
   void set_max_request_body_size(unsigned max_request_body_size);
@@ -43,14 +44,16 @@ class rest_server {
   static int handle_request(void* cls, libmicrohttpd::MHD_Connection* connection, const char* url, const char* method, const char* version, const char* upload_data, size_t* upload_data_size, void** con_cls);
   static void request_completed(void* cls, libmicrohttpd::MHD_Connection* connection, void** con_cls, int toe);
 
-  void logf(const char* message, ...);
+  template<typename... Args> void log(Args&&... args);
+  void log_append();
+  template<typename Arg, typename... Args> void log_append(Arg&& arg, Args&&... args);
   void log_append_pair(std::string& message, const char* key, const std::string& value);
   void log_request(const microhttpd_request* request);
 
   libmicrohttpd::MHD_Daemon* daemon = nullptr;
   rest_service* service = nullptr;
 
-  FILE* log_file = nullptr;
+  std::ostream* log_file = nullptr;
   std::mutex log_file_mutex;
   unsigned max_log_size = 0;
 

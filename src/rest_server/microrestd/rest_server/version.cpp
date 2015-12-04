@@ -14,7 +14,7 @@ namespace microrestd {
 
 // Returns current version.
 version version::current() {
-  return {0, 9, 0, "devel"};
+  return {1, 0, 0, ""};
 }
 
 } // namespace microrestd

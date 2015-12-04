@@ -7,12 +7,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-#include <cctype>
 #include <chrono>
-#include <cstdarg>
-#include <cstdio>
-#include <cstring>
 #include <ctime>
+#include <iomanip>
+#include <iostream>
 #include <memory>
 #include <thread>
 
@@ -121,7 +119,7 @@ rest_server::microhttpd_request::microhttpd_request(const rest_server& server, M
        http_value_compare(content_type, MHD_HTTP_POST_ENCODING_MULTIPART_FORMDATA));
   if (need_post_processor) {
     post_processor.reset(MHD_create_post_processor(connection, 32 << 10, &post_iterator, this));
-    if (!post_processor) fprintf(stderr, "Cannot allocate new post processor!\n");
+    if (!post_processor) cerr << "Cannot allocate new post processor!" << endl;
   }
 
   // Collect GET arguments
@@ -350,11 +348,10 @@ bool rest_server::microhttpd_request::http_value_compare(const char* string, con
 
 
 // Class rest_server
-void rest_server::set_log_file(FILE* log_file, unsigned max_log_size) {
+void rest_server::set_log_file(ostream* log_file, unsigned max_log_size) {
   lock_guard<decltype(log_file_mutex)> log_file_lock(log_file_mutex);
 
   this->log_file = log_file;
-  if (this->log_file) setvbuf(log_file, NULL, _IOLBF, 0);
   this->max_log_size = max_log_size;
 }
 void rest_server::set_min_generated(unsigned min_generated) { this->min_generated = min_generated; }
@@ -390,7 +387,7 @@ bool rest_server::start(rest_service* service, unsigned port) {
                               MHD_OPTION_END);
 
     if (daemon) {
-      logf("REST server starting, port %u, max connections %u, timeout %u, max request body size %u, min generated %u.", port, max_connections, timeout, max_request_body_size, min_generated);
+      log("REST server starting, port ", port, ", max connections ", max_connections, ", timeout ", timeout, ", max request body size ", max_request_body_size, ", min generated ", min_generated, '.');
       return true;
     }
   }
@@ -402,16 +399,16 @@ void rest_server::stop() {
   if (!daemon) return;
 
   // Quiesce the daemon and wait for current requests to be handled.
-  logf("REST server closing listening port and waiting for current requests to finish.");
+  log("REST server closing listening port and waiting for current requests to finish.");
   MHD_socket socket = MHD_quiesce_daemon(daemon);
   if (socket != MHD_INVALID_SOCKET) MHD_socket_close(socket);
   while (true) {
     unsigned connections = *(unsigned*) MHD_get_daemon_info(daemon, MHD_DAEMON_INFO_CURRENT_CONNECTIONS);
-    logf("There are %u current connections.", connections);
+    log("There are ", connections, " current connections.");
     if (!connections) break;
     this_thread::sleep_for(chrono::milliseconds(500));
   }
-  logf("REST server stopped.");
+  log("REST server stopped.");
 
   MHD_stop_daemon(daemon);
   daemon = nullptr;
@@ -438,7 +435,7 @@ BOOL WINAPI RestServerCtrlCHandler(DWORD dwCtrlType) {
 }
 
 bool rest_server::wait_until_signalled() {
-  logf("Waiting until Ctrl+C is pressed.");
+  log("Waiting until Ctrl+C is pressed.");
   unique_lock<mutex> lock(rest_server_ctrl_c_mutex);
   if (!rest_server_ctrl_c_handlers) {
     rest_server_ctrl_c_signalled = false;
@@ -456,7 +453,7 @@ bool rest_server::wait_until_signalled() {
 }
 #else
 bool rest_server::wait_until_signalled() {
-  logf("Waiting until SIGUSR1 or SIGINT is received.");
+  log("Waiting until SIGUSR1 or SIGINT is received.");
 
   sigset_t set;
   if (sigemptyset(&set) != 0) return false;
@@ -484,7 +481,7 @@ int rest_server::handle_request(void* cls, struct MHD_Connection* connection, co
     if (!content_type) content_type = "";
 
     if (!(request = new microhttpd_request(*self, connection, url, content_type, method)))
-      return fprintf(stderr, "Cannot allocate new request!\n"), MHD_NO;
+      return cerr << "Cannot allocate new request!" << endl, MHD_NO;
 
     *con_cls = request;
     return MHD_YES;
@@ -511,14 +508,14 @@ void rest_server::request_completed(void* /*cls*/, struct MHD_Connection* /*conn
   if (request) delete request;
 }
 
-void rest_server::logf(const char* message, ...) {
+template <typename... Args> void rest_server::log(Args&&... args) {
   if (!log_file) return;
 
   // Prepare timestamp
   char timestamp[32];
   time_t time_now;
-  tm tm_now;
   time_now = time(nullptr);
+  tm tm_now;
 #ifdef _MSC_VER
   localtime_s(&tm_now, &time_now);
 #else
@@ -530,15 +527,16 @@ void rest_server::logf(const char* message, ...) {
   {
     lock_guard<decltype(log_file_mutex)> log_file_lock(log_file_mutex);
 
-    if (len) fwrite(timestamp, 1, len, log_file);
-
-    va_list ap;
-    va_start(ap, message);
-    vfprintf(log_file, message, ap);
-    va_end(ap);
-
-    fputc('\n', log_file);
+    if (len) *log_file << timestamp;
+    log_append(forward<Args>(args)...);
+    *log_file << endl;
   }
+}
+
+void rest_server::log_append() {}
+template <typename Arg, typename... Args> void rest_server::log_append(Arg&& arg, Args&&... args) {
+  *log_file << arg;
+  log_append(forward<Args>(args)...);
 }
 
 void rest_server::log_append_pair(string& message, const char* key, const string& value) {
@@ -595,7 +593,7 @@ void rest_server::log_request(const microhttpd_request* request) {
     log_append_pair(data, param.first.c_str(), param.second);
   }
 
-  logf("Request\t%s\t%s\t%s\t%s", address, forwarded_for ? forwarded_for : "", request->url.c_str(), data.c_str());
+  log("Request\t", address, '\t', forwarded_for ? forwarded_for : "", '\t', request->url, '\t', data);
 }
 
 } // namespace microrestd
