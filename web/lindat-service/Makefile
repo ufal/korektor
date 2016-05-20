@@ -1,4 +1,4 @@
-TARGETS = .htaccess about.html api-reference.php demo.php footer.php header.php icon.png info.php korektor.css log.php
+TARGETS = .htaccess about.html api-reference.php demo.php footer.php header.php icon.png info.php korektor.css log.php run.php
 TARGETS_WEBLICHT = weblicht/czech_spellcheck.cmdi weblicht/spellcheck.wadl weblicht/strip_diacritics.cmdi
 
 .PHONY: all
