@@ -449,7 +449,7 @@ bool MorphologyProcessWordFactors(const string &factor_string, bool possibly_add
 
   morpho_nodeP node = cm.root;
 
-  unsigned form_id;
+  unsigned form_id = 0; // Make compiler happy and avoid "maybe unilitialized" warning
 
   for (unsigned i = 0; i < parts.size(); i++)
   {
