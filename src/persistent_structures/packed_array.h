@@ -44,7 +44,7 @@ class PackedArray {
   /// @return Array value at index
   inline uint32_t GetValueAt(uint32_t index) const
   {
-    uint32_t bit = index * bits_per_value;
+    uint64_t bit = uint64_t(index) * bits_per_value;
     uint32_t byte_pointer = bit >> 3;
     uint32_t bit_offset = bit % 8;
 

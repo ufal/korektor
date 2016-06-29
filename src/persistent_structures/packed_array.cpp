@@ -179,7 +179,7 @@ PackedArray::PackedArray(const vector<uint32_t> &values)
 
     // moves to the next byte once the values
     // fill up the current byte
-    byte_pointer = (i * num_bits) >> 3;
+    byte_pointer = (uint64_t(i) * num_bits) >> 3;
 
     bit_pointer = (i * num_bits) % 8;
 
@@ -199,19 +199,10 @@ PackedArray::PackedArray(const vector<uint32_t> &values)
     }
   }
 
-#ifdef _DEBUG
   for (uint32_t i = 0; i < values.size(); i++)
   {
-    uint32_t val = GetValueAt(i);
-    if (val != values[i])
-    {
-      for (unsigned j = 0; j < values.size(); j++)
-        cerr << "values[" << j << "] = " << values[j] << endl;
-      cerr << "val == " << val << ", values[" << i << "] == " << values[i] << endl;
-    }
-    assert(val == values[i]);
+    assert(values[i] == GetValueAt(i));
   }
-#endif
 }
 
 } // namespace korektor
