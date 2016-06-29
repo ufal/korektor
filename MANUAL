@@ -151,10 +151,10 @@ Make targets and options:
 - lib: compile the static library
 - BITS=32 or BITS=64: compile for specified 32-bit or 64-bit architecture
   instead of the default one
-- mode=RELEASE: create release build which statically links the C++ runtime and
+- MODE=release: create release build which statically links the C++ runtime and
   uses LTO
-- mode=DEBUG: create debug build
-- mode=PROFILE: create profile build
+- MODE=debug: create debug build
+- MODE=profile: create profile build
 
 
 Platforms
@@ -683,8 +683,8 @@ Bibtex for Referencing
   }
 
 
-Permanent Identifier
---------------------
+Persistent Identifier
+---------------------
 
-If you prefer to reference Korektor by a permanent identifier (PID), you can use
-http://hdl.handle.net/11234/1-1469.
+If you prefer to reference Korektor by a persistent identifier (PID), you can
+use http://hdl.handle.net/11234/1-1469.

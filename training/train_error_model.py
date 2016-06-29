@@ -107,7 +107,7 @@ class ErrorModel:
                     if re.search(r'swap\_', spell_err[0]):
                         correct_i =  spell_err[0][6]
                         correct_i1 = spell_err[0][5]
-                        self.cm_rev[correct_i + correct_i1] += 1
+                        self.cm_rev[correct_i1 + correct_i] += 1
                         self.num_swap_errors += 1
                     elif re.search(r's\_', spell_err[0]):
                         # typo
@@ -163,7 +163,7 @@ class ErrorModel:
                       + edit_key.encode('utf-8') +']/bigram['+ edit_key.encode('utf-8') + '],\t' \
                       + repr(self.cm_rev[edit_key]) + '/' + repr(self.biletter_count[edit_key]) + ')'
         for edit_key in self.cm_sub:
-            denom_key = edit_key[1]
+            denom_key = edit_key[0]
             if float(self.letter_count[denom_key]) != 0.0:
                 err_prob = self.cm_sub[edit_key] / float(self.letter_count[denom_key])
                 err_logprob = -math.log10(err_prob)

@@ -13,7 +13,7 @@
 
     <script src="//code.jquery.com/jquery-1.11.3.min.js" type="text/javascript"></script>
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
-    <script src="//google-code-prettify.googlecode.com/svn/loader/run_prettify.js" type="text/javascript"></script>
+    <script src="//cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js" type="text/javascript"></script>
   </head>
 
   <body id="lindat-services">
@@ -33,6 +33,6 @@
         <!-- menu -->
         <ul class="nav nav-tabs text-center" style="margin-bottom: 10px">
           <li <?php if ($main_page == 'info.php') echo ' class="active"'?>><a href="info.php"><span class="fa fa-info-circle"></span> About</a></li>
-          <li <?php if ($main_page == 'demo.php') echo ' class="active"'?>><a href="demo.php"><span class="fa fa-cogs"></span> Run</a></li>
+          <li <?php if ($main_page == 'run.php') echo ' class="active"'?>><a href="run.php"><span class="fa fa-cogs"></span> Run</a></li>
           <li <?php if ($main_page == 'api-reference.php') echo ' class="active"'?>><a href="api-reference.php"><span class="fa fa-list"></span> REST API Documentation</a></li>
         </ul>

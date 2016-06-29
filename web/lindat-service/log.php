@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('UTC');
+
 # Use CORS.
 header("Access-Control-Allow-Origin: *");
 
