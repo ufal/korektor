@@ -41,7 +41,7 @@ All rights reserved.
 				else if (resultCount % 2 == 1)
 				{
 					NSArray* keys = [NSArray arrayWithObjects:NSGrammarRange, NSGrammarUserDescription, NSGrammarCorrections, nil];
-					NSArray* values = [NSArray arrayWithObjects:[NSValue valueWithRange:NSMakeRange(/*next_word_start_index + offset*/0, i - next_word_start_index)], @"Je tam chyba, má tam být byvše!", [NSArray arrayWithObject:@"byvše"], nil];
+					NSArray* values = [NSArray arrayWithObjects:[NSValue valueWithRange:NSMakeRange(/*next_word_start_index + offset*/0, i - next_word_start_index)], @"Je tam chyba, ma tam byt byvse!", [NSArray arrayWithObject:@"byvse"], nil];
 					NSDictionary* dict = [NSDictionary dictionaryWithObjects:values forKeys:keys];
 					
 					NSTextCheckingResult *res = [NSTextCheckingResult grammarCheckingResultWithRange:NSMakeRange(next_word_start_index + offset, i - next_word_start_index) details:[NSArray arrayWithObject:dict]];
