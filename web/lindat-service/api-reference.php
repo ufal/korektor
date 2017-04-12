@@ -210,6 +210,6 @@ The described API can be comfortably used by <code>curl</code>. Several examples
 <pre class="prettyprint lang-sh">curl -F 'data=@input_file' -F 'model=czech-diacritics_generator' -F 'suggestions=3' http://lindat.mff.cuni.cz/services/korektor/api/suggestions</pre>
 
 <h3>Converting JSON Result to Plain Text</h3>
-<pre class="prettyprint lang-sh">curl -F 'data=@input_file' http://lindat.mff.cuni.cz/services/korektor/api/correct | python -c "import sys,json; sys.stdout.write(json.load(sys.stdin)['result'])"</pre>
+<pre class="prettyprint lang-sh">curl -F 'data=@input_file' http://lindat.mff.cuni.cz/services/korektor/api/correct | PYTHONIOENCODING=utf-8 python -c "import sys,json; sys.stdout.write(json.load(sys.stdin)['result'])"</pre>
 
 <?php require('footer.php') ?>
