@@ -22,10 +22,13 @@ The plugin is available for the following browers:
   in the AMO (Mozilla Add-ons repository)
 
 
-== Korektor Online Demo ==[online_demo]
 
-[LINDAT/CLARIN http://lindat.cz] hosts [Korektor Online Demo https://lindat.mff.cuni.cz/services/korektor/].
+== Korektor Web Application ==[online_demo]
+
+Korektor Web Application is available at https://lindat.mff.cuni.cz/services/korektor/
+using [LINDAT/CLARIN infrastructure http://lindat.cz].
 
 == Korektor Web Service ==[web_service]
 
-[LINDAT/CLARIN http://lindat.cz] also hosts [Korektor Web Service https://lindat.mff.cuni.cz/services/korektor/api-reference.php].
+Korektor REST Web Service is also available, with the API documentation available
+at https://lindat.mff.cuni.cz/services/korektor/api-reference.php.
