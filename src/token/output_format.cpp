@@ -91,7 +91,7 @@ class OriginalOutputFormat : public OutputFormat {
     }
   }
 
-  virtual void FinishBlock(string& output) {
+  virtual void FinishBlock(string& output) override {
     if (unprinted < block.size()) {
       UTF::UTF16To8Append(block, unprinted, block.size() - unprinted, output);
       unprinted = block.size();
@@ -140,7 +140,7 @@ class XmlOutputFormat : public OutputFormat {
     }
   }
 
-  virtual void FinishBlock(string& output) {
+  virtual void FinishBlock(string& output) override {
     if (unprinted < block.size()) {
       UTF::UTF16To8Append(block, unprinted, block.size() - unprinted, output);
       unprinted = block.size();
