@@ -10,7 +10,11 @@ zip: plugin
 
 .PHONY: run
 run: plugin
-	chromium ../test.html
+	chromium ./test.html
+
+.PHONY: run-firefox
+run-firefox: plugin
+	web-ext run --url ./test.html
 
 .PHONY: clean
 clean:
