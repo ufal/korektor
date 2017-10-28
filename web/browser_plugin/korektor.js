@@ -1,4 +1,4 @@
-// This file is part of korektor <http://github.com/ufal/korektor/>.
+// This file is part of korektor <https://github.com/ufal/korektor/>.
 //
 // Copyright 2015 by Institute of Formal and Applied Linguistics, Faculty
 // of Mathematics and Physics, Charles University in Prague, Czech Republic.
@@ -26,11 +26,11 @@ function korektorSpellcheck(info, tab) {
     });
 
   if (info.menuItemId == 'about_korektor_plugin') {
-    chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor/online#plugin"});
+    chrome.tabs.create({url: "https://ufal.mff.cuni.cz/korektor/online#plugin"});
   }
 
   if (info.menuItemId == 'about_korektor') {
-    chrome.tabs.create({url: "http://ufal.mff.cuni.cz/korektor"});
+    chrome.tabs.create({url: "https://ufal.mff.cuni.cz/korektor"});
   }
 }
 chrome.contextMenus.onClicked.addListener(korektorSpellcheck);

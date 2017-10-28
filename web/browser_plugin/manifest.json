@@ -4,7 +4,7 @@
   "description": "__MSG_app_desc__",
   "default_locale": "en",
   "version": "1.0.0",
-  "homepage_url": "http://ufal.mff.cuni.cz/korektor",
+  "homepage_url": "https://ufal.mff.cuni.cz/korektor",
   "icons": {
     "48": "korektor_48.png",
     "128": "korektor_128.png"
