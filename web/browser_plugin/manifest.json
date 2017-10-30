@@ -1,5 +1,11 @@
 {
   "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "korektor_spellchecker@ufal.mff.cuni.cz",
+      "strict_min_version": "52.0"
+    }
+  },
   "name": "__MSG_app_name__",
   "description": "__MSG_app_desc__",
   "default_locale": "en",
