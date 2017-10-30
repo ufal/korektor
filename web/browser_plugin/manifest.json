@@ -23,7 +23,6 @@
   ],
   "minimum_chrome_version": "23",
   "background": {
-    "scripts": ["korektor.js"],
-    "persistent": false
+    "scripts": ["korektor.js"]
   }
 }
