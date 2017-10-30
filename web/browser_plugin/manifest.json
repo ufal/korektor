@@ -9,7 +9,7 @@
   "name": "__MSG_app_name__",
   "description": "__MSG_app_desc__",
   "default_locale": "en",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage_url": "https://ufal.mff.cuni.cz/korektor",
   "icons": {
     "48": "korektor_48.png",
