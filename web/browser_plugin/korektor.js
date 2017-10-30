@@ -10,19 +10,18 @@
 function korektorSpellcheck(info, tab) {
   if (!("menuItemId" in info)) return;
 
-  // TODO: this would be much nicer to replace this with messaging https://developer.mozilla.org/en-US/Add-ons/WebExtensions/API/tabs/sendMessage
-  var spellcheckCommands = {
-    "spellcheck_and_edit-czech-spellchecker":         "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-spellchecker', true)",
-    "spellcheck_and_edit-czech-diacritics_generator": "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-diacritics_generator', true)",
-    "spellcheck_and_edit-strip_diacritics":           "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'strip_diacritics', true)",
-    "spellcheck-czech-spellchecker":                  "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-spellchecker', false)",
-    "spellcheck-czech-diacritics_generator":          "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'czech-diacritics_generator', false)",
-    "spellcheck-strip_diacritics":                    "korektorPerformSpellcheck(chrome.i18n.getMessage, null, 'strip_diacritics', false)"
+  const spellcheckCommands = {
+    "spellcheck_and_edit-czech-spellchecker":         { model: 'czech-spellchecker', edit: true },
+    "spellcheck_and_edit-czech-diacritics_generator": { model: 'czech-diacritics_generator', edit: true },
+    "spellcheck_and_edit-strip_diacritics":           { model: 'strip_diacritics', edit: true },
+    "spellcheck-czech-spellchecker":                  { model: 'czech-spellchecker', edit: false },
+    "spellcheck-czech-diacritics_generator":          { model: 'czech-diacritics_generator', edit: false },
+    "spellcheck-strip_diacritics":                    { model: 'strip_diacritics', edit: false }
   };
   if (info.menuItemId in spellcheckCommands) {
-    chrome.tabs.executeScript(null, { file: "jquery-2.1.3.min.js" }, function() {
-      chrome.tabs.executeScript(null, { file: "spellcheck.js" }, function() {
-        chrome.tabs.executeScript(null, { code: spellcheckCommands[info.menuItemId] });
+    chrome.tabs.executeScript(tab.id, { file: "/jquery-2.1.3.min.js" }, function() {
+      chrome.tabs.executeScript(tab.id, { file: "/spellcheck.js" }, function() {
+        chrome.tabs.sendMessage(tab.id, spellcheckCommands[info.menuItemId] );
       });
     });
   }
@@ -53,4 +52,3 @@ chrome.contextMenus.create({
 });
 
 chrome.contextMenus.onClicked.addListener(korektorSpellcheck);
-
