@@ -1,9 +1,15 @@
 {
   "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "korektor_spellchecker@ufal.mff.cuni.cz",
+      "strict_min_version": "52.0"
+    }
+  },
   "name": "__MSG_app_name__",
   "description": "__MSG_app_desc__",
   "default_locale": "en",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "homepage_url": "https://ufal.mff.cuni.cz/korektor",
   "icons": {
     "48": "korektor_48.png",
@@ -17,7 +23,6 @@
   ],
   "minimum_chrome_version": "23",
   "background": {
-    "scripts": ["korektor.js"],
-    "persistent": false
+    "scripts": ["korektor.js"]
   }
 }

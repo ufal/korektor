@@ -236,7 +236,6 @@ function korektorPerformSpellcheck(gettext, control, model, edit) {
   });
 }
 
-
 function korektorEdit(gettext, data, textArray) {
   var styleWithoutFont = 'z-index:123456789; color:#000; background-color:transparent;';
   var style = styleWithoutFont + 'font-family:serif; font-size:16px;';
@@ -446,3 +445,8 @@ function korektorEdit(gettext, data, textArray) {
   jQuery('#korektorEditText span', data.dlgDocument).hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave);
   jQuery('#korektorEditDialog', data.dlgDocument).focus();
 }
+
+// Listen to messages from background perform spellcheck
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  korektorPerformSpellcheck(chrome.i18n.getMessage, null, request.model, request.edit);
+});
