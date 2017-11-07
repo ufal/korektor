@@ -16,6 +16,10 @@ run: plugin
 run-firefox: plugin
 	web-ext run --url ./test.html
 
+.PHONY: lint
+lint:
+	web-ext lint -i jquery-2.1.3.min.js test.html build/*
+
 .PHONY: clean
 clean:
 	rm -rf build korektor_spellchecker.zip
