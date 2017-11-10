@@ -8,8 +8,8 @@ plugin: AUTHORS CHANGES LICENSE README jquery-2.1.3.min.js korektor_128.png kore
 zip: plugin
 	cd build && zip -r ../korektor_spellchecker.zip *
 
-.PHONY: run
-run: plugin
+.PHONY: run-chromium
+run-chromium: plugin
 	chromium ./test.html
 
 .PHONY: run-firefox
