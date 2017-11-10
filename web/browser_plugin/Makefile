@@ -17,7 +17,7 @@ run-firefox: plugin
 	web-ext run --url ./test.html
 
 .PHONY: lint
-lint:
+lint: plugin
 	web-ext lint -i jquery-2.1.3.min.js test.html build/*
 
 .PHONY: clean
