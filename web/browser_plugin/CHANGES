@@ -1,3 +1,10 @@
+Version 1.0.1
+---------------------------
+- Port Chrome version to Firefox 52+ WebExtensions.
+- Replace code execution from string by asynchronous messaging.
+- Improve the way context menus are created.
+
+
 Version 1.0.0 [20 Nov 2015]
 ---------------------------
 - Append the dialog after body so that pages with frameset element
