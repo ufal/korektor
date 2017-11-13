@@ -1,6 +1,7 @@
-Version 1.0.1
+Version 1.1.0 [13 Nov 2017]
 ---------------------------
 - Port Chrome version to Firefox 52+ WebExtensions.
+  We now have the exact same version for Firefox and Chrome.
 - Replace code execution from string by asynchronous messaging.
 - Improve the way context menus are created.
 
