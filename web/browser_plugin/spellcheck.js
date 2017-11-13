@@ -177,15 +177,13 @@ function korektorReport(data, korektorArray, correctedArray) {
               {dataType: "json", data: {original: original, korektor:korektor, corrected:corrected, origin:"korektor_plugin"}, type: "POST"});
 }
 
-function korektorPerformSpellcheck(gettext, control, model, edit) {
-  // Chrome does not give us the control, find it manually.  Note that
+function korektorPerformSpellcheck(gettext, model, edit) {
+  // Find the editable control. Note that
   // when the contenteditable is inside an iframe, document.activeElement
   // contains only the iframe, so we need to hop over it ourselves.
-  if (!control) {
-    control = document.activeElement;
-    while (control && control.contentDocument && control.contentDocument.activeElement && control.contentDocument.activeElement != control)
-      control = control.contentDocument.activeElement;
-  }
+  var control = document.activeElement;
+  while (control && control.contentDocument && control.contentDocument.activeElement && control.contentDocument.activeElement != control)
+    control = control.contentDocument.activeElement;
 
   // Abort if no control was given
   if (!control) {
@@ -448,5 +446,5 @@ function korektorEdit(gettext, data, textArray) {
 
 // Listen to messages from background perform spellcheck
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  korektorPerformSpellcheck(chrome.i18n.getMessage, null, request.model, request.edit);
+  korektorPerformSpellcheck(chrome.i18n.getMessage, request.model, request.edit);
 });
