@@ -7,13 +7,29 @@
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted under 3-clause BSD licence.
 
+// Keep tab ids with injected code here.
+const injectedTabs = new Set();
+
 function korektorSpellcheck(tabId, message) {
-  chrome.tabs.executeScript(tabId, { file: "/jquery-2.1.3.min.js" }, function() {
-    chrome.tabs.executeScript(tabId, { file: "/spellcheck.js" }, function() {
-      chrome.tabs.sendMessage(tabId, message );
+  // Inject the code only once to avoid multiple message listeners.
+  if (!injectedTabs.has(tabId)) {
+    chrome.tabs.executeScript(tabId, { file: "/jquery-2.1.3.min.js" }, function() {
+      chrome.tabs.executeScript(tabId, { file: "/spellcheck.js" }, function() {
+        injectedTabs.add(tabId);
+        chrome.tabs.sendMessage(tabId, message);
+      });
     });
-  });
+  } else {
+    chrome.tabs.sendMessage(tabId, message);
+  }
 }
+
+// If a tab is reloaded, the code is no longer injected there.
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (changeInfo.status === 'loading') {
+    injectedTabs.delete(tabId);
+  }
+});
 
 chrome.contextMenus.create({id: "korektor_czech", title: chrome.i18n.getMessage("menu_korektor_czech"), contexts: ["editable"]});
 chrome.contextMenus.create({
