@@ -105,7 +105,7 @@
     text_corrected = jQuery('#output').text();
 
     jQuery('#submit_correction_results').removeClass().empty();
-    jQuery.ajax('//lindat.mff.cuni.cz/services/korektor/log.php',
+    jQuery.ajax('log.php',
                 {dataType: "json", data: {original: text_original, korektor: text_korektor, corrected: text_corrected, origin: "lindat_demo"}, type: "POST", success: function(json) {
       jQuery('#submit_correction_results').addClass("text-success").text('Submitted, thanks.');
     }, error: function(jqXHR, textStatus) {

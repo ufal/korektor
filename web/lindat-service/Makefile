@@ -11,8 +11,8 @@ about.html: ../../documentation/manual_about.html
 	sed -n '/^<div class="body"/,/^<\/div/p' $< | sed 's/<div class="body"[^>]*>/<div>/' >$@
 
 install: $(TARGETS) $(TARGETS_WEBLICHT)
-	rsync -avc $(TARGETS) quest:/var/www/korektor/
-	rsync -avc $(TARGETS_WEBLICHT) quest:/var/www/korektor/weblicht/
+	rsync -avc $(TARGETS) udpipe:korektor/www
+	rsync -avc $(TARGETS_WEBLICHT) udpipe:korektor/www/weblicht/
 
 .PHONY: clean
 clean:
