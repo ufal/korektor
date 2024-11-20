@@ -155,8 +155,9 @@ bool KorektorService::HandleSuggestions(ufal::microrestd::rest_request& req) {
   string error;
   auto data = GetData(req, error); if (!data) return req.respond_error(error);
   auto model = LoadSpellchecker(GetModelId(req), error); if (!model) return req.respond_error(error);
-  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), model->spellchecker->Lexicon());
   auto suggestions = GetSuggestions(req, error); if (!suggestions) return req.respond_error(error);
+  auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), model->spellchecker->Lexicon());
+  if (!input_format) return req.respond_error("Unsupported input format.\n");
 
   class Generator : public ufal::microrestd::json_response_generator {
    public:
@@ -219,6 +220,7 @@ bool KorektorService::HandleCorrect(ufal::microrestd::rest_request& req) {
   auto data = GetData(req, error); if (!data) return req.respond_error(error);
   auto model = LoadSpellchecker(GetModelId(req), error); if (!model) return req.respond_error(error);
   auto input_format = InputFormat::NewInputFormat(GetInputFormat(req), model->spellchecker->Lexicon());
+  if (!input_format) return req.respond_error("Unsupported input format.\n");
 
   class Generator : public ufal::microrestd::json_response_generator {
    public:
