@@ -1,4 +1,4 @@
-TARGETS=korektor.html online.html install.html user.html model_creation.html
+TARGETS=korektor.html online.html install.html user.html model_creation.html policy.html
 all: $(TARGETS)
 
 .PHONY: force
