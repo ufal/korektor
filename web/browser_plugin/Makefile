@@ -1,6 +1,6 @@
 .PHONY: all plugin
 all: plugin
-plugin: AUTHORS CHANGES LICENSE README jquery-2.1.3.min.js korektor_128.png korektor_48.png spellcheck.js _locales korektor.js manifest.json
+plugin: AUTHORS CHANGES LICENSE README korektor_128.png korektor_48.png spellcheck.js _locales korektor.js manifest.json
 	@mkdir -p build
 	cp -r $^ build/
 
@@ -10,15 +10,15 @@ zip: plugin
 
 .PHONY: run-chromium
 run-chromium: plugin
-	chromium ./test.html
+	chromium --user-data-dir=/tmp/chromium-korektor --load-extension=./build ./test.html
 
 .PHONY: run-firefox
 run-firefox: plugin
-	web-ext run --url ./test.html
+	npx web-ext run --url ./test.html
 
 .PHONY: lint
 lint: plugin
-	web-ext lint -i jquery-2.1.3.min.js test.html build/*
+	npx web-ext lint -i test.html build/*
 
 .PHONY: clean
 clean:

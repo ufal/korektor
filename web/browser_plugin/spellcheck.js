@@ -29,7 +29,9 @@ function korektorGetText(control) {
 
     function getText(node) {
       if (!("childNodes" in node)) return;
-      var children = node.childNodes, keep_newlines = jQuery(node).css("white-space").search(/^pre/i) != -1;
+      var children = node.childNodes;
+      var win = (node.ownerDocument || document).defaultView || window;
+      var keep_newlines = win.getComputedStyle(node).whiteSpace.search(/^pre/i) != -1;
       if (range && range.startContainer == node && range.startOffset == 0) selection.start = text.length;
       if (range && range.endContainer == node && range.endOffset == 0) selection.end = text.length;
       for (var i = 0; i < children.length; i++) {
@@ -40,7 +42,8 @@ function korektorGetText(control) {
           var child_text = child.textContent;
           text += keep_newlines ? child_text : child_text.replace(/[\r\n]/g, ' ');
         } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
-          var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+          var childWin = (child.ownerDocument || document).defaultView || window;
+          var block_display = childWin.getComputedStyle(child).display.search(/^(block|list-item|table.*)$/i) != -1;
 
           if (range && range.startContainer == node && range.startOffset == i) selection.start = text.length;
           if (range && range.endContainer == node && range.endOffset == i) selection.end = text.length;
@@ -53,7 +56,8 @@ function korektorGetText(control) {
     }
     getText(control);
     var have_selection = range && "start" in selection && "end" in selection;
-    return {type:"contentEditable", control:control, text:text, whiteSpace:jQuery(control).css("white-space"), selection:have_selection ? selection : null};
+    var ctrlWin = (control.ownerDocument || document).defaultView || window;
+    return {type:"contentEditable", control:control, text:text, whiteSpace:ctrlWin.getComputedStyle(control).whiteSpace, selection:have_selection ? selection : null};
   }
 
   return null;
@@ -134,7 +138,8 @@ function korektorSetText(gettext, data, textArray) {
           if (prev_prefix_len >= 0) range.setStart(child, prev_prefix_len);
           if (prev_suffix_index >= 0) range.setEnd(child, prev_suffix_index + next.length - prev_all.length);
         } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
-          var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+          var childWin = (child.ownerDocument || document).defaultView || window;
+          var block_display = childWin.getComputedStyle(child).display.search(/^(block|list-item|table.*)$/i) != -1;
 
           if (data.selection && data.selection.start == index) range.setStart(node, i);
           if (data.selection && data.selection.end == index) range.setEnd(node, i);
@@ -173,8 +178,17 @@ function korektorReport(data, korektorArray, correctedArray) {
   for (var i = 0; i < correctedArray.length; i++)
     corrected += correctedArray[i][correctedArray[i].length > 1 ? 1 : 0];
 
-  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/log.php',
-              {dataType: "json", data: {original: original, korektor:korektor, corrected:corrected, origin:"korektor_plugin"}, type: "POST"});
+  var params = new URLSearchParams({
+    original: original,
+    korektor: korektor,
+    corrected: corrected,
+    origin: "korektor_plugin"
+  });
+
+  fetch('https://lindat.mff.cuni.cz/services/korektor/log.php', {
+    method: 'POST',
+    body: params
+  }).catch(function() {});
 }
 
 function korektorPerformSpellcheck(gettext, model, edit) {
@@ -196,7 +210,7 @@ function korektorPerformSpellcheck(gettext, model, edit) {
   var topDocument = window.top.document;
 
   // Ignore if edit is in progress
-  if (jQuery('#korektorEditDialogFrame', topDocument).length > 0) return;
+  if (topDocument.getElementById('korektorEditDialogFrame')) return;
 
   // Try getting original text
   var data = korektorGetText(control);
@@ -207,30 +221,41 @@ function korektorPerformSpellcheck(gettext, model, edit) {
 
   // Run Korektor
   data.topDocument = topDocument;
-  jQuery.ajax('https://lindat.mff.cuni.cz/services/korektor/api/suggestions',
-              {dataType: "json", data: {model: model, data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text, suggestions: edit ? 5 : 1}, type: "POST",
-    success: function(json) {
-      if (!("result" in json)) {
-        alert(gettext('korektor_service_error'));
-        return;
-      }
-      var textArray = [];
-      for (var i = 0; i < json.result.length; i++)
-        if (json.result[i].length)
-          textArray.push(json.result[i]);
+  var params = new URLSearchParams({
+    model: model,
+    data: data.selection ? data.text.substring(data.selection.start, data.selection.end) : data.text,
+    suggestions: edit ? 5 : 1
+  });
 
-      // Process the results
-      korektorProcessResults(data, textArray);
-
-      // Edit result or use it directly
-      if (edit)
-        korektorEdit(gettext, data, textArray);
-      else
-        korektorSetText(gettext, data, textArray);
-    },
-    error: function(jqXHR, textStatus) {
+  fetch('https://lindat.mff.cuni.cz/services/korektor/api/suggestions', {
+    method: 'POST',
+    body: params
+  })
+  .then(function(response) {
+    if (!response.ok) throw new Error('HTTP error ' + response.status);
+    return response.json();
+  })
+  .then(function(json) {
+    if (!("result" in json)) {
       alert(gettext('korektor_service_error'));
+      return;
     }
+    var textArray = [];
+    for (var i = 0; i < json.result.length; i++)
+      if (json.result[i].length)
+        textArray.push(json.result[i]);
+
+    // Process the results
+    korektorProcessResults(data, textArray);
+
+    // Edit result or use it directly
+    if (edit)
+      korektorEdit(gettext, data, textArray);
+    else
+      korektorSetText(gettext, data, textArray);
+  })
+  .catch(function() {
+    alert(gettext('korektor_service_error'));
   });
 }
 
@@ -300,7 +325,8 @@ function korektorEdit(gettext, data, textArray) {
 
             index += text_all.length;
           } else if (child.nodeType == 1 && child.nodeName.search(/^(input|textarea|script)$/i) == -1 && child.contentEditable != "false") {
-            var block_display = jQuery(child).css("display").search(/^(block|list-item|table.*)$/i) != -1;
+            var childWin = (child.ownerDocument || document).defaultView || window;
+            var block_display = childWin.getComputedStyle(child).display.search(/^(block|list-item|table.*)$/i) != -1;
 
             var start_index = index;
             var childCopy = "cloneNode" in child ? child.cloneNode(false) : null;
@@ -330,9 +356,18 @@ function korektorEdit(gettext, data, textArray) {
   if (!html) return;
 
   // Add dialog
-  jQuery(data.topDocument.body).after('<iframe src="javascript:\"\"" width="100%" height="100%" style="'+style+'display:block; position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialogFrame" tabindex="-1" contenteditable="false"></iframe>');
-  data.dlgDocument = jQuery('#korektorEditDialogFrame', data.topDocument).get(-1).contentDocument;
-  jQuery(data.dlgDocument.body).html(
+  var frame = data.topDocument.createElement('iframe');
+  frame.setAttribute('src', 'javascript:""');
+  frame.setAttribute('width', '100%');
+  frame.setAttribute('height', '100%');
+  frame.setAttribute('style', style + 'display:block; position:fixed; left:0px; right:0px; top:0px; bottom:0px');
+  frame.setAttribute('id', 'korektorEditDialogFrame');
+  frame.setAttribute('tabindex', '-1');
+  frame.setAttribute('contenteditable', 'false');
+  data.topDocument.body.appendChild(frame);
+
+  data.dlgDocument = frame.contentDocument || frame.contentWindow.document;
+  data.dlgDocument.body.innerHTML =
     '<div style="'+style+'position:fixed; left:0px; right:0px; top:0px; bottom:0px" id="korektorEditDialog" tabindex="-1" contenteditable="false">\n' +
     ' <div style="'+style+'position:absolute; left:0px; right:0px; top:0px; bottom:0px; background-color:#000; opacity:0.5"></div>\n' +
     ' <div style="'+style+'position:absolute; left:20px; right:20px; top:20px; bottom:20px; min-height:80px; background-color:#eee; border:1px solid #999; border-radius:6px; box-shadow: 0px 5px 15px rgba(0,0,0,0.5);">\n' +
@@ -358,32 +393,48 @@ function korektorEdit(gettext, data, textArray) {
     '   </div>\n' +
     '  </div>\n' +
     ' </div>\n' +
-    '</div>'
-  );
+    '</div>';
+
   // Dialog controls
   function korektorEditDialogClose() {
-    jQuery('#korektorEditDialogFrame', data.topDocument).remove();
+    var dlgFrame = data.topDocument.getElementById('korektorEditDialogFrame');
+    if (dlgFrame) dlgFrame.remove();
     data.control.focus();
   }
   function korektorEditDialogHandleEscape(event) {
-    var dialog = jQuery('#korektorEditDialogFrame', data.topDocument);
-    if (dialog.length > 0 && event.keyCode == 27) korektorEditDialogClose();
+    var dlgFrame = data.topDocument.getElementById('korektorEditDialogFrame');
+    if (dlgFrame && event.keyCode == 27) korektorEditDialogClose();
   }
-  jQuery(data.dlgDocument).keyup(korektorEditDialogHandleEscape);
+  data.dlgDocument.addEventListener('keyup', korektorEditDialogHandleEscape);
 
-  jQuery('#korektorEditReportTextLabel', data.dlgDocument).click(function() {
-    var reportText = jQuery('#korektorEditReportText', data.dlgDocument);
-    reportText.prop('checked', !reportText.prop('checked'));
-  });
-  jQuery('#korektorEditOk', data.dlgDocument).click(function() {
-    var resultArray = [];
-    for (var i = 0; i < textArray.length; i++)
-      resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], jQuery('#korektorEditSuggestion'+i, data.dlgDocument).text()]);
-    if (jQuery('#korektorEditReportText', data.dlgDocument).prop('checked')) korektorReport(data, textArray, resultArray);
-    korektorSetText(gettext, data, resultArray);
-    korektorEditDialogClose();
-  });
-  jQuery('#korektorEditCancel', data.dlgDocument).click(korektorEditDialogClose);
+  var reportTextLabel = data.dlgDocument.getElementById('korektorEditReportTextLabel');
+  if (reportTextLabel) {
+    reportTextLabel.addEventListener('click', function() {
+      var reportText = data.dlgDocument.getElementById('korektorEditReportText');
+      if (reportText) reportText.checked = !reportText.checked;
+    });
+  }
+
+  var okBtn = data.dlgDocument.getElementById('korektorEditOk');
+  if (okBtn) {
+    okBtn.addEventListener('click', function() {
+      var resultArray = [];
+      for (var i = 0; i < textArray.length; i++) {
+        var sugNode = data.dlgDocument.getElementById('korektorEditSuggestion' + i);
+        var sugText = sugNode ? sugNode.textContent : '';
+        resultArray.push(textArray[i].length == 1 ? textArray[i] : [textArray[i][0], sugText]);
+      }
+      var reportText = data.dlgDocument.getElementById('korektorEditReportText');
+      if (reportText && reportText.checked) korektorReport(data, textArray, resultArray);
+      korektorSetText(gettext, data, resultArray);
+      korektorEditDialogClose();
+    });
+  }
+
+  var cancelBtn = data.dlgDocument.getElementById('korektorEditCancel');
+  if (cancelBtn) {
+    cancelBtn.addEventListener('click', korektorEditDialogClose);
+  }
 
   // Suggestion dialog handling
   var korektorEditSuggestionsHovering = false;
@@ -396,55 +447,100 @@ function korektorEdit(gettext, data, textArray) {
     if (korektorEditSuggestionsHideTimeout !== null) clearTimeout(korektorEditSuggestionsHideTimeout);
     korektorEditSuggestionsHideTimeout = setTimeout(function(){
       korektorEditSuggestionsHideTimeout = null;
-      if (!korektorEditSuggestionsHovering) jQuery('#korektorEditSuggestions', data.dlgDocument).hide()
+      if (!korektorEditSuggestionsHovering) {
+        var sugBox = data.dlgDocument.getElementById('korektorEditSuggestions');
+        if (sugBox) sugBox.style.display = 'none';
+      }
     }, 300);
   }
   function korektorEditSuggestionsUpdate(suggestion) {
-    var suggestion_text = suggestion.text();
-    jQuery('#korektorEditSuggestions span', data.dlgDocument).each(function() {
-      var span = jQuery(this);
-      span.css('font-weight', span.text() == suggestion_text ? 'bold' : 'normal');
-    });
+    var suggestion_text = suggestion.textContent;
+    var spans = data.dlgDocument.querySelectorAll('#korektorEditSuggestions span');
+    for (var i = 0; i < spans.length; i++) {
+      spans[i].style.fontWeight = (spans[i].textContent == suggestion_text ? 'bold' : 'normal');
+    }
   }
   function korektorEditSuggestionsFill(suggestion) {
-    var id = suggestion.attr('id').replace(/^korektorEditSuggestion/, '');
+    var id = suggestion.id.replace(/^korektorEditSuggestion/, '');
 
     var html = '<b>'+gettext('korektor_dlg_suggestions_original')+'</b>';
-    var quoter = jQuery('<div/>');
+    var quoter = document.createElement('div');
     for (var i = 0; i < textArray[id].length; i++) {
       if (i == 1) html += '<br/><b>'+gettext('korektor_dlg_suggestions')+'</b>';
-      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.text(textArray[id][i]).html() + '</span>';
+      quoter.textContent = textArray[id][i];
+      html += '<br><span style="'+style+'color:#800; text-decoration:underline; cursor:pointer;">' + quoter.innerHTML + '</span>';
     }
-    html += '<br/><b>'+gettext('korektor_dlg_suggestions_custom')+'</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + suggestion.text().replace(/"/g, '&quot;') + '"/>';
+    quoter.textContent = suggestion.textContent;
+    html += '<br/><b>'+gettext('korektor_dlg_suggestions_custom')+'</b><br/><input type="text" style="'+style+'background:#fff; border:1px solid #999; border-radius:4px; width: 100%" value="' + quoter.innerHTML.replace(/"/g, '&quot;') + '"/>';
 
-    jQuery('#korektorEditSuggestions', data.dlgDocument)
-      .empty()
-      .show()
-      .offset({left: suggestion.offset().left, top: suggestion.offset().top + suggestion.height()})
-      .html(html);
+    var sugBox = data.dlgDocument.getElementById('korektorEditSuggestions');
+    sugBox.innerHTML = html;
+    sugBox.style.display = 'block';
+
+    var rect = suggestion.getBoundingClientRect();
+    var win = data.dlgDocument.defaultView || window;
+    var scrollLeft = win.pageXOffset || data.dlgDocument.documentElement.scrollLeft || data.dlgDocument.body.scrollLeft || 0;
+    var scrollTop = win.pageYOffset || data.dlgDocument.documentElement.scrollTop || data.dlgDocument.body.scrollTop || 0;
+
+    sugBox.style.left = (rect.left + scrollLeft) + 'px';
+    sugBox.style.top = (rect.bottom + scrollTop) + 'px';
+
     korektorEditSuggestionsUpdate(suggestion);
-    jQuery('#korektorEditSuggestions span', data.dlgDocument).click(function() {
-      suggestion.text(jQuery(this).text());
-      korektorEditSuggestionsUpdate(suggestion);
-    });
-    jQuery('#korektorEditSuggestions input', data.dlgDocument).on('change input',function() {
-      suggestion.text(jQuery(this).val());
-      korektorEditSuggestionsUpdate(suggestion);
-    });
+
+    var sugSpans = sugBox.querySelectorAll('span');
+    for (var i = 0; i < sugSpans.length; i++) {
+      sugSpans[i].addEventListener('click', function() {
+        suggestion.textContent = this.textContent;
+        korektorEditSuggestionsUpdate(suggestion);
+      });
+    }
+
+    var sugInput = sugBox.querySelector('input');
+    if (sugInput) {
+      var updateFromInput = function() {
+        suggestion.textContent = this.value;
+        korektorEditSuggestionsUpdate(suggestion);
+      };
+      sugInput.addEventListener('change', updateFromInput);
+      sugInput.addEventListener('input', updateFromInput);
+    }
   }
   function korektorEditSuggestionsShow() {
     korektorEditSuggestionsMouseEnter();
-    korektorEditSuggestionsFill(jQuery(this));
+    korektorEditSuggestionsFill(this);
   }
 
   // Fill the dialog with suggestions
-  try { jQuery('#korektorEditText', data.dlgDocument).css("white-space", data.whiteSpace).html(html); } catch (e) {}
-  jQuery('#korektorEditSuggestions', data.dlgDocument).hover(korektorEditSuggestionsMouseEnter, korektorEditSuggestionsMouseLeave);
-  jQuery('#korektorEditText span', data.dlgDocument).hover(korektorEditSuggestionsShow, korektorEditSuggestionsMouseLeave);
-  jQuery('#korektorEditDialog', data.dlgDocument).focus();
+  try {
+    var editText = data.dlgDocument.getElementById('korektorEditText');
+    if (editText) {
+      editText.style.whiteSpace = data.whiteSpace;
+      editText.innerHTML = html;
+    }
+  } catch (e) {}
+
+  var sugBox = data.dlgDocument.getElementById('korektorEditSuggestions');
+  if (sugBox) {
+    sugBox.addEventListener('mouseenter', korektorEditSuggestionsMouseEnter);
+    sugBox.addEventListener('mouseleave', korektorEditSuggestionsMouseLeave);
+  }
+
+  var textSpans = data.dlgDocument.querySelectorAll('#korektorEditText span');
+  for (var i = 0; i < textSpans.length; i++) {
+    textSpans[i].addEventListener('mouseenter', korektorEditSuggestionsShow);
+    textSpans[i].addEventListener('mouseleave', korektorEditSuggestionsMouseLeave);
+  }
+
+  var editDialog = data.dlgDocument.getElementById('korektorEditDialog');
+  if (editDialog) editDialog.focus();
 }
 
-// Listen to messages from background perform spellcheck
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  korektorPerformSpellcheck(chrome.i18n.getMessage, request.model, request.edit);
-});
+// Listen to messages from background to perform spellcheck.
+// Guard against duplicate listeners from repeated script injection
+// (the MV3 service worker re-injects on every invocation).
+if (!window._korektorListenerRegistered) {
+  window._korektorListenerRegistered = true;
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    korektorPerformSpellcheck(chrome.i18n.getMessage, request.model, request.edit);
+  });
+}
